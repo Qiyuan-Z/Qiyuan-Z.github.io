@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>网站说明</title>
+    <url>/2019/12/12/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2/</url>
+    <content><![CDATA[<p>这是我学习制作的第一个博客，主要用于记录研究生学习过程中所遇到的问题以及一些解决方法，顺便会分享一些实用教程，希望能对有需要的人给予帮助</p>
+]]></content>
+  </entry>
+  <entry>
+    <title>Ubuntu下如何添加新用户并增加管理员权限</title>
+    <url>/2019/03/19/Ubuntu%E4%B8%8B%E5%A6%82%E4%BD%95%E6%B7%BB%E5%8A%A0%E6%96%B0%E7%94%A8%E6%88%B7%E5%B9%B6%E5%A2%9E%E5%8A%A0%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/</url>
+    <content><![CDATA[<h2 id="添加新用户"><a href="#添加新用户" class="headerlink" title=" 添加新用户"></a><a id="more"></a> 添加新用户</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo adduser xxx #xxx为用户名</span><br></pre></td></tr></table></figure>
+<p>输入密码后，出现如下信息：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">正在添加用户&quot;xxx&quot;…</span><br><span class="line">正在添加新组&quot;xxx&quot; (1003)…</span><br><span class="line">正在添加新用户&quot;xxx&quot; (1003) 到组&quot;xxx&quot;…</span><br><span class="line">创建主目录&quot;&#x2F;home&#x2F;xxx&quot;…</span><br><span class="line">正在从&quot;&#x2F;etc&#x2F;skel&quot;复制文件…</span><br><span class="line">输入新的 UNIX 密码：</span><br><span class="line">重新输入新的 UNIX 密码：</span><br><span class="line">passwd：已成功更新密码</span><br><span class="line">正在改变 xxx 的用户信息</span><br><span class="line">请输入新值，或直接敲回车以使用默认值</span><br><span class="line">        全名 [ ]：</span><br><span class="line">        房间号码 [ ]：</span><br><span class="line">        工作电话 [ ]：</span><br><span class="line">        家庭电话 [ ]：</span><br><span class="line">        其它 [ ]：</span><br><span class="line">这些信息是否正确？ [Y&#x2F;n] y</span><br></pre></td></tr></table></figure>
+<p>到这里，新用户添加成功。</p>
+<h2 id="增加管理员权限"><a href="#增加管理员权限" class="headerlink" title="增加管理员权限"></a>增加管理员权限</h2><p>需要让此用户有root权限，执行命令：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo nano &#x2F;etc&#x2F;sudoers</span><br></pre></td></tr></table></figure>
+<p>往下拉，修改文件并添加：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">xxx ALL&#x3D;(ALL：ALL) ALL #xxx为你之前所创的用户名</span><br></pre></td></tr></table></figure>
+<p>添加完成按下Ctrl + X保存并退出，再次按下Enter,完成<br>现在你可以点击右上角，看到你新创的用户，点击并切换了！</p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+      </tags>
+  </entry>
+</search>
