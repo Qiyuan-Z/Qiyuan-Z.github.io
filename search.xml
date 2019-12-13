@@ -30,15 +30,15 @@
     <title>Ubuntu下如何安装搜狗输入法</title>
     <url>/2019/03/19/sougou/</url>
     <content><![CDATA[<h2 id="Ubuntu系统配置"><a href="#Ubuntu系统配置" class="headerlink" title=" Ubuntu系统配置"></a><a id="more"></a> Ubuntu系统配置</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">system settings-&gt;language support-&gt;install&#x2F;remove languages</span><br></pre></td></tr></table></figure>
-<p>在弹出的菜单中选择Chinese(simplified),点击apply<br><img src="/.io//20180729142927736.png" alt="Demo"><br><img src="/.io//20180729142927712.png" alt="Demo"></p>
-<h2 id="配置输入法框架"><a href="#配置输入法框架" class="headerlink" title="配置输入法框架"></a>配置输入法框架</h2><p>搜狗输入法是建立在fcitx框架之上的，所以要将输入法框架选择为fictx<br><img src="/.io//20180729142927666.png" alt="Demo"><br>注意：如果没有fcitx选项，那么你就需要安装fcitx框架之后在进行配置，安装方法如下：</p>
+<p>在弹出的菜单中选择Chinese(simplified),点击apply<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/sougou/20180729142927736.png" alt="Demo"><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/sougou/20180729142927712.png" alt="Demo"></p>
+<h2 id="配置输入法框架"><a href="#配置输入法框架" class="headerlink" title="配置输入法框架"></a>配置输入法框架</h2><p>搜狗输入法是建立在fcitx框架之上的，所以要将输入法框架选择为fictx<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/sougou/20180729142927666.png" alt="Demo"><br>注意：如果没有fcitx选项，那么你就需要安装fcitx框架之后在进行配置，安装方法如下：</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo add-apt-repository ppa:fcitx-team&#x2F;nightly   &#x2F;&#x2F;添加FCITX仓库</span><br><span class="line"></span><br><span class="line">sudo apt-get update                              &#x2F;&#x2F;更新仓库</span><br><span class="line"></span><br><span class="line">sudo apt-get install fcitx                       &#x2F;&#x2F;安装fcitx输入法框架</span><br></pre></td></tr></table></figure>
-<p>配置好输入法框架之后，重启ubuntu系统。重启之后如果配置成功，在任务栏的右上角会出现fcitx的设置选项（一个小键盘图标）<br><img src="/.io//20180729142927651.png" alt="Demo"></p>
+<p>配置好输入法框架之后，重启ubuntu系统。重启之后如果配置成功，在任务栏的右上角会出现fcitx的设置选项（一个小键盘图标）<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/sougou/20180729142927651.png" alt="Demo"></p>
 <h2 id="去搜狗官网下载输入法for-Linux"><a href="#去搜狗官网下载输入法for-Linux" class="headerlink" title="去搜狗官网下载输入法for Linux"></a>去搜狗官网下载输入法for Linux</h2><p><a href="https://pinyin.sogou.com/linux/" target="_blank" rel="noopener">官方下载</a><br><a href="https://www.jianguoyun.com/p/DeShNo0QlZ_3Bhic5rAC" target="_blank" rel="noopener">网盘下载</a><br>下载完成之后，在download目录下找到下载的文件，双击安装即可，点击install即可<br>或者在终端的命令窗口中输入如下的指令安装：</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo dpkg -i deb 安装包</span><br></pre></td></tr></table></figure>
-<p>如果在安装过程中出现相关依赖文件的错误。则需要先安装其依赖的软件包<br><img src="/.io//Snipaste_2019-12-13_14-33-14.jpg" alt="Baidu"><br>在终端窗口来执行以下命令，安装缺少的依赖文件:</p>
+<p>如果在安装过程中出现相关依赖文件的错误。则需要先安装其依赖的软件包<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/sougou/Snipaste_2019-12-13_14-33-14.jpg" alt="Baidu"><br>在终端窗口来执行以下命令，安装缺少的依赖文件:</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt-get -f install</span><br></pre></td></tr></table></figure>
-<p><img src="/.io//Snipaste_2019-12-13_14-33-49.jpg" alt="Baidu"><br>安装完成后，首先打开右上角系统设置，选择第一行的最后一个选项”Text Entry“，点击左下角的+号，在打开的窗口中找到搜狗输入法Sogou pinyin点击Add添加进去<br>仅显示当前语言一定要去掉那个勾，才可以找到搜狗输入法，然后添加就是<br><img src="/.io//2019050512074094.png" alt="Demo"><br>这时就可以在右上方小键盘选择搜狗输入法了！</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/sougou/Snipaste_2019-12-13_14-33-49.jpg" alt="Baidu"><br>安装完成后，首先打开右上角系统设置，选择第一行的最后一个选项”Text Entry“，点击左下角的+号，在打开的窗口中找到搜狗输入法Sogou pinyin点击Add添加进去<br>仅显示当前语言一定要去掉那个勾，才可以找到搜狗输入法，然后添加就是<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/sougou/2019050512074094.png" alt="Demo"><br>这时就可以在右上方小键盘选择搜狗输入法了！</p>
 ]]></content>
       <categories>
         <category>教程</category>
