@@ -47,15 +47,14 @@
       </tags>
   </entry>
   <entry>
-    <title>Ubuntu下安装Pycharm</title>
-    <url>/2019/03/19/Ubuntu%E4%B8%8B%E5%AE%89%E8%A3%85Pycharm/</url>
-    <content><![CDATA[<h2 id="下载"><a href="#下载" class="headerlink" title="下载"></a><a id="more"></a>下载</h2><p>有社区版和专业版，专业版需要激活，社区版免费，我下载的是社区版。<br><a href="https://www.jetbrains.com/pycharm/download/#section=linux" target="_blank" rel="noopener">官方下载</a><br><a href="https://www.jianguoyun.com/p/DfZJG3QQlZ_3Bhj8mrEC" target="_blank" rel="noopener">网盘下载</a></p>
-<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>进入download目录，对下载好的Pycharm压缩包进行解压操作，选中文件右键提取到此处即可。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D1664510513%2C942693123%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt="Demo"><br>进入解压后的Pycharm文件夹，进入bin目录，可以看到很多文件，其中有一个文件叫做pycharm.sh。也就是下图中所选中的文件：<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D101055722%2C4258535600%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt="Demo"><br>此时在bin文件夹下右键打开终端，输入运行命令, 执行Pycharm程序</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.&#x2F;pycharm.sh</span><br></pre></td></tr></table></figure>
-<p>如果提示没有权限，大家可以添加sudo命令进行操作：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo .&#x2F;pycharm.sh</span><br></pre></td></tr></table></figure>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D805484803%2C1629350165%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt="Demo"><br>大家点击OK即可进入下一步操作，根据提示的内容进行勾选同意协议，然后点击continue进入下一步，大家可以点击don’t send进入下一步，选择喜欢的界面风格，然后再次点击next进入下一步，直到提示start启动程序。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D227808303%2C3066408894%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt="Demo"><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D22323540%2C1357101677%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt="Demo"><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D1914658415%2C2906990210%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt="Demo"><br>为了方便以后的使用，我们可以将Pycharm的图标（快捷键）锁定到启动器。之后不用再去在终端中启动Pycharm了，直接点击图标启动即可。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D1149108563%2C3867497858%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt="Demo"></p>
-]]></content>
+    <title>Ubuntu下安装更新pip</title>
+    <url>/2019/03/19/Ubuntu%E4%B8%8B%E5%AE%89%E8%A3%85%E6%9B%B4%E6%96%B0pip/</url>
+    <content><![CDATA[<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a><a id="more"></a>安装</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt install python-pip</span><br></pre></td></tr></table></figure>
+<p>若同时装有Python2、Python3上条命令装的是pip2，若还需装pip3，则再执行以下命令</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt install python3-pip</span><br></pre></td></tr></table></figure>
+<h2 id="更新"><a href="#更新" class="headerlink" title="更新"></a>更新</h2><p>安装成功后进行更新：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo pip install --upgrade pip</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo pip3 install --upgrade pip</span><br></pre></td></tr></table></figure>]]></content>
       <categories>
         <category>教程</category>
       </categories>
@@ -65,14 +64,15 @@
       </tags>
   </entry>
   <entry>
-    <title>Ubuntu下安装更新pip</title>
-    <url>/2019/03/19/Ubuntu%E4%B8%8B%E5%AE%89%E8%A3%85%E6%9B%B4%E6%96%B0pip/</url>
-    <content><![CDATA[<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a><a id="more"></a>安装</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt install python-pip</span><br></pre></td></tr></table></figure>
-<p>若同时装有Python2、Python3上条命令装的是pip2，若还需装pip3，则再执行以下命令</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt install python3-pip</span><br></pre></td></tr></table></figure>
-<h2 id="更新"><a href="#更新" class="headerlink" title="更新"></a>更新</h2><p>安装成功后进行更新：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo pip install --upgrade pip</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo pip3 install --upgrade pip</span><br></pre></td></tr></table></figure>]]></content>
+    <title>Ubuntu下安装Pycharm</title>
+    <url>/2019/03/19/Ubuntu%E4%B8%8B%E5%AE%89%E8%A3%85Pycharm/</url>
+    <content><![CDATA[<h2 id="下载"><a href="#下载" class="headerlink" title="下载"></a><a id="more"></a>下载</h2><p>有社区版和专业版，专业版需要激活，社区版免费，我下载的是社区版。<br><a href="https://www.jetbrains.com/pycharm/download/#section=linux" target="_blank" rel="noopener">官方下载</a><br><a href="https://www.jianguoyun.com/p/DfZJG3QQlZ_3Bhj8mrEC" target="_blank" rel="noopener">网盘下载</a></p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>进入download目录，对下载好的Pycharm压缩包进行解压操作，选中文件右键提取到此处即可。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D1664510513%2C942693123%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt="Demo"><br>进入解压后的Pycharm文件夹，进入bin目录，可以看到很多文件，其中有一个文件叫做pycharm.sh。也就是下图中所选中的文件：<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D101055722%2C4258535600%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt="Demo"><br>此时在bin文件夹下右键打开终端，输入运行命令, 执行Pycharm程序</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.&#x2F;pycharm.sh</span><br></pre></td></tr></table></figure>
+<p>如果提示没有权限，大家可以添加sudo命令进行操作：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo .&#x2F;pycharm.sh</span><br></pre></td></tr></table></figure>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D805484803%2C1629350165%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt="Demo"><br>大家点击OK即可进入下一步操作，根据提示的内容进行勾选同意协议，然后点击continue进入下一步，大家可以点击don’t send进入下一步，选择喜欢的界面风格，然后再次点击next进入下一步，直到提示start启动程序。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D227808303%2C3066408894%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt="Demo"><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D22323540%2C1357101677%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt="Demo"><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D1914658415%2C2906990210%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt="Demo"><br>为了方便以后的使用，我们可以将Pycharm的图标（快捷键）锁定到启动器。之后不用再去在终端中启动Pycharm了，直接点击图标启动即可。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D1149108563%2C3867497858%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt="Demo"></p>
+]]></content>
       <categories>
         <category>教程</category>
       </categories>
