@@ -7,9 +7,111 @@
 ]]></content>
   </entry>
   <entry>
+    <title>Ubuntu 16.04下配置GPU版CUDA和cuDNN</title>
+    <url>/2019/03/19/Ubuntu-16.04%E4%B8%8B%E9%85%8D%E7%BD%AEGPU%E7%89%88CUDA%E5%92%8CcuDNN/</url>
+    <content><![CDATA[<h2 id><a href="#" class="headerlink" title></a><a id="more"></a></h2><p>先介绍下我自己配置的环境</p>
+<ul>
+<li>Ubuntu 16.04</li>
+<li>GTX2080ti显卡</li>
+<li>NVIDIA 418.3</li>
+<li>CUDA 10.0</li>
+<li>cuDNN 7.6.2</li>
+</ul>
+<p>以下教程针对从零开始的用户，若系统中已装有CUDA和cuDNN，却在当前用户下无法使用，请<a href="#添加环境变量">添加环境变量</a></p>
+<h2 id="安装NVIDIA显卡驱动"><a href="#安装NVIDIA显卡驱动" class="headerlink" title="安装NVIDIA显卡驱动"></a>安装NVIDIA显卡驱动</h2><p>1.先在<a href="https://www.nvidia.cn/Download/index.aspx?lang=cn" target="_blank" rel="noopener">NVIDIA官网</a>上下载对应的驱动程序，可根据自己的GPU的型号下载相应的.run文件<br>例如NVIDIA-Linux-x86_64-3xx.xx.run形式的文件名</p>
+<p>2.禁用开源nouveau驱动<strong>（非常重要）</strong><br>Ubuntu系统集成的显卡驱动程序是nouveau，它是第三方为NVIDIA开发的开源驱动，我们需要先将其屏蔽才能安装NVIDIA官方驱动。<br>将驱动添加到黑名单blacklist.conf中，但是由于该文件的属性不允许修改。所以需要先修改文件属性。<br>查看属性</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo ls -lh &#x2F;etc&#x2F;modprobe.d&#x2F;blacklist.conf</span><br></pre></td></tr></table></figure>
+<p>修改属性</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo chmod 666 &#x2F;etc&#x2F;modprobe.d&#x2F;blacklist.conf</span><br></pre></td></tr></table></figure>
+<p>用gedit编辑器打开</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo gedit &#x2F;etc&#x2F;modprobe.d&#x2F;blacklist.conf</span><br></pre></td></tr></table></figure>
+<p>在该文件后添加一下几行：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">blacklist vga16fb</span><br><span class="line">blacklist nouveau</span><br><span class="line">blacklist rivafb</span><br><span class="line">blacklist rivatv</span><br><span class="line">blacklist nvidiafb</span><br></pre></td></tr></table></figure>
+<p>3.开始安装<br>先按Ctrl + Alt + F1到控制台，关闭当前图形环境</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo service lightdm stop</span><br></pre></td></tr></table></figure>
+<p>再安装驱动程序</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo chmod a+x NVIDIA-Linux-x86_64-xxx.run</span><br><span class="line">sudo .&#x2F;NVIDIA-Linux-x86_64-xxx.run -no-x-check -no-nouveau-check -no-opengl-files</span><br></pre></td></tr></table></figure>
+<p>最后重新启动图形环境</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo service lightdm start</span><br></pre></td></tr></table></figure>
+<p>在终端里输入：nvidia-smi ，输出以下图片的代码则安装成功<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/CUDA%26cuDNN/2019051413224071.png" alt></p>
+<h2 id="cuda-10-0安装"><a href="#cuda-10-0安装" class="headerlink" title="cuda 10.0安装"></a>cuda 10.0安装</h2><p><a href="https://developer.nvidia.com/cuda-toolkit-archive" target="_blank" rel="noopener">官方下载</a><br><a href="https://pan.baidu.com/s/1piTbzIIL3wTx1dCeUDDiOw" target="_blank" rel="noopener">网盘下载</a> 提取码: aarn</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo chmod a+x cuda_10.0.130_410.48_linux.run &#x2F;&#x2F; 获取权限</span><br><span class="line">sudo sh cuda_10.0.130_410.48_linux.run --tmpdir&#x3D;&#x2F;home&#x2F;max&#x2F;temp</span><br></pre></td></tr></table></figure>
+<p>这里加 –tmpdir 主要是直接运行后，会提示空间不足的问题<br>接下来进入英文选择界面按住空格键可以快速浏览<br>在安装过程中选项选择：<br>accept #同意安装<br>n #不安装Driver，因为已安装驱动<strong>（这里需要强调一下）</strong><br>y #安装CUDA Toolkit<br>#安装到默认目录<br>y #创建安装目录的软链接<br>n #不复制Samples，因为在安装目录下有/samples</p>
+<h2 id="添加环境变量"><a href="#添加环境变量" class="headerlink" title="添加环境变量"></a>添加环境变量</h2><p>home文件下 ctrl+H显示隐藏文件 打开 .bashrc文件在最后添加</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">export PATH&#x3D;&#x2F;usr&#x2F;local&#x2F;cuda-10.0&#x2F;bin$&#123;PATH:+:$&#123;PATH&#125;&#125;</span><br><span class="line">export LD_LIBRARY_PATH&#x3D;&#x2F;usr&#x2F;local&#x2F;cuda-10.0&#x2F;lib64$&#123;LD_LIBRARY_PATH:+:$&#123;LD_LIBRARY_PATH&#125;&#125;</span><br></pre></td></tr></table></figure>
+<p>终端运行如下命令，保存操作</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">source ~&#x2F;.bashrc</span><br></pre></td></tr></table></figure>
+<p>检查cuda是否安装成功</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">nvcc -V</span><br><span class="line">nvcc --version</span><br></pre></td></tr></table></figure>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/CUDA%26cuDNN/20190514132130343.png" alt></p>
+<h2 id="cuDnn-10-0安装"><a href="#cuDnn-10-0安装" class="headerlink" title="cuDnn 10.0安装"></a>cuDnn 10.0安装</h2><p><a href="https://developer.nvidia.com/rdp/cudnn-archive" target="_blank" rel="noopener">官方下载</a><br><a href="https://www.jianguoyun.com/p/DdS0_A4QlZ_3Bhjw8LEC" target="_blank" rel="noopener">网盘下载</a><br>注意：需跟CUDA版本对应<br>切换到下载目录进行解压：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo tar -zxvf .&#x2F;cudnn-10.0-linux-x64-xxx.tgz</span><br></pre></td></tr></table></figure>
+<p>解压下载的文件，可以看到cuda文件夹，在当前目录打开终端，执行如下命令：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo cp cuda&#x2F;include&#x2F;cudnn.h &#x2F;usr&#x2F;local&#x2F;cuda&#x2F;include&#x2F;</span><br><span class="line"> </span><br><span class="line">sudo cp cuda&#x2F;lib64&#x2F;libcudnn* &#x2F;usr&#x2F;local&#x2F;cuda&#x2F;lib64&#x2F;</span><br><span class="line"> </span><br><span class="line">sudo chmod a+r &#x2F;usr&#x2F;local&#x2F;cuda&#x2F;include&#x2F;cudnn.h</span><br><span class="line"> </span><br><span class="line">sudo chmod a+r &#x2F;usr&#x2F;local&#x2F;cuda&#x2F;lib64&#x2F;libcudnn*</span><br></pre></td></tr></table></figure>
+<p>在终端输入</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cat &#x2F;usr&#x2F;local&#x2F;cuda&#x2F;include&#x2F;cudnn.h | grep CUDNN_MAJOR -A 2</span><br></pre></td></tr></table></figure>
+<p>如果出现下图所示版本信息，说明安装成功<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/CUDA%26cuDNN/20180815114007852.png" alt></p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+        <tag>Ubuntu</tag>
+        <tag>CUDA</tag>
+        <tag>cuDNN</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Python新环境下快速安装依赖包的小技巧</title>
+    <url>/2019/03/19/Python%E6%96%B0%E7%8E%AF%E5%A2%83%E4%B8%8B%E5%BF%AB%E9%80%9F%E5%AE%89%E8%A3%85%E4%BE%9D%E8%B5%96%E5%8C%85%E7%9A%84%E5%B0%8F%E6%8A%80%E5%B7%A7/</url>
+    <content><![CDATA[<h2 id><a href="#" class="headerlink" title></a><a id="more"></a></h2><p>当你新创一个Python环境时，若还用pip一个个装你所需要的库，明显效率十分低下。<br>这里有个小技巧，你可以从已配置好的旧环境中，导出一个requirements.txt 文件，用于记录所有依赖包及其精确的版本号。以便新环境部署。<br>在旧环境中执行以下命令，生成requirements.txt文件：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip freeze &gt; requirements.txt</span><br></pre></td></tr></table></figure>
+<p>requirements.txt中的内容类似如下，记录了你旧有环境的依赖包及其精确的版本号：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">appdirs&#x3D;&#x3D;1.4.3</span><br><span class="line">backports.functools-lru-cache&#x3D;&#x3D;1.5</span><br><span class="line">beautifulsoup4&#x3D;&#x3D;4.5.3</span><br><span class="line">bs4&#x3D;&#x3D;0.0.1</span><br><span class="line">cycler&#x3D;&#x3D;0.10.0</span><br><span class="line">kiwisolver&#x3D;&#x3D;1.0.1</span><br><span class="line">lxml&#x3D;&#x3D;3.7.3</span><br><span class="line">matplotlib&#x3D;&#x3D;2.2.0</span><br><span class="line">numpy&#x3D;&#x3D;1.14.1</span><br><span class="line">pandas&#x3D;&#x3D;0.22.0</span><br><span class="line">pyparsing&#x3D;&#x3D;2.2.0</span><br><span class="line">python-dateutil&#x3D;&#x3D;2.6.1</span><br><span class="line">pytz&#x3D;&#x3D;2018.3</span><br><span class="line">six&#x3D;&#x3D;1.11.0</span><br><span class="line">virtualenv&#x3D;&#x3D;15.1.0</span><br></pre></td></tr></table></figure>
+<p>这时你可以把requirements.txt拷入新配置的Python目录下，执行以下命令：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip install -r requirements.txt</span><br></pre></td></tr></table></figure>
+<p>则会按照requirements.txt中所写的依赖包和版本依序进行安装。<br>注意：<br>若迁入的系统不同或Python版本不同，在安装过程中可能会因为找不到相应的依赖包版本而报错<br>这时你可以进入requirements.txt把报错的依赖包后的版本信息去掉，保存，重新执行命令即可，它会自动下载匹配的最新版本。<br>也可以把==改成&lt;=，代表它会搜索不大于此版本的最高版本进行安装。<br>由于pip下载源在国外，若无合适的VPN，此期间下载过程会十分漫长，这里提供几个常用的国内镜像源：</p>
+<ul>
+<li>清华大学 <a href="https://pypi.tuna.tsinghua.edu.cn/simple/" target="_blank" rel="noopener">https://pypi.tuna.tsinghua.edu.cn/simple/</a></li>
+<li>中国科学技术大学 <a href="http://pypi.mirrors.ustc.edu.cn/simple/" target="_blank" rel="noopener">http://pypi.mirrors.ustc.edu.cn/simple/</a></li>
+<li>阿里云 <a href="http://mirrors.aliyun.com/pypi/simple/" target="_blank" rel="noopener">http://mirrors.aliyun.com/pypi/simple/</a></li>
+<li>豆瓣 <a href="http://pypi.douban.com/simple/" target="_blank" rel="noopener">http://pypi.douban.com/simple/</a></li>
+<li>华中科技大学 <a href="http://pypi.hustunique.com/" target="_blank" rel="noopener">http://pypi.hustunique.com/</a></li>
+</ul>
+<p>可以在使用pip的时候，加上参数-i和镜像地址，指定下载源，加速下载过程，如：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip install -r requirements.txt -i https:&#x2F;&#x2F;pypi.tuna.tsinghua.edu.cn&#x2F;simple</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ubuntu16.04下Tensorflow-gpu安装</title>
+    <url>/2019/03/19/Ubuntu16.04%E4%B8%8BTensorflow-gpu%E5%AE%89%E8%A3%85/</url>
+    <content><![CDATA[<h2 id><a href="#" class="headerlink" title></a><a id="more"></a></h2><p>在开始之前，请先确定安装好显卡驱动、CUDA、cuDNN，可以参考我的<a href="https://qiyuan-z.github.io/2019/03/19/Ubuntu-16.04下配置GPU版CUDA和cuDNN/">另一篇博客</a><br>1.安装Numpy<br>推荐安装1.16.0版本，若之前已安装，请先卸载</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip uninstall numpy</span><br></pre></td></tr></table></figure>
+<p>然后执行安装</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip install numpy&#x3D;&#x3D;1.16.0</span><br></pre></td></tr></table></figure>
+<p>2.安装Tensorflow-gpu<br>推荐安装1.14.0版本</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip install tensorflow-gpu&#x3D;&#x3D;1.14.0</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+        <tag>Ubuntu</tag>
+        <tag>Tensorflow</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Ubuntu下virtualenv的使用与pycharm的基本配置</title>
     <url>/2019/03/19/Ubuntu%E4%B8%8Bvirtualenv%E7%9A%84%E4%BD%BF%E7%94%A8%E4%B8%8Epycharm%E7%9A%84%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE/</url>
-    <content><![CDATA[<h2 id="安装virtualenv"><a href="#安装virtualenv" class="headerlink" title="安装virtualenv"></a><a id="more"></a>安装virtualenv</h2><p>virtualenv是 Python 多版本管理的利器，不同版本的开发调试全靠它了（没有多版本进量也装上吧）</p>
+    <content><![CDATA[<h2 id="安装virtualenv"><a href="#安装virtualenv" class="headerlink" title="安装virtualenv"></a><a id="more"></a>安装virtualenv</h2><p>virtualenv是 Python 多版本管理的利器，不同版本的开发调试全靠它了（没有多版本尽量也装上吧）</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo pip install virtualenv</span><br></pre></td></tr></table></figure>
 <h2 id="创建一个virtualenv环境"><a href="#创建一个virtualenv环境" class="headerlink" title="创建一个virtualenv环境"></a>创建一个virtualenv环境</h2><p>使用如下语句：</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">virtualenv + 路径</span><br></pre></td></tr></table></figure>
@@ -24,8 +126,8 @@
 <p>也可直接关闭当前终端。</p>
 <h2 id="删除virtualenv环境"><a href="#删除virtualenv环境" class="headerlink" title="删除virtualenv环境"></a>删除virtualenv环境</h2><p>直接删除对应目录即可删除virtualenv环境，不会对系统产生任何影响，所以在virtualenv中可以放心操作。</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">rm -rvf  + 路径</span><br></pre></td></tr></table></figure>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/virtualenv/5aafafdaa2aca.webp" alt="Demo"></p>
-<h2 id="Pycharm配置"><a href="#Pycharm配置" class="headerlink" title="Pycharm配置"></a>Pycharm配置</h2><p>新建项目<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/virtualenv/5aafb0d3811f2.webp" alt="Demo"></p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/virtualenv/5aafafdaa2aca.webp" alt></p>
+<h2 id="Pycharm配置"><a href="#Pycharm配置" class="headerlink" title="Pycharm配置"></a>Pycharm配置</h2><p>新建项目<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/virtualenv/5aafb0d3811f2.webp" alt></p>
 <ul>
 <li><p>New environment using Virtualenv: 将在项目的目录下创建一个virtualenv环境，然后使用它当作当前项目的python解释器，默认不包含系统的python包。<br>相当于： virtualenv + 路径</p>
 </li>
@@ -36,14 +138,53 @@
 <li><p>Existing interpreter：使用已有的python环境，点击后会出现后面的设置会出现这个界面，分别是virtualenv, conda和系统的python环境。可以选择已有的virtualenv环境，或者直接使用系统的python解释器。 Conda是anaconda(一个科学计算的python发行版)的包管理器，也可以用来建立python环境。</p>
 </li>
 </ul>
-<p>会发现生成的项目中有一个叫venv的文件夹，它实质上和直接用virtualenv创建的一样。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/virtualenv/5aafb2bd99f29.webp" alt="Demo"><br>可以用virtualenv的管理方法管理它，比如安装numpy，安装之后可以在pycharm正常使用。（注意在virtualenv中<strong>不要使用sudo</strong>）<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/virtualenv/5aafb2bdb011c.webp" alt="Demo"><br>也可以在pycharm中使用 file-settings-project-project interpreter中管理环境中的python包，可以对该环境下的python包进行删除和安装。</p>
+<p>会发现生成的项目中有一个叫venv的文件夹，它实质上和直接用virtualenv创建的一样。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/virtualenv/5aafb2bd99f29.webp" alt><br>可以用virtualenv的管理方法管理它，比如安装numpy，安装之后可以在pycharm正常使用。（注意在virtualenv中<strong>不要使用sudo</strong>）<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/virtualenv/5aafb2bdb011c.webp" alt><br>也可以在pycharm中使用 file-settings-project-project interpreter中管理环境中的python包，可以对该环境下的python包进行删除和安装。</p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+        <tag>Ubuntu</tag>
+        <tag>virtualenv</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ubuntu下如何添加新用户并增加管理员权限</title>
+    <url>/2019/03/19/Ubuntu%E4%B8%8B%E5%A6%82%E4%BD%95%E6%B7%BB%E5%8A%A0%E6%96%B0%E7%94%A8%E6%88%B7%E5%B9%B6%E5%A2%9E%E5%8A%A0%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/</url>
+    <content><![CDATA[<h2 id="添加新用户"><a href="#添加新用户" class="headerlink" title=" 添加新用户"></a><a id="more"></a> 添加新用户</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo adduser xxx #xxx为用户名</span><br></pre></td></tr></table></figure>
+<p>输入密码后，出现如下信息：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">正在添加用户&quot;xxx&quot;…</span><br><span class="line">正在添加新组&quot;xxx&quot; (1003)…</span><br><span class="line">正在添加新用户&quot;xxx&quot; (1003) 到组&quot;xxx&quot;…</span><br><span class="line">创建主目录&quot;&#x2F;home&#x2F;xxx&quot;…</span><br><span class="line">正在从&quot;&#x2F;etc&#x2F;skel&quot;复制文件…</span><br><span class="line">输入新的 UNIX 密码：</span><br><span class="line">重新输入新的 UNIX 密码：</span><br><span class="line">passwd：已成功更新密码</span><br><span class="line">正在改变 xxx 的用户信息</span><br><span class="line">请输入新值，或直接敲回车以使用默认值</span><br><span class="line">        全名 [ ]：</span><br><span class="line">        房间号码 [ ]：</span><br><span class="line">        工作电话 [ ]：</span><br><span class="line">        家庭电话 [ ]：</span><br><span class="line">        其它 [ ]：</span><br><span class="line">这些信息是否正确？ [Y&#x2F;n] y</span><br></pre></td></tr></table></figure>
+<p>到这里，新用户添加成功。</p>
+<h2 id="增加管理员权限"><a href="#增加管理员权限" class="headerlink" title="增加管理员权限"></a>增加管理员权限</h2><p>需要让此用户有root权限，执行命令：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo nano &#x2F;etc&#x2F;sudoers</span><br></pre></td></tr></table></figure>
+<p>往下拉，修改文件并添加：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">xxx ALL&#x3D;(ALL：ALL) ALL #xxx为你之前所创的用户名</span><br></pre></td></tr></table></figure>
+<p>添加完成按下Ctrl + X保存并退出，再次按下Enter,完成<br>现在你可以点击右上角，看到你新创的用户，点击并切换了！</p>
 ]]></content>
       <categories>
         <category>教程</category>
       </categories>
       <tags>
         <tag>Ubuntu</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ubuntu下安装Pycharm</title>
+    <url>/2019/03/19/Ubuntu%E4%B8%8B%E5%AE%89%E8%A3%85Pycharm/</url>
+    <content><![CDATA[<h2 id="下载"><a href="#下载" class="headerlink" title="下载"></a><a id="more"></a>下载</h2><p>有社区版和专业版，专业版需要激活，社区版免费，我下载的是社区版。<br><a href="https://www.jetbrains.com/pycharm/download/#section=linux" target="_blank" rel="noopener">官方下载</a><br><a href="https://www.jianguoyun.com/p/DfZJG3QQlZ_3Bhj8mrEC" target="_blank" rel="noopener">网盘下载</a></p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>进入download目录，对下载好的Pycharm压缩包进行解压操作，选中文件右键提取到此处即可。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D1664510513%2C942693123%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt><br>进入解压后的Pycharm文件夹，进入bin目录，可以看到很多文件，其中有一个文件叫做pycharm.sh。也就是下图中所选中的文件：<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D101055722%2C4258535600%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt><br>此时在bin文件夹下右键打开终端，输入运行命令, 执行Pycharm程序</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.&#x2F;pycharm.sh</span><br></pre></td></tr></table></figure>
+<p>如果提示没有权限，大家可以添加sudo命令进行操作：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo .&#x2F;pycharm.sh</span><br></pre></td></tr></table></figure>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D805484803%2C1629350165%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt><br>大家点击OK即可进入下一步操作，根据提示的内容进行勾选同意协议，然后点击continue进入下一步，大家可以点击don’t send进入下一步，选择喜欢的界面风格，然后再次点击next进入下一步，直到提示start启动程序。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D227808303%2C3066408894%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D22323540%2C1357101677%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D1914658415%2C2906990210%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt><br>为了方便以后的使用，我们可以将Pycharm的图标（快捷键）锁定到启动器。之后不用再去在终端中启动Pycharm了，直接点击图标启动即可。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D1149108563%2C3867497858%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt></p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
         <tag>Python</tag>
+        <tag>Ubuntu</tag>
       </tags>
   </entry>
   <entry>
@@ -59,61 +200,23 @@
         <category>教程</category>
       </categories>
       <tags>
-        <tag>Ubuntu</tag>
         <tag>Python</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Ubuntu下安装Pycharm</title>
-    <url>/2019/03/19/Ubuntu%E4%B8%8B%E5%AE%89%E8%A3%85Pycharm/</url>
-    <content><![CDATA[<h2 id="下载"><a href="#下载" class="headerlink" title="下载"></a><a id="more"></a>下载</h2><p>有社区版和专业版，专业版需要激活，社区版免费，我下载的是社区版。<br><a href="https://www.jetbrains.com/pycharm/download/#section=linux" target="_blank" rel="noopener">官方下载</a><br><a href="https://www.jianguoyun.com/p/DfZJG3QQlZ_3Bhj8mrEC" target="_blank" rel="noopener">网盘下载</a></p>
-<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>进入download目录，对下载好的Pycharm压缩包进行解压操作，选中文件右键提取到此处即可。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D1664510513%2C942693123%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt="Demo"><br>进入解压后的Pycharm文件夹，进入bin目录，可以看到很多文件，其中有一个文件叫做pycharm.sh。也就是下图中所选中的文件：<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D101055722%2C4258535600%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt="Demo"><br>此时在bin文件夹下右键打开终端，输入运行命令, 执行Pycharm程序</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.&#x2F;pycharm.sh</span><br></pre></td></tr></table></figure>
-<p>如果提示没有权限，大家可以添加sudo命令进行操作：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo .&#x2F;pycharm.sh</span><br></pre></td></tr></table></figure>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D805484803%2C1629350165%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt="Demo"><br>大家点击OK即可进入下一步操作，根据提示的内容进行勾选同意协议，然后点击continue进入下一步，大家可以点击don’t send进入下一步，选择喜欢的界面风格，然后再次点击next进入下一步，直到提示start启动程序。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D227808303%2C3066408894%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt="Demo"><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D22323540%2C1357101677%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt="Demo"><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D1914658415%2C2906990210%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt="Demo"><br>为了方便以后的使用，我们可以将Pycharm的图标（快捷键）锁定到启动器。之后不用再去在终端中启动Pycharm了，直接点击图标启动即可。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D1149108563%2C3867497858%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt="Demo"></p>
-]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
         <tag>Ubuntu</tag>
-        <tag>Python</tag>
       </tags>
   </entry>
   <entry>
     <title>Ubuntu下如何安装搜狗输入法</title>
     <url>/2019/03/19/sougou/</url>
     <content><![CDATA[<h2 id="Ubuntu系统配置"><a href="#Ubuntu系统配置" class="headerlink" title=" Ubuntu系统配置"></a><a id="more"></a> Ubuntu系统配置</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">system settings-&gt;language support-&gt;install&#x2F;remove languages</span><br></pre></td></tr></table></figure>
-<p>在弹出的菜单中选择Chinese(simplified),点击apply<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/sougou/20180729142927736.png" alt="Demo"><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/sougou/20180729142927712.png" alt="Demo"></p>
-<h2 id="配置输入法框架"><a href="#配置输入法框架" class="headerlink" title="配置输入法框架"></a>配置输入法框架</h2><p>搜狗输入法是建立在fcitx框架之上的，所以要将输入法框架选择为fictx<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/sougou/20180729142927666.png" alt="Demo"><br>注意：如果没有fcitx选项，那么你就需要安装fcitx框架之后在进行配置，安装方法如下：</p>
+<p>在弹出的菜单中选择Chinese(simplified),点击apply<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/sougou/20180729142927736.png" alt><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/sougou/20180729142927712.png" alt></p>
+<h2 id="配置输入法框架"><a href="#配置输入法框架" class="headerlink" title="配置输入法框架"></a>配置输入法框架</h2><p>搜狗输入法是建立在fcitx框架之上的，所以要将输入法框架选择为fictx<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/sougou/20180729142927666.png" alt><br>注意：如果没有fcitx选项，那么你就需要安装fcitx框架之后在进行配置，安装方法如下：</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo add-apt-repository ppa:fcitx-team&#x2F;nightly   &#x2F;&#x2F;添加FCITX仓库</span><br><span class="line"></span><br><span class="line">sudo apt-get update                              &#x2F;&#x2F;更新仓库</span><br><span class="line"></span><br><span class="line">sudo apt-get install fcitx                       &#x2F;&#x2F;安装fcitx输入法框架</span><br></pre></td></tr></table></figure>
-<p>配置好输入法框架之后，重启ubuntu系统。重启之后如果配置成功，在任务栏的右上角会出现fcitx的设置选项（一个小键盘图标）<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/sougou/20180729142927651.png" alt="Demo"></p>
+<p>配置好输入法框架之后，重启ubuntu系统。重启之后如果配置成功，在任务栏的右上角会出现fcitx的设置选项（一个小键盘图标）<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/sougou/20180729142927651.png" alt></p>
 <h2 id="去搜狗官网下载输入法for-Linux"><a href="#去搜狗官网下载输入法for-Linux" class="headerlink" title="去搜狗官网下载输入法for Linux"></a>去搜狗官网下载输入法for Linux</h2><p><a href="https://pinyin.sogou.com/linux/" target="_blank" rel="noopener">官方下载</a><br><a href="https://www.jianguoyun.com/p/DeShNo0QlZ_3Bhic5rAC" target="_blank" rel="noopener">网盘下载</a><br>下载完成之后，在download目录下找到下载的文件，双击安装即可，点击install即可<br>或者在终端的命令窗口中输入如下的指令安装：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo dpkg -i deb 安装包</span><br></pre></td></tr></table></figure>
-<p>如果在安装过程中出现相关依赖文件的错误。则需要先安装其依赖的软件包<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/sougou/Snipaste_2019-12-13_14-33-14.jpg" alt="Baidu"><br>在终端窗口来执行以下命令，安装缺少的依赖文件:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo dpkg -i 安装包名称.deb</span><br></pre></td></tr></table></figure>
+<p>如果在安装过程中出现相关依赖文件的错误。则需要先安装其依赖的软件包<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/sougou/Snipaste_2019-12-13_14-33-14.jpg" alt><br>在终端窗口来执行以下命令，安装缺少的依赖文件:</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt-get -f install</span><br></pre></td></tr></table></figure>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/sougou/Snipaste_2019-12-13_14-33-49.jpg" alt="Baidu"><br>安装完成后，首先打开右上角系统设置，选择第一行的最后一个选项”Text Entry“，点击左下角的+号，在打开的窗口中找到搜狗输入法Sogou pinyin点击Add添加进去<br>仅显示当前语言一定要去掉那个勾，才可以找到搜狗输入法，然后添加就是<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/sougou/2019050512074094.png" alt="Demo"><br>这时就可以在右上方小键盘选择搜狗输入法了！</p>
-]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
-        <tag>Ubuntu</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Ubuntu下如何添加新用户并增加管理员权限</title>
-    <url>/2019/03/19/Ubuntu%E4%B8%8B%E5%A6%82%E4%BD%95%E6%B7%BB%E5%8A%A0%E6%96%B0%E7%94%A8%E6%88%B7%E5%B9%B6%E5%A2%9E%E5%8A%A0%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/</url>
-    <content><![CDATA[<h2 id="添加新用户"><a href="#添加新用户" class="headerlink" title=" 添加新用户"></a><a id="more"></a> 添加新用户</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo adduser xxx #xxx为用户名</span><br></pre></td></tr></table></figure>
-<p>输入密码后，出现如下信息：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">正在添加用户&quot;xxx&quot;…</span><br><span class="line">正在添加新组&quot;xxx&quot; (1003)…</span><br><span class="line">正在添加新用户&quot;xxx&quot; (1003) 到组&quot;xxx&quot;…</span><br><span class="line">创建主目录&quot;&#x2F;home&#x2F;xxx&quot;…</span><br><span class="line">正在从&quot;&#x2F;etc&#x2F;skel&quot;复制文件…</span><br><span class="line">输入新的 UNIX 密码：</span><br><span class="line">重新输入新的 UNIX 密码：</span><br><span class="line">passwd：已成功更新密码</span><br><span class="line">正在改变 xxx 的用户信息</span><br><span class="line">请输入新值，或直接敲回车以使用默认值</span><br><span class="line">        全名 [ ]：</span><br><span class="line">        房间号码 [ ]：</span><br><span class="line">        工作电话 [ ]：</span><br><span class="line">        家庭电话 [ ]：</span><br><span class="line">        其它 [ ]：</span><br><span class="line">这些信息是否正确？ [Y&#x2F;n] y</span><br></pre></td></tr></table></figure>
-<p>到这里，新用户添加成功。</p>
-<h2 id="增加管理员权限"><a href="#增加管理员权限" class="headerlink" title="增加管理员权限"></a>增加管理员权限</h2><p>需要让此用户有root权限，执行命令：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo nano &#x2F;etc&#x2F;sudoers</span><br></pre></td></tr></table></figure>
-<p>往下拉，修改文件并添加：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">xxx ALL&#x3D;(ALL：ALL) ALL #xxx为你之前所创的用户名</span><br></pre></td></tr></table></figure>
-<p>添加完成按下Ctrl + X保存并退出，再次按下Enter,完成<br>现在你可以点击右上角，看到你新创的用户，点击并切换了！</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/sougou/Snipaste_2019-12-13_14-33-49.jpg" alt><br>安装完成后，首先打开右上角系统设置，选择第一行的最后一个选项”Text Entry“，点击左下角的+号，在打开的窗口中找到搜狗输入法Sogou pinyin点击Add添加进去<br>仅显示当前语言一定要去掉那个勾，才可以找到搜狗输入法，然后添加就是<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/sougou/2019050512074094.png" alt><br>这时就可以在右上方小键盘选择搜狗输入法了！</p>
 ]]></content>
       <categories>
         <category>教程</category>

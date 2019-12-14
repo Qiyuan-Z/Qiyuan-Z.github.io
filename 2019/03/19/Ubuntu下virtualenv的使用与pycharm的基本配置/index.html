@@ -14,6 +14,7 @@
 
 
 <link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
 
 
 <script id="hexo-configurations">
@@ -28,7 +29,7 @@
     copycode: {"enable":false,"show_result":false,"style":null},
     back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
     bookmark: {"enable":false,"color":"#222","save":"auto"},
-    fancybox: false,
+    fancybox: true,
     mediumzoom: false,
     lazyload: false,
     pangu: false,
@@ -56,10 +57,11 @@
 <meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;virtualenv&#x2F;5aafb2bd99f29.webp">
 <meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;virtualenv&#x2F;5aafb2bdb011c.webp">
 <meta property="article:published_time" content="2019-03-19T08:23:00.000Z">
-<meta property="article:modified_time" content="2019-12-13T13:06:42.759Z">
+<meta property="article:modified_time" content="2019-12-14T12:30:41.692Z">
 <meta property="article:author" content="Qiyuan-Z">
-<meta property="article:tag" content="Ubuntu">
 <meta property="article:tag" content="Python">
+<meta property="article:tag" content="Ubuntu">
+<meta property="article:tag" content="virtualenv">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;virtualenv&#x2F;5aafafdaa2aca.webp">
 
@@ -239,7 +241,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-13 21:06:42" itemprop="dateModified" datetime="2019-12-13T21:06:42+08:00">2019-12-13</time>
+                <time title="修改时间：2019-12-14 20:30:41" itemprop="dateModified" datetime="2019-12-14T20:30:41+08:00">2019-12-14</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -264,7 +266,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="安装virtualenv"><a href="#安装virtualenv" class="headerlink" title="安装virtualenv"></a><a id="more"></a>安装virtualenv</h2><p>virtualenv是 Python 多版本管理的利器，不同版本的开发调试全靠它了（没有多版本进量也装上吧）</p>
+        <h2 id="安装virtualenv"><a href="#安装virtualenv" class="headerlink" title="安装virtualenv"></a><a id="more"></a>安装virtualenv</h2><p>virtualenv是 Python 多版本管理的利器，不同版本的开发调试全靠它了（没有多版本尽量也装上吧）</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo pip install virtualenv</span><br></pre></td></tr></table></figure>
 <h2 id="创建一个virtualenv环境"><a href="#创建一个virtualenv环境" class="headerlink" title="创建一个virtualenv环境"></a>创建一个virtualenv环境</h2><p>使用如下语句：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">virtualenv + 路径</span><br></pre></td></tr></table></figure>
@@ -279,8 +281,8 @@
 <p>也可直接关闭当前终端。</p>
 <h2 id="删除virtualenv环境"><a href="#删除virtualenv环境" class="headerlink" title="删除virtualenv环境"></a>删除virtualenv环境</h2><p>直接删除对应目录即可删除virtualenv环境，不会对系统产生任何影响，所以在virtualenv中可以放心操作。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rm -rvf  + 路径</span><br></pre></td></tr></table></figure>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/virtualenv/5aafafdaa2aca.webp" alt="Demo"></p>
-<h2 id="Pycharm配置"><a href="#Pycharm配置" class="headerlink" title="Pycharm配置"></a>Pycharm配置</h2><p>新建项目<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/virtualenv/5aafb0d3811f2.webp" alt="Demo"></p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/virtualenv/5aafafdaa2aca.webp" alt></p>
+<h2 id="Pycharm配置"><a href="#Pycharm配置" class="headerlink" title="Pycharm配置"></a>Pycharm配置</h2><p>新建项目<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/virtualenv/5aafb0d3811f2.webp" alt></p>
 <ul>
 <li><p>New environment using Virtualenv: 将在项目的目录下创建一个virtualenv环境，然后使用它当作当前项目的python解释器，默认不包含系统的python包。<br>相当于： virtualenv + 路径</p>
 </li>
@@ -291,7 +293,7 @@
 <li><p>Existing interpreter：使用已有的python环境，点击后会出现后面的设置会出现这个界面，分别是virtualenv, conda和系统的python环境。可以选择已有的virtualenv环境，或者直接使用系统的python解释器。 Conda是anaconda(一个科学计算的python发行版)的包管理器，也可以用来建立python环境。</p>
 </li>
 </ul>
-<p>会发现生成的项目中有一个叫venv的文件夹，它实质上和直接用virtualenv创建的一样。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/virtualenv/5aafb2bd99f29.webp" alt="Demo"><br>可以用virtualenv的管理方法管理它，比如安装numpy，安装之后可以在pycharm正常使用。（注意在virtualenv中<strong>不要使用sudo</strong>）<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/virtualenv/5aafb2bdb011c.webp" alt="Demo"><br>也可以在pycharm中使用 file-settings-project-project interpreter中管理环境中的python包，可以对该环境下的python包进行删除和安装。</p>
+<p>会发现生成的项目中有一个叫venv的文件夹，它实质上和直接用virtualenv创建的一样。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/virtualenv/5aafb2bd99f29.webp" alt><br>可以用virtualenv的管理方法管理它，比如安装numpy，安装之后可以在pycharm正常使用。（注意在virtualenv中<strong>不要使用sudo</strong>）<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/virtualenv/5aafb2bdb011c.webp" alt><br>也可以在pycharm中使用 file-settings-project-project interpreter中管理环境中的python包，可以对该环境下的python包进行删除和安装。</p>
 
     </div>
 
@@ -301,8 +303,9 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/Ubuntu/" rel="tag"># Ubuntu</a>
               <a href="/tags/Python/" rel="tag"># Python</a>
+              <a href="/tags/Ubuntu/" rel="tag"># Ubuntu</a>
+              <a href="/tags/virtualenv/" rel="tag"># virtualenv</a>
           </div>
 
         
@@ -311,12 +314,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2019/03/19/Ubuntu%E4%B8%8B%E5%AE%89%E8%A3%85%E6%9B%B4%E6%96%B0pip/" rel="prev" title="Ubuntu下安装更新pip">
-      <i class="fa fa-chevron-left"></i> Ubuntu下安装更新pip
+    <a href="/2019/03/19/Ubuntu%E4%B8%8B%E5%A6%82%E4%BD%95%E6%B7%BB%E5%8A%A0%E6%96%B0%E7%94%A8%E6%88%B7%E5%B9%B6%E5%A2%9E%E5%8A%A0%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/" rel="prev" title="Ubuntu下如何添加新用户并增加管理员权限">
+      <i class="fa fa-chevron-left"></i> Ubuntu下如何添加新用户并增加管理员权限
     </a></div>
       <div class="post-nav-item">
-    <a href="/2019/12/12/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2/" rel="next" title="网站说明">
-      网站说明 <i class="fa fa-chevron-right"></i>
+    <a href="/2019/03/19/Ubuntu16.04%E4%B8%8BTensorflow-gpu%E5%AE%89%E8%A3%85/" rel="next" title="Ubuntu16.04下Tensorflow-gpu安装">
+      Ubuntu16.04下Tensorflow-gpu安装 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -393,7 +396,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-count">9</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -406,7 +409,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-count">6</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -471,7 +474,11 @@
   </div>
 
   
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
   <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
   <script src="/lib/velocity/velocity.min.js"></script>
   <script src="/lib/velocity/velocity.ui.min.js"></script>
 
@@ -512,6 +519,7 @@
 
   
 
-</body>
+  <script type="text/javascript" src="/js/src/clicklove.js"></script>
 </body>
 </html>
+
