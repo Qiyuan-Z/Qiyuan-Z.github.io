@@ -7,6 +7,56 @@
 ]]></content>
   </entry>
   <entry>
+    <title>Python新环境下快速安装依赖包的小技巧</title>
+    <url>/2019/03/19/Python%E6%96%B0%E7%8E%AF%E5%A2%83%E4%B8%8B%E5%BF%AB%E9%80%9F%E5%AE%89%E8%A3%85%E4%BE%9D%E8%B5%96%E5%8C%85%E7%9A%84%E5%B0%8F%E6%8A%80%E5%B7%A7/</url>
+    <content><![CDATA[<p>当你新创一个Python环境时，若还用pip一个个装你所需要的库，明显效率十分低下。这里有个小技巧，你可以从已配置好的旧环境中，导出一个requirements.txt 文件，用于记录所有依赖包及其精确的版本号。以便新环境部署。</p>
+<a id="more"></a> 
+<p>在旧环境中执行以下命令，生成requirements.txt文件：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip freeze &gt; requirements.txt</span><br></pre></td></tr></table></figure>
+<p>requirements.txt中的内容类似如下，记录了你旧有环境的依赖包及其精确的版本号：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">appdirs&#x3D;&#x3D;1.4.3</span><br><span class="line">backports.functools-lru-cache&#x3D;&#x3D;1.5</span><br><span class="line">beautifulsoup4&#x3D;&#x3D;4.5.3</span><br><span class="line">bs4&#x3D;&#x3D;0.0.1</span><br><span class="line">cycler&#x3D;&#x3D;0.10.0</span><br><span class="line">kiwisolver&#x3D;&#x3D;1.0.1</span><br><span class="line">lxml&#x3D;&#x3D;3.7.3</span><br><span class="line">matplotlib&#x3D;&#x3D;2.2.0</span><br><span class="line">numpy&#x3D;&#x3D;1.14.1</span><br><span class="line">pandas&#x3D;&#x3D;0.22.0</span><br><span class="line">pyparsing&#x3D;&#x3D;2.2.0</span><br><span class="line">python-dateutil&#x3D;&#x3D;2.6.1</span><br><span class="line">pytz&#x3D;&#x3D;2018.3</span><br><span class="line">six&#x3D;&#x3D;1.11.0</span><br><span class="line">virtualenv&#x3D;&#x3D;15.1.0</span><br></pre></td></tr></table></figure>
+<p>这时你可以把requirements.txt拷入新配置的Python目录下，执行以下命令：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip install -r requirements.txt</span><br></pre></td></tr></table></figure>
+<p>则会按照requirements.txt中所写的依赖包和版本依序进行安装。<br>注意：<br>若迁入的系统不同或Python版本不同，在安装过程中可能会因为找不到相应的依赖包版本而报错<br>这时你可以进入requirements.txt把报错的依赖包后的版本信息去掉，保存，重新执行命令即可，它会自动下载匹配的最新版本。<br>也可以把==改成&lt;=，代表它会搜索不大于此版本的最高版本进行安装。<br>由于pip下载源在国外，若无合适的VPN，此期间下载过程会十分漫长，这里提供几个常用的国内镜像源：</p>
+<ul>
+<li>清华大学 <a href="https://pypi.tuna.tsinghua.edu.cn/simple/" target="_blank" rel="noopener">https://pypi.tuna.tsinghua.edu.cn/simple/</a></li>
+<li>中国科学技术大学 <a href="http://pypi.mirrors.ustc.edu.cn/simple/" target="_blank" rel="noopener">http://pypi.mirrors.ustc.edu.cn/simple/</a></li>
+<li>阿里云 <a href="http://mirrors.aliyun.com/pypi/simple/" target="_blank" rel="noopener">http://mirrors.aliyun.com/pypi/simple/</a></li>
+<li>豆瓣 <a href="http://pypi.douban.com/simple/" target="_blank" rel="noopener">http://pypi.douban.com/simple/</a></li>
+<li>华中科技大学 <a href="http://pypi.hustunique.com/" target="_blank" rel="noopener">http://pypi.hustunique.com/</a></li>
+</ul>
+<p>可以在使用pip的时候，加上参数-i和镜像地址，指定下载源，加速下载过程，如：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip install -r requirements.txt -i https:&#x2F;&#x2F;pypi.tuna.tsinghua.edu.cn&#x2F;simple</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ubuntu16.04下Tensorflow-gpu安装</title>
+    <url>/2019/03/19/Ubuntu16.04%E4%B8%8BTensorflow-gpu%E5%AE%89%E8%A3%85/</url>
+    <content><![CDATA[<p>在开始之前，请先确定安装好显卡驱动、CUDA、cuDNN，可以参考我的<a href="https://qiyuan-z.github.io/2019/03/19/Ubuntu-16.04下配置GPU版CUDA和cuDNN/">另一篇博客</a></p>
+<a id="more"></a>
+<p>1.安装Numpy<br>推荐安装1.16.0版本，若之前已安装，请先卸载</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip uninstall numpy</span><br></pre></td></tr></table></figure>
+<p>然后执行安装</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip install numpy&#x3D;&#x3D;1.16.0</span><br></pre></td></tr></table></figure>
+<p>2.安装Tensorflow-gpu<br>推荐安装1.14.0版本</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip install tensorflow-gpu&#x3D;&#x3D;1.14.0</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+        <tag>Ubuntu</tag>
+        <tag>Tensorflow</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Ubuntu 16.04下配置GPU版CUDA和cuDNN</title>
     <url>/2019/03/19/Ubuntu-16.04%E4%B8%8B%E9%85%8D%E7%BD%AEGPU%E7%89%88CUDA%E5%92%8CcuDNN/</url>
     <content><![CDATA[<h2 id><a href="#" class="headerlink" title></a><a id="more"></a></h2><p>先介绍下我自己配置的环境</p>
@@ -63,49 +113,23 @@
       </tags>
   </entry>
   <entry>
-    <title>Python新环境下快速安装依赖包的小技巧</title>
-    <url>/2019/03/19/Python%E6%96%B0%E7%8E%AF%E5%A2%83%E4%B8%8B%E5%BF%AB%E9%80%9F%E5%AE%89%E8%A3%85%E4%BE%9D%E8%B5%96%E5%8C%85%E7%9A%84%E5%B0%8F%E6%8A%80%E5%B7%A7/</url>
-    <content><![CDATA[<h2 id><a href="#" class="headerlink" title></a><a id="more"></a></h2><p>当你新创一个Python环境时，若还用pip一个个装你所需要的库，明显效率十分低下。<br>这里有个小技巧，你可以从已配置好的旧环境中，导出一个requirements.txt 文件，用于记录所有依赖包及其精确的版本号。以便新环境部署。<br>在旧环境中执行以下命令，生成requirements.txt文件：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip freeze &gt; requirements.txt</span><br></pre></td></tr></table></figure>
-<p>requirements.txt中的内容类似如下，记录了你旧有环境的依赖包及其精确的版本号：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">appdirs&#x3D;&#x3D;1.4.3</span><br><span class="line">backports.functools-lru-cache&#x3D;&#x3D;1.5</span><br><span class="line">beautifulsoup4&#x3D;&#x3D;4.5.3</span><br><span class="line">bs4&#x3D;&#x3D;0.0.1</span><br><span class="line">cycler&#x3D;&#x3D;0.10.0</span><br><span class="line">kiwisolver&#x3D;&#x3D;1.0.1</span><br><span class="line">lxml&#x3D;&#x3D;3.7.3</span><br><span class="line">matplotlib&#x3D;&#x3D;2.2.0</span><br><span class="line">numpy&#x3D;&#x3D;1.14.1</span><br><span class="line">pandas&#x3D;&#x3D;0.22.0</span><br><span class="line">pyparsing&#x3D;&#x3D;2.2.0</span><br><span class="line">python-dateutil&#x3D;&#x3D;2.6.1</span><br><span class="line">pytz&#x3D;&#x3D;2018.3</span><br><span class="line">six&#x3D;&#x3D;1.11.0</span><br><span class="line">virtualenv&#x3D;&#x3D;15.1.0</span><br></pre></td></tr></table></figure>
-<p>这时你可以把requirements.txt拷入新配置的Python目录下，执行以下命令：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip install -r requirements.txt</span><br></pre></td></tr></table></figure>
-<p>则会按照requirements.txt中所写的依赖包和版本依序进行安装。<br>注意：<br>若迁入的系统不同或Python版本不同，在安装过程中可能会因为找不到相应的依赖包版本而报错<br>这时你可以进入requirements.txt把报错的依赖包后的版本信息去掉，保存，重新执行命令即可，它会自动下载匹配的最新版本。<br>也可以把==改成&lt;=，代表它会搜索不大于此版本的最高版本进行安装。<br>由于pip下载源在国外，若无合适的VPN，此期间下载过程会十分漫长，这里提供几个常用的国内镜像源：</p>
-<ul>
-<li>清华大学 <a href="https://pypi.tuna.tsinghua.edu.cn/simple/" target="_blank" rel="noopener">https://pypi.tuna.tsinghua.edu.cn/simple/</a></li>
-<li>中国科学技术大学 <a href="http://pypi.mirrors.ustc.edu.cn/simple/" target="_blank" rel="noopener">http://pypi.mirrors.ustc.edu.cn/simple/</a></li>
-<li>阿里云 <a href="http://mirrors.aliyun.com/pypi/simple/" target="_blank" rel="noopener">http://mirrors.aliyun.com/pypi/simple/</a></li>
-<li>豆瓣 <a href="http://pypi.douban.com/simple/" target="_blank" rel="noopener">http://pypi.douban.com/simple/</a></li>
-<li>华中科技大学 <a href="http://pypi.hustunique.com/" target="_blank" rel="noopener">http://pypi.hustunique.com/</a></li>
-</ul>
-<p>可以在使用pip的时候，加上参数-i和镜像地址，指定下载源，加速下载过程，如：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip install -r requirements.txt -i https:&#x2F;&#x2F;pypi.tuna.tsinghua.edu.cn&#x2F;simple</span><br></pre></td></tr></table></figure>
-
+    <title>Ubuntu下如何添加新用户并增加管理员权限</title>
+    <url>/2019/03/19/Ubuntu%E4%B8%8B%E5%A6%82%E4%BD%95%E6%B7%BB%E5%8A%A0%E6%96%B0%E7%94%A8%E6%88%B7%E5%B9%B6%E5%A2%9E%E5%8A%A0%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/</url>
+    <content><![CDATA[<h2 id="添加新用户"><a href="#添加新用户" class="headerlink" title=" 添加新用户"></a><a id="more"></a> 添加新用户</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo adduser xxx #xxx为用户名</span><br></pre></td></tr></table></figure>
+<p>输入密码后，出现如下信息：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">正在添加用户&quot;xxx&quot;…</span><br><span class="line">正在添加新组&quot;xxx&quot; (1003)…</span><br><span class="line">正在添加新用户&quot;xxx&quot; (1003) 到组&quot;xxx&quot;…</span><br><span class="line">创建主目录&quot;&#x2F;home&#x2F;xxx&quot;…</span><br><span class="line">正在从&quot;&#x2F;etc&#x2F;skel&quot;复制文件…</span><br><span class="line">输入新的 UNIX 密码：</span><br><span class="line">重新输入新的 UNIX 密码：</span><br><span class="line">passwd：已成功更新密码</span><br><span class="line">正在改变 xxx 的用户信息</span><br><span class="line">请输入新值，或直接敲回车以使用默认值</span><br><span class="line">        全名 [ ]：</span><br><span class="line">        房间号码 [ ]：</span><br><span class="line">        工作电话 [ ]：</span><br><span class="line">        家庭电话 [ ]：</span><br><span class="line">        其它 [ ]：</span><br><span class="line">这些信息是否正确？ [Y&#x2F;n] y</span><br></pre></td></tr></table></figure>
+<p>到这里，新用户添加成功。</p>
+<h2 id="增加管理员权限"><a href="#增加管理员权限" class="headerlink" title="增加管理员权限"></a>增加管理员权限</h2><p>需要让此用户有root权限，执行命令：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo nano &#x2F;etc&#x2F;sudoers</span><br></pre></td></tr></table></figure>
+<p>往下拉，修改文件并添加：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">xxx ALL&#x3D;(ALL：ALL) ALL #xxx为你之前所创的用户名</span><br></pre></td></tr></table></figure>
+<p>添加完成按下Ctrl + X保存并退出，再次按下Enter,完成<br>现在你可以点击右上角，看到你新创的用户，点击并切换了！</p>
 ]]></content>
       <categories>
         <category>教程</category>
       </categories>
       <tags>
-        <tag>Python</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Ubuntu16.04下Tensorflow-gpu安装</title>
-    <url>/2019/03/19/Ubuntu16.04%E4%B8%8BTensorflow-gpu%E5%AE%89%E8%A3%85/</url>
-    <content><![CDATA[<h2 id><a href="#" class="headerlink" title></a><a id="more"></a></h2><p>在开始之前，请先确定安装好显卡驱动、CUDA、cuDNN，可以参考我的<a href="https://qiyuan-z.github.io/2019/03/19/Ubuntu-16.04下配置GPU版CUDA和cuDNN/">另一篇博客</a><br>1.安装Numpy<br>推荐安装1.16.0版本，若之前已安装，请先卸载</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip uninstall numpy</span><br></pre></td></tr></table></figure>
-<p>然后执行安装</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip install numpy&#x3D;&#x3D;1.16.0</span><br></pre></td></tr></table></figure>
-<p>2.安装Tensorflow-gpu<br>推荐安装1.14.0版本</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip install tensorflow-gpu&#x3D;&#x3D;1.14.0</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
-        <tag>Python</tag>
         <tag>Ubuntu</tag>
-        <tag>Tensorflow</tag>
       </tags>
   </entry>
   <entry>
@@ -147,26 +171,6 @@
         <tag>Python</tag>
         <tag>Ubuntu</tag>
         <tag>virtualenv</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Ubuntu下如何添加新用户并增加管理员权限</title>
-    <url>/2019/03/19/Ubuntu%E4%B8%8B%E5%A6%82%E4%BD%95%E6%B7%BB%E5%8A%A0%E6%96%B0%E7%94%A8%E6%88%B7%E5%B9%B6%E5%A2%9E%E5%8A%A0%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/</url>
-    <content><![CDATA[<h2 id="添加新用户"><a href="#添加新用户" class="headerlink" title=" 添加新用户"></a><a id="more"></a> 添加新用户</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo adduser xxx #xxx为用户名</span><br></pre></td></tr></table></figure>
-<p>输入密码后，出现如下信息：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">正在添加用户&quot;xxx&quot;…</span><br><span class="line">正在添加新组&quot;xxx&quot; (1003)…</span><br><span class="line">正在添加新用户&quot;xxx&quot; (1003) 到组&quot;xxx&quot;…</span><br><span class="line">创建主目录&quot;&#x2F;home&#x2F;xxx&quot;…</span><br><span class="line">正在从&quot;&#x2F;etc&#x2F;skel&quot;复制文件…</span><br><span class="line">输入新的 UNIX 密码：</span><br><span class="line">重新输入新的 UNIX 密码：</span><br><span class="line">passwd：已成功更新密码</span><br><span class="line">正在改变 xxx 的用户信息</span><br><span class="line">请输入新值，或直接敲回车以使用默认值</span><br><span class="line">        全名 [ ]：</span><br><span class="line">        房间号码 [ ]：</span><br><span class="line">        工作电话 [ ]：</span><br><span class="line">        家庭电话 [ ]：</span><br><span class="line">        其它 [ ]：</span><br><span class="line">这些信息是否正确？ [Y&#x2F;n] y</span><br></pre></td></tr></table></figure>
-<p>到这里，新用户添加成功。</p>
-<h2 id="增加管理员权限"><a href="#增加管理员权限" class="headerlink" title="增加管理员权限"></a>增加管理员权限</h2><p>需要让此用户有root权限，执行命令：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo nano &#x2F;etc&#x2F;sudoers</span><br></pre></td></tr></table></figure>
-<p>往下拉，修改文件并添加：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">xxx ALL&#x3D;(ALL：ALL) ALL #xxx为你之前所创的用户名</span><br></pre></td></tr></table></figure>
-<p>添加完成按下Ctrl + X保存并退出，再次按下Enter,完成<br>现在你可以点击右上角，看到你新创的用户，点击并切换了！</p>
-]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
-        <tag>Ubuntu</tag>
       </tags>
   </entry>
   <entry>

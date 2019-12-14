@@ -47,13 +47,15 @@
   };
 </script>
 
-  <meta property="og:type" content="article">
+  <meta name="description" content="在开始之前，请先确定安装好显卡驱动、CUDA、cuDNN，可以参考我的另一篇博客">
+<meta property="og:type" content="article">
 <meta property="og:title" content="Ubuntu16.04下Tensorflow-gpu安装">
 <meta property="og:url" content="https:&#x2F;&#x2F;qiyuan-z.github.io&#x2F;2019&#x2F;03&#x2F;19&#x2F;Ubuntu16.04%E4%B8%8BTensorflow-gpu%E5%AE%89%E8%A3%85&#x2F;index.html">
 <meta property="og:site_name" content="Yuan">
+<meta property="og:description" content="在开始之前，请先确定安装好显卡驱动、CUDA、cuDNN，可以参考我的另一篇博客">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2019-03-19T08:23:00.000Z">
-<meta property="article:modified_time" content="2019-12-14T12:45:29.252Z">
+<meta property="article:modified_time" content="2019-12-14T12:55:54.549Z">
 <meta property="article:author" content="Qiyuan-Z">
 <meta property="article:tag" content="Python">
 <meta property="article:tag" content="Ubuntu">
@@ -236,7 +238,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-14 20:45:29" itemprop="dateModified" datetime="2019-12-14T20:45:29+08:00">2019-12-14</time>
+                <time title="修改时间：2019-12-14 20:55:54" itemprop="dateModified" datetime="2019-12-14T20:55:54+08:00">2019-12-14</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -261,7 +263,9 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id><a href="#" class="headerlink" title></a><a id="more"></a></h2><p>在开始之前，请先确定安装好显卡驱动、CUDA、cuDNN，可以参考我的<a href="https://qiyuan-z.github.io/2019/03/19/Ubuntu-16.04下配置GPU版CUDA和cuDNN/">另一篇博客</a><br>1.安装Numpy<br>推荐安装1.16.0版本，若之前已安装，请先卸载</p>
+        <p>在开始之前，请先确定安装好显卡驱动、CUDA、cuDNN，可以参考我的<a href="https://qiyuan-z.github.io/2019/03/19/Ubuntu-16.04下配置GPU版CUDA和cuDNN/">另一篇博客</a></p>
+<a id="more"></a>
+<p>1.安装Numpy<br>推荐安装1.16.0版本，若之前已安装，请先卸载</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip uninstall numpy</span><br></pre></td></tr></table></figure>
 <p>然后执行安装</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install numpy&#x3D;&#x3D;1.16.0</span><br></pre></td></tr></table></figure>
@@ -286,8 +290,8 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2019/03/19/Ubuntu%E4%B8%8Bvirtualenv%E7%9A%84%E4%BD%BF%E7%94%A8%E4%B8%8Epycharm%E7%9A%84%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE/" rel="prev" title="Ubuntu下virtualenv的使用与pycharm的基本配置">
-      <i class="fa fa-chevron-left"></i> Ubuntu下virtualenv的使用与pycharm的基本配置
+    <a href="/2019/03/19/Ubuntu-16.04%E4%B8%8B%E9%85%8D%E7%BD%AEGPU%E7%89%88CUDA%E5%92%8CcuDNN/" rel="prev" title="Ubuntu 16.04下配置GPU版CUDA和cuDNN">
+      <i class="fa fa-chevron-left"></i> Ubuntu 16.04下配置GPU版CUDA和cuDNN
     </a></div>
       <div class="post-nav-item">
     <a href="/2019/03/19/Python%E6%96%B0%E7%8E%AF%E5%A2%83%E4%B8%8B%E5%BF%AB%E9%80%9F%E5%AE%89%E8%A3%85%E4%BE%9D%E8%B5%96%E5%8C%85%E7%9A%84%E5%B0%8F%E6%8A%80%E5%B7%A7/" rel="next" title="Python新环境下快速安装依赖包的小技巧">
@@ -352,7 +356,6 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#null"><span class="nav-number">1.</span> <span class="nav-text"></span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
