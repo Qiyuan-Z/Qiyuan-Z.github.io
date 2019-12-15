@@ -26,7 +26,7 @@
     version: '7.6.0',
     exturl: false,
     sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
-    copycode: {"enable":false,"show_result":false,"style":null},
+    copycode: {"enable":true,"show_result":true,"style":null},
     back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
     bookmark: {"enable":false,"color":"#222","save":"auto"},
     fancybox: true,
@@ -256,6 +256,34 @@
             </span>
 
           
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/03/19/Ubuntu-16.04%E4%B8%8B%E9%85%8D%E7%BD%AEGPU%E7%89%88CUDA%E5%92%8CcuDNN/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/03/19/Ubuntu-16.04%E4%B8%8B%E9%85%8D%E7%BD%AEGPU%E7%89%88CUDA%E5%92%8CcuDNN/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
 
         </div>
       </header>
@@ -329,8 +357,8 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2019/03/19/Ubuntu%E4%B8%8B%E5%A6%82%E4%BD%95%E6%B7%BB%E5%8A%A0%E6%96%B0%E7%94%A8%E6%88%B7%E5%B9%B6%E5%A2%9E%E5%8A%A0%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/" rel="prev" title="Ubuntu下如何添加新用户并增加管理员权限">
-      <i class="fa fa-chevron-left"></i> Ubuntu下如何添加新用户并增加管理员权限
+    <a href="/2019/03/19/sougou/" rel="prev" title="Ubuntu下如何安装搜狗输入法">
+      <i class="fa fa-chevron-left"></i> Ubuntu下如何安装搜狗输入法
     </a></div>
       <div class="post-nav-item">
     <a href="/2019/03/19/Ubuntu16.04%E4%B8%8BTensorflow-gpu%E5%AE%89%E8%A3%85/" rel="next" title="Ubuntu16.04下Tensorflow-gpu安装">
@@ -349,6 +377,7 @@
 
           </div>
           
+    <div class="comments" id="valine-comments"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -398,7 +427,9 @@
           <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#null"><span class="nav-number">1.</span> <span class="nav-text"></span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装NVIDIA显卡驱动"><span class="nav-number">2.</span> <span class="nav-text">安装NVIDIA显卡驱动</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cuda-10-0安装"><span class="nav-number">3.</span> <span class="nav-text">cuda 10.0安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#添加环境变量"><span class="nav-number">4.</span> <span class="nav-text">添加环境变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cuDnn-10-0安装"><span class="nav-number">5.</span> <span class="nav-text">cuDnn 10.0安装</span></a></li></ol></div>
       </div>
       <!--/noindex-->
-
+	  
+     
+	  
       <div class="site-overview-wrap sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <img class="site-author-image" itemprop="image" alt="Qiyuan-Z"
@@ -452,7 +483,11 @@
   </div>
 
       </div>
-
+	  
+      <div id="music163player">
+		   <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=280 height=86 src="//music.163.com/outchain/player?type=2&id=491484238&auto=1&height=66">
+		   </iframe>
+	  </div>
     </div>
   </aside>
   <div id="sidebar-dimmer"></div>
@@ -473,6 +508,16 @@
     <i class="fa fa-heart"></i>
   </span>
   <span class="author" itemprop="copyrightHolder">Qiyuan-Z</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="站点总字数">7k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">6 分钟</span>
 </div>
 
         
@@ -533,6 +578,35 @@
   
 
   
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: false,
+      notify: false,
+      appId: 'Qbpc7uiugdEBCmq9h8ld4Ttd-gzGzoHsz',
+      appKey: 'jqjQ3QRJdnoeCASIA6XkWK1E',
+      placeholder: "601872068@qq.com",
+      avatar: 'mm',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: false,
+      lang: 'zh-cn' || 'zh-cn',
+      path: location.pathname,
+      recordIP: false,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
 
   <script type="text/javascript" src="/js/src/clicklove.js"></script>
 </body>
