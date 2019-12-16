@@ -199,7 +199,7 @@
 <p>若需指定python版本：</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">virtualenv –p python3 + 路径</span><br></pre></td></tr></table></figure>
 <h2 id="激活virtualenv环境"><a href="#激活virtualenv环境" class="headerlink" title="激活virtualenv环境"></a>激活virtualenv环境</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">source 路径&#x2F;bin&#x2F;activate</span><br></pre></td></tr></table></figure>
-<p>也可以直接进到所创环境的bin目录中右键终端，运行activate<br>注意：激活只对当前终端有效，如果新打开了一个终端的话，重新运行上面的命令。 激活后终端前面会多一个(**)的东西，提示当前virtualenv的名称。</p>
+<p>也可以直接进到所创环境的bin目录中右键终端，运行source activate<br>注意：激活只对当前终端有效，如果新打开了一个终端的话，重新运行上面的命令。 激活后终端前面会多一个(**)的东西，提示当前virtualenv的名称。</p>
 <p>激活后可以在当前终端通过python 文件名.py的方式运行python脚本，如果脚本中使用了当前环境中没有的包，将会报错。</p>
 <p>可以在激活环境后使用pip安装对应的包。<strong>注意不要使用sudo</strong>，否则包会安装到系统当中去，而不是当前的virtualenv目录中。</p>
 <h2 id="退出virtualenv环境"><a href="#退出virtualenv环境" class="headerlink" title="退出virtualenv环境"></a>退出virtualenv环境</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">deactivate</span><br></pre></td></tr></table></figure>

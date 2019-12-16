@@ -57,7 +57,7 @@
 <meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;virtualenv&#x2F;5aafb2bd99f29.webp">
 <meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;virtualenv&#x2F;5aafb2bdb011c.webp">
 <meta property="article:published_time" content="2019-03-19T08:23:00.000Z">
-<meta property="article:modified_time" content="2019-12-14T12:30:41.692Z">
+<meta property="article:modified_time" content="2019-12-16T06:01:35.611Z">
 <meta property="article:author" content="Qiyuan-Z">
 <meta property="article:tag" content="Python">
 <meta property="article:tag" content="Ubuntu">
@@ -241,7 +241,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-14 20:30:41" itemprop="dateModified" datetime="2019-12-14T20:30:41+08:00">2019-12-14</time>
+                <time title="修改时间：2019-12-16 14:01:35" itemprop="dateModified" datetime="2019-12-16T14:01:35+08:00">2019-12-16</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -302,7 +302,7 @@
 <p>若需指定python版本：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">virtualenv –p python3 + 路径</span><br></pre></td></tr></table></figure>
 <h2 id="激活virtualenv环境"><a href="#激活virtualenv环境" class="headerlink" title="激活virtualenv环境"></a>激活virtualenv环境</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">source 路径&#x2F;bin&#x2F;activate</span><br></pre></td></tr></table></figure>
-<p>也可以直接进到所创环境的bin目录中右键终端，运行activate<br>注意：激活只对当前终端有效，如果新打开了一个终端的话，重新运行上面的命令。 激活后终端前面会多一个(**)的东西，提示当前virtualenv的名称。</p>
+<p>也可以直接进到所创环境的bin目录中右键终端，运行source activate<br>注意：激活只对当前终端有效，如果新打开了一个终端的话，重新运行上面的命令。 激活后终端前面会多一个(**)的东西，提示当前virtualenv的名称。</p>
 <p>激活后可以在当前终端通过python 文件名.py的方式运行python脚本，如果脚本中使用了当前环境中没有的包，将会报错。</p>
 <p>可以在激活环境后使用pip安装对应的包。<strong>注意不要使用sudo</strong>，否则包会安装到系统当中去，而不是当前的virtualenv目录中。</p>
 <h2 id="退出virtualenv环境"><a href="#退出virtualenv环境" class="headerlink" title="退出virtualenv环境"></a>退出virtualenv环境</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">deactivate</span><br></pre></td></tr></table></figure>
