@@ -7,6 +7,82 @@
 ]]></content>
   </entry>
   <entry>
+    <title>PyQt5与Opencv的小小融合</title>
+    <url>/2019/03/20/PyQt5%E4%B8%8EOpencv%E7%9A%84%E5%B0%8F%E5%B0%8F%E8%9E%8D%E5%90%88/</url>
+    <content><![CDATA[<h2 id="一些核心代码"><a href="#一些核心代码" class="headerlink" title="一些核心代码"></a><a id="more"></a>一些核心代码</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class myLabel(QLabel):</span><br><span class="line">    x0 &#x3D; 0</span><br><span class="line">    y0 &#x3D; 0</span><br><span class="line">    x1 &#x3D; 0</span><br><span class="line">    y1 &#x3D; 0</span><br><span class="line">    flag &#x3D; False</span><br><span class="line"></span><br><span class="line">    def mousePressEvent(self,event):</span><br><span class="line">        self.flag &#x3D; True</span><br><span class="line">        self.x0 &#x3D; event.x()</span><br><span class="line">        self.y0 &#x3D; event.y()</span><br><span class="line">    def mouseReleaseEvent(self,event):</span><br><span class="line">        self.flag &#x3D; False</span><br><span class="line"></span><br><span class="line">    def mouseMoveEvent(self,event):</span><br><span class="line">        if self.flag:</span><br><span class="line">            self.x1 &#x3D; event.x()</span><br><span class="line">            self.y1 &#x3D; event.y()</span><br><span class="line">            self.update()</span><br><span class="line">    def paintEvent(self, event):</span><br><span class="line">        super().paintEvent(event)</span><br><span class="line">        rect &#x3D;QRect(self.x0, self.y0, abs(self.x1-self.x0), abs(self.y1-self.y0))</span><br><span class="line">        painter &#x3D; QPainter(self)</span><br><span class="line">        painter.setPen(QPen(Qt.red,4,Qt.SolidLine))</span><br><span class="line">        painter.drawRect(rect)</span><br><span class="line"></span><br><span class="line">        pqscreen  &#x3D; QGuiApplication.primaryScreen()</span><br><span class="line">        pixmap2 &#x3D; pqscreen.grabWindow(self.winId(), self.x0, self.y0, abs(self.x1-self.x0), abs(self.y1-self.y0))</span><br><span class="line">        pixmap2.save(&#39;555.png&#39;)</span><br><span class="line">    </span><br><span class="line">class Example(QWidget):</span><br><span class="line">    def __init__(self):</span><br><span class="line">        super().__init__()</span><br><span class="line">        self.initUI()</span><br><span class="line">    def initUI(self):</span><br><span class="line">        self.resize(675, 300)</span><br><span class="line">        self.setWindowTitle(&#39;关注微信公众号：学点编程吧--opencv、PyQt5的小小融合&#39;)</span><br><span class="line"></span><br><span class="line">        self.lb &#x3D; myLabel(self)</span><br><span class="line">        self.lb.setGeometry(QRect(140, 30, 511, 241))</span><br><span class="line"></span><br><span class="line">        img &#x3D; cv2.imread(&#39;xxx.jpg&#39;)</span><br><span class="line">        height, width, bytesPerComponent &#x3D; img.shape</span><br><span class="line">        bytesPerLine &#x3D; 3 * width</span><br><span class="line">        cv2.cvtColor(img, cv2.COLOR_BGR2RGB, img)</span><br><span class="line">        QImg &#x3D; QImage(img.data, width, height, bytesPerLine, QImage.Format_RGB888)</span><br><span class="line">        pixmap &#x3D; QPixmap.fromImage(QImg)</span><br><span class="line"></span><br><span class="line">        self.lb.setPixmap(pixmap)</span><br><span class="line">        self.lb.setCursor(Qt.CrossCursor)</span><br><span class="line"></span><br><span class="line">        self.show()</span><br></pre></td></tr></table></figure>
+<h2 id="实现大体思路"><a href="#实现大体思路" class="headerlink" title="实现大体思路"></a>实现大体思路</h2><ul>
+<li>重新实现QLabel类，在类中重新实现了鼠标的点击、拖动、释放、以及绘画事件</li>
+<li>在窗体上新建了一个label标签，然后载入图片</li>
+<li>label标签载入的图像是由Opencv实现的</li>
+</ul>
+<h2 id="鼠标画矩形的思路"><a href="#鼠标画矩形的思路" class="headerlink" title="鼠标画矩形的思路"></a>鼠标画矩形的思路</h2><ul>
+<li>新建一个矩形是否完成标志flag，默认是Flase，表示未完成</li>
+<li>鼠标点击的时候，记录当前鼠标所在位置的坐标，flag标志置为True，表示开始画矩形了</li>
+<li>鼠标拖动的时候，因为flag为True，所以记录当前鼠标所在位置的坐标</li>
+<li>鼠标释放的时候，flag置为False，表示矩形画完了，准备画下一个了</li>
+</ul>
+<h2 id="代码讲解"><a href="#代码讲解" class="headerlink" title="代码讲解"></a>代码讲解</h2><h3 id="Opencv图像的转换"><a href="#Opencv图像的转换" class="headerlink" title="Opencv图像的转换"></a>Opencv图像的转换</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">img &#x3D; cv2.imread(&#39;xxx.jpg&#39;)</span><br><span class="line">height, width, bytesPerComponent &#x3D; img.shape</span><br><span class="line">bytesPerLine &#x3D; 3 * width</span><br><span class="line">cv2.cvtColor(img, cv2.COLOR_BGR2RGB, img)</span><br><span class="line">QImg &#x3D; QImage(img.data, width, height, bytesPerLine, QImage.Format_RGB888)</span><br><span class="line">pixmap &#x3D; QPixmap.fromImage(QImg)</span><br></pre></td></tr></table></figure>
+<p>这个就是Opencv和PyQt对象的转化了。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">img &#x3D; cv2.imread(&#39;xxx.jpg&#39;)</span><br></pre></td></tr></table></figure>
+<p>使用Opencv读取图像。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">height, width, bytesPerComponent &#x3D; img.shape</span><br></pre></td></tr></table></figure>
+<p>在OpenCV-Python绑定中，图像使用NumPy数组的属性(这就解释了为什么要更新numpy)来表示图像的尺寸和通道信息。此时如果我们输出img.shape，将得到(200, 360, 3)。最后的3表示这是一个RGB图像。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cv2.cvtColor(img, cv2.COLOR_BGR2RGB, img)</span><br></pre></td></tr></table></figure>
+<p>将图像从一个颜色空间转换为另一个颜色空间。<br>Python中的函数要求是这样的：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Python：cv2.cvtColor（src，code [，dst [，dstCn]]）→dst</span><br></pre></td></tr></table></figure>
+<p>参数：</p>
+<ol>
+<li>src - 输入图像：8位无符号，16位无符号（CV_16UC …）或单精度浮点数。</li>
+<li>dst - 输出与src相同大小和深度的图像。</li>
+<li>code - 颜色空间转换代码（请参阅下面的说明）。</li>
+<li>dstCn - 目标图像中的通道数量；如果参数是0，则通道的数量是从src和代码自动导出的。</li>
+</ol>
+<p>该函数将输入图像从一个颜色空间转换为另一个颜色空间。在从RGB颜色空间转换到RGB颜色空间的情况下，通道的顺序应明确指定（RGB或BGR）。请注意，OpenCV中的默认颜色格式通常被称为RGB，但实际上是BGR（字节相反）。因此，标准（24位）彩色图像中的第一个字节将是一个8位蓝色分量，第二个字节将是绿色，而第三个字节将是红色。第四，五，六字节将是第二个像素（蓝色，然后是绿色，然后是红色），依此类推。</p>
+<p>这里我们就是要求从Opencv的BGR图像转换成RGB图像了。为什么？因为要转换成PyQt5可以识别的啊！</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">bytesPerLine &#x3D; 3 * width</span><br><span class="line">QImg &#x3D; QImage(img.data, width, height, bytesPerLine, QImage.Format_RGB888)</span><br></pre></td></tr></table></figure>
+<p>QImage类提供了独立于硬件的图像表示形式，允许直接访问像素数据，并可用作绘画设备。Qt提供了四个类来处理图像数据：QImage，QPixmap，QBitmap和QPicture。QImage是为I/O设计和优化的，并且可以直接进行像素访问和操作，而QPixmap则是针对在屏幕上显示图像而设计和优化的。 </p>
+<p>QBitmap只是一个继承QPixmap的便利类，深度为1。最后，QPicture类是一个记录和重放QPainter命令的绘图设备。</p>
+<p>因为QImage是一个QPaintDevice子类，QPainter可以用来直接绘制图像。在QImage上使用QPainter时，可以在当前GUI线程之外的另一个线程中执行绘制。QImage提供了一系列功能，可用于获取有关图像的各种信息。也有几个功能，使图像转换。<br>详见官网介绍：<a href="https://doc.qt.io/qt-5/qimage.html" target="_blank" rel="noopener">QImage Class | Qt GUI 5.10</a></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">QImg &#x3D; QImage(img.data, width, height, bytesPerLine, QImage.Format_RGB888)</span><br></pre></td></tr></table></figure>
+<p>函数原型是：<strong>QImage(str, int, int, int, QImage.Format)</strong>，用给定的宽度，高度和格式构造一个使用现有内存缓冲区数据的图像。宽度和高度必须以像素指定。bytesPerLine指定每行的字节数。</p>
+<p><strong>这里有个疑问：为什么bytesPerLine = 3 * width？</strong><br>我的理解是：当1个像素占3个字节，此时图像为真彩色图像。</p>
+<p><strong>QImage.Format_RGB888</strong>表示的是图像存储使用8-8-8 24位RGB格式。当然还有更多的格式，详见QImage的官方介绍，限于篇幅这里不展开。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pixmap &#x3D; QPixmap.fromImage(QImg)</span><br></pre></td></tr></table></figure>
+<p>这个很好理解，就是想QImage对象转换成QPixmap对象，便于下步我们将Label标签中设置图像。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">self.lb.setPixmap(pixmap)</span><br></pre></td></tr></table></figure>
+<p>设置标签的图像信息。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">self.lb.setCursor(Qt.CrossCursor)</span><br></pre></td></tr></table></figure>
+<p>设置鼠标在QLabel对象中的样式，只是为了画画好看些而已，没其它的意思。除了这个十字架的，还有其它很多样式，如下图：<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/v2-cf7bf8978adbaa898f059207f52f3d5b_hd.jpg" alt></p>
+<h3 id="鼠标事件"><a href="#鼠标事件" class="headerlink" title="鼠标事件"></a>鼠标事件</h3><p>按照上文中我们介绍的思路，我们自定义了一个QLabel类myLabel，当然是继承了QLabel。然后我们用几个类变量记录鼠标的坐标和矩形是否完成的标志。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">def mousePressEvent(self,event):</span><br><span class="line">    self.flag &#x3D; True</span><br><span class="line">    self.x0 &#x3D; event.x()</span><br><span class="line">    self.y0 &#x3D; event.y()</span><br><span class="line"></span><br><span class="line">def mouseReleaseEvent(self,event):</span><br><span class="line">    self.flag &#x3D; False</span><br><span class="line"></span><br><span class="line">def mouseMoveEvent(self,event):</span><br><span class="line">    if self.flag:</span><br><span class="line">        self.x1 &#x3D; event.x()</span><br><span class="line">        self.y1 &#x3D; event.y()</span><br><span class="line">        self.update()</span><br></pre></td></tr></table></figure>
+<p>这里就是重载了鼠标产生的几个事件，是我们自定义的。分别记录了点击鼠标后初始的鼠标坐标，以及释放鼠标后的鼠标坐标。并在鼠标移动的时候更新UI。也就是我们上面所说的鼠标画矩形的思路。</p>
+<h3 id="画矩形"><a href="#画矩形" class="headerlink" title="画矩形"></a>画矩形</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">def paintEvent(self, event):</span><br><span class="line">    super().paintEvent(event)</span><br><span class="line">    rect &#x3D;QRect(self.x0, self.y0, abs(self.x1-self.x0), abs(self.y1-self.y0))</span><br><span class="line">    painter &#x3D; QPainter(self)</span><br><span class="line">    painter.setPen(QPen(Qt.red,4,Qt.SolidLine))</span><br><span class="line">    painter.drawRect(rect)</span><br><span class="line"></span><br><span class="line">    pqscreen  &#x3D; QGuiApplication.primaryScreen()</span><br><span class="line">    pixmap2 &#x3D; pqscreen.grabWindow(self.winId(), self.x0, self.y0, abs(self.x1-self.x0), abs(self.y1-self.y0))</span><br><span class="line">    pixmap2.save(&#39;555.png&#39;)</span><br></pre></td></tr></table></figure>
+<p>这个是关键点啊！</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">super().paintEvent(event)</span><br></pre></td></tr></table></figure>
+<p>调用父类的paintEvent()，这个是为了显示你设置的效果。否则会是一片空白。大家可以试试注释这句话，看看效果啊！</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">rect &#x3D;QRect(self.x0, self.y0, abs(self.x1-self.x0), abs(self.y1-self.y0))</span><br></pre></td></tr></table></figure>
+<p>QRect类使用整数精度在平面中定义一个矩形。矩形通常表示为左上角和大小。QRect的大小（宽度和高度）始终等同于构成其渲染基础的数学矩形。QRect可以用一组左，上，宽和高整数，或者从QPoint和QSize构成。以下代码创建两个相同的矩形。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">QRect(100, 200, 11, 16)</span><br><span class="line">QRect(QPoint(100, 200), QSize(11, 16))</span><br><span class="line">painter &#x3D; QPainter(self)</span><br><span class="line">painter.setPen(QPen(Qt.red,4,Qt.SolidLine))</span><br><span class="line">painter.drawRect(rect)</span><br></pre></td></tr></table></figure>
+<p>构建一个QPainter对象，设置它的画笔，然后画一个矩形。貌似感觉好简单！^_^”</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pqscreen  &#x3D; QGuiApplication.primaryScreen()</span><br><span class="line">pixmap2 &#x3D; pqscreen.grabWindow(self.winId(), self.x0, self.y0, abs(self.x1-self.x0), abs(self.y1-self.y0))</span><br><span class="line">pixmap2.save(&#39;555.png&#39;)</span><br></pre></td></tr></table></figure>
+<p>截屏的原理呢，主要还是运用QScreen类中的grabWindow方法。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">QScreen.grabWindow(WId window, int x &#x3D; 0, int y &#x3D; 0, int width &#x3D; -1, int height &#x3D; -1)</span><br></pre></td></tr></table></figure>
+<p>大致意思是创建并返回通过抓取由QRect（x，y，width，height）限制的给定窗口构造的像素图。</p>
+<p>参数（x，y）指定窗口中的偏移量，而（宽度，高度）指定要复制的区域。如果宽度为负数，则该函数将所有内容复制到窗口的右边界。如果高度为负数，则该函数将所有内容复制到窗口的底部。</p>
+<p>窗口系统标识符（WId）可以使用QWidget.winId（）函数进行检索。grabWindow（）函数从屏幕抓取像素，而不是从窗口抓取像素，即，如果有另一个窗口部分或全部覆盖抓取的像素，则也会从上面的窗口获取像素。鼠标光标一般不会被抓取。详见官网介绍：QScreen Class | Qt GUI 5.10</p>
+<p>由于QScreen类无构造函数，所以我们使用QGuiApplication.primaryScreen()创建了一个Qscreen类对象。最后使用pixmap2.save(‘555.png’)，保存具体的截图。</p>
+<p>如果你想保存的图片没有红框，可以参考这里：<br><a href="http://www.xdbcb8.com/forum/topic/%e3%80%8apyqt5%e4%b8%8eopencv%e7%9a%84%e5%b0%8f%e5%b0%8f%e8%9e%8d%e5%90%88%e3%80%8b%e8%bf%99%e7%af%87%e6%96%87%e7%ab%a0%e4%b8%ad%e5%a6%82%e4%bd%95%e5%ae%9e%e7%8e%b0%e4%bf%9d%e5%ad%98%e4%b8%8b%e6%9d%a5" target="_blank" rel="noopener">《pyqt5与opencv的小小融合》这篇文章中如何实现保存下来</a></p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+        <tag>Opencv</tag>
+        <tag>PyQt5</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Python新环境下快速安装依赖包的小技巧</title>
     <url>/2019/03/19/Python%E6%96%B0%E7%8E%AF%E5%A2%83%E4%B8%8B%E5%BF%AB%E9%80%9F%E5%AE%89%E8%A3%85%E4%BE%9D%E8%B5%96%E5%8C%85%E7%9A%84%E5%B0%8F%E6%8A%80%E5%B7%A7/</url>
     <content><![CDATA[<p>当你新创一个Python环境时，若还用pip一个个装你所需要的库，明显效率十分低下。这里有个小技巧，你可以从已配置好的旧环境中，导出一个requirements.txt 文件，用于记录所有依赖包及其精确的版本号。以便新环境部署。</p>
@@ -227,82 +303,6 @@
         <tag>Python</tag>
         <tag>Ubuntu</tag>
         <tag>virtualenv</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>PyQt5与Opencv的小小融合</title>
-    <url>/2019/03/19/PyQt5%E4%B8%8EOpencv%E7%9A%84%E5%B0%8F%E5%B0%8F%E8%9E%8D%E5%90%88/</url>
-    <content><![CDATA[<h2 id="一些核心代码"><a href="#一些核心代码" class="headerlink" title="一些核心代码"></a><a id="more"></a>一些核心代码</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class myLabel(QLabel):</span><br><span class="line">    x0 &#x3D; 0</span><br><span class="line">    y0 &#x3D; 0</span><br><span class="line">    x1 &#x3D; 0</span><br><span class="line">    y1 &#x3D; 0</span><br><span class="line">    flag &#x3D; False</span><br><span class="line"></span><br><span class="line">    def mousePressEvent(self,event):</span><br><span class="line">        self.flag &#x3D; True</span><br><span class="line">        self.x0 &#x3D; event.x()</span><br><span class="line">        self.y0 &#x3D; event.y()</span><br><span class="line">    def mouseReleaseEvent(self,event):</span><br><span class="line">        self.flag &#x3D; False</span><br><span class="line"></span><br><span class="line">    def mouseMoveEvent(self,event):</span><br><span class="line">        if self.flag:</span><br><span class="line">            self.x1 &#x3D; event.x()</span><br><span class="line">            self.y1 &#x3D; event.y()</span><br><span class="line">            self.update()</span><br><span class="line">    def paintEvent(self, event):</span><br><span class="line">        super().paintEvent(event)</span><br><span class="line">        rect &#x3D;QRect(self.x0, self.y0, abs(self.x1-self.x0), abs(self.y1-self.y0))</span><br><span class="line">        painter &#x3D; QPainter(self)</span><br><span class="line">        painter.setPen(QPen(Qt.red,4,Qt.SolidLine))</span><br><span class="line">        painter.drawRect(rect)</span><br><span class="line"></span><br><span class="line">        pqscreen  &#x3D; QGuiApplication.primaryScreen()</span><br><span class="line">        pixmap2 &#x3D; pqscreen.grabWindow(self.winId(), self.x0, self.y0, abs(self.x1-self.x0), abs(self.y1-self.y0))</span><br><span class="line">        pixmap2.save(&#39;555.png&#39;)</span><br><span class="line">    </span><br><span class="line">class Example(QWidget):</span><br><span class="line">    def __init__(self):</span><br><span class="line">        super().__init__()</span><br><span class="line">        self.initUI()</span><br><span class="line">    def initUI(self):</span><br><span class="line">        self.resize(675, 300)</span><br><span class="line">        self.setWindowTitle(&#39;关注微信公众号：学点编程吧--opencv、PyQt5的小小融合&#39;)</span><br><span class="line"></span><br><span class="line">        self.lb &#x3D; myLabel(self)</span><br><span class="line">        self.lb.setGeometry(QRect(140, 30, 511, 241))</span><br><span class="line"></span><br><span class="line">        img &#x3D; cv2.imread(&#39;xxx.jpg&#39;)</span><br><span class="line">        height, width, bytesPerComponent &#x3D; img.shape</span><br><span class="line">        bytesPerLine &#x3D; 3 * width</span><br><span class="line">        cv2.cvtColor(img, cv2.COLOR_BGR2RGB, img)</span><br><span class="line">        QImg &#x3D; QImage(img.data, width, height, bytesPerLine, QImage.Format_RGB888)</span><br><span class="line">        pixmap &#x3D; QPixmap.fromImage(QImg)</span><br><span class="line"></span><br><span class="line">        self.lb.setPixmap(pixmap)</span><br><span class="line">        self.lb.setCursor(Qt.CrossCursor)</span><br><span class="line"></span><br><span class="line">        self.show()</span><br></pre></td></tr></table></figure>
-<h2 id="实现大体思路"><a href="#实现大体思路" class="headerlink" title="实现大体思路"></a>实现大体思路</h2><ul>
-<li>重新实现QLabel类，在类中重新实现了鼠标的点击、拖动、释放、以及绘画事件</li>
-<li>在窗体上新建了一个label标签，然后载入图片</li>
-<li>label标签载入的图像是由Opencv实现的</li>
-</ul>
-<h2 id="鼠标画矩形的思路"><a href="#鼠标画矩形的思路" class="headerlink" title="鼠标画矩形的思路"></a>鼠标画矩形的思路</h2><ul>
-<li>新建一个矩形是否完成标志flag，默认是Flase，表示未完成</li>
-<li>鼠标点击的时候，记录当前鼠标所在位置的坐标，flag标志置为True，表示开始画矩形了</li>
-<li>鼠标拖动的时候，因为flag为True，所以记录当前鼠标所在位置的坐标</li>
-<li>鼠标释放的时候，flag置为False，表示矩形画完了，准备画下一个了</li>
-</ul>
-<h2 id="代码讲解"><a href="#代码讲解" class="headerlink" title="代码讲解"></a>代码讲解</h2><h3 id="Opencv图像的转换"><a href="#Opencv图像的转换" class="headerlink" title="Opencv图像的转换"></a>Opencv图像的转换</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">img &#x3D; cv2.imread(&#39;xxx.jpg&#39;)</span><br><span class="line">height, width, bytesPerComponent &#x3D; img.shape</span><br><span class="line">bytesPerLine &#x3D; 3 * width</span><br><span class="line">cv2.cvtColor(img, cv2.COLOR_BGR2RGB, img)</span><br><span class="line">QImg &#x3D; QImage(img.data, width, height, bytesPerLine, QImage.Format_RGB888)</span><br><span class="line">pixmap &#x3D; QPixmap.fromImage(QImg)</span><br></pre></td></tr></table></figure>
-<p>这个就是Opencv和PyQt对象的转化了。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">img &#x3D; cv2.imread(&#39;xxx.jpg&#39;)</span><br></pre></td></tr></table></figure>
-<p>使用Opencv读取图像。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">height, width, bytesPerComponent &#x3D; img.shape</span><br></pre></td></tr></table></figure>
-<p>在OpenCV-Python绑定中，图像使用NumPy数组的属性(这就解释了为什么要更新numpy)来表示图像的尺寸和通道信息。此时如果我们输出img.shape，将得到(200, 360, 3)。最后的3表示这是一个RGB图像。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cv2.cvtColor(img, cv2.COLOR_BGR2RGB, img)</span><br></pre></td></tr></table></figure>
-<p>将图像从一个颜色空间转换为另一个颜色空间。<br>Python中的函数要求是这样的：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Python：cv2.cvtColor（src，code [，dst [，dstCn]]）→dst</span><br></pre></td></tr></table></figure>
-<p>参数：</p>
-<ol>
-<li>src - 输入图像：8位无符号，16位无符号（CV_16UC …）或单精度浮点数。</li>
-<li>dst - 输出与src相同大小和深度的图像。</li>
-<li>code - 颜色空间转换代码（请参阅下面的说明）。</li>
-<li>dstCn - 目标图像中的通道数量；如果参数是0，则通道的数量是从src和代码自动导出的。</li>
-</ol>
-<p>该函数将输入图像从一个颜色空间转换为另一个颜色空间。在从RGB颜色空间转换到RGB颜色空间的情况下，通道的顺序应明确指定（RGB或BGR）。请注意，OpenCV中的默认颜色格式通常被称为RGB，但实际上是BGR（字节相反）。因此，标准（24位）彩色图像中的第一个字节将是一个8位蓝色分量，第二个字节将是绿色，而第三个字节将是红色。第四，五，六字节将是第二个像素（蓝色，然后是绿色，然后是红色），依此类推。</p>
-<p>这里我们就是要求从Opencv的BGR图像转换成RGB图像了。为什么？因为要转换成PyQt5可以识别的啊！</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">bytesPerLine &#x3D; 3 * width</span><br><span class="line">QImg &#x3D; QImage(img.data, width, height, bytesPerLine, QImage.Format_RGB888)</span><br></pre></td></tr></table></figure>
-<p>QImage类提供了独立于硬件的图像表示形式，允许直接访问像素数据，并可用作绘画设备。Qt提供了四个类来处理图像数据：QImage，QPixmap，QBitmap和QPicture。QImage是为I/O设计和优化的，并且可以直接进行像素访问和操作，而QPixmap则是针对在屏幕上显示图像而设计和优化的。 </p>
-<p>QBitmap只是一个继承QPixmap的便利类，深度为1。最后，QPicture类是一个记录和重放QPainter命令的绘图设备。</p>
-<p>因为QImage是一个QPaintDevice子类，QPainter可以用来直接绘制图像。在QImage上使用QPainter时，可以在当前GUI线程之外的另一个线程中执行绘制。QImage提供了一系列功能，可用于获取有关图像的各种信息。也有几个功能，使图像转换。<br>详见官网介绍：<a href="https://doc.qt.io/qt-5/qimage.html" target="_blank" rel="noopener">QImage Class | Qt GUI 5.10</a></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">QImg &#x3D; QImage(img.data, width, height, bytesPerLine, QImage.Format_RGB888)</span><br></pre></td></tr></table></figure>
-<p>函数原型是：<strong>QImage(str, int, int, int, QImage.Format)</strong>，用给定的宽度，高度和格式构造一个使用现有内存缓冲区数据的图像。宽度和高度必须以像素指定。bytesPerLine指定每行的字节数。</p>
-<p><strong>这里有个疑问：为什么bytesPerLine = 3 * width？</strong><br>我的理解是：当1个像素占3个字节，此时图像为真彩色图像。</p>
-<p><strong>QImage.Format_RGB888</strong>表示的是图像存储使用8-8-8 24位RGB格式。当然还有更多的格式，详见QImage的官方介绍，限于篇幅这里不展开。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pixmap &#x3D; QPixmap.fromImage(QImg)</span><br></pre></td></tr></table></figure>
-<p>这个很好理解，就是想QImage对象转换成QPixmap对象，便于下步我们将Label标签中设置图像。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">self.lb.setPixmap(pixmap)</span><br></pre></td></tr></table></figure>
-<p>设置标签的图像信息。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">self.lb.setCursor(Qt.CrossCursor)</span><br></pre></td></tr></table></figure>
-<p>设置鼠标在QLabel对象中的样式，只是为了画画好看些而已，没其它的意思。除了这个十字架的，还有其它很多样式，如下图：<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/v2-cf7bf8978adbaa898f059207f52f3d5b_hd.jpg" alt></p>
-<h3 id="鼠标事件"><a href="#鼠标事件" class="headerlink" title="鼠标事件"></a>鼠标事件</h3><p>按照上文中我们介绍的思路，我们自定义了一个QLabel类myLabel，当然是继承了QLabel。然后我们用几个类变量记录鼠标的坐标和矩形是否完成的标志。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">def mousePressEvent(self,event):</span><br><span class="line">    self.flag &#x3D; True</span><br><span class="line">    self.x0 &#x3D; event.x()</span><br><span class="line">    self.y0 &#x3D; event.y()</span><br><span class="line"></span><br><span class="line">def mouseReleaseEvent(self,event):</span><br><span class="line">    self.flag &#x3D; False</span><br><span class="line"></span><br><span class="line">def mouseMoveEvent(self,event):</span><br><span class="line">    if self.flag:</span><br><span class="line">        self.x1 &#x3D; event.x()</span><br><span class="line">        self.y1 &#x3D; event.y()</span><br><span class="line">        self.update()</span><br></pre></td></tr></table></figure>
-<p>这里就是重载了鼠标产生的几个事件，是我们自定义的。分别记录了点击鼠标后初始的鼠标坐标，以及释放鼠标后的鼠标坐标。并在鼠标移动的时候更新UI。也就是我们上面所说的鼠标画矩形的思路。</p>
-<h3 id="画矩形"><a href="#画矩形" class="headerlink" title="画矩形"></a>画矩形</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">def paintEvent(self, event):</span><br><span class="line">    super().paintEvent(event)</span><br><span class="line">    rect &#x3D;QRect(self.x0, self.y0, abs(self.x1-self.x0), abs(self.y1-self.y0))</span><br><span class="line">    painter &#x3D; QPainter(self)</span><br><span class="line">    painter.setPen(QPen(Qt.red,4,Qt.SolidLine))</span><br><span class="line">    painter.drawRect(rect)</span><br><span class="line"></span><br><span class="line">    pqscreen  &#x3D; QGuiApplication.primaryScreen()</span><br><span class="line">    pixmap2 &#x3D; pqscreen.grabWindow(self.winId(), self.x0, self.y0, abs(self.x1-self.x0), abs(self.y1-self.y0))</span><br><span class="line">    pixmap2.save(&#39;555.png&#39;)</span><br></pre></td></tr></table></figure>
-<p>这个是关键点啊！</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">super().paintEvent(event)</span><br></pre></td></tr></table></figure>
-<p>调用父类的paintEvent()，这个是为了显示你设置的效果。否则会是一片空白。大家可以试试注释这句话，看看效果啊！</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">rect &#x3D;QRect(self.x0, self.y0, abs(self.x1-self.x0), abs(self.y1-self.y0))</span><br></pre></td></tr></table></figure>
-<p>QRect类使用整数精度在平面中定义一个矩形。矩形通常表示为左上角和大小。QRect的大小（宽度和高度）始终等同于构成其渲染基础的数学矩形。QRect可以用一组左，上，宽和高整数，或者从QPoint和QSize构成。以下代码创建两个相同的矩形。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">QRect(100, 200, 11, 16)</span><br><span class="line">QRect(QPoint(100, 200), QSize(11, 16))</span><br><span class="line">painter &#x3D; QPainter(self)</span><br><span class="line">painter.setPen(QPen(Qt.red,4,Qt.SolidLine))</span><br><span class="line">painter.drawRect(rect)</span><br></pre></td></tr></table></figure>
-<p>构建一个QPainter对象，设置它的画笔，然后画一个矩形。貌似感觉好简单！^_^”</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pqscreen  &#x3D; QGuiApplication.primaryScreen()</span><br><span class="line">pixmap2 &#x3D; pqscreen.grabWindow(self.winId(), self.x0, self.y0, abs(self.x1-self.x0), abs(self.y1-self.y0))</span><br><span class="line">pixmap2.save(&#39;555.png&#39;)</span><br></pre></td></tr></table></figure>
-<p>截屏的原理呢，主要还是运用QScreen类中的grabWindow方法。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">QScreen.grabWindow(WId window, int x &#x3D; 0, int y &#x3D; 0, int width &#x3D; -1, int height &#x3D; -1)</span><br></pre></td></tr></table></figure>
-<p>大致意思是创建并返回通过抓取由QRect（x，y，width，height）限制的给定窗口构造的像素图。</p>
-<p>参数（x，y）指定窗口中的偏移量，而（宽度，高度）指定要复制的区域。如果宽度为负数，则该函数将所有内容复制到窗口的右边界。如果高度为负数，则该函数将所有内容复制到窗口的底部。</p>
-<p>窗口系统标识符（WId）可以使用QWidget.winId（）函数进行检索。grabWindow（）函数从屏幕抓取像素，而不是从窗口抓取像素，即，如果有另一个窗口部分或全部覆盖抓取的像素，则也会从上面的窗口获取像素。鼠标光标一般不会被抓取。详见官网介绍：QScreen Class | Qt GUI 5.10</p>
-<p>由于QScreen类无构造函数，所以我们使用QGuiApplication.primaryScreen()创建了一个Qscreen类对象。最后使用pixmap2.save(‘555.png’)，保存具体的截图。</p>
-<p>如果你想保存的图片没有红框，可以参考这里：<br><a href="http://www.xdbcb8.com/forum/topic/%e3%80%8apyqt5%e4%b8%8eopencv%e7%9a%84%e5%b0%8f%e5%b0%8f%e8%9e%8d%e5%90%88%e3%80%8b%e8%bf%99%e7%af%87%e6%96%87%e7%ab%a0%e4%b8%ad%e5%a6%82%e4%bd%95%e5%ae%9e%e7%8e%b0%e4%bf%9d%e5%ad%98%e4%b8%8b%e6%9d%a5" target="_blank" rel="noopener">《pyqt5与opencv的小小融合》这篇文章中如何实现保存下来</a></p>
-]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
-        <tag>Python</tag>
-        <tag>Opencv</tag>
-        <tag>PyQt5</tag>
       </tags>
   </entry>
 </search>
