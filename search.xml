@@ -319,4 +319,61 @@
         <tag>矩阵分析</tag>
       </tags>
   </entry>
+  <entry>
+    <title>Permmision denied解决方法</title>
+    <url>/2019/03/19/Permmision%20denied%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/</url>
+    <content><![CDATA[<p>这是因为要管理员权限的，而ubuntu又不想给普通用户赋予管理员权限。所以这里开启root账号</p>
+<h2 id="首先设置-root-密码"><a href="#首先设置-root-密码" class="headerlink" title=" 首先设置 root 密码"></a><a id="more"></a> 首先设置 root 密码</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo passwd</span><br></pre></td></tr></table></figure>
+<p>会出现以下画面：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[sudo] password for luban:                        &#x2F;&#x2F;输入当前普通用户的密码</span><br><span class="line"></span><br><span class="line">Enter new UNIX password:                          &#x2F;&#x2F;给root设置密码</span><br><span class="line"></span><br><span class="line">Retype new UNIX password:                         &#x2F;&#x2F;确认输入密码</span><br><span class="line"></span><br><span class="line">passwd: password updated successfully</span><br></pre></td></tr></table></figure>
+<h2 id="开启root"><a href="#开启root" class="headerlink" title="开启root"></a>开启root</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">su root</span><br></pre></td></tr></table></figure>
+<h2 id="修改文件权限"><a href="#修改文件权限" class="headerlink" title="修改文件权限"></a>修改文件权限</h2><p>为了获得执行权限，借助chmod指令修改文件权限即可。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">chmod 777 文件夹或文件路径</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>ubuntu下 teamviewer的安装方法</title>
+    <url>/2019/03/19/ubuntu%E4%B8%8B-teamviewer%E7%9A%84%E5%AE%89%E8%A3%85%E6%96%B9%E6%B3%95/</url>
+    <content><![CDATA[<h2 id="去官网下载安装包"><a href="#去官网下载安装包" class="headerlink" title=" 去官网下载安装包"></a><a id="more"></a> 去官网下载安装包</h2><p><a href="https://www.teamviewer.com/zhcn/download/linux/" target="_blank" rel="noopener">官网链接</a><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/teamviewer/20180128120840387.png" alt></p>
+<h2 id="在命令行进行安装"><a href="#在命令行进行安装" class="headerlink" title="在命令行进行安装"></a>在命令行进行安装</h2><p>（在下载文件夹下打开命令行，输入：sudo dpkg -i  teamviewer_13.0.6634_amd64.deb）（teamviewer_13.0.6634_amd64.deb为安装包名，根据自己安装包）</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo dpkg -i  teamviewer_13.0.6634_amd64.deb</span><br></pre></td></tr></table></figure>
+<h2 id="安装出错，一行语句搞定依赖关系"><a href="#安装出错，一行语句搞定依赖关系" class="headerlink" title="安装出错，一行语句搞定依赖关系"></a>安装出错，一行语句搞定依赖关系</h2><p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/teamviewer/20180128120923823.png" alt></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt-get install -f</span><br></pre></td></tr></table></figure>
+<h2 id="再次安装"><a href="#再次安装" class="headerlink" title="再次安装"></a>再次安装</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo dpkg -i  teamviewer_13.0.6634_amd64.deb</span><br></pre></td></tr></table></figure>
+<h2 id="打开teamview"><a href="#打开teamview" class="headerlink" title="打开teamview"></a>打开teamview</h2><p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/teamviewer/20180128121156354.png" alt><br>或用命令行启动：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo teamviewer --daemon start</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+        <tag>Teamviewer</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>如何解决出现 unable to resolve host 问题</title>
+    <url>/2019/03/19/%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3%E5%87%BA%E7%8E%B0-unable-to-resolve-host-%E9%97%AE%E9%A2%98/</url>
+    <content><![CDATA[<h2 id><a href="#" class="headerlink" title></a><a id="more"></a></h2><p>Ubuntu环境，有时候执行sudo 就出现这个警告讯息: </p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo: unable to resolve host abc</span><br></pre></td></tr></table></figure>
+<p>虽然sudo 还是可以正常执行, 但是看到这样的通知还是会觉得烦，怎么去除这个警告呢？</p>
+<p>这个警告是因为系统找不到一个叫做 abc的hostname </p>
+<p>通过 修改 /etc/hosts 设定, 可以解决</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">nano &#x2F;etc&#x2F;hostname</span><br></pre></td></tr></table></figure>
+
+<p>在127.0.0.1 localhost 后面加上主机名称(hostname) 即可:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">127.0.0.1 localhost abc</span><br></pre></td></tr></table></figure>
+<p>问题解决！</p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+      </tags>
+  </entry>
 </search>
