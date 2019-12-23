@@ -113,37 +113,19 @@
       </tags>
   </entry>
   <entry>
-    <title>Ubuntu下安装Pycharm</title>
-    <url>/2019/03/19/Ubuntu%E4%B8%8B%E5%AE%89%E8%A3%85Pycharm/</url>
-    <content><![CDATA[<h2 id="下载"><a href="#下载" class="headerlink" title="下载"></a><a id="more"></a>下载</h2><p>有社区版和专业版，专业版需要激活，社区版免费，我下载的是社区版。<br><a href="https://www.jetbrains.com/pycharm/download/#section=linux" target="_blank" rel="noopener">官方下载</a><br><a href="https://www.jianguoyun.com/p/DfZJG3QQlZ_3Bhj8mrEC" target="_blank" rel="noopener">网盘下载</a></p>
-<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>进入download目录，对下载好的Pycharm压缩包进行解压操作，选中文件右键提取到此处即可。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D1664510513%2C942693123%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt><br>进入解压后的Pycharm文件夹，进入bin目录，可以看到很多文件，其中有一个文件叫做pycharm.sh。也就是下图中所选中的文件：<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D101055722%2C4258535600%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt><br>此时在bin文件夹下右键打开终端，输入运行命令, 执行Pycharm程序</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.&#x2F;pycharm.sh</span><br></pre></td></tr></table></figure>
-<p>如果提示没有权限，大家可以添加sudo命令进行操作：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo .&#x2F;pycharm.sh</span><br></pre></td></tr></table></figure>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D805484803%2C1629350165%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt><br>大家点击OK即可进入下一步操作，根据提示的内容进行勾选同意协议，然后点击continue进入下一步，大家可以点击don’t send进入下一步，选择喜欢的界面风格，然后再次点击next进入下一步，直到提示start启动程序。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D227808303%2C3066408894%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D22323540%2C1357101677%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D1914658415%2C2906990210%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt><br>为了方便以后的使用，我们可以将Pycharm的图标（快捷键）锁定到启动器。之后不用再去在终端中启动Pycharm了，直接点击图标启动即可。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D1149108563%2C3867497858%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt></p>
-]]></content>
+    <title>Permmision denied解决方法</title>
+    <url>/2019/03/19/Permmision%20denied%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/</url>
+    <content><![CDATA[<p>这是因为要管理员权限的，而ubuntu又不想给普通用户赋予管理员权限。所以这里开启root账号</p>
+<h2 id="首先设置-root-密码"><a href="#首先设置-root-密码" class="headerlink" title=" 首先设置 root 密码"></a><a id="more"></a> 首先设置 root 密码</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo passwd</span><br></pre></td></tr></table></figure>
+<p>会出现以下画面：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[sudo] password for luban:                        &#x2F;&#x2F;输入当前普通用户的密码</span><br><span class="line"></span><br><span class="line">Enter new UNIX password:                          &#x2F;&#x2F;给root设置密码</span><br><span class="line"></span><br><span class="line">Retype new UNIX password:                         &#x2F;&#x2F;确认输入密码</span><br><span class="line"></span><br><span class="line">passwd: password updated successfully</span><br></pre></td></tr></table></figure>
+<h2 id="开启root"><a href="#开启root" class="headerlink" title="开启root"></a>开启root</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">su root</span><br></pre></td></tr></table></figure>
+<h2 id="修改文件权限"><a href="#修改文件权限" class="headerlink" title="修改文件权限"></a>修改文件权限</h2><p>为了获得执行权限，借助chmod指令修改文件权限即可。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">chmod 777 文件夹或文件路径</span><br></pre></td></tr></table></figure>]]></content>
       <categories>
         <category>教程</category>
       </categories>
       <tags>
-        <tag>Python</tag>
-        <tag>Ubuntu</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Ubuntu下安装更新pip</title>
-    <url>/2019/03/19/Ubuntu%E4%B8%8B%E5%AE%89%E8%A3%85%E6%9B%B4%E6%96%B0pip/</url>
-    <content><![CDATA[<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a><a id="more"></a>安装</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt install python-pip</span><br></pre></td></tr></table></figure>
-<p>若同时装有Python2、Python3上条命令装的是pip2，若还需装pip3，则再执行以下命令</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt install python3-pip</span><br></pre></td></tr></table></figure>
-<h2 id="更新"><a href="#更新" class="headerlink" title="更新"></a>更新</h2><p>安装成功后进行更新：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo pip install --upgrade pip</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo pip3 install --upgrade pip</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
-        <tag>Python</tag>
         <tag>Ubuntu</tag>
       </tags>
   </entry>
@@ -168,23 +150,21 @@
       </tags>
   </entry>
   <entry>
-    <title>Ubuntu16.04下Tensorflow-gpu安装</title>
-    <url>/2019/03/19/Ubuntu16.04%E4%B8%8BTensorflow-gpu%E5%AE%89%E8%A3%85/</url>
-    <content><![CDATA[<p>在开始之前，请先确定安装好显卡驱动、CUDA、cuDNN，可以参考我的<a href="https://qiyuan-z.github.io/2019/03/19/Ubuntu-16.04下配置GPU版CUDA和cuDNN/">另一篇博客</a></p>
-<a id="more"></a>
-<p>1.安装Numpy<br>推荐安装1.16.0版本，若之前已安装，请先卸载</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip uninstall numpy</span><br></pre></td></tr></table></figure>
-<p>然后执行安装</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip install numpy&#x3D;&#x3D;1.16.0</span><br></pre></td></tr></table></figure>
-<p>2.安装Tensorflow-gpu<br>推荐安装1.14.0版本</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip install tensorflow-gpu&#x3D;&#x3D;1.14.0</span><br></pre></td></tr></table></figure>]]></content>
+    <title>Ubuntu下安装Pycharm</title>
+    <url>/2019/03/19/Ubuntu%E4%B8%8B%E5%AE%89%E8%A3%85Pycharm/</url>
+    <content><![CDATA[<h2 id="下载"><a href="#下载" class="headerlink" title="下载"></a><a id="more"></a>下载</h2><p>有社区版和专业版，专业版需要激活，社区版免费，我下载的是社区版。<br><a href="https://www.jetbrains.com/pycharm/download/#section=linux" target="_blank" rel="noopener">官方下载</a><br><a href="https://www.jianguoyun.com/p/DfZJG3QQlZ_3Bhj8mrEC" target="_blank" rel="noopener">网盘下载</a></p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>进入download目录，对下载好的Pycharm压缩包进行解压操作，选中文件右键提取到此处即可。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D1664510513%2C942693123%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt><br>进入解压后的Pycharm文件夹，进入bin目录，可以看到很多文件，其中有一个文件叫做pycharm.sh。也就是下图中所选中的文件：<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D101055722%2C4258535600%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt><br>此时在bin文件夹下右键打开终端，输入运行命令, 执行Pycharm程序</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.&#x2F;pycharm.sh</span><br></pre></td></tr></table></figure>
+<p>如果提示没有权限，大家可以添加sudo命令进行操作：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo .&#x2F;pycharm.sh</span><br></pre></td></tr></table></figure>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D805484803%2C1629350165%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt><br>大家点击OK即可进入下一步操作，根据提示的内容进行勾选同意协议，然后点击continue进入下一步，大家可以点击don’t send进入下一步，选择喜欢的界面风格，然后再次点击next进入下一步，直到提示start启动程序。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D227808303%2C3066408894%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D22323540%2C1357101677%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D1914658415%2C2906990210%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt><br>为了方便以后的使用，我们可以将Pycharm的图标（快捷键）锁定到启动器。之后不用再去在终端中启动Pycharm了，直接点击图标启动即可。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D1149108563%2C3867497858%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt></p>
+]]></content>
       <categories>
         <category>教程</category>
       </categories>
       <tags>
         <tag>Python</tag>
         <tag>Ubuntu</tag>
-        <tag>Tensorflow</tag>
       </tags>
   </entry>
   <entry>
@@ -244,6 +224,23 @@
       </tags>
   </entry>
   <entry>
+    <title>Ubuntu下安装更新pip</title>
+    <url>/2019/03/19/Ubuntu%E4%B8%8B%E5%AE%89%E8%A3%85%E6%9B%B4%E6%96%B0pip/</url>
+    <content><![CDATA[<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a><a id="more"></a>安装</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt install python-pip</span><br></pre></td></tr></table></figure>
+<p>若同时装有Python2、Python3上条命令装的是pip2，若还需装pip3，则再执行以下命令</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt install python3-pip</span><br></pre></td></tr></table></figure>
+<h2 id="更新"><a href="#更新" class="headerlink" title="更新"></a>更新</h2><p>安装成功后进行更新：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo pip install --upgrade pip</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo pip3 install --upgrade pip</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+        <tag>Ubuntu</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Ubuntu下如何安装搜狗输入法</title>
     <url>/2019/03/19/sougou/</url>
     <content><![CDATA[<h2 id="Ubuntu系统配置"><a href="#Ubuntu系统配置" class="headerlink" title=" Ubuntu系统配置"></a><a id="more"></a> Ubuntu系统配置</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">system settings-&gt;language support-&gt;install&#x2F;remove languages</span><br></pre></td></tr></table></figure>
@@ -262,6 +259,26 @@
       </categories>
       <tags>
         <tag>Ubuntu</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ubuntu16.04下Tensorflow-gpu安装</title>
+    <url>/2019/03/19/Ubuntu16.04%E4%B8%8BTensorflow-gpu%E5%AE%89%E8%A3%85/</url>
+    <content><![CDATA[<p>在开始之前，请先确定安装好显卡驱动、CUDA、cuDNN，可以参考我的<a href="https://qiyuan-z.github.io/2019/03/19/Ubuntu-16.04下配置GPU版CUDA和cuDNN/">另一篇博客</a></p>
+<a id="more"></a>
+<p>1.安装Numpy<br>推荐安装1.16.0版本，若之前已安装，请先卸载</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip uninstall numpy</span><br></pre></td></tr></table></figure>
+<p>然后执行安装</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip install numpy&#x3D;&#x3D;1.16.0</span><br></pre></td></tr></table></figure>
+<p>2.安装Tensorflow-gpu<br>推荐安装1.14.0版本</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip install tensorflow-gpu&#x3D;&#x3D;1.14.0</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+        <tag>Ubuntu</tag>
+        <tag>Tensorflow</tag>
       </tags>
   </entry>
   <entry>
@@ -320,15 +337,19 @@
       </tags>
   </entry>
   <entry>
-    <title>Permmision denied解决方法</title>
-    <url>/2019/03/19/Permmision%20denied%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/</url>
-    <content><![CDATA[<p>这是因为要管理员权限的，而ubuntu又不想给普通用户赋予管理员权限。所以这里开启root账号</p>
-<h2 id="首先设置-root-密码"><a href="#首先设置-root-密码" class="headerlink" title=" 首先设置 root 密码"></a><a id="more"></a> 首先设置 root 密码</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo passwd</span><br></pre></td></tr></table></figure>
-<p>会出现以下画面：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[sudo] password for luban:                        &#x2F;&#x2F;输入当前普通用户的密码</span><br><span class="line"></span><br><span class="line">Enter new UNIX password:                          &#x2F;&#x2F;给root设置密码</span><br><span class="line"></span><br><span class="line">Retype new UNIX password:                         &#x2F;&#x2F;确认输入密码</span><br><span class="line"></span><br><span class="line">passwd: password updated successfully</span><br></pre></td></tr></table></figure>
-<h2 id="开启root"><a href="#开启root" class="headerlink" title="开启root"></a>开启root</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">su root</span><br></pre></td></tr></table></figure>
-<h2 id="修改文件权限"><a href="#修改文件权限" class="headerlink" title="修改文件权限"></a>修改文件权限</h2><p>为了获得执行权限，借助chmod指令修改文件权限即可。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">chmod 777 文件夹或文件路径</span><br></pre></td></tr></table></figure>]]></content>
+    <title>如何解决出现 unable to resolve host 问题</title>
+    <url>/2019/03/19/%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3%E5%87%BA%E7%8E%B0-unable-to-resolve-host-%E9%97%AE%E9%A2%98/</url>
+    <content><![CDATA[<h2 id><a href="#" class="headerlink" title></a><a id="more"></a></h2><p>Ubuntu环境，有时候执行sudo 就出现这个警告讯息: </p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo: unable to resolve host abc</span><br></pre></td></tr></table></figure>
+<p>虽然sudo 还是可以正常执行, 但是看到这样的通知还是会觉得烦，怎么去除这个警告呢？</p>
+<p>这个警告是因为系统找不到一个叫做 abc的hostname </p>
+<p>通过 修改 /etc/hosts 设定, 可以解决</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">nano &#x2F;etc&#x2F;hostname</span><br></pre></td></tr></table></figure>
+
+<p>在127.0.0.1 localhost 后面加上主机名称(hostname) 即可:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">127.0.0.1 localhost abc</span><br></pre></td></tr></table></figure>
+<p>问题解决！</p>
+]]></content>
       <categories>
         <category>教程</category>
       </categories>
@@ -353,27 +374,6 @@
       <tags>
         <tag>Ubuntu</tag>
         <tag>Teamviewer</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>如何解决出现 unable to resolve host 问题</title>
-    <url>/2019/03/19/%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3%E5%87%BA%E7%8E%B0-unable-to-resolve-host-%E9%97%AE%E9%A2%98/</url>
-    <content><![CDATA[<h2 id><a href="#" class="headerlink" title></a><a id="more"></a></h2><p>Ubuntu环境，有时候执行sudo 就出现这个警告讯息: </p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo: unable to resolve host abc</span><br></pre></td></tr></table></figure>
-<p>虽然sudo 还是可以正常执行, 但是看到这样的通知还是会觉得烦，怎么去除这个警告呢？</p>
-<p>这个警告是因为系统找不到一个叫做 abc的hostname </p>
-<p>通过 修改 /etc/hosts 设定, 可以解决</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">nano &#x2F;etc&#x2F;hostname</span><br></pre></td></tr></table></figure>
-
-<p>在127.0.0.1 localhost 后面加上主机名称(hostname) 即可:</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">127.0.0.1 localhost abc</span><br></pre></td></tr></table></figure>
-<p>问题解决！</p>
-]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
-        <tag>Ubuntu</tag>
       </tags>
   </entry>
 </search>
