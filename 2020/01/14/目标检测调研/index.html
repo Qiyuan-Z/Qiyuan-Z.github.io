@@ -1,9 +1,330 @@
-<?xml version="1.0" encoding="utf-8"?>
-<search>
-  <entry>
-    <title>目标检测调研</title>
-    <url>/2020/01/14/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E8%B0%83%E7%A0%94/</url>
-    <content><![CDATA[<h3 id="目标检测的任务"><a href="#目标检测的任务" class="headerlink" title=" 目标检测的任务"></a><a id="more"></a> 目标检测的任务</h3><ul>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://Qiyuan-Z.github.io').hostname,
+    root: '/',
+    scheme: 'Mist',
+    version: '7.6.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":true,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta property="og:type" content="article">
+<meta property="og:title" content="目标检测调研">
+<meta property="og:url" content="https:&#x2F;&#x2F;qiyuan-z.github.io&#x2F;2020&#x2F;01&#x2F;14&#x2F;%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E8%B0%83%E7%A0%94&#x2F;index.html">
+<meta property="og:site_name" content="Yuan">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;deep_learning_object_detection_dataset.PNG">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;2018042521300715.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;20180423003716617.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;deep_learning_object_detection_history.PNG">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;20180509095302426.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;1423648-20190316210029111-840970217.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;1423648-20190317100459585-1587811888.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;TIM%E5%9B%BE%E7%89%8720200106182123.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;Snipaste_2020-01-07_09-57-14.jpg">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;20180425214236957.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;Snipaste_2020-01-07_10-28-09.jpg">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;20180425215129861.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;Snipaste_2020-01-07_10-41-12.jpg">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;Snipaste_2020-01-07_10-46-02.jpg">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;3940902-7569280b566d0e58.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;3940902-5519b489e581557a.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;3940902-a6127730f6d21abd.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;v2-e64a99b38f411c337f538eb5f093bdf3_r.jpg">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;v2-1908feeaba591d28bee3c4a754cca282_r.jpg">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;v2-7abead97efcc46a3ee5b030a2151643f_hd.jpg">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;v2-1ab4b6c3dd607a5035b5203c76b078f3_r.jpg">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;v2-8241c8076d60156248916fe2f1a5674a_r.jpg">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;6983308-d54136f1eb0cd733.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;6983308-0d1e8d42480e1c1a.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;6983308-29a33d2e79ed722b.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;20180511204751564.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;Snipaste_2020-01-07_18-40-15.jpg">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;Snipaste_2020-01-07_18-53-58.jpg">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;Snipaste_2020-01-07_19-14-51.jpg">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;20161229150249883.jpg">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;Snipaste_2020-01-08_09-22-20.jpg">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;2709767-e65c08c61bfaa7c7.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;2709767-bc5def91d05e4d3a.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;2709767-9b28d0f1c682b80a.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;2709767-5cc00a60004e0473.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;Snipaste_2020-01-08_14-51-11.jpg">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;2148039-cec47c5d71ce8f22.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;Snipaste_2020-01-08_15-32-00.jpg">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;2018051716490729.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;Snipaste_2020-01-08_16-00-32.jpg">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;Snipaste_2020-01-08_16-11-49.jpg">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;Snipaste_2020-01-08_16-17-17.jpg">
+<meta property="article:published_time" content="2020-01-14T12:47:23.096Z">
+<meta property="article:modified_time" content="2020-01-14T13:24:23.275Z">
+<meta property="article:author" content="Qiyuan-Z">
+<meta property="article:tag" content="目标检测">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;deep_learning_object_detection_dataset.PNG">
+
+<link rel="canonical" href="https://qiyuan-z.github.io/2020/01/14/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E8%B0%83%E7%A0%94/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>目标检测调研 | Yuan</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Yuan</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qiyuan-z.github.io/2020/01/14/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E8%B0%83%E7%A0%94/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/wallhaven-915.png">
+      <meta itemprop="name" content="Qiyuan-Z">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Yuan">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          目标检测调研
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-01-14 20:47:23 / 修改时间：21:24:23" itemprop="dateCreated datePublished" datetime="2020-01-14T20:47:23+08:00">2020-01-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index">
+                    <span itemprop="name">学习</span>
+                  </a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/01/14/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E8%B0%83%E7%A0%94/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/01/14/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E8%B0%83%E7%A0%94/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>24k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>22 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="目标检测的任务"><a href="#目标检测的任务" class="headerlink" title=" 目标检测的任务"></a><a id="more"></a> 目标检测的任务</h3><ul>
 <li><strong>分类-Classification</strong>：解决“是什么？”的问题，即给定一张图片或一段视频判断里面包含什么类别的目标。</li>
 <li><strong>定位-Location</strong>：解决“在哪里？”的问题，即定位出这个目标的的位置。</li>
 <li><strong>检测-Detection</strong>：解决“是什么？在哪里？”的问题，即定位出这个目标的的位置并且知道目标物是什么。</li>
@@ -644,7 +965,7 @@ W_{*}=\operatorname{argmin}_{w_{*}} \sum_{i}^{N}\left(t_{*}^{i}-\hat{w}_{*}^{T} 
 <p><strong>Region Proposal Networks</strong>。RPN网络用于生成region proposals。该层通过softmax判断anchors属于positive或者negative，再利用bounding box regression修正anchors获得精确的proposals。</p>
 <p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/v2-1908feeaba591d28bee3c4a754cca282_r.jpg" alt></p>
 <p>可以看到RPN网络实际分为2条线，上面一条通过softmax分类anchors获得positive和negative分类，下面一条用于计算对于anchors的bounding box regression偏移量，以获得精确的proposal。而最后的Proposal层则负责综合positive anchors和对应bounding box regression偏移量获取proposals，同时剔除太小和超出边界的proposals。</p>
-<p>所谓anchors，实际上就是一组由rpn/generate_anchors.py生成的矩形。直接运行作者demo中的generate_anchors.py可以得到以下输出：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[[ -84.  -40.   99.   55.]</span><br><span class="line"> [-176.  -88.  191.  103.]</span><br><span class="line"> [-360. -184.  375.  199.]</span><br><span class="line"> [ -56.  -56.   71.   71.]</span><br><span class="line"> [-120. -120.  135.  135.]</span><br><span class="line"> [-248. -248.  263.  263.]</span><br><span class="line"> [ -36.  -80.   51.   95.]</span><br><span class="line"> [ -80. -168.   95.  183.]</span><br><span class="line"> [-168. -344.  183.  359.]]</span><br></pre></td></tr></table></figure><br>其中每行的4个值$\left(x_{1}, y_{1}, x_{2}, y_{2}\right)$表矩形左上和右下角点坐标。9个矩形共有3种形状，长宽比为大约为width: height $\in\{1: 1,1: 2,2: 1\}$三种，如图。实际上通过anchors就引入了检测中常用到的多尺度方法。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/v2-7abead97efcc46a3ee5b030a2151643f_hd.jpg" alt></p>
+<p>所谓anchors，实际上就是一组由rpn/generate_anchors.py生成的矩形。直接运行作者demo中的generate_anchors.py可以得到以下输出：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[[ -84.  -40.   99.   55.]</span><br><span class="line"> [-176.  -88.  191.  103.]</span><br><span class="line"> [-360. -184.  375.  199.]</span><br><span class="line"> [ -56.  -56.   71.   71.]</span><br><span class="line"> [-120. -120.  135.  135.]</span><br><span class="line"> [-248. -248.  263.  263.]</span><br><span class="line"> [ -36.  -80.   51.   95.]</span><br><span class="line"> [ -80. -168.   95.  183.]</span><br><span class="line"> [-168. -344.  183.  359.]]</span><br></pre></td></tr></table></figure><br>其中每行的4个值$\left(x_{1}, y_{1}, x_{2}, y_{2}\right)$表矩形左上和右下角点坐标。9个矩形共有3种形状，长宽比为大约为width: height $\in\{1: 1,1: 2,2: 1\}$三种，如图。实际上通过anchors就引入了检测中常用到的多尺度方法。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/v2-7abead97efcc46a3ee5b030a2151643f_hd.jpg" alt></p>
 <p>注：关于上面的anchors size，其实是根据检测图像设置的。在python demo中，会把任意大小的输入图像reshape成800x600。再回头来看anchors的大小，anchors中长宽1:2中最大为352x704，长宽2:1中最大736x384，基本是cover了800x600的各个尺度和形状。</p>
 <p><strong>那么这9个anchors是做什么的呢？</strong>遍历Conv layers计算获得的feature maps，为每一个点都配备这9种anchors作为初始的检测框。这样做获得检测框很不准确，不用担心，后面还有2次bounding box regression可以修正检测框位置。</p>
 <p><strong>其实RPN最终就是在原图尺度上，设置了密密麻麻的候选Anchor。然后用cnn去判断哪些Anchor是里面有目标的positive anchor，哪些是没目标的negative anchor。所以，仅仅是个二分类而已！</strong></p>
@@ -837,388 +1158,323 @@ y=\left(t_{y} * h_{a}\right)-y_{a}</script><p>这个公式的理解为：当预�
 <li>视频中的检测（实时）</li>
 <li>信息融合检测</li>
 </ul>
-]]></content>
-      <categories>
-        <category>学习</category>
-      </categories>
-      <tags>
-        <tag>目标检测</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>网站说明</title>
-    <url>/2019/12/12/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2/</url>
-    <content><![CDATA[<p>这是我学习制作的第一个博客，主要用于记录研究生学习过程中所遇到的问题以及一些解决方法，顺便会分享一些实用教程，希望能对有需要的人给予帮助</p>
-]]></content>
-  </entry>
-  <entry>
-    <title>PyQt5与Opencv的小小融合</title>
-    <url>/2019/03/20/PyQt5%E4%B8%8EOpencv%E7%9A%84%E5%B0%8F%E5%B0%8F%E8%9E%8D%E5%90%88/</url>
-    <content><![CDATA[<h2 id="一些核心代码"><a href="#一些核心代码" class="headerlink" title="一些核心代码"></a><a id="more"></a>一些核心代码</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class myLabel(QLabel):</span><br><span class="line">    x0 &#x3D; 0</span><br><span class="line">    y0 &#x3D; 0</span><br><span class="line">    x1 &#x3D; 0</span><br><span class="line">    y1 &#x3D; 0</span><br><span class="line">    flag &#x3D; False</span><br><span class="line"></span><br><span class="line">    def mousePressEvent(self,event):</span><br><span class="line">        self.flag &#x3D; True</span><br><span class="line">        self.x0 &#x3D; event.x()</span><br><span class="line">        self.y0 &#x3D; event.y()</span><br><span class="line">    def mouseReleaseEvent(self,event):</span><br><span class="line">        self.flag &#x3D; False</span><br><span class="line"></span><br><span class="line">    def mouseMoveEvent(self,event):</span><br><span class="line">        if self.flag:</span><br><span class="line">            self.x1 &#x3D; event.x()</span><br><span class="line">            self.y1 &#x3D; event.y()</span><br><span class="line">            self.update()</span><br><span class="line">    def paintEvent(self, event):</span><br><span class="line">        super().paintEvent(event)</span><br><span class="line">        rect &#x3D;QRect(self.x0, self.y0, abs(self.x1-self.x0), abs(self.y1-self.y0))</span><br><span class="line">        painter &#x3D; QPainter(self)</span><br><span class="line">        painter.setPen(QPen(Qt.red,4,Qt.SolidLine))</span><br><span class="line">        painter.drawRect(rect)</span><br><span class="line"></span><br><span class="line">        pqscreen  &#x3D; QGuiApplication.primaryScreen()</span><br><span class="line">        pixmap2 &#x3D; pqscreen.grabWindow(self.winId(), self.x0, self.y0, abs(self.x1-self.x0), abs(self.y1-self.y0))</span><br><span class="line">        pixmap2.save(&#39;555.png&#39;)</span><br><span class="line">    </span><br><span class="line">class Example(QWidget):</span><br><span class="line">    def __init__(self):</span><br><span class="line">        super().__init__()</span><br><span class="line">        self.initUI()</span><br><span class="line">    def initUI(self):</span><br><span class="line">        self.resize(675, 300)</span><br><span class="line">        self.setWindowTitle(&#39;关注微信公众号：学点编程吧--opencv、PyQt5的小小融合&#39;)</span><br><span class="line"></span><br><span class="line">        self.lb &#x3D; myLabel(self)</span><br><span class="line">        self.lb.setGeometry(QRect(140, 30, 511, 241))</span><br><span class="line"></span><br><span class="line">        img &#x3D; cv2.imread(&#39;xxx.jpg&#39;)</span><br><span class="line">        height, width, bytesPerComponent &#x3D; img.shape</span><br><span class="line">        bytesPerLine &#x3D; 3 * width</span><br><span class="line">        cv2.cvtColor(img, cv2.COLOR_BGR2RGB, img)</span><br><span class="line">        QImg &#x3D; QImage(img.data, width, height, bytesPerLine, QImage.Format_RGB888)</span><br><span class="line">        pixmap &#x3D; QPixmap.fromImage(QImg)</span><br><span class="line"></span><br><span class="line">        self.lb.setPixmap(pixmap)</span><br><span class="line">        self.lb.setCursor(Qt.CrossCursor)</span><br><span class="line"></span><br><span class="line">        self.show()</span><br></pre></td></tr></table></figure>
-<h2 id="实现大体思路"><a href="#实现大体思路" class="headerlink" title="实现大体思路"></a>实现大体思路</h2><ul>
-<li>重新实现QLabel类，在类中重新实现了鼠标的点击、拖动、释放、以及绘画事件</li>
-<li>在窗体上新建了一个label标签，然后载入图片</li>
-<li>label标签载入的图像是由Opencv实现的</li>
-</ul>
-<h2 id="鼠标画矩形的思路"><a href="#鼠标画矩形的思路" class="headerlink" title="鼠标画矩形的思路"></a>鼠标画矩形的思路</h2><ul>
-<li>新建一个矩形是否完成标志flag，默认是Flase，表示未完成</li>
-<li>鼠标点击的时候，记录当前鼠标所在位置的坐标，flag标志置为True，表示开始画矩形了</li>
-<li>鼠标拖动的时候，因为flag为True，所以记录当前鼠标所在位置的坐标</li>
-<li>鼠标释放的时候，flag置为False，表示矩形画完了，准备画下一个了</li>
-</ul>
-<h2 id="代码讲解"><a href="#代码讲解" class="headerlink" title="代码讲解"></a>代码讲解</h2><h3 id="Opencv图像的转换"><a href="#Opencv图像的转换" class="headerlink" title="Opencv图像的转换"></a>Opencv图像的转换</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">img &#x3D; cv2.imread(&#39;xxx.jpg&#39;)</span><br><span class="line">height, width, bytesPerComponent &#x3D; img.shape</span><br><span class="line">bytesPerLine &#x3D; 3 * width</span><br><span class="line">cv2.cvtColor(img, cv2.COLOR_BGR2RGB, img)</span><br><span class="line">QImg &#x3D; QImage(img.data, width, height, bytesPerLine, QImage.Format_RGB888)</span><br><span class="line">pixmap &#x3D; QPixmap.fromImage(QImg)</span><br></pre></td></tr></table></figure>
-<p>这个就是Opencv和PyQt对象的转化了。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">img &#x3D; cv2.imread(&#39;xxx.jpg&#39;)</span><br></pre></td></tr></table></figure>
-<p>使用Opencv读取图像。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">height, width, bytesPerComponent &#x3D; img.shape</span><br></pre></td></tr></table></figure>
-<p>在OpenCV-Python绑定中，图像使用NumPy数组的属性(这就解释了为什么要更新numpy)来表示图像的尺寸和通道信息。此时如果我们输出img.shape，将得到(200, 360, 3)。最后的3表示这是一个RGB图像。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cv2.cvtColor(img, cv2.COLOR_BGR2RGB, img)</span><br></pre></td></tr></table></figure>
-<p>将图像从一个颜色空间转换为另一个颜色空间。<br>Python中的函数要求是这样的：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Python：cv2.cvtColor（src，code [，dst [，dstCn]]）→dst</span><br></pre></td></tr></table></figure>
-<p>参数：</p>
-<ol>
-<li>src - 输入图像：8位无符号，16位无符号（CV_16UC …）或单精度浮点数。</li>
-<li>dst - 输出与src相同大小和深度的图像。</li>
-<li>code - 颜色空间转换代码（请参阅下面的说明）。</li>
-<li>dstCn - 目标图像中的通道数量；如果参数是0，则通道的数量是从src和代码自动导出的。</li>
-</ol>
-<p>该函数将输入图像从一个颜色空间转换为另一个颜色空间。在从RGB颜色空间转换到RGB颜色空间的情况下，通道的顺序应明确指定（RGB或BGR）。请注意，OpenCV中的默认颜色格式通常被称为RGB，但实际上是BGR（字节相反）。因此，标准（24位）彩色图像中的第一个字节将是一个8位蓝色分量，第二个字节将是绿色，而第三个字节将是红色。第四，五，六字节将是第二个像素（蓝色，然后是绿色，然后是红色），依此类推。</p>
-<p>这里我们就是要求从Opencv的BGR图像转换成RGB图像了。为什么？因为要转换成PyQt5可以识别的啊！</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">bytesPerLine &#x3D; 3 * width</span><br><span class="line">QImg &#x3D; QImage(img.data, width, height, bytesPerLine, QImage.Format_RGB888)</span><br></pre></td></tr></table></figure>
-<p>QImage类提供了独立于硬件的图像表示形式，允许直接访问像素数据，并可用作绘画设备。Qt提供了四个类来处理图像数据：QImage，QPixmap，QBitmap和QPicture。QImage是为I/O设计和优化的，并且可以直接进行像素访问和操作，而QPixmap则是针对在屏幕上显示图像而设计和优化的。 </p>
-<p>QBitmap只是一个继承QPixmap的便利类，深度为1。最后，QPicture类是一个记录和重放QPainter命令的绘图设备。</p>
-<p>因为QImage是一个QPaintDevice子类，QPainter可以用来直接绘制图像。在QImage上使用QPainter时，可以在当前GUI线程之外的另一个线程中执行绘制。QImage提供了一系列功能，可用于获取有关图像的各种信息。也有几个功能，使图像转换。<br>详见官网介绍：<a href="https://doc.qt.io/qt-5/qimage.html" target="_blank" rel="noopener">QImage Class | Qt GUI 5.10</a></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">QImg &#x3D; QImage(img.data, width, height, bytesPerLine, QImage.Format_RGB888)</span><br></pre></td></tr></table></figure>
-<p>函数原型是：<strong>QImage(str, int, int, int, QImage.Format)</strong>，用给定的宽度，高度和格式构造一个使用现有内存缓冲区数据的图像。宽度和高度必须以像素指定。bytesPerLine指定每行的字节数。</p>
-<p><strong>这里有个疑问：为什么bytesPerLine = 3 * width？</strong><br>我的理解是：当1个像素占3个字节，此时图像为真彩色图像。</p>
-<p><strong>QImage.Format_RGB888</strong>表示的是图像存储使用8-8-8 24位RGB格式。当然还有更多的格式，详见QImage的官方介绍，限于篇幅这里不展开。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pixmap &#x3D; QPixmap.fromImage(QImg)</span><br></pre></td></tr></table></figure>
-<p>这个很好理解，就是想QImage对象转换成QPixmap对象，便于下步我们将Label标签中设置图像。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">self.lb.setPixmap(pixmap)</span><br></pre></td></tr></table></figure>
-<p>设置标签的图像信息。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">self.lb.setCursor(Qt.CrossCursor)</span><br></pre></td></tr></table></figure>
-<p>设置鼠标在QLabel对象中的样式，只是为了画画好看些而已，没其它的意思。除了这个十字架的，还有其它很多样式，如下图：<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/v2-cf7bf8978adbaa898f059207f52f3d5b_hd.jpg" alt></p>
-<h3 id="鼠标事件"><a href="#鼠标事件" class="headerlink" title="鼠标事件"></a>鼠标事件</h3><p>按照上文中我们介绍的思路，我们自定义了一个QLabel类myLabel，当然是继承了QLabel。然后我们用几个类变量记录鼠标的坐标和矩形是否完成的标志。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">def mousePressEvent(self,event):</span><br><span class="line">    self.flag &#x3D; True</span><br><span class="line">    self.x0 &#x3D; event.x()</span><br><span class="line">    self.y0 &#x3D; event.y()</span><br><span class="line"></span><br><span class="line">def mouseReleaseEvent(self,event):</span><br><span class="line">    self.flag &#x3D; False</span><br><span class="line"></span><br><span class="line">def mouseMoveEvent(self,event):</span><br><span class="line">    if self.flag:</span><br><span class="line">        self.x1 &#x3D; event.x()</span><br><span class="line">        self.y1 &#x3D; event.y()</span><br><span class="line">        self.update()</span><br></pre></td></tr></table></figure>
-<p>这里就是重载了鼠标产生的几个事件，是我们自定义的。分别记录了点击鼠标后初始的鼠标坐标，以及释放鼠标后的鼠标坐标。并在鼠标移动的时候更新UI。也就是我们上面所说的鼠标画矩形的思路。</p>
-<h3 id="画矩形"><a href="#画矩形" class="headerlink" title="画矩形"></a>画矩形</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">def paintEvent(self, event):</span><br><span class="line">    super().paintEvent(event)</span><br><span class="line">    rect &#x3D;QRect(self.x0, self.y0, abs(self.x1-self.x0), abs(self.y1-self.y0))</span><br><span class="line">    painter &#x3D; QPainter(self)</span><br><span class="line">    painter.setPen(QPen(Qt.red,4,Qt.SolidLine))</span><br><span class="line">    painter.drawRect(rect)</span><br><span class="line"></span><br><span class="line">    pqscreen  &#x3D; QGuiApplication.primaryScreen()</span><br><span class="line">    pixmap2 &#x3D; pqscreen.grabWindow(self.winId(), self.x0, self.y0, abs(self.x1-self.x0), abs(self.y1-self.y0))</span><br><span class="line">    pixmap2.save(&#39;555.png&#39;)</span><br></pre></td></tr></table></figure>
-<p>这个是关键点啊！</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">super().paintEvent(event)</span><br></pre></td></tr></table></figure>
-<p>调用父类的paintEvent()，这个是为了显示你设置的效果。否则会是一片空白。大家可以试试注释这句话，看看效果啊！</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">rect &#x3D;QRect(self.x0, self.y0, abs(self.x1-self.x0), abs(self.y1-self.y0))</span><br></pre></td></tr></table></figure>
-<p>QRect类使用整数精度在平面中定义一个矩形。矩形通常表示为左上角和大小。QRect的大小（宽度和高度）始终等同于构成其渲染基础的数学矩形。QRect可以用一组左，上，宽和高整数，或者从QPoint和QSize构成。以下代码创建两个相同的矩形。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">QRect(100, 200, 11, 16)</span><br><span class="line">QRect(QPoint(100, 200), QSize(11, 16))</span><br><span class="line">painter &#x3D; QPainter(self)</span><br><span class="line">painter.setPen(QPen(Qt.red,4,Qt.SolidLine))</span><br><span class="line">painter.drawRect(rect)</span><br></pre></td></tr></table></figure>
-<p>构建一个QPainter对象，设置它的画笔，然后画一个矩形。貌似感觉好简单！^_^”</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pqscreen  &#x3D; QGuiApplication.primaryScreen()</span><br><span class="line">pixmap2 &#x3D; pqscreen.grabWindow(self.winId(), self.x0, self.y0, abs(self.x1-self.x0), abs(self.y1-self.y0))</span><br><span class="line">pixmap2.save(&#39;555.png&#39;)</span><br></pre></td></tr></table></figure>
-<p>截屏的原理呢，主要还是运用QScreen类中的grabWindow方法。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">QScreen.grabWindow(WId window, int x &#x3D; 0, int y &#x3D; 0, int width &#x3D; -1, int height &#x3D; -1)</span><br></pre></td></tr></table></figure>
-<p>大致意思是创建并返回通过抓取由QRect（x，y，width，height）限制的给定窗口构造的像素图。</p>
-<p>参数（x，y）指定窗口中的偏移量，而（宽度，高度）指定要复制的区域。如果宽度为负数，则该函数将所有内容复制到窗口的右边界。如果高度为负数，则该函数将所有内容复制到窗口的底部。</p>
-<p>窗口系统标识符（WId）可以使用QWidget.winId（）函数进行检索。grabWindow（）函数从屏幕抓取像素，而不是从窗口抓取像素，即，如果有另一个窗口部分或全部覆盖抓取的像素，则也会从上面的窗口获取像素。鼠标光标一般不会被抓取。详见官网介绍：QScreen Class | Qt GUI 5.10</p>
-<p>由于QScreen类无构造函数，所以我们使用QGuiApplication.primaryScreen()创建了一个Qscreen类对象。最后使用pixmap2.save(‘555.png’)，保存具体的截图。</p>
-<p>如果你想保存的图片没有红框，可以参考这里：<br><a href="http://www.xdbcb8.com/forum/topic/%e3%80%8apyqt5%e4%b8%8eopencv%e7%9a%84%e5%b0%8f%e5%b0%8f%e8%9e%8d%e5%90%88%e3%80%8b%e8%bf%99%e7%af%87%e6%96%87%e7%ab%a0%e4%b8%ad%e5%a6%82%e4%bd%95%e5%ae%9e%e7%8e%b0%e4%bf%9d%e5%ad%98%e4%b8%8b%e6%9d%a5" target="_blank" rel="noopener">《pyqt5与opencv的小小融合》这篇文章中如何实现保存下来</a></p>
-]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
-        <tag>Python</tag>
-        <tag>Opencv</tag>
-        <tag>PyQt5</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Python新环境下快速安装依赖包的小技巧</title>
-    <url>/2019/03/19/Python%E6%96%B0%E7%8E%AF%E5%A2%83%E4%B8%8B%E5%BF%AB%E9%80%9F%E5%AE%89%E8%A3%85%E4%BE%9D%E8%B5%96%E5%8C%85%E7%9A%84%E5%B0%8F%E6%8A%80%E5%B7%A7/</url>
-    <content><![CDATA[<p>当你新创一个Python环境时，若还用pip一个个装你所需要的库，明显效率十分低下。这里有个小技巧，你可以从已配置好的旧环境中，导出一个requirements.txt 文件，用于记录所有依赖包及其精确的版本号。以便新环境部署。</p>
-<a id="more"></a> 
-<p>在旧环境中执行以下命令，生成requirements.txt文件：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip freeze &gt; requirements.txt</span><br></pre></td></tr></table></figure>
-<p>requirements.txt中的内容类似如下，记录了你旧有环境的依赖包及其精确的版本号：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">appdirs&#x3D;&#x3D;1.4.3</span><br><span class="line">backports.functools-lru-cache&#x3D;&#x3D;1.5</span><br><span class="line">beautifulsoup4&#x3D;&#x3D;4.5.3</span><br><span class="line">bs4&#x3D;&#x3D;0.0.1</span><br><span class="line">cycler&#x3D;&#x3D;0.10.0</span><br><span class="line">kiwisolver&#x3D;&#x3D;1.0.1</span><br><span class="line">lxml&#x3D;&#x3D;3.7.3</span><br><span class="line">matplotlib&#x3D;&#x3D;2.2.0</span><br><span class="line">numpy&#x3D;&#x3D;1.14.1</span><br><span class="line">pandas&#x3D;&#x3D;0.22.0</span><br><span class="line">pyparsing&#x3D;&#x3D;2.2.0</span><br><span class="line">python-dateutil&#x3D;&#x3D;2.6.1</span><br><span class="line">pytz&#x3D;&#x3D;2018.3</span><br><span class="line">six&#x3D;&#x3D;1.11.0</span><br><span class="line">virtualenv&#x3D;&#x3D;15.1.0</span><br></pre></td></tr></table></figure>
-<p>这时你可以把requirements.txt拷入新配置的Python目录下，执行以下命令：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip install -r requirements.txt</span><br></pre></td></tr></table></figure>
-<p>则会按照requirements.txt中所写的依赖包和版本依序进行安装。<br>注意：<br>若迁入的系统不同或Python版本不同，在安装过程中可能会因为找不到相应的依赖包版本而报错<br>这时你可以进入requirements.txt把报错的依赖包后的版本信息去掉，保存，重新执行命令即可，它会自动下载匹配的最新版本。<br>也可以把==改成&lt;=，代表它会搜索不大于此版本的最高版本进行安装。<br>由于pip下载源在国外，若无合适的VPN，此期间下载过程会十分漫长，这里提供几个常用的国内镜像源：</p>
-<ul>
-<li>清华大学 <a href="https://pypi.tuna.tsinghua.edu.cn/simple/" target="_blank" rel="noopener">https://pypi.tuna.tsinghua.edu.cn/simple/</a></li>
-<li>中国科学技术大学 <a href="http://pypi.mirrors.ustc.edu.cn/simple/" target="_blank" rel="noopener">http://pypi.mirrors.ustc.edu.cn/simple/</a></li>
-<li>阿里云 <a href="http://mirrors.aliyun.com/pypi/simple/" target="_blank" rel="noopener">http://mirrors.aliyun.com/pypi/simple/</a></li>
-<li>豆瓣 <a href="http://pypi.douban.com/simple/" target="_blank" rel="noopener">http://pypi.douban.com/simple/</a></li>
-<li>华中科技大学 <a href="http://pypi.hustunique.com/" target="_blank" rel="noopener">http://pypi.hustunique.com/</a></li>
-</ul>
-<p>可以在使用pip的时候，加上参数-i和镜像地址，指定下载源，加速下载过程，如：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip install -r requirements.txt -i https:&#x2F;&#x2F;pypi.tuna.tsinghua.edu.cn&#x2F;simple</span><br></pre></td></tr></table></figure>
 
-]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
-        <tag>Python</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Permmision denied解决方法</title>
-    <url>/2019/03/19/Permmision%20denied%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/</url>
-    <content><![CDATA[<p>这是因为要管理员权限的，而ubuntu又不想给普通用户赋予管理员权限。所以这里开启root账号</p>
-<h2 id="首先设置-root-密码"><a href="#首先设置-root-密码" class="headerlink" title=" 首先设置 root 密码"></a><a id="more"></a> 首先设置 root 密码</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo passwd</span><br></pre></td></tr></table></figure>
-<p>会出现以下画面：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[sudo] password for luban:                        &#x2F;&#x2F;输入当前普通用户的密码</span><br><span class="line"></span><br><span class="line">Enter new UNIX password:                          &#x2F;&#x2F;给root设置密码</span><br><span class="line"></span><br><span class="line">Retype new UNIX password:                         &#x2F;&#x2F;确认输入密码</span><br><span class="line"></span><br><span class="line">passwd: password updated successfully</span><br></pre></td></tr></table></figure>
-<h2 id="开启root"><a href="#开启root" class="headerlink" title="开启root"></a>开启root</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">su root</span><br></pre></td></tr></table></figure>
-<h2 id="修改文件权限"><a href="#修改文件权限" class="headerlink" title="修改文件权限"></a>修改文件权限</h2><p>为了获得执行权限，借助chmod指令修改文件权限即可。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">chmod 777 文件夹或文件路径</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
-        <tag>Ubuntu</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Ubuntu下如何添加新用户并增加管理员权限</title>
-    <url>/2019/03/19/Ubuntu%E4%B8%8B%E5%A6%82%E4%BD%95%E6%B7%BB%E5%8A%A0%E6%96%B0%E7%94%A8%E6%88%B7%E5%B9%B6%E5%A2%9E%E5%8A%A0%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/</url>
-    <content><![CDATA[<h2 id="添加新用户"><a href="#添加新用户" class="headerlink" title=" 添加新用户"></a><a id="more"></a> 添加新用户</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo adduser xxx #xxx为用户名</span><br></pre></td></tr></table></figure>
-<p>输入密码后，出现如下信息：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">正在添加用户&quot;xxx&quot;…</span><br><span class="line">正在添加新组&quot;xxx&quot; (1003)…</span><br><span class="line">正在添加新用户&quot;xxx&quot; (1003) 到组&quot;xxx&quot;…</span><br><span class="line">创建主目录&quot;&#x2F;home&#x2F;xxx&quot;…</span><br><span class="line">正在从&quot;&#x2F;etc&#x2F;skel&quot;复制文件…</span><br><span class="line">输入新的 UNIX 密码：</span><br><span class="line">重新输入新的 UNIX 密码：</span><br><span class="line">passwd：已成功更新密码</span><br><span class="line">正在改变 xxx 的用户信息</span><br><span class="line">请输入新值，或直接敲回车以使用默认值</span><br><span class="line">        全名 [ ]：</span><br><span class="line">        房间号码 [ ]：</span><br><span class="line">        工作电话 [ ]：</span><br><span class="line">        家庭电话 [ ]：</span><br><span class="line">        其它 [ ]：</span><br><span class="line">这些信息是否正确？ [Y&#x2F;n] y</span><br></pre></td></tr></table></figure>
-<p>到这里，新用户添加成功。</p>
-<h2 id="增加管理员权限"><a href="#增加管理员权限" class="headerlink" title="增加管理员权限"></a>增加管理员权限</h2><p>需要让此用户有root权限，执行命令：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo nano &#x2F;etc&#x2F;sudoers</span><br></pre></td></tr></table></figure>
-<p>往下拉，修改文件并添加：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">xxx ALL&#x3D;(ALL：ALL) ALL #xxx为你之前所创的用户名</span><br></pre></td></tr></table></figure>
-<p>添加完成按下Ctrl + X保存并退出，再次按下Enter,完成<br>现在你可以点击右上角，看到你新创的用户，点击并切换了！</p>
-]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
-        <tag>Ubuntu</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Ubuntu下安装Pycharm</title>
-    <url>/2019/03/19/Ubuntu%E4%B8%8B%E5%AE%89%E8%A3%85Pycharm/</url>
-    <content><![CDATA[<h2 id="下载"><a href="#下载" class="headerlink" title="下载"></a><a id="more"></a>下载</h2><p>有社区版和专业版，专业版需要激活，社区版免费，我下载的是社区版。<br><a href="https://www.jetbrains.com/pycharm/download/#section=linux" target="_blank" rel="noopener">官方下载</a><br><a href="https://www.jianguoyun.com/p/DfZJG3QQlZ_3Bhj8mrEC" target="_blank" rel="noopener">网盘下载</a></p>
-<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>进入download目录，对下载好的Pycharm压缩包进行解压操作，选中文件右键提取到此处即可。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D1664510513%2C942693123%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt><br>进入解压后的Pycharm文件夹，进入bin目录，可以看到很多文件，其中有一个文件叫做pycharm.sh。也就是下图中所选中的文件：<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D101055722%2C4258535600%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt><br>此时在bin文件夹下右键打开终端，输入运行命令, 执行Pycharm程序</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.&#x2F;pycharm.sh</span><br></pre></td></tr></table></figure>
-<p>如果提示没有权限，大家可以添加sudo命令进行操作：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo .&#x2F;pycharm.sh</span><br></pre></td></tr></table></figure>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D805484803%2C1629350165%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt><br>大家点击OK即可进入下一步操作，根据提示的内容进行勾选同意协议，然后点击continue进入下一步，大家可以点击don’t send进入下一步，选择喜欢的界面风格，然后再次点击next进入下一步，直到提示start启动程序。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D227808303%2C3066408894%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D22323540%2C1357101677%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D1914658415%2C2906990210%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt><br>为了方便以后的使用，我们可以将Pycharm的图标（快捷键）锁定到启动器。之后不用再去在终端中启动Pycharm了，直接点击图标启动即可。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D1149108563%2C3867497858%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt></p>
-]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
-        <tag>Python</tag>
-        <tag>Ubuntu</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Ubuntu 16.04下配置GPU版CUDA和cuDNN</title>
-    <url>/2019/03/19/Ubuntu-16.04%E4%B8%8B%E9%85%8D%E7%BD%AEGPU%E7%89%88CUDA%E5%92%8CcuDNN/</url>
-    <content><![CDATA[<h2 id><a href="#" class="headerlink" title></a><a id="more"></a></h2><p>先介绍下我自己配置的环境</p>
-<ul>
-<li>Ubuntu 16.04</li>
-<li>GTX2080ti显卡</li>
-<li>NVIDIA 418.3</li>
-<li>CUDA 10.0</li>
-<li>cuDNN 7.6.2</li>
-</ul>
-<p>以下教程针对从零开始的用户，若系统中已装有CUDA和cuDNN，却在当前用户下无法使用，请<a href="#添加环境变量">添加环境变量</a></p>
-<h2 id="安装NVIDIA显卡驱动"><a href="#安装NVIDIA显卡驱动" class="headerlink" title="安装NVIDIA显卡驱动"></a>安装NVIDIA显卡驱动</h2><p>1.先在<a href="https://www.nvidia.cn/Download/index.aspx?lang=cn" target="_blank" rel="noopener">NVIDIA官网</a>上下载对应的驱动程序，可根据自己的GPU的型号下载相应的.run文件<br>例如NVIDIA-Linux-x86_64-3xx.xx.run形式的文件名</p>
-<p>2.禁用开源nouveau驱动<strong>（非常重要）</strong><br>Ubuntu系统集成的显卡驱动程序是nouveau，它是第三方为NVIDIA开发的开源驱动，我们需要先将其屏蔽才能安装NVIDIA官方驱动。<br>将驱动添加到黑名单blacklist.conf中，但是由于该文件的属性不允许修改。所以需要先修改文件属性。<br>查看属性</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo ls -lh &#x2F;etc&#x2F;modprobe.d&#x2F;blacklist.conf</span><br></pre></td></tr></table></figure>
-<p>修改属性</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo chmod 666 &#x2F;etc&#x2F;modprobe.d&#x2F;blacklist.conf</span><br></pre></td></tr></table></figure>
-<p>用gedit编辑器打开</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo gedit &#x2F;etc&#x2F;modprobe.d&#x2F;blacklist.conf</span><br></pre></td></tr></table></figure>
-<p>在该文件后添加一下几行：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">blacklist vga16fb</span><br><span class="line">blacklist nouveau</span><br><span class="line">blacklist rivafb</span><br><span class="line">blacklist rivatv</span><br><span class="line">blacklist nvidiafb</span><br></pre></td></tr></table></figure>
-<p>3.开始安装<br>先按Ctrl + Alt + F1到控制台，关闭当前图形环境</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo service lightdm stop</span><br></pre></td></tr></table></figure>
-<p>再安装驱动程序</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo chmod a+x NVIDIA-Linux-x86_64-xxx.run</span><br><span class="line">sudo .&#x2F;NVIDIA-Linux-x86_64-xxx.run -no-x-check -no-nouveau-check -no-opengl-files</span><br></pre></td></tr></table></figure>
-<p>最后重新启动图形环境</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo service lightdm start</span><br></pre></td></tr></table></figure>
-<p>在终端里输入：nvidia-smi ，输出以下图片的代码则安装成功<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/CUDA%26cuDNN/2019051413224071.png" alt></p>
-<h2 id="cuda-10-0安装"><a href="#cuda-10-0安装" class="headerlink" title="cuda 10.0安装"></a>cuda 10.0安装</h2><p><a href="https://developer.nvidia.com/cuda-toolkit-archive" target="_blank" rel="noopener">官方下载</a><br><a href="https://pan.baidu.com/s/1piTbzIIL3wTx1dCeUDDiOw" target="_blank" rel="noopener">网盘下载</a> 提取码: aarn</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo chmod a+x cuda_10.0.130_410.48_linux.run &#x2F;&#x2F; 获取权限</span><br><span class="line">sudo sh cuda_10.0.130_410.48_linux.run --tmpdir&#x3D;&#x2F;home&#x2F;max&#x2F;temp</span><br></pre></td></tr></table></figure>
-<p>这里加 –tmpdir 主要是直接运行后，会提示空间不足的问题<br>接下来进入英文选择界面按住空格键可以快速浏览<br>在安装过程中选项选择：<br>accept #同意安装<br>n #不安装Driver，因为已安装驱动<strong>（这里需要强调一下）</strong><br>y #安装CUDA Toolkit<br>#安装到默认目录<br>y #创建安装目录的软链接<br>n #不复制Samples，因为在安装目录下有/samples</p>
-<h2 id="添加环境变量"><a href="#添加环境变量" class="headerlink" title="添加环境变量"></a>添加环境变量</h2><p>home文件下 ctrl+H显示隐藏文件 打开 .bashrc文件在最后添加</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">export PATH&#x3D;&#x2F;usr&#x2F;local&#x2F;cuda-10.0&#x2F;bin$&#123;PATH:+:$&#123;PATH&#125;&#125;</span><br><span class="line">export LD_LIBRARY_PATH&#x3D;&#x2F;usr&#x2F;local&#x2F;cuda-10.0&#x2F;lib64$&#123;LD_LIBRARY_PATH:+:$&#123;LD_LIBRARY_PATH&#125;&#125;</span><br></pre></td></tr></table></figure>
-<p>终端运行如下命令，保存操作</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">source ~&#x2F;.bashrc</span><br></pre></td></tr></table></figure>
-<p>检查cuda是否安装成功</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">nvcc -V</span><br><span class="line">nvcc --version</span><br></pre></td></tr></table></figure>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/CUDA%26cuDNN/20190514132130343.png" alt></p>
-<h2 id="cuDnn-10-0安装"><a href="#cuDnn-10-0安装" class="headerlink" title="cuDnn 10.0安装"></a>cuDnn 10.0安装</h2><p><a href="https://developer.nvidia.com/rdp/cudnn-archive" target="_blank" rel="noopener">官方下载</a><br><a href="https://www.jianguoyun.com/p/DdS0_A4QlZ_3Bhjw8LEC" target="_blank" rel="noopener">网盘下载</a><br>注意：需跟CUDA版本对应<br>切换到下载目录进行解压：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo tar -zxvf .&#x2F;cudnn-10.0-linux-x64-xxx.tgz</span><br></pre></td></tr></table></figure>
-<p>解压下载的文件，可以看到cuda文件夹，在当前目录打开终端，执行如下命令：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo cp cuda&#x2F;include&#x2F;cudnn.h &#x2F;usr&#x2F;local&#x2F;cuda&#x2F;include&#x2F;</span><br><span class="line"> </span><br><span class="line">sudo cp cuda&#x2F;lib64&#x2F;libcudnn* &#x2F;usr&#x2F;local&#x2F;cuda&#x2F;lib64&#x2F;</span><br><span class="line"> </span><br><span class="line">sudo chmod a+r &#x2F;usr&#x2F;local&#x2F;cuda&#x2F;include&#x2F;cudnn.h</span><br><span class="line"> </span><br><span class="line">sudo chmod a+r &#x2F;usr&#x2F;local&#x2F;cuda&#x2F;lib64&#x2F;libcudnn*</span><br></pre></td></tr></table></figure>
-<p>在终端输入</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cat &#x2F;usr&#x2F;local&#x2F;cuda&#x2F;include&#x2F;cudnn.h | grep CUDNN_MAJOR -A 2</span><br></pre></td></tr></table></figure>
-<p>如果出现下图所示版本信息，说明安装成功<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/CUDA%26cuDNN/20180815114007852.png" alt></p>
-]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
-        <tag>Python</tag>
-        <tag>Ubuntu</tag>
-        <tag>CUDA</tag>
-        <tag>cuDNN</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Ubuntu下安装更新pip</title>
-    <url>/2019/03/19/Ubuntu%E4%B8%8B%E5%AE%89%E8%A3%85%E6%9B%B4%E6%96%B0pip/</url>
-    <content><![CDATA[<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a><a id="more"></a>安装</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt install python-pip</span><br></pre></td></tr></table></figure>
-<p>若同时装有Python2、Python3上条命令装的是pip2，若还需装pip3，则再执行以下命令</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt install python3-pip</span><br></pre></td></tr></table></figure>
-<h2 id="更新"><a href="#更新" class="headerlink" title="更新"></a>更新</h2><p>安装成功后进行更新：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo pip install --upgrade pip</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo pip3 install --upgrade pip</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
-        <tag>Python</tag>
-        <tag>Ubuntu</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Ubuntu下如何安装搜狗输入法</title>
-    <url>/2019/03/19/sougou/</url>
-    <content><![CDATA[<h2 id="Ubuntu系统配置"><a href="#Ubuntu系统配置" class="headerlink" title=" Ubuntu系统配置"></a><a id="more"></a> Ubuntu系统配置</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">system settings-&gt;language support-&gt;install&#x2F;remove languages</span><br></pre></td></tr></table></figure>
-<p>在弹出的菜单中选择Chinese(simplified),点击apply<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/sougou/20180729142927736.png" alt><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/sougou/20180729142927712.png" alt></p>
-<h2 id="配置输入法框架"><a href="#配置输入法框架" class="headerlink" title="配置输入法框架"></a>配置输入法框架</h2><p>搜狗输入法是建立在fcitx框架之上的，所以要将输入法框架选择为fictx<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/sougou/20180729142927666.png" alt><br>注意：如果没有fcitx选项，那么你就需要安装fcitx框架之后在进行配置，安装方法如下：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo add-apt-repository ppa:fcitx-team&#x2F;nightly   &#x2F;&#x2F;添加FCITX仓库</span><br><span class="line"></span><br><span class="line">sudo apt-get update                              &#x2F;&#x2F;更新仓库</span><br><span class="line"></span><br><span class="line">sudo apt-get install fcitx                       &#x2F;&#x2F;安装fcitx输入法框架</span><br></pre></td></tr></table></figure>
-<p>配置好输入法框架之后，重启ubuntu系统。重启之后如果配置成功，在任务栏的右上角会出现fcitx的设置选项（一个小键盘图标）<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/sougou/20180729142927651.png" alt></p>
-<h2 id="去搜狗官网下载输入法for-Linux"><a href="#去搜狗官网下载输入法for-Linux" class="headerlink" title="去搜狗官网下载输入法for Linux"></a>去搜狗官网下载输入法for Linux</h2><p><a href="https://pinyin.sogou.com/linux/" target="_blank" rel="noopener">官方下载</a><br><a href="https://www.jianguoyun.com/p/DeShNo0QlZ_3Bhic5rAC" target="_blank" rel="noopener">网盘下载</a><br>下载完成之后，在download目录下找到下载的文件，双击安装即可，点击install即可<br>或者在终端的命令窗口中输入如下的指令安装：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo dpkg -i 安装包名称.deb</span><br></pre></td></tr></table></figure>
-<p>如果在安装过程中出现相关依赖文件的错误。则需要先安装其依赖的软件包<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/sougou/Snipaste_2019-12-13_14-33-14.jpg" alt><br>在终端窗口来执行以下命令，安装缺少的依赖文件:</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt-get -f install</span><br></pre></td></tr></table></figure>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/sougou/Snipaste_2019-12-13_14-33-49.jpg" alt><br>安装完成后，首先打开右上角系统设置，选择第一行的最后一个选项”Text Entry“，点击左下角的+号，在打开的窗口中找到搜狗输入法Sogou pinyin点击Add添加进去<br>仅显示当前语言一定要去掉那个勾，才可以找到搜狗输入法，然后添加就是<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/sougou/2019050512074094.png" alt><br>这时就可以在右上方小键盘选择搜狗输入法了！</p>
-]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
-        <tag>Ubuntu</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Ubuntu16.04下Tensorflow-gpu安装</title>
-    <url>/2019/03/19/Ubuntu16.04%E4%B8%8BTensorflow-gpu%E5%AE%89%E8%A3%85/</url>
-    <content><![CDATA[<p>在开始之前，请先确定安装好显卡驱动、CUDA、cuDNN，可以参考我的<a href="https://qiyuan-z.github.io/2019/03/19/Ubuntu-16.04下配置GPU版CUDA和cuDNN/">另一篇博客</a></p>
-<a id="more"></a>
-<p>1.安装Numpy<br>推荐安装1.16.0版本，若之前已安装，请先卸载</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip uninstall numpy</span><br></pre></td></tr></table></figure>
-<p>然后执行安装</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip install numpy&#x3D;&#x3D;1.16.0</span><br></pre></td></tr></table></figure>
-<p>2.安装Tensorflow-gpu<br>推荐安装1.14.0版本</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip install tensorflow-gpu&#x3D;&#x3D;1.14.0</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
-        <tag>Python</tag>
-        <tag>Ubuntu</tag>
-        <tag>Tensorflow</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Ubuntu下virtualenv的使用与pycharm的基本配置</title>
-    <url>/2019/03/19/Ubuntu%E4%B8%8Bvirtualenv%E7%9A%84%E4%BD%BF%E7%94%A8%E4%B8%8Epycharm%E7%9A%84%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE/</url>
-    <content><![CDATA[<h2 id="安装virtualenv"><a href="#安装virtualenv" class="headerlink" title="安装virtualenv"></a><a id="more"></a>安装virtualenv</h2><p>virtualenv是 Python 多版本管理的利器，不同版本的开发调试全靠它了（没有多版本尽量也装上吧）</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo pip install virtualenv</span><br></pre></td></tr></table></figure>
-<h2 id="创建一个virtualenv环境"><a href="#创建一个virtualenv环境" class="headerlink" title="创建一个virtualenv环境"></a>创建一个virtualenv环境</h2><p>使用如下语句：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">virtualenv + 路径</span><br></pre></td></tr></table></figure>
-<p>以这种方式创建环境将不包含系统的python包，新的环境里面只有pip、setuptools和wheel这些包，则许多包要用pip重新安装。</p>
-<p>若需指定python版本：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">virtualenv –p python3 + 路径</span><br></pre></td></tr></table></figure>
-<h2 id="激活virtualenv环境"><a href="#激活virtualenv环境" class="headerlink" title="激活virtualenv环境"></a>激活virtualenv环境</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">source 路径&#x2F;bin&#x2F;activate</span><br></pre></td></tr></table></figure>
-<p>也可以直接进到所创环境的bin目录中右键终端，运行source activate<br>注意：激活只对当前终端有效，如果新打开了一个终端的话，重新运行上面的命令。 激活后终端前面会多一个(**)的东西，提示当前virtualenv的名称。</p>
-<p>激活后可以在当前终端通过python 文件名.py的方式运行python脚本，如果脚本中使用了当前环境中没有的包，将会报错。</p>
-<p>可以在激活环境后使用pip安装对应的包。<strong>注意不要使用sudo</strong>，否则包会安装到系统当中去，而不是当前的virtualenv目录中。</p>
-<h2 id="退出virtualenv环境"><a href="#退出virtualenv环境" class="headerlink" title="退出virtualenv环境"></a>退出virtualenv环境</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">deactivate</span><br></pre></td></tr></table></figure>
-<p>也可直接关闭当前终端。</p>
-<h2 id="删除virtualenv环境"><a href="#删除virtualenv环境" class="headerlink" title="删除virtualenv环境"></a>删除virtualenv环境</h2><p>直接删除对应目录即可删除virtualenv环境，不会对系统产生任何影响，所以在virtualenv中可以放心操作。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">rm -rvf  + 路径</span><br></pre></td></tr></table></figure>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/virtualenv/5aafafdaa2aca.webp" alt></p>
-<h2 id="Pycharm配置"><a href="#Pycharm配置" class="headerlink" title="Pycharm配置"></a>Pycharm配置</h2><p>新建项目<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/virtualenv/5aafb0d3811f2.webp" alt></p>
-<ul>
-<li><p>New environment using Virtualenv: 将在项目的目录下创建一个virtualenv环境，然后使用它当作当前项目的python解释器，默认不包含系统的python包。<br>相当于： virtualenv + 路径</p>
-</li>
-<li><p>location:为新建的环境的位置，默认为当前工程下的venv。</p>
-</li>
-<li><p>Base interpreter:基于系统中的python版本，新建的环境中的python版本与此一致，可以选择python2或者python3, 取决于项目的需要，相当于virtualenv –p python版本 +路径。<br>勾选Inherit global site-packages，包含系统的python包，相当于： virtualenv –system-site-packages + 路径<br>勾选Make available to all projects，下次新建项目的时候会在Existing interpreter中找到这个环境， 可以重复使用这个环境。</p>
-</li>
-<li><p>Existing interpreter：使用已有的python环境，点击后会出现后面的设置会出现这个界面，分别是virtualenv, conda和系统的python环境。可以选择已有的virtualenv环境，或者直接使用系统的python解释器。 Conda是anaconda(一个科学计算的python发行版)的包管理器，也可以用来建立python环境。</p>
-</li>
-</ul>
-<p>会发现生成的项目中有一个叫venv的文件夹，它实质上和直接用virtualenv创建的一样。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/virtualenv/5aafb2bd99f29.webp" alt><br>可以用virtualenv的管理方法管理它，比如安装numpy，安装之后可以在pycharm正常使用。（注意在virtualenv中<strong>不要使用sudo</strong>）<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/virtualenv/5aafb2bdb011c.webp" alt><br>也可以在pycharm中使用 file-settings-project-project interpreter中管理环境中的python包，可以对该环境下的python包进行删除和安装。</p>
-]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
-        <tag>Python</tag>
-        <tag>Ubuntu</tag>
-        <tag>virtualenv</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>矩阵分析（刘丁酉）课后答案及历年试卷</title>
-    <url>/2019/03/19/%E7%9F%A9%E9%98%B5%E5%88%86%E6%9E%90%EF%BC%88%E5%88%98%E4%B8%81%E9%85%89%EF%BC%89%E8%AF%BE%E5%90%8E%E7%AD%94%E6%A1%88%E5%8F%8A%E5%8E%86%E5%B9%B4%E8%AF%95%E5%8D%B7/</url>
-    <content><![CDATA[<p>考虑到刘丁酉版本只有部分习题的解答，还不够详细，于是我在学习过程中，将每道习题做了一遍，并记录了下来，希望能对学习矩阵分析的同学给予一定的参考。由于本人仍在学习阶段，难免答案会有做错的地方，希望大家不要尽信答案，只当作一个思路上的参考来看。顺便附赠历年的卷子与答案（看了一遍历年的卷子，答案有错!@-@）</p>
-<a id="more"></a>  
-<p>下载地址：<a href="https://www.jianguoyun.com/p/DQe8_9kQlZ_3Bhid4LYC" target="_blank" rel="noopener">点击下载</a></p>
-]]></content>
-      <categories>
-        <category>资源分享</category>
-      </categories>
-      <tags>
-        <tag>矩阵分析</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>如何解决出现 unable to resolve host 问题</title>
-    <url>/2019/03/19/%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3%E5%87%BA%E7%8E%B0-unable-to-resolve-host-%E9%97%AE%E9%A2%98/</url>
-    <content><![CDATA[<h2 id><a href="#" class="headerlink" title></a><a id="more"></a></h2><p>Ubuntu环境，有时候执行sudo 就出现这个警告讯息: </p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo: unable to resolve host abc</span><br></pre></td></tr></table></figure>
-<p>虽然sudo 还是可以正常执行, 但是看到这样的通知还是会觉得烦，怎么去除这个警告呢？</p>
-<p>这个警告是因为系统找不到一个叫做 abc的hostname </p>
-<p>通过 修改 /etc/hosts 设定, 可以解决</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">nano &#x2F;etc&#x2F;hostname</span><br></pre></td></tr></table></figure>
+    </div>
 
-<p>在127.0.0.1 localhost 后面加上主机名称(hostname) 即可:</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">127.0.0.1 localhost abc</span><br></pre></td></tr></table></figure>
-<p>问题解决！</p>
-]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
-        <tag>Ubuntu</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>ubuntu下 teamviewer的安装方法</title>
-    <url>/2019/03/19/ubuntu%E4%B8%8B-teamviewer%E7%9A%84%E5%AE%89%E8%A3%85%E6%96%B9%E6%B3%95/</url>
-    <content><![CDATA[<h2 id="去官网下载安装包"><a href="#去官网下载安装包" class="headerlink" title=" 去官网下载安装包"></a><a id="more"></a> 去官网下载安装包</h2><p><a href="https://www.teamviewer.com/zhcn/download/linux/" target="_blank" rel="noopener">官网链接</a><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/teamviewer/20180128120840387.png" alt></p>
-<h2 id="在命令行进行安装"><a href="#在命令行进行安装" class="headerlink" title="在命令行进行安装"></a>在命令行进行安装</h2><p>（在下载文件夹下打开命令行，输入：sudo dpkg -i  teamviewer_13.0.6634_amd64.deb）（teamviewer_13.0.6634_amd64.deb为安装包名，根据自己安装包）</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo dpkg -i  teamviewer_13.0.6634_amd64.deb</span><br></pre></td></tr></table></figure>
-<h2 id="安装出错，一行语句搞定依赖关系"><a href="#安装出错，一行语句搞定依赖关系" class="headerlink" title="安装出错，一行语句搞定依赖关系"></a>安装出错，一行语句搞定依赖关系</h2><p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/teamviewer/20180128120923823.png" alt></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt-get install -f</span><br></pre></td></tr></table></figure>
-<h2 id="再次安装"><a href="#再次安装" class="headerlink" title="再次安装"></a>再次安装</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo dpkg -i  teamviewer_13.0.6634_amd64.deb</span><br></pre></td></tr></table></figure>
-<h2 id="打开teamview"><a href="#打开teamview" class="headerlink" title="打开teamview"></a>打开teamview</h2><p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/teamviewer/20180128121156354.png" alt><br>或用命令行启动：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo teamviewer --daemon start</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
-        <tag>Ubuntu</tag>
-        <tag>Teamviewer</tag>
-      </tags>
-  </entry>
-</search>
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/" rel="tag"># 目标检测</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/12/12/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2/" rel="prev" title="网站说明">
+      <i class="fa fa-chevron-left"></i> 网站说明
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#目标检测的任务"><span class="nav-number">1.</span> <span class="nav-text"> 目标检测的任务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#所面临的挑战"><span class="nav-number">2.</span> <span class="nav-text">所面临的挑战</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据集"><span class="nav-number">3.</span> <span class="nav-text">数据集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#评价指标"><span class="nav-number">4.</span> <span class="nav-text">评价指标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#深度学习目标检测方法"><span class="nav-number">5.</span> <span class="nav-text">深度学习目标检测方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#各方法在各数据集上的精度"><span class="nav-number">6.</span> <span class="nav-text">各方法在各数据集上的精度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#目标检测的候选框-Proposal"><span class="nav-number">7.</span> <span class="nav-text">目标检测的候选框(Proposal)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#边界框回归-Bounding-Box-regression"><span class="nav-number">8.</span> <span class="nav-text">边界框回归(Bounding-Box regression)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#R-CNN"><span class="nav-number">9.</span> <span class="nav-text">R-CNN</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SPP-Net"><span class="nav-number">10.</span> <span class="nav-text">SPP-Net</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Fast-R-CNN"><span class="nav-number">11.</span> <span class="nav-text">Fast R-CNN</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Faster-R-CNN"><span class="nav-number">12.</span> <span class="nav-text">Faster R-CNN</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#YOLO"><span class="nav-number">13.</span> <span class="nav-text">YOLO</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#YOLO-v2"><span class="nav-number">14.</span> <span class="nav-text">YOLO v2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#YOLO-v3"><span class="nav-number">15.</span> <span class="nav-text">YOLO v3</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SSD"><span class="nav-number">16.</span> <span class="nav-text">SSD</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DSSD"><span class="nav-number">17.</span> <span class="nav-text">DSSD</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#目标检测进展"><span class="nav-number">18.</span> <span class="nav-text">目标检测进展</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#未来的研究"><span class="nav-number">19.</span> <span class="nav-text">未来的研究</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+	  
+     
+	  
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qiyuan-Z"
+      src="/images/wallhaven-915.png">
+  <p class="site-author-name" itemprop="name">Qiyuan-Z</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">15</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Qiyuan-Z" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Qiyuan-Z" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:601872068@qq.com" title="E-Mail → mailto:601872068@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://project-inkstone.github.io/project-inkstone/?tdsourcetag=s_pctim_aiomsg" title="https:&#x2F;&#x2F;project-inkstone.github.io&#x2F;project-inkstone&#x2F;?tdsourcetag&#x3D;s_pctim_aiomsg" rel="noopener" target="_blank">project-inkstone</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+	  
+      <div id="music163player">
+		   <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=280 height=86 src="//music.163.com/outchain/player?type=2&id=491484238&auto=1&height=66">
+		   </iframe>
+	  </div>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qiyuan-Z</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="站点总字数">38k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">34 分钟</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+<script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', () => {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: false,
+      notify: false,
+      appId: 'Qbpc7uiugdEBCmq9h8ld4Ttd-gzGzoHsz',
+      appKey: 'jqjQ3QRJdnoeCASIA6XkWK1E',
+      placeholder: "601872068@qq.com",
+      avatar: 'mm',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: false,
+      lang: 'zh-cn' || 'zh-cn',
+      path: location.pathname,
+      recordIP: false,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+  <script type="text/javascript" src="/js/src/clicklove.js"></script>
+</body>
+</html>
+
