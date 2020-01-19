@@ -1,6 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Ubuntu美化</title>
+    <url>/2020/01/19/Ubuntu%E7%BE%8E%E5%8C%96/</url>
+    <content><![CDATA[<h2 id><a href="#" class="headerlink" title></a><a id="more"></a></h2><ul>
+<li>安装Unity-tweak-tool<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt-get install unity-tweak-tool</span><br></pre></td></tr></table></figure>
+<img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/Ubuntu%E7%BE%8E%E5%8C%96/20180909004455285.png" alt></li>
+<li>更新源<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo add-apt-repository ppa:noobslab&#x2F;themes</span><br><span class="line">sudo apt-add-repository ppa:numix&#x2F;ppa </span><br><span class="line">sudo apt update</span><br></pre></td></tr></table></figure></li>
+<li>安装主题<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo add-apt-repository ppa:noobslab&#x2F;themes  </span><br><span class="line">sudo apt-get update  </span><br><span class="line">sudo apt-get install flatabulous-theme </span><br><span class="line">sudo apt-get install arc-theme</span><br></pre></td></tr></table></figure></li>
+<li>安装图标<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo add-apt-repository ppa:noobslab&#x2F;icons  </span><br><span class="line">sudo apt-get update  </span><br><span class="line">sudo apt-get install ultra-flat-icons </span><br><span class="line">sudo apt-get install numix-icon-theme-circle</span><br></pre></td></tr></table></figure></li>
+<li>选择主题<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/Ubuntu%E7%BE%8E%E5%8C%96/20180909005108750.png" alt></li>
+<li>选择图标<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/Ubuntu%E7%BE%8E%E5%8C%96/20180909005211146.png" alt></li>
+<li>最终效果<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/Ubuntu%E7%BE%8E%E5%8C%96/20180909005447430.png" alt></li>
+</ul>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Windows10安装ubuntu16.04双系统教程</title>
+    <url>/2020/01/19/Windows10%E5%AE%89%E8%A3%85ubuntu16.04%E5%8F%8C%E7%B3%BB%E7%BB%9F%E6%95%99%E7%A8%8B/</url>
+    <content><![CDATA[<h2 id><a href="#" class="headerlink" title></a><a id="more"></a></h2><p>BIOS模式有传统的MBR模式和新式UEFI模式，这将对安装双系统的方法产生直接影响。目前来看，大部分电脑都属于新式UEFI模式，不过也存在一些老机子仍然属于传统MBR模式。本教程只介绍新式UEFI模式下的双系统安装方法，如果你的电脑属于传统MBR模式，强烈建议你重装windows系统来更新BIOS模式到UEFI。</p>
+<h2 id="制作系统盘"><a href="#制作系统盘" class="headerlink" title="制作系统盘"></a>制作系统盘</h2><p>需要准备以下工具：<br>①ubuntu系统镜像<br>②刻录软件，推荐”软碟通”，会提示注册，选择继续试用就好<br>③一个大于 2G 的 U 盘<br>1.安装并打开软碟通，插上 U 盘，并且最好备份你的 U 盘，因为之后需要格式化；<br>2.进入软碟通，选择文件，浏览到你的ubuntu镜像所在的目录，选择ubuntu镜像文件，双击打开，如图：<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/%E5%8F%8C%E7%B3%BB%E7%BB%9F/2019121214422030.jpg" alt><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/%E5%8F%8C%E7%B3%BB%E7%BB%9F/2019121214422031.jpg" alt><br>3.在软碟通界面菜单栏选择”启动”，选择”写入硬盘映像”，如图所示：<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/%E5%8F%8C%E7%B3%BB%E7%BB%9F/2019121214422032.jpg" alt><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/%E5%8F%8C%E7%B3%BB%E7%BB%9F/2019121214422033.jpg" alt><br>接下来很重要，注意次序：<br>1）看你的硬盘驱动器是否对应的是你的 U 盘（必须是） ，一般默认是；<br>2）看映像文件是否对应你的 ubuntu 镜像；<br>3）如果上述均没有错误，选择格式化，之后就会格式化你的 U 盘；<br>4）在 U 盘格式化完毕之后，选择写入，之后就是慢慢等待了，等待写入完毕；</p>
+<h2 id="在windows下创建空白分区"><a href="#在windows下创建空白分区" class="headerlink" title="在windows下创建空白分区"></a>在windows下创建空白分区</h2><p>说明：这一步是为ubuntu系统分配空间，单硬盘和双硬盘存在一点区别。<br>1.”此电脑”点击右键，点击”管理”，点击”磁盘管理”：<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/%E5%8F%8C%E7%B3%BB%E7%BB%9F/2019121214422034.jpg" alt><br>2.为ubuntu分配空间<br>（1）如果是单硬盘，任选一个盘，在该盘点击右键，选择压缩卷，如下，输入压缩空间量，单位为M，如果空间充足，建议分出80G或100G，空间不足也可以分60G（1G=1024M）：<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/%E5%8F%8C%E7%B3%BB%E7%BB%9F/20190520082545559.png" alt><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/%E5%8F%8C%E7%B3%BB%E7%BB%9F/2019121214422136.jpg" alt><br>（2）如果是双硬盘，需要先在系统盘分出200M的空白分区用来安装ubuntu的启动项，然后再在另一块硬盘分出空间，在该盘点击右键，选择压缩卷，如下，输入压缩空间量，单位为M,如果空间充足，建议分出80G或100G，空间不足也可以分60G（1G=1024M）<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/%E5%8F%8C%E7%B3%BB%E7%BB%9F/2019121214422138.jpg" alt></p>
+<h2 id="用做好的系统盘安装系统"><a href="#用做好的系统盘安装系统" class="headerlink" title="用做好的系统盘安装系统"></a>用做好的系统盘安装系统</h2><p>先点击桌面右下角：电源图标→电源设置→电源和睡眠→其他电源设置→选择电源按钮的功能→更改当前不可用的设置，将“关机设置”中的快速启动项关闭，保存修改。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/%E5%8F%8C%E7%B3%BB%E7%BB%9F/20190520084629381.png" alt>若呈灰色，无法修改，win+r进入gpedit.msc将系统配置中的关机选项，快速启动改为禁用，重启完即可更改。<br>1.插好系统盘，重启电脑，开机进bios，在Security页面，关掉secure boot（不同电脑secure boot可能在不同位置），然后到Boot页面，如果有Fast Boot这一项（部分联想电脑有），也把它关掉，没有忽略；然后保存更改，在Boot页面下方启动项选择 USB启动，回车，如果顺利进入安装页面，继续往下做；如果点击USB启动项无法进入，保存并退出，电脑会重启，根据自己电脑按相应的键进boot manager，找到USB启动项，回车即可进入。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/%E5%8F%8C%E7%B3%BB%E7%BB%9F/2019121214422139.jpg" alt><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/%E5%8F%8C%E7%B3%BB%E7%BB%9F/2019121214422140.jpg" alt><br>2.然后会进入这个界面，选择Install Ubuntu，回车确认<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/%E5%8F%8C%E7%B3%BB%E7%BB%9F/2019121214422141.jpg" alt><br>3.安装过程记住断网，否则很慢<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/%E5%8F%8C%E7%B3%BB%E7%BB%9F/2019121214422143.jpg" alt><br>全不选，边安装边下载更新很慢，点击”继续”<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/%E5%8F%8C%E7%B3%BB%E7%BB%9F/20171229140050194.png" alt><br>出现以下或类似界面，一定要选择”其他选项”，因为需要手动分区<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/%E5%8F%8C%E7%B3%BB%E7%BB%9F/2019121214422145.jpg" alt><br>分区界面如下<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/%E5%8F%8C%E7%B3%BB%E7%BB%9F/2019121214422246.jpg" alt><br>在这里，我们进行手动分区，选择留出的空闲分区，点击”+”进行分区，如下：<br>1）efi：如果是单硬盘，在唯一的一个空闲分区上添加，大小200M，逻辑分区，空间起始位置，用于efi；如果是双硬盘，找到事先分好的200M空闲分区添加，逻辑分区，空间起始位置，用于efi。这个分区必不可少，用于安装ubuntu启动项。<br>2）swap:中文是”交换空间”，充当ubuntu的虚拟内存，一般的大小与电脑物理内存一样，可以将其分为 8G，逻辑分区，空间起始位置，用于”swap”或”交换空间”<br>3) /:这是ubuntu 的根目录,用于安装系统和软件，相当于windows的C盘，我们将其分为 20G，主分区，空间起始位置，用于”ext4日志文件系统”，挂载点为”/“（根据你的磁盘空间调整，可以大一点，毕竟ubuntu装软件都是默认装在根目录的）<br>4）/home:相当于windows的其他盘，剩下的全分给它，逻辑分区，空间起始位置，用于”ext4日志文件系统”，挂载点为”/home”<br>分区完毕，在分区界面的下方，选择安装启动项的位置，我们刚刚不是创建了200M的efi分区吗，现在你看看这个区前面的编号是多少，比如是/dev/sda1,不同的机子会有不同的编号，下拉列表选择这个efi分区编号（这里一定要注意，windows的启动项也是efi文件，大小大概是100M，而我们创建的ubuntu的efi大小是200M，一定要选对），之后点击”Install Now”<br>设置地区不重要，按你需要设置，也可以直接继续，不影响<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/%E5%8F%8C%E7%B3%BB%E7%BB%9F/2019121214422248.jpg" alt><br>键盘布局默认是英语的，建议不改（默认中文也行）<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/%E5%8F%8C%E7%B3%BB%E7%BB%9F/2019121214422249.jpg" alt><br>这里设置用户，自己输入就可以了，例如英文字母，尽量简单点，密码也简单点<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/%E5%8F%8C%E7%B3%BB%E7%BB%9F/2019121214422250.jpg" alt><br>系统开始安装，耐心等待安装完毕就可以了<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/%E5%8F%8C%E7%B3%BB%E7%BB%9F/2019121214422251.jpg" alt><br>全部完成之后，会提醒你重启，把U盘拔了，点”现在重启”，如果卡死就强制关机再重启就好<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/%E5%8F%8C%E7%B3%BB%E7%BB%9F/2019121214422252.jpg" alt><br>重启后你会看到以下界面，第一项是ubuntu启动项，第二项是ubuntu高级设置，第三项是windows启动项，第四项不用管，默认选择的是第一个，回车进ubuntu系统<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/%E5%8F%8C%E7%B3%BB%E7%BB%9F/2019121214422253.jpg" alt><br>若没有出现，则进入bios将启动顺序改为Ubuntu先。</p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+        <tag>Windows10</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>CMake Error at /usr/share/cmake-3.5/Modules/FindQt4.cmake:634 (message)</title>
+    <url>/2020/01/19/CMake%20Error/</url>
+    <content><![CDATA[<h2 id><a href="#" class="headerlink" title></a><a id="more"></a></h2><p>编译工程时出现cmake找不到Qt4的问题,如下:<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">CMake Warning at &#x2F;usr&#x2F;share&#x2F;cmake-3.5&#x2F;Modules&#x2F;FindQt4.cmake:626 (message):</span><br><span class="line">&#x2F;usr&#x2F;bin&#x2F;qmake-qt4 reported QT_INSTALL_LIBS as &quot;&#x2F;usr&#x2F;lib&#x2F;x86_64-linux-gnu&quot;</span><br><span class="line"> but QtCore could not be found there.  </span><br><span class="line"> Qt is NOT installed correctly for the target build environment.</span><br></pre></td></tr></table></figure><br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">CMake Error at &#x2F;usr&#x2F;share&#x2F;cmake-3.5&#x2F;Modules&#x2F;FindQt4.cmake:634 (message):</span><br><span class="line">  Could NOT find QtCore.</span><br></pre></td></tr></table></figure><br>解决办法<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt install cmake gcc g++ qt&#123;4,5&#125;-qmake libqt4-dev</span><br></pre></td></tr></table></figure></p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>对目录 /var/lib/apt/lists/ 加锁 问题解决方法</title>
+    <url>/2020/01/19/%E5%AF%B9%E7%9B%AE%E5%BD%95-varlibaptlists-%E5%8A%A0%E9%94%81-%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/</url>
+    <content><![CDATA[<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo rm &#x2F;var&#x2F;lib&#x2F;apt&#x2F;lists&#x2F;lock</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>ubuntu apt 更换为国内的源</title>
+    <url>/2020/01/19/ubuntu-apt-%E6%9B%B4%E6%8D%A2%E4%B8%BA%E5%9B%BD%E5%86%85%E7%9A%84%E6%BA%90/</url>
+    <content><![CDATA[<h2 id><a href="#" class="headerlink" title></a><a id="more"></a></h2><p>备份原来的源：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo cp &#x2F;etc&#x2F;apt&#x2F;sources.list &#x2F;etc&#x2F;apt&#x2F;sources.list.bak</span><br></pre></td></tr></table></figure><br>更换源:<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo gedit &#x2F;etc&#x2F;apt&#x2F;sources.list</span><br></pre></td></tr></table></figure><br>将里面文件内容全部替换成下面：<br><a href="https://wiki.ubuntu.org.cn/%E6%A8%A1%E6%9D%BF:16.04source" target="_blank" rel="noopener">点击此处获得最新源</a><br>保存退出<br>执行更新：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt-get update</span><br></pre></td></tr></table></figure></p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Win10和Ubuntu双系统下时间不对问题</title>
+    <url>/2020/01/19/Win10%E5%92%8CUbuntu%E5%8F%8C%E7%B3%BB%E7%BB%9F%E4%B8%8B%E6%97%B6%E9%97%B4%E4%B8%8D%E5%AF%B9%E9%97%AE%E9%A2%98/</url>
+    <content><![CDATA[<h2 id><a href="#" class="headerlink" title></a><a id="more"></a></h2><p>电脑安装完win10和Ubuntu双系统后，Ubuntu时间总会和Windows时间相差8小时，这是因为windows认为bios时间是本地时间，Ubuntu认为bios时间是UTC时间，所以我们需要将Ubuntu时间改成本地时间。<br>执行这条语句：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">timedatectl set-local-rtc 1 --adjust-system-clock</span><br></pre></td></tr></table></figure>
+<p>重启进入windows，时间设置中点击立即同步即可解决。</p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>如何获取OneDrive 5T网盘空间(可升级25T)</title>
     <url>/2020/01/16/%E5%A6%82%E4%BD%95%E8%8E%B7%E5%8F%96OneDrive-5T%E7%BD%91%E7%9B%98%E7%A9%BA%E9%97%B4(%E5%8F%AF%E5%8D%87%E7%BA%A725T)/</url>
     <content><![CDATA[<p><a href="https://blog.wulel.com/post/how-to-get-5t-onedrive/" target="_blank" rel="noopener">点此跳转</a></p>
