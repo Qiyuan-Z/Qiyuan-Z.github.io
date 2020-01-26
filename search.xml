@@ -1,6 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Ubuntu配置SSH和Xshell连接服务器的教程</title>
+    <url>/2020/01/26/Ubuntu%E9%85%8D%E7%BD%AESSH%E5%92%8CXshell%E8%BF%9E%E6%8E%A5%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E6%95%99%E7%A8%8B/</url>
+    <content><![CDATA[<h2 id><a href="#" class="headerlink" title></a><a id="more"></a></h2><p>SSH分为客户端 openssh-client 和服务器 openssh-server，可以利用以下命令确认电脑<br>上是否安装了客户端和服务器。如果只是想远程登陆别的机器只需要安装客户端（Ubuntu默认安装了客户端），如果要本机的SSH服务就需要安装服务器。<br>首先确认ssh-server是否已经启动了，下面是已经启动过了。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">dpkg -l | grep ssh</span><br></pre></td></tr></table></figure><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SSH/2019111014161410.jpg" alt><br>客户端 openssh-client 和服务器 openssh-server安装命令如下：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt install openssh-client</span><br><span class="line">sudo apt install openssh-server</span><br></pre></td></tr></table></figure><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SSH/2019111014161511.jpg" alt><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SSH/2019111014161512.jpg" alt><br>查看网卡对应的服务器IP地址和用户名<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ifconfig | grep inet</span><br></pre></td></tr></table></figure><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SSH/2019111014161513.jpg" alt><br>远程登录和复制文件，需要我们进入Xshell输入命令。<br>首先登陆Xshell，新建会话，点击连接。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SSH/2019111014161614.jpg" alt><br>输入登陆服务器IP（刚才查得的），端口22（默认），选择协议SSH。之后确认和连接，<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SSH/2019111014161615.jpg" alt><br>首次登陆需要用户名和密码，输入进去你Ubuntu的用户名和密码。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SSH/2019111014161617.jpg" alt><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SSH/2019111014161718.jpg" alt><br>查看信息是否连接，进入服务器。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SSH/2019111014161719.jpg" alt></p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+        <tag>SSH</tag>
+        <tag>Xshell</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Pycharm连接远程服务器并实现远程调试</title>
+    <url>/2020/01/26/Pycharm%E8%BF%9E%E6%8E%A5%E8%BF%9C%E7%A8%8B%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%B9%B6%E5%AE%9E%E7%8E%B0%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95/</url>
+    <content><![CDATA[<h2 id="Pycharm连接远程服务器"><a href="#Pycharm连接远程服务器" class="headerlink" title="Pycharm连接远程服务器"></a><a id="more"></a>Pycharm连接远程服务器</h2><ul>
+<li>进入配置页面<br>Pycharm菜单栏，如下图所示，依次点击 Tools -&gt; Deployment -&gt; Configration…<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm%20remote%20control/20180829161124726.png" alt></li>
+<li>配置连接服务器<br>如下图。name随便写个就行。<br>Connection下，协议最好选择sftp，接下来填写服务器主机IP，用户名，密码。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm%20remote%20control/2018082916114659.png" alt><br>点击Test SFTP connection会发现，如果连接成功会提示你如下<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm%20remote%20control/20180829161158768.png" alt><br>在Mapping下，选择连接windows下的那部分代码和服务器上代码相连，本地Local path，服务器path，apply，OK，表示已经把本地的代码和服务器代码连接上了。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm%20remote%20control/20180829161217756.png" alt></li>
+<li>上传代码，使得本地代码和服务器代码保持同步<br>点击Upload to name（刚才填写的远程服务器名字），即可上传代码。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm%20remote%20control/20180829161235445.png" alt><br>若配置有多个不同服务器或同一个服务器配置了多个 服务器上传路径（Deployment Path），可选择 Upload to…，上传到不同的服务器/路径。</li>
+</ul>
+<h2 id="配置远程Python解释器"><a href="#配置远程Python解释器" class="headerlink" title="配置远程Python解释器"></a>配置远程Python解释器</h2><p>使用服务器调试Python程序的前提时在服务器上安装了Python解释器，如果没安装，请先安装。</p>
+<ul>
+<li>将Python解释器设置为远程服务器上的<br>在菜单栏，File -&gt; Settings… -&gt; Project ×× -&gt; Project Interpreter，点击右侧 Add按钮，添加解释器。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm%20remote%20control/20180829161249360.png" alt><br>选择SSH Interpreter，填写服务器的 Host 地址，端口Port，用户名Username，填好后，下一步Next。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm%20remote%20control/20180829161306837.png" alt><br>填写密码 Password，下一步Next。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm%20remote%20control/20180829161340812.png" alt><br>选择远程服务器上Python解释器的位置，服务器上的远程同步文件夹Sync folders（即之前配置的服务器Path），可以选择多个。如果不知道Python安装在哪，可以远程连接服务器后，使用 命令 which python 找到Python安装位置。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm%20remote%20control/20180829161653972.jpg" alt><br>Finish，配置结束。该项目现在使用的就是远程服务器上的Python解释器了。以后的项目若想/不想使用该解释器，手动更改解释器即可。</li>
+</ul>
+<h2 id="使用远程解释器运行本地Python程序"><a href="#使用远程解释器运行本地Python程序" class="headerlink" title="使用远程解释器运行本地Python程序"></a>使用远程解释器运行本地Python程序</h2><p>将测试代码上传至远程服务器（Tooles -&gt; Deployment -&gt; Upload to ××）。<br>Run测试代码，可以看到现在代码是在远程服务器上运行了。</p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Pycharm</tag>
+        <tag>SSH</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ubuntu下Rime安装配置</title>
+    <url>/2020/01/26/Ubuntu%E4%B8%8BRime%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE/</url>
+    <content><![CDATA[<h2 id><a href="#" class="headerlink" title></a><a id="more"></a></h2><p>官方网站及文档：<a href="https://rime.im/" target="_blank" rel="noopener">https://rime.im/</a><br>输入法平台：iBus<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt install ibus-rime</span><br></pre></td></tr></table></figure><br>在设置人区域和语言选择设置输入法为Rime<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/rime/1762213-d899b160aa87f944.png" alt><br>根据个人喜好修改配置文件：一般用户直接修改default.yaml即可。修改前最好备份一下。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">~&#x2F;.config&#x2F;ibus&#x2F;rime&#x2F;default.yaml</span><br><span class="line"></span><br><span class="line">schema_list:   </span><br><span class="line">  - schema: luna_pinyin_simp #simp是简体，第一位是默认输入法 </span><br><span class="line">menu:</span><br><span class="line">  page_size: 9 #每页候选词个数</span><br><span class="line">ascii_composer:</span><br><span class="line">  switch_key:</span><br><span class="line">    Shift_L: commit_code #左shift提交字母</span><br></pre></td></tr></table></figure><br>重启ibus-deamon<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ibus restart</span><br></pre></td></tr></table></figure></p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>arxiv文章下载加速</title>
+    <url>/2020/01/26/arxiv%E6%96%87%E7%AB%A0%E4%B8%8B%E8%BD%BD%E5%8A%A0%E9%80%9F/</url>
+    <content><![CDATA[<h2 id><a href="#" class="headerlink" title></a><a id="more"></a></h2><p>对于我们这样的深度学习屌丝来说，没钱，没资源，没数据，没时间，只能看看别人的论文生存了，经常会到arxiv上下载一些文章，比如cvpr的文章，但是，由于国内封锁，下载很慢，甚至接连几天打不开arxiv的网站，咋办？<br>强烈推荐使用中科院arxiv的镜像地址：<a href="http://xxx.itp.ac.cn" target="_blank" rel="noopener">http://xxx.itp.ac.cn</a><br>具体使用方法：把要访问 arxiv 链接中的域名从 <a href="https://arxiv.org" target="_blank" rel="noopener">https://arxiv.org</a> 换成 <a href="http://xxx.itp.ac.cn" target="_blank" rel="noopener">http://xxx.itp.ac.cn</a> ,<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">比如:</span><br><span class="line">https:&#x2F;&#x2F;arxiv.org&#x2F;pdf&#x2F;1608.00367</span><br><span class="line">换成：</span><br><span class="line">http:&#x2F;&#x2F;xxx.itp.ac.cn&#x2F;pdf&#x2F;1608.00367.pdf</span><br></pre></td></tr></table></figure><br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">或者将：</span><br><span class="line">https:&#x2F;&#x2F;arxiv.org&#x2F;abs&#x2F;1608.00367</span><br><span class="line">换成：</span><br><span class="line">http:&#x2F;&#x2F;xxx.itp.ac.cn&#x2F;abs&#x2F;1608.00367</span><br></pre></td></tr></table></figure><br>即可打开，是不是很爽？</p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>arxiv</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>ubuntu16.04安装opencv教程</title>
     <url>/2020/01/19/ubuntu16.04%E5%AE%89%E8%A3%85opencv%E6%95%99%E7%A8%8B/</url>
     <content><![CDATA[<h2 id><a href="#" class="headerlink" title></a><a id="more"></a></h2><p>1.去官网下载opencv，在本教程中选用的时opencv3.4.1，其他版本的配置方法异曲同工。<br>下载链接(<a href="http://opencv.org/releases.html)，选择sources版本" target="_blank" rel="noopener">http://opencv.org/releases.html)，选择sources版本</a><br>2.解压下载下来的zip包<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">unzip opencv-3.4.1.zip</span><br></pre></td></tr></table></figure><br>3.进入到解压后的文件包中<br>4.安装依赖库和cmake ，如果提醒需要apt-get update，那就先sudo su进入root权限，再sudo apt-get update，然后在执行下面命令<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt-get install cmake</span><br></pre></td></tr></table></figure><br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt-get install build-essential libgtk2.0-dev libavcodec-dev libavformat-dev libjpeg.dev libtiff4.dev libswscale-dev libjasper-dev</span><br></pre></td></tr></table></figure><br>在第二步中若提示依赖版本问题，原因在于apt源太旧，更换新的源，再进行安装。<br>5.安装完cmake之后执行命令 ,创建编译文件夹，不创建的会提示（如下图）<br>In-source builds are not allowed.<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mkdir my_build_dir</span><br><span class="line">cd my_build_dir</span><br></pre></td></tr></table></figure><br>6.cmake一下<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cmake -D CMAKE_BUILD_TYPE&#x3D;Release -D CMAKE_INSTALL_PREFIX&#x3D;&#x2F;usr&#x2F;local ..</span><br></pre></td></tr></table></figure><br>注意：如果已经在新的文件夹中编译，但是还会出现之前的报错，把cmakecache.txt删了再编译就可<br>期间可能会下载一个东西，等待一会儿就OK<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/opencv/20171005220631735.png" alt><br>7.执行命令，漫长的编译过程<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo make</span><br></pre></td></tr></table></figure><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/opencv/20171005214720292.png" alt><br>8.执行命令<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo make install</span><br></pre></td></tr></table></figure><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/opencv/20171005214847504.png" alt><br>9.sudo make install 执行完毕后OpenCV编译过程就结束了，接下来就需要配置一些OpenCV的编译环境首先将OpenCV的库添加到路径，从而可以让系统找到<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo gedit &#x2F;etc&#x2F;ld.so.conf.d&#x2F;opencv.conf</span><br></pre></td></tr></table></figure><br>执行此命令后打开的可能是一个空白的文件，不用管，只需要在文件末尾添加<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;usr&#x2F;local&#x2F;lib</span><br></pre></td></tr></table></figure><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/opencv/20171005215009149.png" alt><br>10.执行如下命令使得刚才的配置路径生效<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo ldconfig</span><br></pre></td></tr></table></figure><br>11.配置bash<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo gedit &#x2F;etc&#x2F;bash.bashrc</span><br></pre></td></tr></table></figure><br>在最末尾添加<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PKG_CONFIG_PATH&#x3D;$PKG_CONFIG_PATH:&#x2F;usr&#x2F;local&#x2F;lib&#x2F;pkgconfig  </span><br><span class="line">export PKG_CONFIG_PATH</span><br></pre></td></tr></table></figure><br>保存，执行如下命令使得配置生效<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">source &#x2F;etc&#x2F;bash.bashrc</span><br></pre></td></tr></table></figure><br>更新<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo updatedb</span><br></pre></td></tr></table></figure><br>12.至此所有的配置都已经完成<br>下面用一个小程序测试一下</p>
