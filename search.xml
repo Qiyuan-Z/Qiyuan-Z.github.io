@@ -1,6 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Pytorch快速安装教程</title>
+    <url>/2020/01/26/Pytorch%E5%BF%AB%E9%80%9F%E5%AE%89%E8%A3%85%E6%95%99%E7%A8%8B/</url>
+    <content><![CDATA[<h2 id><a href="#" class="headerlink" title></a><a id="more"></a></h2><p>进入官网(<a href="https://pytorch.org/)，按照你的环境选择，得到下载命令，这里以windows为例，Ubuntu同理" target="_blank" rel="noopener">https://pytorch.org/)，按照你的环境选择，得到下载命令，这里以windows为例，Ubuntu同理</a></p>
+<h2 id="conda安装"><a href="#conda安装" class="headerlink" title="conda安装"></a>conda安装</h2><p>官网得到命令如图：<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pytorch%20install/Snipaste_2020-01-26_14-06-32.jpg" alt><br>但由于墙的原因直接使用此命令下载很慢，因此请更换conda源为国内镜像<br>并将命令中 -c pytorch去掉<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">conda install pytorch torchvision cudatoolkit&#x3D;10.1</span><br></pre></td></tr></table></figure><br>即可调用国内镜像下载。</p>
+<h2 id="pip安装"><a href="#pip安装" class="headerlink" title="pip安装"></a>pip安装</h2><p>官网得到命令如图：<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pytorch%20install/Snipaste_2020-01-26_14-06-05.jpg" alt><br>红色框出部分为官网建议版本，但由于墙的原因直接使用此命令下载很慢，因此将pip下载地址改成国内镜像即可<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip3 install torch&#x3D;&#x3D;&#x3D;1.4.0 torchvision&#x3D;&#x3D;&#x3D;0.5.0 -i https:&#x2F;&#x2F;pypi.tuna.tsinghua.edu.cn&#x2F;simple</span><br></pre></td></tr></table></figure></p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+        <tag>Pytorch</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>设置Pycharm plots不在tool window显示</title>
+    <url>/2020/01/26/%E8%AE%BE%E7%BD%AEPycharm-plots%E4%B8%8D%E5%9C%A8tool-window%E6%98%BE%E7%A4%BA/</url>
+    <content><![CDATA[<h2 id><a href="#" class="headerlink" title></a><a id="more"></a></h2><p>Pycharm画图默认在tool windows显示，对于观看、操作其极不方便，特别是画动态图时，还会把每帧都输出，因此最好设置让它单独窗口显示。<br>如下图，把勾去掉即可。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/plot/Snipaste_2020-01-26_14-14-13.jpg" alt></p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Pycharm</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Ubuntu配置SSH和Xshell连接服务器的教程</title>
     <url>/2020/01/26/Ubuntu%E9%85%8D%E7%BD%AESSH%E5%92%8CXshell%E8%BF%9E%E6%8E%A5%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E6%95%99%E7%A8%8B/</url>
     <content><![CDATA[<h2 id><a href="#" class="headerlink" title></a><a id="more"></a></h2><p>SSH分为客户端 openssh-client 和服务器 openssh-server，可以利用以下命令确认电脑<br>上是否安装了客户端和服务器。如果只是想远程登陆别的机器只需要安装客户端（Ubuntu默认安装了客户端），如果要本机的SSH服务就需要安装服务器。<br>首先确认ssh-server是否已经启动了，下面是已经启动过了。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">dpkg -l | grep ssh</span><br></pre></td></tr></table></figure><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SSH/2019111014161410.jpg" alt><br>客户端 openssh-client 和服务器 openssh-server安装命令如下：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt install openssh-client</span><br><span class="line">sudo apt install openssh-server</span><br></pre></td></tr></table></figure><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SSH/2019111014161511.jpg" alt><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SSH/2019111014161512.jpg" alt><br>查看网卡对应的服务器IP地址和用户名<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ifconfig | grep inet</span><br></pre></td></tr></table></figure><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SSH/2019111014161513.jpg" alt><br>远程登录和复制文件，需要我们进入Xshell输入命令。<br>首先登陆Xshell，新建会话，点击连接。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SSH/2019111014161614.jpg" alt><br>输入登陆服务器IP（刚才查得的），端口22（默认），选择协议SSH。之后确认和连接，<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SSH/2019111014161615.jpg" alt><br>首次登陆需要用户名和密码，输入进去你Ubuntu的用户名和密码。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SSH/2019111014161617.jpg" alt><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SSH/2019111014161718.jpg" alt><br>查看信息是否连接，进入服务器。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SSH/2019111014161719.jpg" alt></p>
