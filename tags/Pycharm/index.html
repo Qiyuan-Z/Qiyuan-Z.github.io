@@ -66,7 +66,20 @@
     isPost: false
   };
 </script>
-
+<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.css"><style>
+#needsharebutton-postbottom {
+  cursor: pointer;
+  height: 26px;
+  margin-top: 10px;
+  position: relative;
+}
+#needsharebutton-postbottom .btn {
+  border: 1px solid $btn-default-border-color;
+  border-radius: 3px;
+  display: initial;
+  padding: 1px 4px;
+}
+</style>
   <title>标签: Pycharm | Yuan</title>
   
 
@@ -486,6 +499,15 @@
 
   
 
+  <script src="//cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.js"></script>
+  <script>
+      pbOptions = {};
+        pbOptions.iconStyle = "box";
+        pbOptions.boxForm = "horizontal";
+        pbOptions.position = "bottomCenter";
+        pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+  </script>
 
 <script>
 NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
@@ -501,7 +523,7 @@ NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
       notify: false,
       appId: 'Qbpc7uiugdEBCmq9h8ld4Ttd-gzGzoHsz',
       appKey: 'jqjQ3QRJdnoeCASIA6XkWK1E',
-      placeholder: "601872068@qq.com",
+      placeholder: "欢迎交流讨论...",
       avatar: 'mm',
       meta: guest,
       pageSize: '10' || 10,
@@ -513,8 +535,8 @@ NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
     });
   }, window.Valine);
 });
-</script>
 
+</script>
   <script type="text/javascript" src="/js/src/clicklove.js"></script>
 </body>
 </html>
