@@ -1,6 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>华硕路由器刷固件</title>
+    <url>/2020/02/03/%E5%8D%8E%E7%A1%95%E8%B7%AF%E7%94%B1%E5%99%A8%E5%88%B7%E5%9B%BA%E4%BB%B6/</url>
+    <content><![CDATA[<h2 id="介绍"><a href="#介绍" class="headerlink" title=" 介绍"></a><a id="more"></a> 介绍</h2><p>现在市面上的路由器基本上使用的都是官方的固件，这是因为路由器的设备厂商是为了设备的稳定性着想而出发的，还有就是所谓的刷梅林固件也就是刷第三方的固件，最大的作用可以解封一些功能。对于梅林固件来说，这有一半的性质是属于官方的路由器固件，但是还有一半是可以用户自己来进行设置的，其实梅林固件就是一个华硕路由器的自定义固件，是华硕官方的闭源驱动，因此稳定性要好很多，不支持超频，很少出现死机、卡顿的情况。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/merlin/185417q0zxbdexeze1x1nb.jpg" alt></p>
+<p>其最具特色的便是多了软件中心，在里面安装各种各样的插件可以实现各种功能，比如翻墙，去广告，离线下载，双拨等。</p>
+<p>并不是所有的路由器都能刷梅林固件，非华硕的路由器需要与华硕某个版本的硬件一致才能刷，以网件和华硕自身的路由器居多。</p>
+<p>我手头的路由器为华硕AC86U，华硕刷梅林固件相对简单，风险低，若其他品牌的路由器请去查找相应教程，此教程只适用于华硕品牌。</p>
+<h2 id="固件下载"><a href="#固件下载" class="headerlink" title="固件下载"></a>固件下载</h2><p><a href="https://firmware.koolshare.cn/" target="_blank" rel="noopener">Koolshare</a>是路由器刷机的论坛，可以去里面下载固件。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/merlin/Snipaste_2020-02-03_16-18-35.jpg" alt></p>
+<p>常用到的为红色框出来的这四个，分别是华硕官改固件、梅林原版固件、梅林改版固件、网件官改固件。</p>
+<ul>
+<li><p>原厂固件为华硕官方的固件。</p>
+</li>
+<li><p>原版梅林为国外RMerl大神基于华硕官方固件源代码修改而来的梅林固件。</p>
+</li>
+<li><p>改版梅林为koolshare开发组基于梅林固件修改而来的带软件中心的梅林改版固件。</p>
+</li>
+<li><p>官改固件为koolshare开发组基于华硕官方源代码修改而来的带软件中心的官改固件。</p>
+</li>
+</ul>
+<p>这之中常用的为梅林改和官改，相比官改固件，梅林改版固件有更多的功能和bug修复，而官改固件更新较快。好用程度差别不大，稳定性来说也基本无差，选哪个固件基于个人喜好即可。</p>
+<p>我用的是梅林改固件，进入文件夹，可以看到可用机型。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/merlin/Snipaste_2020-02-03_16-32-11.jpg" alt></p>
+<p>选择对应机型。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/merlin/Snipaste_2020-02-03_16-32-28.jpg" alt></p>
+<p>选择最新版本固件下载，固件为.w后缀。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/merlin/Snipaste_2020-02-03_16-32-47.jpg" alt></p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/merlin/Snipaste_2020-02-03_16-32-57.jpg" alt></p>
+<h2 id="固件安装"><a href="#固件安装" class="headerlink" title="固件安装"></a>固件安装</h2><ul>
+<li>选择【系统管理】-【固件升级】，选择下好的 .w 后缀的固件，上传即可</li>
+</ul>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/merlin/k3.png" alt></p>
+<ul>
+<li>刷机完成后会自动重启，请耐心等待完成</li>
+</ul>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/merlin/k4.png" alt></p>
+<ul>
+<li><p>刷机完成后在【系统管理】–【恢复/导出/上传设置】恢复出厂设置</p>
+</li>
+<li><p>在【系统管理】–【系统设置】内勾选：Format JFFS partition at next boot 和 Enable JFFS custom scripts and configs 然后点击应用本页面设置，成功后重启路由器；</p>
+</li>
+</ul>
+<p>（注：双清就是指恢复出厂设置 + 格式化jffs分区）</p>
+<p>重启后先将路由器连上网络，然后进入软件中心将软件中心更新到最新版本（如果有）。</p>
+<h2 id="软件中心"><a href="#软件中心" class="headerlink" title="软件中心"></a>软件中心</h2><p>完成上述工作，梅林固件就装好了，现在你可以进入软件中心未安装，选择合适的插件安装了，插件就不一一介绍，具体可以百度，我常用的是虚拟内存和shadowsocks。</p>
+<p>新版软件中心内不提供shadowsocks插件，我这里通过<a href="https://quqi.gblhgk.com/s/2796382/045bYgimCEJLRiCe" target="_blank" rel="noopener">云盘</a>分享，大家可以在【软件中心】-【离线安装】手动安装插件。</p>
+<h2 id="后续更新"><a href="#后续更新" class="headerlink" title="后续更新"></a>后续更新</h2><p>按此教程做的，后续更新新版的梅林改时，按B来即可。</p>
+<h5 id="A-原厂固件-原版梅林-刷-改版梅林："><a href="#A-原厂固件-原版梅林-刷-改版梅林：" class="headerlink" title="A. 原厂固件/原版梅林 刷 改版梅林："></a>A. 原厂固件/原版梅林 刷 改版梅林：</h5><ol>
+<li>在<code>原产固件</code>/<code>原版梅林</code>固件升级页面下直接上传.w 后缀的<code>改版梅林</code>固件文件；</li>
+<li>刷机完成后会自动重启，此时刷机完成（刷机完成后可以不恢复出产设置，当然恢复一次更好）；</li>
+<li>刷机完成在【系统管理 】–【 系统设置】内勾选：<code>Format JFFS partition at next boot</code> 和 <code>Enable JFFS custom scripts and configs</code> 然后点击<code>应用本页面设置</code>，成功后重启路由器；</li>
+<li>重启后先将路由器连上网络，然后进入软件中心将软件中心更新到最新版本（如果有）。</li>
+</ol>
+<h5 id="B-改版梅林-刷-改版梅林："><a href="#B-改版梅林-刷-改版梅林：" class="headerlink" title="B. 改版梅林 刷 改版梅林："></a>B. 改版梅林 刷 改版梅林：</h5><ol>
+<li>刷过<code>改版梅林</code>固件的，在固件升级页面下直接上传.w 后缀的<code>改版梅林</code>文件（如无特殊说明，不需要恢复出产设置）；</li>
+<li>刷机后所有已经安装的插件都会被保留，不会受到影响。</li>
+</ol>
+<h5 id="C-改版梅林-刷-官改固件："><a href="#C-改版梅林-刷-官改固件：" class="headerlink" title="C. 改版梅林 刷 官改固件："></a>C. 改版梅林 刷 官改固件：</h5><ul>
+<li>详见：<a href="http://koolshare.cn/thread-139965-1-1.html" target="_blank" rel="noopener">http://koolshare.cn/thread-139965-1-1.html</a></li>
+</ul>
+<h5 id="D-官改固件-刷-改版梅林："><a href="#D-官改固件-刷-改版梅林：" class="headerlink" title="D. 官改固件 刷 改版梅林："></a>D. 官改固件 刷 改版梅林：</h5><ul>
+<li>详见：<a href="http://koolshare.cn/thread-139965-1-1.html" target="_blank" rel="noopener">http://koolshare.cn/thread-139965-1-1.html</a></li>
+</ul>
+<h5 id="E-改版梅林-刷-原厂固件-梅林原版："><a href="#E-改版梅林-刷-原厂固件-梅林原版：" class="headerlink" title="E. 改版梅林 刷 原厂固件/梅林原版："></a>E. 改版梅林 刷 原厂固件/梅林原版：</h5><ol>
+<li>在<code>改版梅林</code>固件升级页面下直接上传.w 后缀的<code>原产固件</code>/<code>梅林原版</code>固件文件，刷机完成后机器会自动重启（刷机后可以不恢复出产设置，当然恢复一次更好）；</li>
+<li>刷机完成在【系统管理 】–【 系统设置】内勾选：<code>Format JFFS partition at next boot</code> 和 <code>Enable JFFS custom scripts and configs</code> 然后点击<code>应用本页面设置</code>，成功应用后重启路由器即可，此操作可以清除安装在jffs分区的软件中心和所有插件。</li>
+</ol>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>路由器</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>一些百度网盘的破解方法</title>
     <url>/2020/02/02/%E4%B8%80%E4%BA%9B%E7%99%BE%E5%BA%A6%E7%BD%91%E7%9B%98%E7%9A%84%E7%A0%B4%E8%A7%A3%E6%96%B9%E6%B3%95/</url>
     <content><![CDATA[<h2 id="1-网盘助手"><a href="#1-网盘助手" class="headerlink" title=" 1.网盘助手"></a><a id="more"></a> 1.网盘助手</h2><p>由网友”哩呵”制作的<a href="https://greasyfork.org/zh-CN/scripts/378301-%E7%BD%91%E7%9B%98%E5%8A%A9%E6%89%8B" target="_blank" rel="noopener">网盘助手</a>脚本，需要通过拓展 Violentmonkey 或者 Tampermonkey 来启用，原理是通过显示直链，然后使用 IDM 来加速下载<br><strong>使用方法：（下载部分）</strong><br>1、选择要下载的文件，点击页面里的 “生成链接” 来获取加速下载地址。<br>2、使用鼠标右键点击链接（注意是右键点击链接），选择“使用 IDM 下载”，然后确定下载。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/baiduwp/7a6a15d5gy1g8s99l1zdqg20qn0euqa8.gif" alt></p>
