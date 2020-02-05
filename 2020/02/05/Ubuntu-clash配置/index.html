@@ -57,8 +57,9 @@
 <meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;clash&#x2F;linux-clash-3.jpg">
 <meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;clash&#x2F;linux-clash-4.jpg">
 <meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;clash&#x2F;linux-clash-5.jpg">
+<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;clash&#x2F;Snipaste_2020-02-05_23-07-03.jpg">
 <meta property="article:published_time" content="2020-02-05T12:23:25.445Z">
-<meta property="article:modified_time" content="2020-02-05T12:23:25.553Z">
+<meta property="article:modified_time" content="2020-02-05T15:07:59.468Z">
 <meta property="article:author" content="Qiyuan-Z">
 <meta property="article:tag" content="Ubuntu">
 <meta name="twitter:card" content="summary">
@@ -245,8 +246,9 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2020-02-05 20:23:25" itemprop="dateCreated datePublished" datetime="2020-02-05T20:23:25+08:00">2020-02-05</time>
+              <time title="创建时间：2020-02-05 20:23:25 / 修改时间：23:07:59" itemprop="dateCreated datePublished" datetime="2020-02-05T20:23:25+08:00">2020-02-05</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -287,7 +289,7 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>501</span>
+              <span>1.6k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -306,16 +308,25 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="1"><a href="#1" class="headerlink" title=" 1."></a><a id="more"></a> 1.</h2><p>执行 <code>cd &amp;&amp; mkdir clash</code>在用户目录下创建 clash 文件夹。</p>
-<p>下载适合的 Clash 二进制文件并解压重命名为 clash</p>
+        <h2 id="1"><a href="#1" class="headerlink" title=" 1."></a><a id="more"></a> 1.</h2><p>执行 <code>cd &amp;&amp; mkdir clash</code>在用户目录下创建 clash 文件夹，用于存放解压后的文件及配置文件,将下载的压缩文件解压至此，得到一个可执行文件“ clash-linux-amd64 ”。。</p>
 <p>一般个人的64位电脑下载 clash-linux-amd64.tar.gz 即可。</p>
 <p><a href="https://github.com/Dreamacro/clash/releases" target="_blank" rel="noopener">下载客户端</a><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/clash/windows-cfw-1.png" alt></p>
-<h2 id="2"><a href="#2" class="headerlink" title="2."></a>2.</h2><p>在终端 cd 到 Clash 二进制文件所在的目录，执行下载 Clash 配置文件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget -O config.yml https:&#x2F;&#x2F;coolgay.buzz&#x2F;link&#x2F;sCoeTIRSzrBQRe11?clash&#x3D;1&amp;log-level&#x3D;info</span><br></pre></td></tr></table></figure><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/clash/linux-clash-2.jpg" alt></p>
-<h2 id="3"><a href="#3" class="headerlink" title="3."></a>3.</h2><p>执行 <code>./clash -d .</code> 即可启动 Clash，同时启动 HTTP 代理和 Socks5 代理。</p>
-<p>如提示权限不足，请执行 <code>chmod +x clash</code><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/clash/linux-clash-3.jpg" alt></p>
-<h2 id="4"><a href="#4" class="headerlink" title="4."></a>4.</h2><p>访问 <a href="http://clash.razord.top/" target="_blank" rel="noopener">Clash Dashboard </a> 可以进行切换节点、测延迟等操作。</p>
+<h2 id="2"><a href="#2" class="headerlink" title="2."></a>2.</h2><p>在终端中执行该文件<code>sudo ./clash-linux-amd64</code>，提示缺少config.yml配置文件，并自动生成/home/当前用户ID/.config/clash文件夹，其中包含两个文件 config.yml 和 Country.mmdb ，若看不到这文件夹，则按<code>ctrl+H</code>显示隐藏文件。其中 Country.mmdb由于墙的原因下载较慢，这里提供<a href="https://quqi.gblhgk.com/s/2796382/PtRJqrmJaeM9Nh17" target="_blank" rel="noopener">网盘下载</a>，直接拷贝进/home/当前用户ID/.config/clash中。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo cp Country.mmdb的路径 ~&#x2F;home&#x2F;当前用户ID&#x2F;.config&#x2F;clash</span><br></pre></td></tr></table></figure></p>
+<h2 id="3"><a href="#3" class="headerlink" title="3."></a>3.</h2><p>编辑/home/当前用户ID/.config/clash下的 config.yml配置文件，内容为自己的服务器及规则等信息(有些商家会提供相应的yml文件，下载后将内容copy至该文件)，保存更改后复制该文件至先前创建的Clash文件夹(by:这两个文件夹不要弄混，一个是手动建立的，一个是自动创建的，都需要.yml文件)。</p>
+<p>在终端 cd 到 Clash 二进制文件所在的目录，执行下载 Clash 配置文件，得到商家提供的服务器及规则等信息<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/clash/linux-clash-2.jpg" alt></p>
+<p>将其在/home/当前用户ID/.config/clash下复制一份<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo cp ~&#x2F;home&#x2F;当前用户ID&#x2F;clash&#x2F;config.yml ~&#x2F;home&#x2F;当前用户ID&#x2F;.config&#x2F;clash</span><br></pre></td></tr></table></figure></p>
+<h2 id="4"><a href="#4" class="headerlink" title="4."></a>4.</h2><p>重启终端，执行 <code>sudo ./clash-linux-amd64</code>以加载配置文件</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/clash/linux-clash-3.jpg" alt></p>
+<h2 id="5"><a href="#5" class="headerlink" title="5."></a>5.</h2><p>访问 <a href="http://clash.razord.top/" target="_blank" rel="noopener">Clash Dashboard </a> 可以进行切换节点、测延迟等操作。</p>
 <p>Host: <code>127.0.0.1</code>，端口: <code>9090</code><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/clash/linux-clash-4.jpg" alt></p>
-<h2 id="5"><a href="#5" class="headerlink" title="5."></a>5.</h2><p>以 Ubuntu 19.04 为例，打开系统设置，选择网络，点击网络代理右边的 ⚙ 按钮，选择手动，填写 HTTP 和 HTTPS 代理为 <code>127.0.0.1:7890</code>，填写 Socks 主机为 <code>127.0.0.1:7891</code>，即可启用系统代理。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/clash/linux-clash-5.jpg" alt></p>
+<h2 id="6"><a href="#6" class="headerlink" title="6."></a>6.</h2><p>以 Ubuntu 19.04 为例，打开系统设置，选择网络，点击网络代理右边的 ⚙ 按钮，选择手动，填写 HTTP 和 HTTPS 代理为 <code>127.0.0.1:7890</code>，填写 Socks 主机为 <code>127.0.0.1:7891</code>，即可启用系统代理。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/clash/linux-clash-5.jpg" alt></p>
+<p>若需关掉代理，则<code>ctrl+c</code>停止终端，并在系统代理设置中重新改为无即可。</p>
+<h2 id="7"><a href="#7" class="headerlink" title="7."></a>7.</h2><p>若需固定到启动器，则选择合适的图片文件，用作图标，放置于创建的clash文件夹下</p>
+<p>使用<code>sudo gedit /usr/share/applications/Clash.desktop</code>在 /usr/share/applications/ 中创建一个文件 Clash.desktop ，步骤及内容如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"># 以下各项根据自己的情况填写</span><br><span class="line">[Desktop Entry]</span><br><span class="line"> Version&#x3D;0.17.0</span><br><span class="line"> Name&#x3D;Clash</span><br><span class="line"> Comment&#x3D;A rule-based tunnel in Go</span><br><span class="line"> Exec&#x3D;&#x2F;full&#x2F;path&#x2F;to&#x2F;clash-linux</span><br><span class="line"> Icon&#x3D;&#x2F;full&#x2F;path&#x2F;to&#x2F;clash-logo.png</span><br><span class="line"> Terminal&#x3D;false</span><br><span class="line"> Type&#x3D;Application</span><br><span class="line"> Categories&#x3D;Network</span><br></pre></td></tr></table></figure></p>
+<p>关键词说明</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[Desktop Entry] 文件头</span><br><span class="line">Version    版本</span><br><span class="line">Name    应用名称</span><br><span class="line">Name[xx]    不同语言的应用名称</span><br><span class="line">Comment 注释</span><br><span class="line">Exec    执行文件路径</span><br><span class="line">Icon    图标路径</span><br><span class="line">Terminal    是否使用终端</span><br><span class="line">Type    启动器类型</span><br><span class="line">Categories  应用的类型（内容相关）</span><br></pre></td></tr></table></figure>
+<p>上述操作完成后，即可在启动器中看到该应用图标，对其右键单击，选择固定到任务栏，方便以后打开 。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/clash/Snipaste_2020-02-05_23-07-03.jpg" alt></p>
 
     </div>
 
@@ -404,7 +415,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1"><span class="nav-number">1.</span> <span class="nav-text"> 1.</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2"><span class="nav-number">2.</span> <span class="nav-text">2.</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3"><span class="nav-number">3.</span> <span class="nav-text">3.</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4"><span class="nav-number">4.</span> <span class="nav-text">4.</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5"><span class="nav-number">5.</span> <span class="nav-text">5.</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1"><span class="nav-number">1.</span> <span class="nav-text"> 1.</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2"><span class="nav-number">2.</span> <span class="nav-text">2.</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3"><span class="nav-number">3.</span> <span class="nav-text">3.</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4"><span class="nav-number">4.</span> <span class="nav-text">4.</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5"><span class="nav-number">5.</span> <span class="nav-text">5.</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6"><span class="nav-number">6.</span> <span class="nav-text">6.</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7"><span class="nav-number">7.</span> <span class="nav-text">7.</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 	  
@@ -492,12 +503,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-area-chart"></i>
     </span>
-    <span title="站点总字数">134k</span>
+    <span title="站点总字数">135k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">2:02</span>
+    <span title="站点阅读时长">2:03</span>
 </div>
 
         
