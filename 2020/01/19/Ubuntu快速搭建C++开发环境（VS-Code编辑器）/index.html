@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 4.1.0">
+<meta name="generator" content="Hexo 4.2.0">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
@@ -22,7 +22,7 @@
   var CONFIG = {
     hostname: new URL('https://Qiyuan-Z.github.io').hostname,
     root: '/',
-    scheme: 'Mist',
+    scheme: 'Gemini',
     version: '7.6.0',
     exturl: false,
     sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
@@ -49,25 +49,25 @@
 
   <meta property="og:type" content="article">
 <meta property="og:title" content="Ubuntu快速搭建C++开发环境（VS Code编辑器）">
-<meta property="og:url" content="https:&#x2F;&#x2F;qiyuan-z.github.io&#x2F;2020&#x2F;01&#x2F;19&#x2F;Ubuntu%E5%BF%AB%E9%80%9F%E6%90%AD%E5%BB%BAC++%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%EF%BC%88VS-Code%E7%BC%96%E8%BE%91%E5%99%A8%EF%BC%89&#x2F;index.html">
+<meta property="og:url" content="https://qiyuan-z.github.io/2020/01/19/Ubuntu%E5%BF%AB%E9%80%9F%E6%90%AD%E5%BB%BAC++%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%EF%BC%88VS-Code%E7%BC%96%E8%BE%91%E5%99%A8%EF%BC%89/index.html">
 <meta property="og:site_name" content="Yuan">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;VScode&#x2F;11655830-047109e9a0a075af.jpg">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;VScode&#x2F;11655830-8c9880935d6bcbe8.png">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;VScode&#x2F;11655830-43717f65ac98f10e.png">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;VScode&#x2F;11655830-84d0b75234245983.png">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;VScode&#x2F;11655830-5c0e4151fa446bb1.png">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;VScode&#x2F;11655830-9086cfb5ebae16ca.png">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;VScode&#x2F;11655830-422767a1784b76a6.png">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;VScode&#x2F;11655830-86304c028d93ecc7.png">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;VScode&#x2F;11655830-4ecc19bb3b0c9794.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/VScode/11655830-047109e9a0a075af.jpg">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/VScode/11655830-8c9880935d6bcbe8.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/VScode/11655830-43717f65ac98f10e.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/VScode/11655830-84d0b75234245983.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/VScode/11655830-5c0e4151fa446bb1.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/VScode/11655830-9086cfb5ebae16ca.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/VScode/11655830-422767a1784b76a6.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/VScode/11655830-86304c028d93ecc7.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/VScode/11655830-4ecc19bb3b0c9794.png">
 <meta property="article:published_time" content="2020-01-19T11:07:49.403Z">
 <meta property="article:modified_time" content="2020-01-19T11:14:47.595Z">
 <meta property="article:author" content="Qiyuan-Z">
 <meta property="article:tag" content="Ubuntu">
 <meta property="article:tag" content="C++">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;VScode&#x2F;11655830-047109e9a0a075af.jpg">
+<meta name="twitter:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/VScode/11655830-047109e9a0a075af.jpg">
 
 <link rel="canonical" href="https://qiyuan-z.github.io/2020/01/19/Ubuntu%E5%BF%AB%E9%80%9F%E6%90%AD%E5%BB%BAC++%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%EF%BC%88VS-Code%E7%BC%96%E8%BE%91%E5%99%A8%EF%BC%89/">
 
@@ -142,6 +142,7 @@
         <span class="logo-line-after"><i></i></span>
       </a>
     </div>
+        <p class="site-subtitle">记录学习中的点点滴滴</p>
   </div>
 
   <div class="site-nav-toggle">
@@ -213,6 +214,7 @@
     <i class="fa fa-arrow-up"></i>
     <span>0%</span>
   </div>
+  <div class="reading-progress-bar"></div>
 
 
     <main class="main">
@@ -233,7 +235,7 @@
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/wallhaven-915.png">
       <meta itemprop="name" content="Qiyuan-Z">
-      <meta itemprop="description" content="">
+      <meta itemprop="description" content="偉大な魂は目的を持ち、そうでないものは願望を持つ">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -273,21 +275,7 @@
               </span>
               <span class="post-meta-item-text">阅读次数：</span>
               <span id="busuanzi_value_page_pv"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2020/01/19/Ubuntu%E5%BF%AB%E9%80%9F%E6%90%AD%E5%BB%BAC++%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%EF%BC%88VS-Code%E7%BC%96%E8%BE%91%E5%99%A8%EF%BC%89/#comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/01/19/Ubuntu%E5%BF%AB%E9%80%9F%E6%90%AD%E5%BB%BAC++%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%EF%BC%88VS-Code%E7%BC%96%E8%BE%91%E5%99%A8%EF%BC%89/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
+            </span><br>
             <span class="post-meta-item" title="本文字数">
               <span class="post-meta-item-icon">
                 <i class="fa fa-file-word-o"></i>
@@ -360,11 +348,27 @@
         </span>
       </div>
     </div>
+	<div>
 
+	  
+
+		<div>
+
+    
+
+        <div >-------------本文结束感谢您的阅读-------------</div>
+
+    
+
+</div>
+
+	  
+
+	</div>
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/Ubuntu/" rel="tag"># Ubuntu</a>
-              <a href="/tags/C/" rel="tag"># C++</a>
+              <a href="/tags/Ubuntu/" rel="tag"><i class="fa fa-tag"></i> Ubuntu</a>
+              <a href="/tags/C/" rel="tag"><i class="fa fa-tag"></i> C++</a>
           </div>
 
         
@@ -393,7 +397,6 @@
 
           </div>
           
-    <div class="comments" id="valine-comments"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -440,7 +443,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#null"><span class="nav-number">1.</span> <span class="nav-text"></span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装g-8"><span class="nav-number">2.</span> <span class="nav-text">安装g++-8</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装Visual-Studio-Code"><span class="nav-number">3.</span> <span class="nav-text">安装Visual Studio Code</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建第一个C-项目（以下步骤除非有特殊说明，否则每次创建项目都要执行一次）："><span class="nav-number">4.</span> <span class="nav-text">创建第一个C++项目（以下步骤除非有特殊说明，否则每次创建项目都要执行一次）：</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#null"><span class="nav-text"></span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装g-8"><span class="nav-text">安装g++-8</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装Visual-Studio-Code"><span class="nav-text">安装Visual Studio Code</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建第一个C-项目（以下步骤除非有特殊说明，否则每次创建项目都要执行一次）："><span class="nav-text">创建第一个C++项目（以下步骤除非有特殊说明，否则每次创建项目都要执行一次）：</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 	  
@@ -451,14 +454,14 @@
     <img class="site-author-image" itemprop="image" alt="Qiyuan-Z"
       src="/images/wallhaven-915.png">
   <p class="site-author-name" itemprop="name">Qiyuan-Z</p>
-  <div class="site-description" itemprop="description"></div>
+  <div class="site-description" itemprop="description">偉大な魂は目的を持ち、そうでないものは願望を持つ</div>
 </div>
 <div class="site-state-wrap motion-element">
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">34</span>
+          <span class="site-state-item-count">33</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -583,7 +586,7 @@
 <script src="/js/motion.js"></script>
 
 
-<script src="/js/schemes/muse.js"></script>
+<script src="/js/schemes/pisces.js"></script>
 
 
 <script src="/js/next-boot.js"></script>
@@ -674,35 +677,6 @@
         pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
       new needShareButton('#needsharebutton-postbottom', pbOptions);
   </script>
-
-<script>
-NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
-  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
-    var GUEST = ['nick', 'mail', 'link'];
-    var guest = 'nick,mail,link';
-    guest = guest.split(',').filter(item => {
-      return GUEST.includes(item);
-    });
-    new Valine({
-      el: '#valine-comments',
-      verify: false,
-      notify: false,
-      appId: 'Qbpc7uiugdEBCmq9h8ld4Ttd-gzGzoHsz',
-      appKey: 'jqjQ3QRJdnoeCASIA6XkWK1E',
-      placeholder: "欢迎交流讨论...",
-      avatar: 'mm',
-      meta: guest,
-      pageSize: '10' || 10,
-      visitor: false,
-      lang: 'zh-cn' || 'zh-cn',
-      path: location.pathname,
-      recordIP: false,
-      serverURLs: ''
-    });
-  }, window.Valine);
-});
-
-</script>
   <script type="text/javascript" src="/js/src/clicklove.js"></script>
 </body>
 </html>

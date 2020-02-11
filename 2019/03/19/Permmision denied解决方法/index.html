@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 4.1.0">
+<meta name="generator" content="Hexo 4.2.0">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
@@ -22,7 +22,7 @@
   var CONFIG = {
     hostname: new URL('https://Qiyuan-Z.github.io').hostname,
     root: '/',
-    scheme: 'Mist',
+    scheme: 'Gemini',
     version: '7.6.0',
     exturl: false,
     sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
@@ -50,7 +50,7 @@
   <meta name="description" content="这是因为要管理员权限的，而ubuntu又不想给普通用户赋予管理员权限。所以这里开启root账号">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Permmision denied解决方法">
-<meta property="og:url" content="https:&#x2F;&#x2F;qiyuan-z.github.io&#x2F;2019&#x2F;03&#x2F;19&#x2F;Permmision%20denied%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95&#x2F;index.html">
+<meta property="og:url" content="https://qiyuan-z.github.io/2019/03/19/Permmision%20denied%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/index.html">
 <meta property="og:site_name" content="Yuan">
 <meta property="og:description" content="这是因为要管理员权限的，而ubuntu又不想给普通用户赋予管理员权限。所以这里开启root账号">
 <meta property="og:locale" content="zh_CN">
@@ -133,6 +133,7 @@
         <span class="logo-line-after"><i></i></span>
       </a>
     </div>
+        <p class="site-subtitle">记录学习中的点点滴滴</p>
   </div>
 
   <div class="site-nav-toggle">
@@ -204,6 +205,7 @@
     <i class="fa fa-arrow-up"></i>
     <span>0%</span>
   </div>
+  <div class="reading-progress-bar"></div>
 
 
     <main class="main">
@@ -224,7 +226,7 @@
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/wallhaven-915.png">
       <meta itemprop="name" content="Qiyuan-Z">
-      <meta itemprop="description" content="">
+      <meta itemprop="description" content="偉大な魂は目的を持ち、そうでないものは願望を持つ">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -270,21 +272,7 @@
               </span>
               <span class="post-meta-item-text">阅读次数：</span>
               <span id="busuanzi_value_page_pv"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2019/03/19/Permmision%20denied%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/#comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2019/03/19/Permmision%20denied%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
+            </span><br>
             <span class="post-meta-item" title="本文字数">
               <span class="post-meta-item-icon">
                 <i class="fa fa-file-word-o"></i>
@@ -311,11 +299,10 @@
       
         <p>这是因为要管理员权限的，而ubuntu又不想给普通用户赋予管理员权限。所以这里开启root账号</p>
 <h2 id="首先设置-root-密码"><a href="#首先设置-root-密码" class="headerlink" title=" 首先设置 root 密码"></a><a id="more"></a> 首先设置 root 密码</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo passwd</span><br></pre></td></tr></table></figure>
-<p>会出现以下画面：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[sudo] password for luban:                        &#x2F;&#x2F;输入当前普通用户的密码</span><br><span class="line"></span><br><span class="line">Enter new UNIX password:                          &#x2F;&#x2F;给root设置密码</span><br><span class="line"></span><br><span class="line">Retype new UNIX password:                         &#x2F;&#x2F;确认输入密码</span><br><span class="line"></span><br><span class="line">passwd: password updated successfully</span><br></pre></td></tr></table></figure>
+<p>会出现以下画面：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[sudo] password for luban:                        &#x2F;&#x2F;输入当前普通用户的密码</span><br><span class="line"></span><br><span class="line">Enter new UNIX password:                          &#x2F;&#x2F;给root设置密码</span><br><span class="line"></span><br><span class="line">Retype new UNIX password:                         &#x2F;&#x2F;确认输入密码</span><br><span class="line"></span><br><span class="line">passwd: password updated successfully</span><br></pre></td></tr></table></figure></p>
 <h2 id="开启root"><a href="#开启root" class="headerlink" title="开启root"></a>开启root</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">su root</span><br></pre></td></tr></table></figure>
-<h2 id="修改文件权限"><a href="#修改文件权限" class="headerlink" title="修改文件权限"></a>修改文件权限</h2><p>为了获得执行权限，借助chmod指令修改文件权限即可。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod 777 文件夹或文件路径</span><br></pre></td></tr></table></figure>
+<h2 id="修改文件权限"><a href="#修改文件权限" class="headerlink" title="修改文件权限"></a>修改文件权限</h2><p>为了获得执行权限，借助chmod指令修改文件权限即可。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod 777 文件夹或文件路径</span><br></pre></td></tr></table></figure></p>
+
     </div>
 
     
@@ -327,10 +314,26 @@
         </span>
       </div>
     </div>
+	<div>
 
+	  
+
+		<div>
+
+    
+
+        <div >-------------本文结束感谢您的阅读-------------</div>
+
+    
+
+</div>
+
+	  
+
+	</div>
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/Ubuntu/" rel="tag"># Ubuntu</a>
+              <a href="/tags/Ubuntu/" rel="tag"><i class="fa fa-tag"></i> Ubuntu</a>
           </div>
 
         
@@ -339,12 +342,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2019/03/19/Ubuntu%E4%B8%8B%E5%A6%82%E4%BD%95%E6%B7%BB%E5%8A%A0%E6%96%B0%E7%94%A8%E6%88%B7%E5%B9%B6%E5%A2%9E%E5%8A%A0%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/" rel="prev" title="Ubuntu下如何添加新用户并增加管理员权限">
-      <i class="fa fa-chevron-left"></i> Ubuntu下如何添加新用户并增加管理员权限
+    <a href="/2019/03/19/Python%E6%96%B0%E7%8E%AF%E5%A2%83%E4%B8%8B%E5%BF%AB%E9%80%9F%E5%AE%89%E8%A3%85%E4%BE%9D%E8%B5%96%E5%8C%85%E7%9A%84%E5%B0%8F%E6%8A%80%E5%B7%A7/" rel="prev" title="Python新环境下快速安装依赖包的小技巧">
+      <i class="fa fa-chevron-left"></i> Python新环境下快速安装依赖包的小技巧
     </a></div>
       <div class="post-nav-item">
-    <a href="/2019/03/19/Python%E6%96%B0%E7%8E%AF%E5%A2%83%E4%B8%8B%E5%BF%AB%E9%80%9F%E5%AE%89%E8%A3%85%E4%BE%9D%E8%B5%96%E5%8C%85%E7%9A%84%E5%B0%8F%E6%8A%80%E5%B7%A7/" rel="next" title="Python新环境下快速安装依赖包的小技巧">
-      Python新环境下快速安装依赖包的小技巧 <i class="fa fa-chevron-right"></i>
+    <a href="/2019/03/20/PyQt5%E4%B8%8EOpencv%E7%9A%84%E5%B0%8F%E5%B0%8F%E8%9E%8D%E5%90%88/" rel="next" title="PyQt5与Opencv的小小融合">
+      PyQt5与Opencv的小小融合 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -359,7 +362,6 @@
 
           </div>
           
-    <div class="comments" id="valine-comments"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -406,7 +408,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#首先设置-root-密码"><span class="nav-number">1.</span> <span class="nav-text"> 首先设置 root 密码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开启root"><span class="nav-number">2.</span> <span class="nav-text">开启root</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#修改文件权限"><span class="nav-number">3.</span> <span class="nav-text">修改文件权限</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#首先设置-root-密码"><span class="nav-text"> 首先设置 root 密码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开启root"><span class="nav-text">开启root</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#修改文件权限"><span class="nav-text">修改文件权限</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 	  
@@ -417,14 +419,14 @@
     <img class="site-author-image" itemprop="image" alt="Qiyuan-Z"
       src="/images/wallhaven-915.png">
   <p class="site-author-name" itemprop="name">Qiyuan-Z</p>
-  <div class="site-description" itemprop="description"></div>
+  <div class="site-description" itemprop="description">偉大な魂は目的を持ち、そうでないものは願望を持つ</div>
 </div>
 <div class="site-state-wrap motion-element">
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">34</span>
+          <span class="site-state-item-count">33</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -549,7 +551,7 @@
 <script src="/js/motion.js"></script>
 
 
-<script src="/js/schemes/muse.js"></script>
+<script src="/js/schemes/pisces.js"></script>
 
 
 <script src="/js/next-boot.js"></script>
@@ -592,35 +594,6 @@
         pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
       new needShareButton('#needsharebutton-postbottom', pbOptions);
   </script>
-
-<script>
-NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
-  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
-    var GUEST = ['nick', 'mail', 'link'];
-    var guest = 'nick,mail,link';
-    guest = guest.split(',').filter(item => {
-      return GUEST.includes(item);
-    });
-    new Valine({
-      el: '#valine-comments',
-      verify: false,
-      notify: false,
-      appId: 'Qbpc7uiugdEBCmq9h8ld4Ttd-gzGzoHsz',
-      appKey: 'jqjQ3QRJdnoeCASIA6XkWK1E',
-      placeholder: "欢迎交流讨论...",
-      avatar: 'mm',
-      meta: guest,
-      pageSize: '10' || 10,
-      visitor: false,
-      lang: 'zh-cn' || 'zh-cn',
-      path: location.pathname,
-      recordIP: false,
-      serverURLs: ''
-    });
-  }, window.Valine);
-});
-
-</script>
   <script type="text/javascript" src="/js/src/clicklove.js"></script>
 </body>
 </html>

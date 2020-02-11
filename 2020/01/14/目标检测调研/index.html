@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 4.1.0">
+<meta name="generator" content="Hexo 4.2.0">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
@@ -22,7 +22,7 @@
   var CONFIG = {
     hostname: new URL('https://Qiyuan-Z.github.io').hostname,
     root: '/',
-    scheme: 'Mist',
+    scheme: 'Gemini',
     version: '7.6.0',
     exturl: false,
     sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
@@ -49,57 +49,57 @@
 
   <meta property="og:type" content="article">
 <meta property="og:title" content="目标检测调研">
-<meta property="og:url" content="https:&#x2F;&#x2F;qiyuan-z.github.io&#x2F;2020&#x2F;01&#x2F;14&#x2F;%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E8%B0%83%E7%A0%94&#x2F;index.html">
+<meta property="og:url" content="https://qiyuan-z.github.io/2020/01/14/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E8%B0%83%E7%A0%94/index.html">
 <meta property="og:site_name" content="Yuan">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;deep_learning_object_detection_dataset.PNG">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;2018042521300715.png">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;20180423003716617.png">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;deep_learning_object_detection_history.PNG">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;20180509095302426.png">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;1423648-20190316210029111-840970217.png">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;1423648-20190317100459585-1587811888.png">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;TIM%E5%9B%BE%E7%89%8720200106182123.png">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;Snipaste_2020-01-07_09-57-14.jpg">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;20180425214236957.png">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;Snipaste_2020-01-07_10-28-09.jpg">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;20180425215129861.png">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;Snipaste_2020-01-07_10-41-12.jpg">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;Snipaste_2020-01-07_10-46-02.jpg">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;3940902-7569280b566d0e58.png">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;3940902-5519b489e581557a.png">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;3940902-a6127730f6d21abd.png">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;v2-e64a99b38f411c337f538eb5f093bdf3_r.jpg">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;v2-1908feeaba591d28bee3c4a754cca282_r.jpg">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;v2-7abead97efcc46a3ee5b030a2151643f_hd.jpg">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;v2-1ab4b6c3dd607a5035b5203c76b078f3_r.jpg">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;v2-8241c8076d60156248916fe2f1a5674a_r.jpg">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;6983308-d54136f1eb0cd733.png">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;6983308-0d1e8d42480e1c1a.png">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;6983308-29a33d2e79ed722b.png">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;20180511204751564.png">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;Snipaste_2020-01-07_18-40-15.jpg">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;Snipaste_2020-01-07_18-53-58.jpg">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;Snipaste_2020-01-07_19-14-51.jpg">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;20161229150249883.jpg">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;Snipaste_2020-01-08_09-22-20.jpg">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;2709767-e65c08c61bfaa7c7.png">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;2709767-bc5def91d05e4d3a.png">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;2709767-9b28d0f1c682b80a.png">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;2709767-5cc00a60004e0473.png">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;Snipaste_2020-01-08_14-51-11.jpg">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;2148039-cec47c5d71ce8f22.png">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;Snipaste_2020-01-08_15-32-00.jpg">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;2018051716490729.png">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;Snipaste_2020-01-08_16-00-32.jpg">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;Snipaste_2020-01-08_16-11-49.jpg">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;Snipaste_2020-01-08_16-17-17.jpg">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/deep_learning_object_detection_dataset.PNG">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/2018042521300715.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/20180423003716617.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/deep_learning_object_detection_history.PNG">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/20180509095302426.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/1423648-20190316210029111-840970217.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/1423648-20190317100459585-1587811888.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/TIM%E5%9B%BE%E7%89%8720200106182123.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/Snipaste_2020-01-07_09-57-14.jpg">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/20180425214236957.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/Snipaste_2020-01-07_10-28-09.jpg">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/20180425215129861.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/Snipaste_2020-01-07_10-41-12.jpg">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/Snipaste_2020-01-07_10-46-02.jpg">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/3940902-7569280b566d0e58.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/3940902-5519b489e581557a.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/3940902-a6127730f6d21abd.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/v2-e64a99b38f411c337f538eb5f093bdf3_r.jpg">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/v2-1908feeaba591d28bee3c4a754cca282_r.jpg">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/v2-7abead97efcc46a3ee5b030a2151643f_hd.jpg">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/v2-1ab4b6c3dd607a5035b5203c76b078f3_r.jpg">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/v2-8241c8076d60156248916fe2f1a5674a_r.jpg">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/6983308-d54136f1eb0cd733.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/6983308-0d1e8d42480e1c1a.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/6983308-29a33d2e79ed722b.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/20180511204751564.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/Snipaste_2020-01-07_18-40-15.jpg">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/Snipaste_2020-01-07_18-53-58.jpg">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/Snipaste_2020-01-07_19-14-51.jpg">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/20161229150249883.jpg">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/Snipaste_2020-01-08_09-22-20.jpg">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/2709767-e65c08c61bfaa7c7.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/2709767-bc5def91d05e4d3a.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/2709767-9b28d0f1c682b80a.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/2709767-5cc00a60004e0473.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/Snipaste_2020-01-08_14-51-11.jpg">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/2148039-cec47c5d71ce8f22.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/Snipaste_2020-01-08_15-32-00.jpg">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/2018051716490729.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/Snipaste_2020-01-08_16-00-32.jpg">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/Snipaste_2020-01-08_16-11-49.jpg">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/Snipaste_2020-01-08_16-17-17.jpg">
 <meta property="article:published_time" content="2020-01-14T12:47:23.096Z">
 <meta property="article:modified_time" content="2020-01-14T13:24:23.275Z">
 <meta property="article:author" content="Qiyuan-Z">
 <meta property="article:tag" content="目标检测">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;object%20detection&#x2F;deep_learning_object_detection_dataset.PNG">
+<meta name="twitter:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/deep_learning_object_detection_dataset.PNG">
 
 <link rel="canonical" href="https://qiyuan-z.github.io/2020/01/14/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E8%B0%83%E7%A0%94/">
 
@@ -174,6 +174,7 @@
         <span class="logo-line-after"><i></i></span>
       </a>
     </div>
+        <p class="site-subtitle">记录学习中的点点滴滴</p>
   </div>
 
   <div class="site-nav-toggle">
@@ -245,6 +246,7 @@
     <i class="fa fa-arrow-up"></i>
     <span>0%</span>
   </div>
+  <div class="reading-progress-bar"></div>
 
 
     <main class="main">
@@ -265,7 +267,7 @@
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/wallhaven-915.png">
       <meta itemprop="name" content="Qiyuan-Z">
-      <meta itemprop="description" content="">
+      <meta itemprop="description" content="偉大な魂は目的を持ち、そうでないものは願望を持つ">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -305,21 +307,7 @@
               </span>
               <span class="post-meta-item-text">阅读次数：</span>
               <span id="busuanzi_value_page_pv"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2020/01/14/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E8%B0%83%E7%A0%94/#comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/01/14/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E8%B0%83%E7%A0%94/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
+            </span><br>
             <span class="post-meta-item" title="本文字数">
               <span class="post-meta-item-icon">
                 <i class="fa fa-file-word-o"></i>
@@ -873,19 +861,19 @@
 <p>优点：<br>　　　　（a）计算效率优于滑窗法。<br>　　　　（b）由于采用子区域合并策略，所以可以包含各种大小的疑似物体框。<br>　　　　（c）合并区域相似的指标多样性，提高了检测物体的概率。</p>
 <h3 id="边界框回归-Bounding-Box-regression"><a href="#边界框回归-Bounding-Box-regression" class="headerlink" title="边界框回归(Bounding-Box regression)"></a>边界框回归(Bounding-Box regression)</h3><p>窗口一般使用四维向量$(x,y,w,h)$来表示， 分别表示窗口的中心点坐标和宽高。 对于下图, 红色的框 $P$ 代表原始的Proposal, 绿色的框 $G$ 代表目标的 Ground Truth， 目标是寻找一种关系使得输入原始的窗口 $P$ 经过映射得到一个跟真实窗口 $G$ 更接近的回归窗口$\hat{G}$。</p>
 <p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/TIM%E5%9B%BE%E7%89%8720200106182123.png" alt></p>
-<p>边框回归的目的既是：给定$\left(P_{x}, P_{y}, P_{w}, P_{h}\right)$寻找一种映射$f$， 使得$f\left(P_{x}, P_{y}, P_{w}, P_{h}\right)=\left(\hat{G}_{x}, \hat{G}_{y}, \hat{G}_{w}, \hat{G}_{h}\right)$并且$\left(\hat{G}_{x}, \hat{G}_{y}, \hat{G}_{w}, \hat{G}_{h}\right) \approx\left(G_{x}, G_{y}, G_{w}, G_{h}\right)$</p>
+<p>边框回归的目的既是：给定$\left(P<em>{x}, P</em>{y}, P<em>{w}, P</em>{h}\right)$寻找一种映射$f$， 使得$f\left(P<em>{x}, P</em>{y}, P<em>{w}, P</em>{h}\right)=\left(\hat{G}<em>{x}, \hat{G}</em>{y}, \hat{G}<em>{w}, \hat{G}</em>{h}\right)$并且$\left(\hat{G}<em>{x}, \hat{G}</em>{y}, \hat{G}<em>{w}, \hat{G}</em>{h}\right) \approx\left(G<em>{x}, G</em>{y}, G<em>{w}, G</em>{h}\right)$</p>
 <p>思路: 平移 + 尺度放缩</p>
 <ol>
-<li><p>先做平移$(\Delta x, \Delta y), \quad \Delta x=P_{w} d_{x}(P), \Delta y=P_{h} d_{y}(P)$</p>
-<p>$\hat{G}_{x}=P_{w} d_{x}(P)+P_{x}$<br>$\hat{G}_{y}=P_{h} d_{y}(P)+P_{y}$</p>
+<li><p>先做平移$(\Delta x, \Delta y), \quad \Delta x=P<em>{w} d</em>{x}(P), \Delta y=P<em>{h} d</em>{y}(P)$</p>
+<p>$\hat{G}<em>{x}=P</em>{w} d<em>{x}(P)+P</em>{x}$<br>$\hat{G}<em>{y}=P</em>{h} d<em>{y}(P)+P</em>{y}$</p>
 </li>
-<li><p>然后再做尺度缩放$\left(S_{w}, S_{h}\right), S_{w}=\exp \left(d_{w}(P)\right), S_{h}=\exp \left(d_{h}(P)\right)$</p>
-<p>$\hat{G}_{w}=P_{w} \exp \left(d_{w}(P)\right)$<br>$\hat{G}_{h}=P_{h} \exp \left(d_{h}(P)\right)$</p>
+<li><p>然后再做尺度缩放$\left(S<em>{w}, S</em>{h}\right), S<em>{w}=\exp \left(d</em>{w}(P)\right), S<em>{h}=\exp \left(d</em>{h}(P)\right)$</p>
+<p>$\hat{G}<em>{w}=P</em>{w} \exp \left(d<em>{w}(P)\right)$<br>$\hat{G}</em>{h}=P<em>{h} \exp \left(d</em>{h}(P)\right)$</p>
 </li>
 </ol>
-<p>边框回归就是学习$d_{x}(P), d_{y}(P), d_{w}(P), d_{h}(P)$这四个变换。</p>
+<p>边框回归就是学习$d<em>{x}(P), d</em>{y}(P), d<em>{w}(P), d</em>{h}(P)$这四个变换。</p>
 <p>线性回归就是给定输入的特征向量$X$, 学习一组参数 $W$, 使得经过线性回归后的值跟真实值 $Y$(Ground Truth)非常接近. 即$Y ≈ WX$。</p>
-<p>输入为：$P=\left(P_{x}, P_{y}, P_{w}, P_{h}\right)$这个窗口对应的 CNN 特征(注：训练阶段输入还包括 Ground Truth， 也就是下边提到的$t_{*}=\left(t_{x}, t_{y}, t_{w}, t_{h}\right)$ )</p>
+<p>输入为：$P=\left(P<em>{x}, P</em>{y}, P<em>{w}, P</em>{h}\right)$这个窗口对应的 CNN 特征(注：训练阶段输入还包括 Ground Truth， 也就是下边提到的$t<em>{*}=\left(t</em>{x}, t<em>{y}, t</em>{w}, t_{h}\right)$ )</p>
 <p>输出为：四个变换，因为有了这四个变换我们就可以直接得到 Ground Truth，真实值所对应的真正的变化为</p>
 <script type="math/tex; mode=display">
 \begin{aligned}
@@ -893,9 +881,9 @@
 &t_{y}=\left(G_{y}-P_{y}\right) / P_{h}\\
 &t_{w}=\log \left(G_{w} / P_{w}\right)\\
 &t_{h}=\log \left(G_{h} / P_{h}\right)
-\end{aligned}</script><p>目标函数可以表示为$d_{<em>}(P)=w_{</em>}^{T} \Phi_{5}(P)$， $\Phi_{5}(P)$是输入 Proposal 的特征向量， $w_{<em>}$是要学习的参数（</em> 表示 $x,y,w,h$， 也就是每一个变换对应一个目标函数）, $d_{*}(P)$ 是得到的预测值。</p>
-<p>损失函数：要让预测值跟真实值$t_{*}=\left(t_{x}, t_{y}, t_{w}, t_{h}\right)$差距最小</p>
-<p>$Loss=\sum_{i}^{N}\left(t_{<em>}^{i}-\hat{w}_{</em>}^{T} \phi_{5}\left(P^{i}\right)\right)^{2}$</p>
+\end{aligned}</script><p>目标函数可以表示为$d<em>{*}(P)=w</em>{<em>}^{T} \Phi<em>{5}(P)$， $\Phi</em>{5}(P)$是输入 Proposal 的特征向量， $w_{</em>}$是要学习的参数（<em> 表示 $x,y,w,h$， 也就是每一个变换对应一个目标函数）, $d_{</em>}(P)$ 是得到的预测值。</p>
+<p>损失函数：要让预测值跟真实值$t<em>{*}=\left(t</em>{x}, t<em>{y}, t</em>{w}, t_{h}\right)$差距最小</p>
+<p>$Loss=\sum<em>{i}^{N}\left(t</em>{<em>}^{i}-\hat{w}_{</em>}^{T} \phi_{5}\left(P^{i}\right)\right)^{2}$</p>
 <p>函数优化目标为：</p>
 <script type="math/tex; mode=display">
 W_{*}=\operatorname{argmin}_{w_{*}} \sum_{i}^{N}\left(t_{*}^{i}-\hat{w}_{*}^{T} \phi_{5}\left(P^{i}\right)\right)^{2}+\lambda\left\|\hat{w}_{*}\right\|^{2}</script><h3 id="R-CNN"><a href="#R-CNN" class="headerlink" title="R-CNN"></a>R-CNN</h3><p>Rich feature hierarchies for accurate object detection and semantic segmentation(CVPR 2014)</p>
@@ -985,7 +973,7 @@ W_{*}=\operatorname{argmin}_{w_{*}} \sum_{i}^{N}\left(t_{*}^{i}-\hat{w}_{*}^{T} 
 <p><strong>Region Proposal Networks</strong>。RPN网络用于生成region proposals。该层通过softmax判断anchors属于positive或者negative，再利用bounding box regression修正anchors获得精确的proposals。</p>
 <p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/v2-1908feeaba591d28bee3c4a754cca282_r.jpg" alt></p>
 <p>可以看到RPN网络实际分为2条线，上面一条通过softmax分类anchors获得positive和negative分类，下面一条用于计算对于anchors的bounding box regression偏移量，以获得精确的proposal。而最后的Proposal层则负责综合positive anchors和对应bounding box regression偏移量获取proposals，同时剔除太小和超出边界的proposals。</p>
-<p>所谓anchors，实际上就是一组由rpn/generate_anchors.py生成的矩形。直接运行作者demo中的generate_anchors.py可以得到以下输出：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[[ -84.  -40.   99.   55.]</span><br><span class="line"> [-176.  -88.  191.  103.]</span><br><span class="line"> [-360. -184.  375.  199.]</span><br><span class="line"> [ -56.  -56.   71.   71.]</span><br><span class="line"> [-120. -120.  135.  135.]</span><br><span class="line"> [-248. -248.  263.  263.]</span><br><span class="line"> [ -36.  -80.   51.   95.]</span><br><span class="line"> [ -80. -168.   95.  183.]</span><br><span class="line"> [-168. -344.  183.  359.]]</span><br></pre></td></tr></table></figure><br>其中每行的4个值$\left(x_{1}, y_{1}, x_{2}, y_{2}\right)$表矩形左上和右下角点坐标。9个矩形共有3种形状，长宽比为大约为width: height $\in\{1: 1,1: 2,2: 1\}$三种，如图。实际上通过anchors就引入了检测中常用到的多尺度方法。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/v2-7abead97efcc46a3ee5b030a2151643f_hd.jpg" alt></p>
+<p>所谓anchors，实际上就是一组由rpn/generate<em>anchors.py生成的矩形。直接运行作者demo中的generate_anchors.py可以得到以下输出：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[[ -84.  -40.   99.   55.]</span><br><span class="line"> [-176.  -88.  191.  103.]</span><br><span class="line"> [-360. -184.  375.  199.]</span><br><span class="line"> [ -56.  -56.   71.   71.]</span><br><span class="line"> [-120. -120.  135.  135.]</span><br><span class="line"> [-248. -248.  263.  263.]</span><br><span class="line"> [ -36.  -80.   51.   95.]</span><br><span class="line"> [ -80. -168.   95.  183.]</span><br><span class="line"> [-168. -344.  183.  359.]]</span><br></pre></td></tr></table></figure><br>其中每行的4个值$\left(x</em>{1}, y<em>{1}, x</em>{2}, y_{2}\right)$表矩形左上和右下角点坐标。9个矩形共有3种形状，长宽比为大约为width: height $\in{1: 1,1: 2,2: 1}$三种，如图。实际上通过anchors就引入了检测中常用到的多尺度方法。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/v2-7abead97efcc46a3ee5b030a2151643f_hd.jpg" alt></p>
 <p>注：关于上面的anchors size，其实是根据检测图像设置的。在python demo中，会把任意大小的输入图像reshape成800x600。再回头来看anchors的大小，anchors中长宽1:2中最大为352x704，长宽2:1中最大736x384，基本是cover了800x600的各个尺度和形状。</p>
 <p><strong>那么这9个anchors是做什么的呢？</strong>遍历Conv layers计算获得的feature maps，为每一个点都配备这9种anchors作为初始的检测框。这样做获得检测框很不准确，不用担心，后面还有2次bounding box regression可以修正检测框位置。</p>
 <p><strong>其实RPN最终就是在原图尺度上，设置了密密麻麻的候选Anchor。然后用cnn去判断哪些Anchor是里面有目标的positive anchor，哪些是没目标的negative anchor。所以，仅仅是个二分类而已！</strong></p>
@@ -994,7 +982,7 @@ W_{*}=\operatorname{argmin}_{w_{*}} \sum_{i}^{N}\left(t_{*}^{i}-\hat{w}_{*}^{T} 
 <p><strong>那么为何要在softmax前后都接一个reshape layer？</strong>其实只是为了便于softmax分类,存储形式为[1, 2x9, H, W]。而在softmax分类时需要进行positive/negative二分类，所以reshape layer会将其变为[1, 2, 9xH, W]大小，即单独“腾空”出来一个维度以便softmax分类，之后再reshape回复原状。</p>
 <p>RPN网络中利用anchors和softmax初步提取出positive anchors作为候选区域（另外也有实现用sigmoid代替softmax，原理类似）。</p>
 <p><strong>对proposals进行bounding box regression</strong><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/v2-8241c8076d60156248916fe2f1a5674a_r.jpg" alt></p>
-<p>可以看到其 num_output=36，即经过该卷积输出图像为WxHx36，这里相当于feature maps每个点都有9个anchors，每个anchors又都有4个用于回归的$\left[d_{x}(A), d_{y}(A), d_{w}(A), d_{h}(A)\right]$变化量</p>
+<p>可以看到其 num<em>output=36，即经过该卷积输出图像为WxHx36，这里相当于feature maps每个点都有9个anchors，每个anchors又都有4个用于回归的$\left[d</em>{x}(A), d<em>{y}(A), d</em>{w}(A), d_{h}(A)\right]$变化量</p>
 <p><strong>创新点</strong></p>
 <ul>
 <li>采用RPN(Region Proposal Network)代替选择性搜索(Selective Search)，利用GPU进行计算大幅度缩减提取region proposal的速度。</li>
@@ -1025,15 +1013,15 @@ W_{*}=\operatorname{argmin}_{w_{*}} \sum_{i}^{N}\left(t_{*}^{i}-\hat{w}_{*}^{T} 
 </ul>
 <p>所以，最后网络的输出维度为$S \times S \times (B\times 5 + C)$，这里输出为$7\times7\times(2\times5+20)$, 虽然每个单元格负责预测一种物体(这也是这篇文章的问题，当有小物体时可能会有问题)，但是每个单元格可以预测多个bbox值(这里可以认为有多个不同形状的bbox，为了更准确的定位出物体，如下图所示)。</p>
 <p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/6983308-29a33d2e79ed722b.png" alt></p>
-<p><strong>(x,y)是bbox的中心相对于单元格的offset</strong><br>单元格坐标为$(x_{col},y_{row})$，假设它预测的输出的bbox中心坐标为$(x_c,y_c)$,那么最终预测出来的(x,y)是经过归一化处理的，表示的是中心相对于单元格的offset</p>
+<p><strong>(x,y)是bbox的中心相对于单元格的offset</strong><br>单元格坐标为$(x<em>{col},y</em>{row})$，假设它预测的输出的bbox中心坐标为$(x_c,y_c)$,那么最终预测出来的(x,y)是经过归一化处理的，表示的是中心相对于单元格的offset</p>
 <p><strong>(w,h)是bbox相对于整个图片的比例</strong><br>预测的bbox的宽高为$w_b,h_b$，(w,h)表示的是bbox的是相对于整张图片的占比</p>
-<p><strong>confidence</strong><br>这个置信度是由两部分组成，一是格子内是否有目标，二是bbox的准确度。定义置信度为$P_r(Object)∗IOU^{truth}_{pred}$<br>这里，如果格子内有物体，则$P_r(Object)=1$，此时置信度等于IoU。如果格子内没有物体，则$P_r(Object)=0$，此时置信度为0</p>
+<p><strong>confidence</strong><br>这个置信度是由两部分组成，一是格子内是否有目标，二是bbox的准确度。定义置信度为$P<em>r(Object)∗IOU^{truth}</em>{pred}$<br>这里，如果格子内有物体，则$P_r(Object)=1$，此时置信度等于IoU。如果格子内没有物体，则$P_r(Object)=0$，此时置信度为0</p>
 <p><strong>C类的条件概率</strong><br>条件概率定义为$P_r(Class_i |Object)$，表示该单元格存在物体且属于第i类的概率。</p>
-<p>在测试的时候每个单元格预测最终输出的概率定义为，如下两图所示（两幅图不一样，代表一个框会输出B列概率值）<br>$P_r(Class_i|Object) ∗ P_r(Object) ∗ IOU^{truth}_{pred} = P_r(Class_i) ∗ IOU^{truth}_{pred}$</p>
+<p>在测试的时候每个单元格预测最终输出的概率定义为，如下两图所示（两幅图不一样，代表一个框会输出B列概率值）<br>$P<em>r(Class_i|Object) ∗ P_r(Object) ∗ IOU^{truth}</em>{pred} = P<em>r(Class_i) ∗ IOU^{truth}</em>{pred}$</p>
 <p>最后将$(S\times S)\times B\times20$ 列的结果送入NMS，最后即可得到最终的输出框结果</p>
 <p><strong>损失函数</strong></p>
 <p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/20180511204751564.png" alt></p>
-<p>这里强调两点：<br> 1.每个图片的每个单元格不一定都包含object，如果没有object，那么confidence就会变成0，这样在优化模型的时候可能会让梯度跨越太大，模型不稳定跑飞了。为了平衡这一点，在损失函数中，设置两个参数$λ_{corrd}$和$λ_{noobj}$，其中$λ_{corrd}$控制bbox预测位置的损失，$λ_{noobj}$控制单个格内没有目标的损失。<br> 2.对于大的物体，小的偏差对于小的物体影响较大，为了减少这个影响，所以对bbox的宽高都开根号。</p>
+<p>这里强调两点：<br> 1.每个图片的每个单元格不一定都包含object，如果没有object，那么confidence就会变成0，这样在优化模型的时候可能会让梯度跨越太大，模型不稳定跑飞了。为了平衡这一点，在损失函数中，设置两个参数$λ<em>{corrd}$和$λ</em>{noobj}$，其中$λ<em>{corrd}$控制bbox预测位置的损失，$λ</em>{noobj}$控制单个格内没有目标的损失。<br> 2.对于大的物体，小的偏差对于小的物体影响较大，为了减少这个影响，所以对bbox的宽高都开根号。</p>
 <p><strong>缺点</strong></p>
 <ul>
 <li>YOLO的物体检测精度低于其他state-of-the-art的物体检测系统。</li>
@@ -1069,12 +1057,12 @@ x=\left(t_{x} * w_{a}\right)-x_{a}</script><script type="math/tex; mode=display"
 y=\left(t_{y} * h_{a}\right)-y_{a}</script><p>这个公式的理解为：当预测tx=1，就会把box向右边移动一定距离（具体为anchor box的宽度），预测tx=-1，就会把box向左边移动相同的距离，该公式没有任何约束，中心点可能会出现在图像任何位置，这就有可能导致回归过程震荡，甚至无法收敛。</p>
 <p><strong>强约束方法</strong>：</p>
 <ul>
-<li>对应 Cell 距离左上角的边距为$\left(C_{x}, C_{y}\right)$，σ定义为sigmoid激活函数，将函数值约束到［0，1］，用来预测相对于该Cell中心的偏移（不会偏离cell）；</li>
-<li>预定Anchor（文中描述为bounding box prior）对应的宽高为$\left(P_{w}, P_{h}\right)$，预测 Location 是相对于Anchor的宽高乘以系数得到；</li>
+<li>对应 Cell 距离左上角的边距为$\left(C<em>{x}, C</em>{y}\right)$，σ定义为sigmoid激活函数，将函数值约束到［0，1］，用来预测相对于该Cell中心的偏移（不会偏离cell）；</li>
+<li>预定Anchor（文中描述为bounding box prior）对应的宽高为$\left(P<em>{w}, P</em>{h}\right)$，预测 Location 是相对于Anchor的宽高乘以系数得到；</li>
 </ul>
 </li>
 </ul>
-<p>  如果这个cell距离图像左上角的边距为$\left(C_{x}, C_{y}\right)$以及该cell对应的box维度（bounding box prior）的长和宽分别为$\left(P_{w}, P_{h}\right)$，那么预测值可以表示为： </p>
+<p>  如果这个cell距离图像左上角的边距为$\left(C<em>{x}, C</em>{y}\right)$以及该cell对应的box维度（bounding box prior）的长和宽分别为$\left(P<em>{w}, P</em>{h}\right)$，那么预测值可以表示为： </p>
 <p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/Snipaste_2020-01-07_18-53-58.jpg" alt></p>
 <ul>
 <li><p><strong>Fine-Grained Features</strong><br>YOLO最终在13x13的特征图上进行预测，虽然这足以胜任大尺度物体的检测，但对于小物体还需要更精细的特征图（Fine-Grained Features），前面更精细的特征图可以用来预测小物体。<br>YOLOv2提出了一种passthrough层来利用更精细的特征图。YOLOv2所利用的Fine-Grained Features是26x26大小的特征图（最后一个maxpooling层的输入），对于Darknet-19模型来说就是大小为26x26x512的特征图。passthrough层与ResNet网络的shortcut类似，以前面更高分辨率的特征图为输入，然后将其连接到后面的低分辨率特征图上。前面的特征图维度是后面的特征图的2倍，passthrough层抽取前面层的每个2x2的局部区域，然后将其转化为channel维度，对于26x26x512的特征图，经passthrough层处理之后就变成了13x13x2048的新特征图（特征图大小降低4倍，而channles增加4倍），这样就可以与后面的13x13x1024特征图连接在一起形成13x13x3072的特征图，然后在此特征图基础上卷积做预测。</p>
@@ -1190,10 +1178,26 @@ y=\left(t_{y} * h_{a}\right)-y_{a}</script><p>这个公式的理解为：当预�
         </span>
       </div>
     </div>
+	<div>
 
+	  
+
+		<div>
+
+    
+
+        <div >-------------本文结束感谢您的阅读-------------</div>
+
+    
+
+</div>
+
+	  
+
+	</div>
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/" rel="tag"># 目标检测</a>
+              <a href="/tags/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/" rel="tag"><i class="fa fa-tag"></i> 目标检测</a>
           </div>
 
         
@@ -1202,8 +1206,8 @@ y=\left(t_{y} * h_{a}\right)-y_{a}</script><p>这个公式的理解为：当预�
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2019/12/12/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2/" rel="prev" title="网站说明">
-      <i class="fa fa-chevron-left"></i> 网站说明
+    <a href="/2019/03/20/PyQt5%E4%B8%8EOpencv%E7%9A%84%E5%B0%8F%E5%B0%8F%E8%9E%8D%E5%90%88/" rel="prev" title="PyQt5与Opencv的小小融合">
+      <i class="fa fa-chevron-left"></i> PyQt5与Opencv的小小融合
     </a></div>
       <div class="post-nav-item">
     <a href="/2020/01/16/%E4%BD%BF-Onedrive-%E5%90%8C%E6%AD%A5%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%A4%B9/" rel="next" title="使 Onedrive 同步任意文件夹">
@@ -1222,7 +1226,6 @@ y=\left(t_{y} * h_{a}\right)-y_{a}</script><p>这个公式的理解为：当预�
 
           </div>
           
-    <div class="comments" id="valine-comments"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -1269,7 +1272,7 @@ y=\left(t_{y} * h_{a}\right)-y_{a}</script><p>这个公式的理解为：当预�
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#目标检测的任务"><span class="nav-number">1.</span> <span class="nav-text"> 目标检测的任务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#所面临的挑战"><span class="nav-number">2.</span> <span class="nav-text">所面临的挑战</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据集"><span class="nav-number">3.</span> <span class="nav-text">数据集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#评价指标"><span class="nav-number">4.</span> <span class="nav-text">评价指标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#深度学习目标检测方法"><span class="nav-number">5.</span> <span class="nav-text">深度学习目标检测方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#各方法在各数据集上的精度"><span class="nav-number">6.</span> <span class="nav-text">各方法在各数据集上的精度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#目标检测的候选框-Proposal"><span class="nav-number">7.</span> <span class="nav-text">目标检测的候选框(Proposal)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#边界框回归-Bounding-Box-regression"><span class="nav-number">8.</span> <span class="nav-text">边界框回归(Bounding-Box regression)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#R-CNN"><span class="nav-number">9.</span> <span class="nav-text">R-CNN</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SPP-Net"><span class="nav-number">10.</span> <span class="nav-text">SPP-Net</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Fast-R-CNN"><span class="nav-number">11.</span> <span class="nav-text">Fast R-CNN</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Faster-R-CNN"><span class="nav-number">12.</span> <span class="nav-text">Faster R-CNN</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#YOLO"><span class="nav-number">13.</span> <span class="nav-text">YOLO</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#YOLO-v2"><span class="nav-number">14.</span> <span class="nav-text">YOLO v2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#YOLO-v3"><span class="nav-number">15.</span> <span class="nav-text">YOLO v3</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SSD"><span class="nav-number">16.</span> <span class="nav-text">SSD</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DSSD"><span class="nav-number">17.</span> <span class="nav-text">DSSD</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#目标检测进展"><span class="nav-number">18.</span> <span class="nav-text">目标检测进展</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#未来的研究"><span class="nav-number">19.</span> <span class="nav-text">未来的研究</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#目标检测的任务"><span class="nav-text"> 目标检测的任务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#所面临的挑战"><span class="nav-text">所面临的挑战</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据集"><span class="nav-text">数据集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#评价指标"><span class="nav-text">评价指标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#深度学习目标检测方法"><span class="nav-text">深度学习目标检测方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#各方法在各数据集上的精度"><span class="nav-text">各方法在各数据集上的精度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#目标检测的候选框-Proposal"><span class="nav-text">目标检测的候选框(Proposal)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#边界框回归-Bounding-Box-regression"><span class="nav-text">边界框回归(Bounding-Box regression)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#R-CNN"><span class="nav-text">R-CNN</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SPP-Net"><span class="nav-text">SPP-Net</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Fast-R-CNN"><span class="nav-text">Fast R-CNN</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Faster-R-CNN"><span class="nav-text">Faster R-CNN</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#YOLO"><span class="nav-text">YOLO</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#YOLO-v2"><span class="nav-text">YOLO v2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#YOLO-v3"><span class="nav-text">YOLO v3</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SSD"><span class="nav-text">SSD</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DSSD"><span class="nav-text">DSSD</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#目标检测进展"><span class="nav-text">目标检测进展</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#未来的研究"><span class="nav-text">未来的研究</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 	  
@@ -1280,14 +1283,14 @@ y=\left(t_{y} * h_{a}\right)-y_{a}</script><p>这个公式的理解为：当预�
     <img class="site-author-image" itemprop="image" alt="Qiyuan-Z"
       src="/images/wallhaven-915.png">
   <p class="site-author-name" itemprop="name">Qiyuan-Z</p>
-  <div class="site-description" itemprop="description"></div>
+  <div class="site-description" itemprop="description">偉大な魂は目的を持ち、そうでないものは願望を持つ</div>
 </div>
 <div class="site-state-wrap motion-element">
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">34</span>
+          <span class="site-state-item-count">33</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1412,7 +1415,7 @@ y=\left(t_{y} * h_{a}\right)-y_{a}</script><p>这个公式的理解为：当预�
 <script src="/js/motion.js"></script>
 
 
-<script src="/js/schemes/muse.js"></script>
+<script src="/js/schemes/pisces.js"></script>
 
 
 <script src="/js/next-boot.js"></script>
@@ -1503,35 +1506,6 @@ y=\left(t_{y} * h_{a}\right)-y_{a}</script><p>这个公式的理解为：当预�
         pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
       new needShareButton('#needsharebutton-postbottom', pbOptions);
   </script>
-
-<script>
-NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
-  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
-    var GUEST = ['nick', 'mail', 'link'];
-    var guest = 'nick,mail,link';
-    guest = guest.split(',').filter(item => {
-      return GUEST.includes(item);
-    });
-    new Valine({
-      el: '#valine-comments',
-      verify: false,
-      notify: false,
-      appId: 'Qbpc7uiugdEBCmq9h8ld4Ttd-gzGzoHsz',
-      appKey: 'jqjQ3QRJdnoeCASIA6XkWK1E',
-      placeholder: "欢迎交流讨论...",
-      avatar: 'mm',
-      meta: guest,
-      pageSize: '10' || 10,
-      visitor: false,
-      lang: 'zh-cn' || 'zh-cn',
-      path: location.pathname,
-      recordIP: false,
-      serverURLs: ''
-    });
-  }, window.Valine);
-});
-
-</script>
   <script type="text/javascript" src="/js/src/clicklove.js"></script>
 </body>
 </html>

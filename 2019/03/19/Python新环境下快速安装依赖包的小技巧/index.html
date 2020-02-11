@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 4.1.0">
+<meta name="generator" content="Hexo 4.2.0">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
@@ -22,7 +22,7 @@
   var CONFIG = {
     hostname: new URL('https://Qiyuan-Z.github.io').hostname,
     root: '/',
-    scheme: 'Mist',
+    scheme: 'Gemini',
     version: '7.6.0',
     exturl: false,
     sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
@@ -50,7 +50,7 @@
   <meta name="description" content="当你新创一个Python环境时，若还用pip一个个装你所需要的库，明显效率十分低下。这里有个小技巧，你可以从已配置好的旧环境中，导出一个requirements.txt 文件，用于记录所有依赖包及其精确的版本号。以便新环境部署。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Python新环境下快速安装依赖包的小技巧">
-<meta property="og:url" content="https:&#x2F;&#x2F;qiyuan-z.github.io&#x2F;2019&#x2F;03&#x2F;19&#x2F;Python%E6%96%B0%E7%8E%AF%E5%A2%83%E4%B8%8B%E5%BF%AB%E9%80%9F%E5%AE%89%E8%A3%85%E4%BE%9D%E8%B5%96%E5%8C%85%E7%9A%84%E5%B0%8F%E6%8A%80%E5%B7%A7&#x2F;index.html">
+<meta property="og:url" content="https://qiyuan-z.github.io/2019/03/19/Python%E6%96%B0%E7%8E%AF%E5%A2%83%E4%B8%8B%E5%BF%AB%E9%80%9F%E5%AE%89%E8%A3%85%E4%BE%9D%E8%B5%96%E5%8C%85%E7%9A%84%E5%B0%8F%E6%8A%80%E5%B7%A7/index.html">
 <meta property="og:site_name" content="Yuan">
 <meta property="og:description" content="当你新创一个Python环境时，若还用pip一个个装你所需要的库，明显效率十分低下。这里有个小技巧，你可以从已配置好的旧环境中，导出一个requirements.txt 文件，用于记录所有依赖包及其精确的版本号。以便新环境部署。">
 <meta property="og:locale" content="zh_CN">
@@ -133,6 +133,7 @@
         <span class="logo-line-after"><i></i></span>
       </a>
     </div>
+        <p class="site-subtitle">记录学习中的点点滴滴</p>
   </div>
 
   <div class="site-nav-toggle">
@@ -204,6 +205,7 @@
     <i class="fa fa-arrow-up"></i>
     <span>0%</span>
   </div>
+  <div class="reading-progress-bar"></div>
 
 
     <main class="main">
@@ -224,7 +226,7 @@
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/wallhaven-915.png">
       <meta itemprop="name" content="Qiyuan-Z">
-      <meta itemprop="description" content="">
+      <meta itemprop="description" content="偉大な魂は目的を持ち、そうでないものは願望を持つ">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -270,21 +272,7 @@
               </span>
               <span class="post-meta-item-text">阅读次数：</span>
               <span id="busuanzi_value_page_pv"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2019/03/19/Python%E6%96%B0%E7%8E%AF%E5%A2%83%E4%B8%8B%E5%BF%AB%E9%80%9F%E5%AE%89%E8%A3%85%E4%BE%9D%E8%B5%96%E5%8C%85%E7%9A%84%E5%B0%8F%E6%8A%80%E5%B7%A7/#comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2019/03/19/Python%E6%96%B0%E7%8E%AF%E5%A2%83%E4%B8%8B%E5%BF%AB%E9%80%9F%E5%AE%89%E8%A3%85%E4%BE%9D%E8%B5%96%E5%8C%85%E7%9A%84%E5%B0%8F%E6%8A%80%E5%B7%A7/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
+            </span><br>
             <span class="post-meta-item" title="本文字数">
               <span class="post-meta-item-icon">
                 <i class="fa fa-file-word-o"></i>
@@ -309,15 +297,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>当你新创一个Python环境时，若还用pip一个个装你所需要的库，明显效率十分低下。这里有个小技巧，你可以从已配置好的旧环境中，导出一个requirements.txt 文件，用于记录所有依赖包及其精确的版本号。以便新环境部署。</p>
-<a id="more"></a> 
-<p>在旧环境中执行以下命令，生成requirements.txt文件：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip freeze &gt; requirements.txt</span><br></pre></td></tr></table></figure>
-<p>requirements.txt中的内容类似如下，记录了你旧有环境的依赖包及其精确的版本号：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">appdirs&#x3D;&#x3D;1.4.3</span><br><span class="line">backports.functools-lru-cache&#x3D;&#x3D;1.5</span><br><span class="line">beautifulsoup4&#x3D;&#x3D;4.5.3</span><br><span class="line">bs4&#x3D;&#x3D;0.0.1</span><br><span class="line">cycler&#x3D;&#x3D;0.10.0</span><br><span class="line">kiwisolver&#x3D;&#x3D;1.0.1</span><br><span class="line">lxml&#x3D;&#x3D;3.7.3</span><br><span class="line">matplotlib&#x3D;&#x3D;2.2.0</span><br><span class="line">numpy&#x3D;&#x3D;1.14.1</span><br><span class="line">pandas&#x3D;&#x3D;0.22.0</span><br><span class="line">pyparsing&#x3D;&#x3D;2.2.0</span><br><span class="line">python-dateutil&#x3D;&#x3D;2.6.1</span><br><span class="line">pytz&#x3D;&#x3D;2018.3</span><br><span class="line">six&#x3D;&#x3D;1.11.0</span><br><span class="line">virtualenv&#x3D;&#x3D;15.1.0</span><br></pre></td></tr></table></figure>
-<p>这时你可以把requirements.txt拷入新配置的Python目录下，执行以下命令：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install -r requirements.txt</span><br></pre></td></tr></table></figure>
-<p>则会按照requirements.txt中所写的依赖包和版本依序进行安装。<br>注意：<br>若迁入的系统不同或Python版本不同，在安装过程中可能会因为找不到相应的依赖包版本而报错<br>这时你可以进入requirements.txt把报错的依赖包后的版本信息去掉，保存，重新执行命令即可，它会自动下载匹配的最新版本。<br>也可以把==改成&lt;=，代表它会搜索不大于此版本的最高版本进行安装。<br>由于pip下载源在国外，若无合适的VPN，此期间下载过程会十分漫长，这里提供几个常用的国内镜像源：</p>
+        <p>当你新创一个Python环境时，若还用pip一个个装你所需要的库，明显效率十分低下。这里有个小技巧，你可以从已配置好的旧环境中，导出一个requirements.txt 文件，用于记录所有依赖包及其精确的版本号。以便新环境部署。<br><a id="more"></a><br>在旧环境中执行以下命令，生成requirements.txt文件：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip freeze &gt; requirements.txt</span><br></pre></td></tr></table></figure><br>requirements.txt中的内容类似如下，记录了你旧有环境的依赖包及其精确的版本号：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">appdirs&#x3D;&#x3D;1.4.3</span><br><span class="line">backports.functools-lru-cache&#x3D;&#x3D;1.5</span><br><span class="line">beautifulsoup4&#x3D;&#x3D;4.5.3</span><br><span class="line">bs4&#x3D;&#x3D;0.0.1</span><br><span class="line">cycler&#x3D;&#x3D;0.10.0</span><br><span class="line">kiwisolver&#x3D;&#x3D;1.0.1</span><br><span class="line">lxml&#x3D;&#x3D;3.7.3</span><br><span class="line">matplotlib&#x3D;&#x3D;2.2.0</span><br><span class="line">numpy&#x3D;&#x3D;1.14.1</span><br><span class="line">pandas&#x3D;&#x3D;0.22.0</span><br><span class="line">pyparsing&#x3D;&#x3D;2.2.0</span><br><span class="line">python-dateutil&#x3D;&#x3D;2.6.1</span><br><span class="line">pytz&#x3D;&#x3D;2018.3</span><br><span class="line">six&#x3D;&#x3D;1.11.0</span><br><span class="line">virtualenv&#x3D;&#x3D;15.1.0</span><br></pre></td></tr></table></figure><br>这时你可以把requirements.txt拷入新配置的Python目录下，执行以下命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install -r requirements.txt</span><br></pre></td></tr></table></figure><br>则会按照requirements.txt中所写的依赖包和版本依序进行安装。<br>注意：<br>若迁入的系统不同或Python版本不同，在安装过程中可能会因为找不到相应的依赖包版本而报错<br>这时你可以进入requirements.txt把报错的依赖包后的版本信息去掉，保存，重新执行命令即可，它会自动下载匹配的最新版本。<br>也可以把==改成&lt;=，代表它会搜索不大于此版本的最高版本进行安装。<br>由于pip下载源在国外，若无合适的VPN，此期间下载过程会十分漫长，这里提供几个常用的国内镜像源：</p>
 <ul>
 <li>清华大学 <a href="https://pypi.tuna.tsinghua.edu.cn/simple/" target="_blank" rel="noopener">https://pypi.tuna.tsinghua.edu.cn/simple/</a></li>
 <li>中国科学技术大学 <a href="http://pypi.mirrors.ustc.edu.cn/simple/" target="_blank" rel="noopener">http://pypi.mirrors.ustc.edu.cn/simple/</a></li>
@@ -327,7 +307,6 @@
 </ul>
 <p>可以在使用pip的时候，加上参数-i和镜像地址，指定下载源，加速下载过程，如：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install -r requirements.txt -i https:&#x2F;&#x2F;pypi.tuna.tsinghua.edu.cn&#x2F;simple</span><br></pre></td></tr></table></figure>
-
 
     </div>
 
@@ -340,10 +319,26 @@
         </span>
       </div>
     </div>
+	<div>
 
+	  
+
+		<div>
+
+    
+
+        <div >-------------本文结束感谢您的阅读-------------</div>
+
+    
+
+</div>
+
+	  
+
+	</div>
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/Python/" rel="tag"># Python</a>
+              <a href="/tags/Python/" rel="tag"><i class="fa fa-tag"></i> Python</a>
           </div>
 
         
@@ -352,12 +347,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2019/03/19/Permmision%20denied%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/" rel="prev" title="Permmision denied解决方法">
-      <i class="fa fa-chevron-left"></i> Permmision denied解决方法
+    <a href="/2019/03/19/Ubuntu-16.04%E4%B8%8B%E9%85%8D%E7%BD%AEGPU%E7%89%88CUDA%E5%92%8CcuDNN/" rel="prev" title="Ubuntu 16.04下配置GPU版CUDA和cuDNN">
+      <i class="fa fa-chevron-left"></i> Ubuntu 16.04下配置GPU版CUDA和cuDNN
     </a></div>
       <div class="post-nav-item">
-    <a href="/2019/03/20/PyQt5%E4%B8%8EOpencv%E7%9A%84%E5%B0%8F%E5%B0%8F%E8%9E%8D%E5%90%88/" rel="next" title="PyQt5与Opencv的小小融合">
-      PyQt5与Opencv的小小融合 <i class="fa fa-chevron-right"></i>
+    <a href="/2019/03/19/Permmision%20denied%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/" rel="next" title="Permmision denied解决方法">
+      Permmision denied解决方法 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -372,7 +367,6 @@
 
           </div>
           
-    <div class="comments" id="valine-comments"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -429,14 +423,14 @@
     <img class="site-author-image" itemprop="image" alt="Qiyuan-Z"
       src="/images/wallhaven-915.png">
   <p class="site-author-name" itemprop="name">Qiyuan-Z</p>
-  <div class="site-description" itemprop="description"></div>
+  <div class="site-description" itemprop="description">偉大な魂は目的を持ち、そうでないものは願望を持つ</div>
 </div>
 <div class="site-state-wrap motion-element">
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">34</span>
+          <span class="site-state-item-count">33</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -561,7 +555,7 @@
 <script src="/js/motion.js"></script>
 
 
-<script src="/js/schemes/muse.js"></script>
+<script src="/js/schemes/pisces.js"></script>
 
 
 <script src="/js/next-boot.js"></script>
@@ -604,35 +598,6 @@
         pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
       new needShareButton('#needsharebutton-postbottom', pbOptions);
   </script>
-
-<script>
-NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
-  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
-    var GUEST = ['nick', 'mail', 'link'];
-    var guest = 'nick,mail,link';
-    guest = guest.split(',').filter(item => {
-      return GUEST.includes(item);
-    });
-    new Valine({
-      el: '#valine-comments',
-      verify: false,
-      notify: false,
-      appId: 'Qbpc7uiugdEBCmq9h8ld4Ttd-gzGzoHsz',
-      appKey: 'jqjQ3QRJdnoeCASIA6XkWK1E',
-      placeholder: "欢迎交流讨论...",
-      avatar: 'mm',
-      meta: guest,
-      pageSize: '10' || 10,
-      visitor: false,
-      lang: 'zh-cn' || 'zh-cn',
-      path: location.pathname,
-      recordIP: false,
-      serverURLs: ''
-    });
-  }, window.Valine);
-});
-
-</script>
   <script type="text/javascript" src="/js/src/clicklove.js"></script>
 </body>
 </html>

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 4.1.0">
+<meta name="generator" content="Hexo 4.2.0">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
@@ -22,7 +22,7 @@
   var CONFIG = {
     hostname: new URL('https://Qiyuan-Z.github.io').hostname,
     root: '/',
-    scheme: 'Mist',
+    scheme: 'Gemini',
     version: '7.6.0',
     exturl: false,
     sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
@@ -49,25 +49,25 @@
 
   <meta property="og:type" content="article">
 <meta property="og:title" content="Pycharm连接远程服务器并实现远程调试">
-<meta property="og:url" content="https:&#x2F;&#x2F;qiyuan-z.github.io&#x2F;2020&#x2F;01&#x2F;26&#x2F;Pycharm%E8%BF%9E%E6%8E%A5%E8%BF%9C%E7%A8%8B%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%B9%B6%E5%AE%9E%E7%8E%B0%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95&#x2F;index.html">
+<meta property="og:url" content="https://qiyuan-z.github.io/2020/01/26/Pycharm%E8%BF%9E%E6%8E%A5%E8%BF%9C%E7%A8%8B%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%B9%B6%E5%AE%9E%E7%8E%B0%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95/index.html">
 <meta property="og:site_name" content="Yuan">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;pycharm%20remote%20control&#x2F;20180829161124726.png">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;pycharm%20remote%20control&#x2F;2018082916114659.png">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;pycharm%20remote%20control&#x2F;20180829161158768.png">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;pycharm%20remote%20control&#x2F;20180829161217756.png">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;pycharm%20remote%20control&#x2F;20180829161235445.png">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;pycharm%20remote%20control&#x2F;20180829161249360.png">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;pycharm%20remote%20control&#x2F;20180829161306837.png">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;pycharm%20remote%20control&#x2F;20180829161340812.png">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;pycharm%20remote%20control&#x2F;20180829161653972.jpg">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm%20remote%20control/20180829161124726.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm%20remote%20control/2018082916114659.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm%20remote%20control/20180829161158768.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm%20remote%20control/20180829161217756.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm%20remote%20control/20180829161235445.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm%20remote%20control/20180829161249360.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm%20remote%20control/20180829161306837.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm%20remote%20control/20180829161340812.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm%20remote%20control/20180829161653972.jpg">
 <meta property="article:published_time" content="2020-01-26T05:24:11.755Z">
 <meta property="article:modified_time" content="2020-01-26T05:28:17.283Z">
 <meta property="article:author" content="Qiyuan-Z">
 <meta property="article:tag" content="Pycharm">
 <meta property="article:tag" content="SSH">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;pycharm%20remote%20control&#x2F;20180829161124726.png">
+<meta name="twitter:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm%20remote%20control/20180829161124726.png">
 
 <link rel="canonical" href="https://qiyuan-z.github.io/2020/01/26/Pycharm%E8%BF%9E%E6%8E%A5%E8%BF%9C%E7%A8%8B%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%B9%B6%E5%AE%9E%E7%8E%B0%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95/">
 
@@ -142,6 +142,7 @@
         <span class="logo-line-after"><i></i></span>
       </a>
     </div>
+        <p class="site-subtitle">记录学习中的点点滴滴</p>
   </div>
 
   <div class="site-nav-toggle">
@@ -213,6 +214,7 @@
     <i class="fa fa-arrow-up"></i>
     <span>0%</span>
   </div>
+  <div class="reading-progress-bar"></div>
 
 
     <main class="main">
@@ -233,7 +235,7 @@
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/wallhaven-915.png">
       <meta itemprop="name" content="Qiyuan-Z">
-      <meta itemprop="description" content="">
+      <meta itemprop="description" content="偉大な魂は目的を持ち、そうでないものは願望を持つ">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -273,21 +275,7 @@
               </span>
               <span class="post-meta-item-text">阅读次数：</span>
               <span id="busuanzi_value_page_pv"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2020/01/26/Pycharm%E8%BF%9E%E6%8E%A5%E8%BF%9C%E7%A8%8B%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%B9%B6%E5%AE%9E%E7%8E%B0%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95/#comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/01/26/Pycharm%E8%BF%9E%E6%8E%A5%E8%BF%9C%E7%A8%8B%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%B9%B6%E5%AE%9E%E7%8E%B0%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
+            </span><br>
             <span class="post-meta-item" title="本文字数">
               <span class="post-meta-item-icon">
                 <i class="fa fa-file-word-o"></i>
@@ -334,11 +322,27 @@
         </span>
       </div>
     </div>
+	<div>
 
+	  
+
+		<div>
+
+    
+
+        <div >-------------本文结束感谢您的阅读-------------</div>
+
+    
+
+</div>
+
+	  
+
+	</div>
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/Pycharm/" rel="tag"># Pycharm</a>
-              <a href="/tags/SSH/" rel="tag"># SSH</a>
+              <a href="/tags/Pycharm/" rel="tag"><i class="fa fa-tag"></i> Pycharm</a>
+              <a href="/tags/SSH/" rel="tag"><i class="fa fa-tag"></i> SSH</a>
           </div>
 
         
@@ -367,7 +371,6 @@
 
           </div>
           
-    <div class="comments" id="valine-comments"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -414,7 +417,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Pycharm连接远程服务器"><span class="nav-number">1.</span> <span class="nav-text">Pycharm连接远程服务器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置远程Python解释器"><span class="nav-number">2.</span> <span class="nav-text">配置远程Python解释器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用远程解释器运行本地Python程序"><span class="nav-number">3.</span> <span class="nav-text">使用远程解释器运行本地Python程序</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Pycharm连接远程服务器"><span class="nav-text">Pycharm连接远程服务器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置远程Python解释器"><span class="nav-text">配置远程Python解释器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用远程解释器运行本地Python程序"><span class="nav-text">使用远程解释器运行本地Python程序</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 	  
@@ -425,14 +428,14 @@
     <img class="site-author-image" itemprop="image" alt="Qiyuan-Z"
       src="/images/wallhaven-915.png">
   <p class="site-author-name" itemprop="name">Qiyuan-Z</p>
-  <div class="site-description" itemprop="description"></div>
+  <div class="site-description" itemprop="description">偉大な魂は目的を持ち、そうでないものは願望を持つ</div>
 </div>
 <div class="site-state-wrap motion-element">
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">34</span>
+          <span class="site-state-item-count">33</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -557,7 +560,7 @@
 <script src="/js/motion.js"></script>
 
 
-<script src="/js/schemes/muse.js"></script>
+<script src="/js/schemes/pisces.js"></script>
 
 
 <script src="/js/next-boot.js"></script>
@@ -648,35 +651,6 @@
         pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
       new needShareButton('#needsharebutton-postbottom', pbOptions);
   </script>
-
-<script>
-NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
-  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
-    var GUEST = ['nick', 'mail', 'link'];
-    var guest = 'nick,mail,link';
-    guest = guest.split(',').filter(item => {
-      return GUEST.includes(item);
-    });
-    new Valine({
-      el: '#valine-comments',
-      verify: false,
-      notify: false,
-      appId: 'Qbpc7uiugdEBCmq9h8ld4Ttd-gzGzoHsz',
-      appKey: 'jqjQ3QRJdnoeCASIA6XkWK1E',
-      placeholder: "欢迎交流讨论...",
-      avatar: 'mm',
-      meta: guest,
-      pageSize: '10' || 10,
-      visitor: false,
-      lang: 'zh-cn' || 'zh-cn',
-      path: location.pathname,
-      recordIP: false,
-      serverURLs: ''
-    });
-  }, window.Valine);
-});
-
-</script>
   <script type="text/javascript" src="/js/src/clicklove.js"></script>
 </body>
 </html>

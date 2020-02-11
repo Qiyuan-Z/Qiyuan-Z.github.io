@@ -132,7 +132,7 @@
   <entry>
     <title>Pytorch快速安装教程</title>
     <url>/2020/01/26/Pytorch%E5%BF%AB%E9%80%9F%E5%AE%89%E8%A3%85%E6%95%99%E7%A8%8B/</url>
-    <content><![CDATA[<h2 id><a href="#" class="headerlink" title></a><a id="more"></a></h2><p>进入官网(<a href="https://pytorch.org/)，按照你的环境选择，得到下载命令，这里以windows为例，Ubuntu同理" target="_blank" rel="noopener">https://pytorch.org/)，按照你的环境选择，得到下载命令，这里以windows为例，Ubuntu同理</a></p>
+    <content><![CDATA[<h2 id><a href="#" class="headerlink" title></a><a id="more"></a></h2><p>进入<a href="https://pytorch.org/" target="_blank" rel="noopener">官网</a>，按照你的环境选择，得到下载命令，这里以windows为例，Ubuntu同理</p>
 <h2 id="conda安装"><a href="#conda安装" class="headerlink" title="conda安装"></a>conda安装</h2><p>官网得到命令如图：<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pytorch%20install/Snipaste_2020-01-26_14-06-32.jpg" alt><br>但由于墙的原因直接使用此命令下载很慢，因此请更换conda源为国内镜像<br>并将命令中 -c pytorch去掉<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">conda install pytorch torchvision cudatoolkit&#x3D;10.1</span><br></pre></td></tr></table></figure><br>即可调用国内镜像下载。</p>
 <h2 id="pip安装"><a href="#pip安装" class="headerlink" title="pip安装"></a>pip安装</h2><p>官网得到命令如图：<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pytorch%20install/Snipaste_2020-01-26_14-06-05.jpg" alt><br>红色框出部分为官网建议版本，但由于墙的原因直接使用此命令下载很慢，因此将pip下载地址改成国内镜像即可<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip3 install torch&#x3D;&#x3D;&#x3D;1.4.0 torchvision&#x3D;&#x3D;&#x3D;0.5.0 -i https:&#x2F;&#x2F;pypi.tuna.tsinghua.edu.cn&#x2F;simple</span><br></pre></td></tr></table></figure></p>
 ]]></content>
@@ -226,8 +226,8 @@
         <category>教程</category>
       </categories>
       <tags>
-        <tag>Opencv</tag>
         <tag>Ubuntu</tag>
+        <tag>Opencv</tag>
       </tags>
   </entry>
   <entry>
@@ -920,19 +920,19 @@
 <p>优点：<br>　　　　（a）计算效率优于滑窗法。<br>　　　　（b）由于采用子区域合并策略，所以可以包含各种大小的疑似物体框。<br>　　　　（c）合并区域相似的指标多样性，提高了检测物体的概率。</p>
 <h3 id="边界框回归-Bounding-Box-regression"><a href="#边界框回归-Bounding-Box-regression" class="headerlink" title="边界框回归(Bounding-Box regression)"></a>边界框回归(Bounding-Box regression)</h3><p>窗口一般使用四维向量$(x,y,w,h)$来表示， 分别表示窗口的中心点坐标和宽高。 对于下图, 红色的框 $P$ 代表原始的Proposal, 绿色的框 $G$ 代表目标的 Ground Truth， 目标是寻找一种关系使得输入原始的窗口 $P$ 经过映射得到一个跟真实窗口 $G$ 更接近的回归窗口$\hat{G}$。</p>
 <p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/TIM%E5%9B%BE%E7%89%8720200106182123.png" alt></p>
-<p>边框回归的目的既是：给定$\left(P_{x}, P_{y}, P_{w}, P_{h}\right)$寻找一种映射$f$， 使得$f\left(P_{x}, P_{y}, P_{w}, P_{h}\right)=\left(\hat{G}_{x}, \hat{G}_{y}, \hat{G}_{w}, \hat{G}_{h}\right)$并且$\left(\hat{G}_{x}, \hat{G}_{y}, \hat{G}_{w}, \hat{G}_{h}\right) \approx\left(G_{x}, G_{y}, G_{w}, G_{h}\right)$</p>
+<p>边框回归的目的既是：给定$\left(P<em>{x}, P</em>{y}, P<em>{w}, P</em>{h}\right)$寻找一种映射$f$， 使得$f\left(P<em>{x}, P</em>{y}, P<em>{w}, P</em>{h}\right)=\left(\hat{G}<em>{x}, \hat{G}</em>{y}, \hat{G}<em>{w}, \hat{G}</em>{h}\right)$并且$\left(\hat{G}<em>{x}, \hat{G}</em>{y}, \hat{G}<em>{w}, \hat{G}</em>{h}\right) \approx\left(G<em>{x}, G</em>{y}, G<em>{w}, G</em>{h}\right)$</p>
 <p>思路: 平移 + 尺度放缩</p>
 <ol>
-<li><p>先做平移$(\Delta x, \Delta y), \quad \Delta x=P_{w} d_{x}(P), \Delta y=P_{h} d_{y}(P)$</p>
-<p>$\hat{G}_{x}=P_{w} d_{x}(P)+P_{x}$<br>$\hat{G}_{y}=P_{h} d_{y}(P)+P_{y}$</p>
+<li><p>先做平移$(\Delta x, \Delta y), \quad \Delta x=P<em>{w} d</em>{x}(P), \Delta y=P<em>{h} d</em>{y}(P)$</p>
+<p>$\hat{G}<em>{x}=P</em>{w} d<em>{x}(P)+P</em>{x}$<br>$\hat{G}<em>{y}=P</em>{h} d<em>{y}(P)+P</em>{y}$</p>
 </li>
-<li><p>然后再做尺度缩放$\left(S_{w}, S_{h}\right), S_{w}=\exp \left(d_{w}(P)\right), S_{h}=\exp \left(d_{h}(P)\right)$</p>
-<p>$\hat{G}_{w}=P_{w} \exp \left(d_{w}(P)\right)$<br>$\hat{G}_{h}=P_{h} \exp \left(d_{h}(P)\right)$</p>
+<li><p>然后再做尺度缩放$\left(S<em>{w}, S</em>{h}\right), S<em>{w}=\exp \left(d</em>{w}(P)\right), S<em>{h}=\exp \left(d</em>{h}(P)\right)$</p>
+<p>$\hat{G}<em>{w}=P</em>{w} \exp \left(d<em>{w}(P)\right)$<br>$\hat{G}</em>{h}=P<em>{h} \exp \left(d</em>{h}(P)\right)$</p>
 </li>
 </ol>
-<p>边框回归就是学习$d_{x}(P), d_{y}(P), d_{w}(P), d_{h}(P)$这四个变换。</p>
+<p>边框回归就是学习$d<em>{x}(P), d</em>{y}(P), d<em>{w}(P), d</em>{h}(P)$这四个变换。</p>
 <p>线性回归就是给定输入的特征向量$X$, 学习一组参数 $W$, 使得经过线性回归后的值跟真实值 $Y$(Ground Truth)非常接近. 即$Y ≈ WX$。</p>
-<p>输入为：$P=\left(P_{x}, P_{y}, P_{w}, P_{h}\right)$这个窗口对应的 CNN 特征(注：训练阶段输入还包括 Ground Truth， 也就是下边提到的$t_{*}=\left(t_{x}, t_{y}, t_{w}, t_{h}\right)$ )</p>
+<p>输入为：$P=\left(P<em>{x}, P</em>{y}, P<em>{w}, P</em>{h}\right)$这个窗口对应的 CNN 特征(注：训练阶段输入还包括 Ground Truth， 也就是下边提到的$t<em>{*}=\left(t</em>{x}, t<em>{y}, t</em>{w}, t_{h}\right)$ )</p>
 <p>输出为：四个变换，因为有了这四个变换我们就可以直接得到 Ground Truth，真实值所对应的真正的变化为</p>
 <script type="math/tex; mode=display">
 \begin{aligned}
@@ -940,9 +940,9 @@
 &t_{y}=\left(G_{y}-P_{y}\right) / P_{h}\\
 &t_{w}=\log \left(G_{w} / P_{w}\right)\\
 &t_{h}=\log \left(G_{h} / P_{h}\right)
-\end{aligned}</script><p>目标函数可以表示为$d_{<em>}(P)=w_{</em>}^{T} \Phi_{5}(P)$， $\Phi_{5}(P)$是输入 Proposal 的特征向量， $w_{<em>}$是要学习的参数（</em> 表示 $x,y,w,h$， 也就是每一个变换对应一个目标函数）, $d_{*}(P)$ 是得到的预测值。</p>
-<p>损失函数：要让预测值跟真实值$t_{*}=\left(t_{x}, t_{y}, t_{w}, t_{h}\right)$差距最小</p>
-<p>$Loss=\sum_{i}^{N}\left(t_{<em>}^{i}-\hat{w}_{</em>}^{T} \phi_{5}\left(P^{i}\right)\right)^{2}$</p>
+\end{aligned}</script><p>目标函数可以表示为$d<em>{*}(P)=w</em>{<em>}^{T} \Phi<em>{5}(P)$， $\Phi</em>{5}(P)$是输入 Proposal 的特征向量， $w_{</em>}$是要学习的参数（<em> 表示 $x,y,w,h$， 也就是每一个变换对应一个目标函数）, $d_{</em>}(P)$ 是得到的预测值。</p>
+<p>损失函数：要让预测值跟真实值$t<em>{*}=\left(t</em>{x}, t<em>{y}, t</em>{w}, t_{h}\right)$差距最小</p>
+<p>$Loss=\sum<em>{i}^{N}\left(t</em>{<em>}^{i}-\hat{w}_{</em>}^{T} \phi_{5}\left(P^{i}\right)\right)^{2}$</p>
 <p>函数优化目标为：</p>
 <script type="math/tex; mode=display">
 W_{*}=\operatorname{argmin}_{w_{*}} \sum_{i}^{N}\left(t_{*}^{i}-\hat{w}_{*}^{T} \phi_{5}\left(P^{i}\right)\right)^{2}+\lambda\left\|\hat{w}_{*}\right\|^{2}</script><h3 id="R-CNN"><a href="#R-CNN" class="headerlink" title="R-CNN"></a>R-CNN</h3><p>Rich feature hierarchies for accurate object detection and semantic segmentation(CVPR 2014)</p>
@@ -1032,7 +1032,7 @@ W_{*}=\operatorname{argmin}_{w_{*}} \sum_{i}^{N}\left(t_{*}^{i}-\hat{w}_{*}^{T} 
 <p><strong>Region Proposal Networks</strong>。RPN网络用于生成region proposals。该层通过softmax判断anchors属于positive或者negative，再利用bounding box regression修正anchors获得精确的proposals。</p>
 <p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/v2-1908feeaba591d28bee3c4a754cca282_r.jpg" alt></p>
 <p>可以看到RPN网络实际分为2条线，上面一条通过softmax分类anchors获得positive和negative分类，下面一条用于计算对于anchors的bounding box regression偏移量，以获得精确的proposal。而最后的Proposal层则负责综合positive anchors和对应bounding box regression偏移量获取proposals，同时剔除太小和超出边界的proposals。</p>
-<p>所谓anchors，实际上就是一组由rpn/generate_anchors.py生成的矩形。直接运行作者demo中的generate_anchors.py可以得到以下输出：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[[ -84.  -40.   99.   55.]</span><br><span class="line"> [-176.  -88.  191.  103.]</span><br><span class="line"> [-360. -184.  375.  199.]</span><br><span class="line"> [ -56.  -56.   71.   71.]</span><br><span class="line"> [-120. -120.  135.  135.]</span><br><span class="line"> [-248. -248.  263.  263.]</span><br><span class="line"> [ -36.  -80.   51.   95.]</span><br><span class="line"> [ -80. -168.   95.  183.]</span><br><span class="line"> [-168. -344.  183.  359.]]</span><br></pre></td></tr></table></figure><br>其中每行的4个值$\left(x_{1}, y_{1}, x_{2}, y_{2}\right)$表矩形左上和右下角点坐标。9个矩形共有3种形状，长宽比为大约为width: height $\in\{1: 1,1: 2,2: 1\}$三种，如图。实际上通过anchors就引入了检测中常用到的多尺度方法。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/v2-7abead97efcc46a3ee5b030a2151643f_hd.jpg" alt></p>
+<p>所谓anchors，实际上就是一组由rpn/generate<em>anchors.py生成的矩形。直接运行作者demo中的generate_anchors.py可以得到以下输出：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[[ -84.  -40.   99.   55.]</span><br><span class="line"> [-176.  -88.  191.  103.]</span><br><span class="line"> [-360. -184.  375.  199.]</span><br><span class="line"> [ -56.  -56.   71.   71.]</span><br><span class="line"> [-120. -120.  135.  135.]</span><br><span class="line"> [-248. -248.  263.  263.]</span><br><span class="line"> [ -36.  -80.   51.   95.]</span><br><span class="line"> [ -80. -168.   95.  183.]</span><br><span class="line"> [-168. -344.  183.  359.]]</span><br></pre></td></tr></table></figure><br>其中每行的4个值$\left(x</em>{1}, y<em>{1}, x</em>{2}, y_{2}\right)$表矩形左上和右下角点坐标。9个矩形共有3种形状，长宽比为大约为width: height $\in{1: 1,1: 2,2: 1}$三种，如图。实际上通过anchors就引入了检测中常用到的多尺度方法。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/v2-7abead97efcc46a3ee5b030a2151643f_hd.jpg" alt></p>
 <p>注：关于上面的anchors size，其实是根据检测图像设置的。在python demo中，会把任意大小的输入图像reshape成800x600。再回头来看anchors的大小，anchors中长宽1:2中最大为352x704，长宽2:1中最大736x384，基本是cover了800x600的各个尺度和形状。</p>
 <p><strong>那么这9个anchors是做什么的呢？</strong>遍历Conv layers计算获得的feature maps，为每一个点都配备这9种anchors作为初始的检测框。这样做获得检测框很不准确，不用担心，后面还有2次bounding box regression可以修正检测框位置。</p>
 <p><strong>其实RPN最终就是在原图尺度上，设置了密密麻麻的候选Anchor。然后用cnn去判断哪些Anchor是里面有目标的positive anchor，哪些是没目标的negative anchor。所以，仅仅是个二分类而已！</strong></p>
@@ -1041,7 +1041,7 @@ W_{*}=\operatorname{argmin}_{w_{*}} \sum_{i}^{N}\left(t_{*}^{i}-\hat{w}_{*}^{T} 
 <p><strong>那么为何要在softmax前后都接一个reshape layer？</strong>其实只是为了便于softmax分类,存储形式为[1, 2x9, H, W]。而在softmax分类时需要进行positive/negative二分类，所以reshape layer会将其变为[1, 2, 9xH, W]大小，即单独“腾空”出来一个维度以便softmax分类，之后再reshape回复原状。</p>
 <p>RPN网络中利用anchors和softmax初步提取出positive anchors作为候选区域（另外也有实现用sigmoid代替softmax，原理类似）。</p>
 <p><strong>对proposals进行bounding box regression</strong><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/v2-8241c8076d60156248916fe2f1a5674a_r.jpg" alt></p>
-<p>可以看到其 num_output=36，即经过该卷积输出图像为WxHx36，这里相当于feature maps每个点都有9个anchors，每个anchors又都有4个用于回归的$\left[d_{x}(A), d_{y}(A), d_{w}(A), d_{h}(A)\right]$变化量</p>
+<p>可以看到其 num<em>output=36，即经过该卷积输出图像为WxHx36，这里相当于feature maps每个点都有9个anchors，每个anchors又都有4个用于回归的$\left[d</em>{x}(A), d<em>{y}(A), d</em>{w}(A), d_{h}(A)\right]$变化量</p>
 <p><strong>创新点</strong></p>
 <ul>
 <li>采用RPN(Region Proposal Network)代替选择性搜索(Selective Search)，利用GPU进行计算大幅度缩减提取region proposal的速度。</li>
@@ -1072,15 +1072,15 @@ W_{*}=\operatorname{argmin}_{w_{*}} \sum_{i}^{N}\left(t_{*}^{i}-\hat{w}_{*}^{T} 
 </ul>
 <p>所以，最后网络的输出维度为$S \times S \times (B\times 5 + C)$，这里输出为$7\times7\times(2\times5+20)$, 虽然每个单元格负责预测一种物体(这也是这篇文章的问题，当有小物体时可能会有问题)，但是每个单元格可以预测多个bbox值(这里可以认为有多个不同形状的bbox，为了更准确的定位出物体，如下图所示)。</p>
 <p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/6983308-29a33d2e79ed722b.png" alt></p>
-<p><strong>(x,y)是bbox的中心相对于单元格的offset</strong><br>单元格坐标为$(x_{col},y_{row})$，假设它预测的输出的bbox中心坐标为$(x_c,y_c)$,那么最终预测出来的(x,y)是经过归一化处理的，表示的是中心相对于单元格的offset</p>
+<p><strong>(x,y)是bbox的中心相对于单元格的offset</strong><br>单元格坐标为$(x<em>{col},y</em>{row})$，假设它预测的输出的bbox中心坐标为$(x_c,y_c)$,那么最终预测出来的(x,y)是经过归一化处理的，表示的是中心相对于单元格的offset</p>
 <p><strong>(w,h)是bbox相对于整个图片的比例</strong><br>预测的bbox的宽高为$w_b,h_b$，(w,h)表示的是bbox的是相对于整张图片的占比</p>
-<p><strong>confidence</strong><br>这个置信度是由两部分组成，一是格子内是否有目标，二是bbox的准确度。定义置信度为$P_r(Object)∗IOU^{truth}_{pred}$<br>这里，如果格子内有物体，则$P_r(Object)=1$，此时置信度等于IoU。如果格子内没有物体，则$P_r(Object)=0$，此时置信度为0</p>
+<p><strong>confidence</strong><br>这个置信度是由两部分组成，一是格子内是否有目标，二是bbox的准确度。定义置信度为$P<em>r(Object)∗IOU^{truth}</em>{pred}$<br>这里，如果格子内有物体，则$P_r(Object)=1$，此时置信度等于IoU。如果格子内没有物体，则$P_r(Object)=0$，此时置信度为0</p>
 <p><strong>C类的条件概率</strong><br>条件概率定义为$P_r(Class_i |Object)$，表示该单元格存在物体且属于第i类的概率。</p>
-<p>在测试的时候每个单元格预测最终输出的概率定义为，如下两图所示（两幅图不一样，代表一个框会输出B列概率值）<br>$P_r(Class_i|Object) ∗ P_r(Object) ∗ IOU^{truth}_{pred} = P_r(Class_i) ∗ IOU^{truth}_{pred}$</p>
+<p>在测试的时候每个单元格预测最终输出的概率定义为，如下两图所示（两幅图不一样，代表一个框会输出B列概率值）<br>$P<em>r(Class_i|Object) ∗ P_r(Object) ∗ IOU^{truth}</em>{pred} = P<em>r(Class_i) ∗ IOU^{truth}</em>{pred}$</p>
 <p>最后将$(S\times S)\times B\times20$ 列的结果送入NMS，最后即可得到最终的输出框结果</p>
 <p><strong>损失函数</strong></p>
 <p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/20180511204751564.png" alt></p>
-<p>这里强调两点：<br> 1.每个图片的每个单元格不一定都包含object，如果没有object，那么confidence就会变成0，这样在优化模型的时候可能会让梯度跨越太大，模型不稳定跑飞了。为了平衡这一点，在损失函数中，设置两个参数$λ_{corrd}$和$λ_{noobj}$，其中$λ_{corrd}$控制bbox预测位置的损失，$λ_{noobj}$控制单个格内没有目标的损失。<br> 2.对于大的物体，小的偏差对于小的物体影响较大，为了减少这个影响，所以对bbox的宽高都开根号。</p>
+<p>这里强调两点：<br> 1.每个图片的每个单元格不一定都包含object，如果没有object，那么confidence就会变成0，这样在优化模型的时候可能会让梯度跨越太大，模型不稳定跑飞了。为了平衡这一点，在损失函数中，设置两个参数$λ<em>{corrd}$和$λ</em>{noobj}$，其中$λ<em>{corrd}$控制bbox预测位置的损失，$λ</em>{noobj}$控制单个格内没有目标的损失。<br> 2.对于大的物体，小的偏差对于小的物体影响较大，为了减少这个影响，所以对bbox的宽高都开根号。</p>
 <p><strong>缺点</strong></p>
 <ul>
 <li>YOLO的物体检测精度低于其他state-of-the-art的物体检测系统。</li>
@@ -1116,12 +1116,12 @@ x=\left(t_{x} * w_{a}\right)-x_{a}</script><script type="math/tex; mode=display"
 y=\left(t_{y} * h_{a}\right)-y_{a}</script><p>这个公式的理解为：当预测tx=1，就会把box向右边移动一定距离（具体为anchor box的宽度），预测tx=-1，就会把box向左边移动相同的距离，该公式没有任何约束，中心点可能会出现在图像任何位置，这就有可能导致回归过程震荡，甚至无法收敛。</p>
 <p><strong>强约束方法</strong>：</p>
 <ul>
-<li>对应 Cell 距离左上角的边距为$\left(C_{x}, C_{y}\right)$，σ定义为sigmoid激活函数，将函数值约束到［0，1］，用来预测相对于该Cell中心的偏移（不会偏离cell）；</li>
-<li>预定Anchor（文中描述为bounding box prior）对应的宽高为$\left(P_{w}, P_{h}\right)$，预测 Location 是相对于Anchor的宽高乘以系数得到；</li>
+<li>对应 Cell 距离左上角的边距为$\left(C<em>{x}, C</em>{y}\right)$，σ定义为sigmoid激活函数，将函数值约束到［0，1］，用来预测相对于该Cell中心的偏移（不会偏离cell）；</li>
+<li>预定Anchor（文中描述为bounding box prior）对应的宽高为$\left(P<em>{w}, P</em>{h}\right)$，预测 Location 是相对于Anchor的宽高乘以系数得到；</li>
 </ul>
 </li>
 </ul>
-<p>  如果这个cell距离图像左上角的边距为$\left(C_{x}, C_{y}\right)$以及该cell对应的box维度（bounding box prior）的长和宽分别为$\left(P_{w}, P_{h}\right)$，那么预测值可以表示为： </p>
+<p>  如果这个cell距离图像左上角的边距为$\left(C<em>{x}, C</em>{y}\right)$以及该cell对应的box维度（bounding box prior）的长和宽分别为$\left(P<em>{w}, P</em>{h}\right)$，那么预测值可以表示为： </p>
 <p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/Snipaste_2020-01-07_18-53-58.jpg" alt></p>
 <ul>
 <li><p><strong>Fine-Grained Features</strong><br>YOLO最终在13x13的特征图上进行预测，虽然这足以胜任大尺度物体的检测，但对于小物体还需要更精细的特征图（Fine-Grained Features），前面更精细的特征图可以用来预测小物体。<br>YOLOv2提出了一种passthrough层来利用更精细的特征图。YOLOv2所利用的Fine-Grained Features是26x26大小的特征图（最后一个maxpooling层的输入），对于Darknet-19模型来说就是大小为26x26x512的特征图。passthrough层与ResNet网络的shortcut类似，以前面更高分辨率的特征图为输入，然后将其连接到后面的低分辨率特征图上。前面的特征图维度是后面的特征图的2倍，passthrough层抽取前面层的每个2x2的局部区域，然后将其转化为channel维度，对于26x26x512的特征图，经passthrough层处理之后就变成了13x13x2048的新特征图（特征图大小降低4倍，而channles增加4倍），这样就可以与后面的13x13x1024特征图连接在一起形成13x13x3072的特征图，然后在此特征图基础上卷积做预测。</p>
@@ -1234,12 +1234,6 @@ y=\left(t_{y} * h_{a}\right)-y_{a}</script><p>这个公式的理解为：当预�
       </tags>
   </entry>
   <entry>
-    <title>网站说明</title>
-    <url>/2019/12/12/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2/</url>
-    <content><![CDATA[<p>这是我学习制作的第一个博客，主要用于记录研究生学习过程中所遇到的问题以及一些解决方法，顺便会分享一些实用教程，希望能对有需要的人给予帮助</p>
-]]></content>
-  </entry>
-  <entry>
     <title>PyQt5与Opencv的小小融合</title>
     <url>/2019/03/20/PyQt5%E4%B8%8EOpencv%E7%9A%84%E5%B0%8F%E5%B0%8F%E8%9E%8D%E5%90%88/</url>
     <content><![CDATA[<h2 id="一些核心代码"><a href="#一些核心代码" class="headerlink" title="一些核心代码"></a><a id="more"></a>一些核心代码</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class myLabel(QLabel):</span><br><span class="line">    x0 &#x3D; 0</span><br><span class="line">    y0 &#x3D; 0</span><br><span class="line">    x1 &#x3D; 0</span><br><span class="line">    y1 &#x3D; 0</span><br><span class="line">    flag &#x3D; False</span><br><span class="line"></span><br><span class="line">    def mousePressEvent(self,event):</span><br><span class="line">        self.flag &#x3D; True</span><br><span class="line">        self.x0 &#x3D; event.x()</span><br><span class="line">        self.y0 &#x3D; event.y()</span><br><span class="line">    def mouseReleaseEvent(self,event):</span><br><span class="line">        self.flag &#x3D; False</span><br><span class="line"></span><br><span class="line">    def mouseMoveEvent(self,event):</span><br><span class="line">        if self.flag:</span><br><span class="line">            self.x1 &#x3D; event.x()</span><br><span class="line">            self.y1 &#x3D; event.y()</span><br><span class="line">            self.update()</span><br><span class="line">    def paintEvent(self, event):</span><br><span class="line">        super().paintEvent(event)</span><br><span class="line">        rect &#x3D;QRect(self.x0, self.y0, abs(self.x1-self.x0), abs(self.y1-self.y0))</span><br><span class="line">        painter &#x3D; QPainter(self)</span><br><span class="line">        painter.setPen(QPen(Qt.red,4,Qt.SolidLine))</span><br><span class="line">        painter.drawRect(rect)</span><br><span class="line"></span><br><span class="line">        pqscreen  &#x3D; QGuiApplication.primaryScreen()</span><br><span class="line">        pixmap2 &#x3D; pqscreen.grabWindow(self.winId(), self.x0, self.y0, abs(self.x1-self.x0), abs(self.y1-self.y0))</span><br><span class="line">        pixmap2.save(&#39;555.png&#39;)</span><br><span class="line">    </span><br><span class="line">class Example(QWidget):</span><br><span class="line">    def __init__(self):</span><br><span class="line">        super().__init__()</span><br><span class="line">        self.initUI()</span><br><span class="line">    def initUI(self):</span><br><span class="line">        self.resize(675, 300)</span><br><span class="line">        self.setWindowTitle(&#39;关注微信公众号：学点编程吧--opencv、PyQt5的小小融合&#39;)</span><br><span class="line"></span><br><span class="line">        self.lb &#x3D; myLabel(self)</span><br><span class="line">        self.lb.setGeometry(QRect(140, 30, 511, 241))</span><br><span class="line"></span><br><span class="line">        img &#x3D; cv2.imread(&#39;xxx.jpg&#39;)</span><br><span class="line">        height, width, bytesPerComponent &#x3D; img.shape</span><br><span class="line">        bytesPerLine &#x3D; 3 * width</span><br><span class="line">        cv2.cvtColor(img, cv2.COLOR_BGR2RGB, img)</span><br><span class="line">        QImg &#x3D; QImage(img.data, width, height, bytesPerLine, QImage.Format_RGB888)</span><br><span class="line">        pixmap &#x3D; QPixmap.fromImage(QImg)</span><br><span class="line"></span><br><span class="line">        self.lb.setPixmap(pixmap)</span><br><span class="line">        self.lb.setCursor(Qt.CrossCursor)</span><br><span class="line"></span><br><span class="line">        self.show()</span><br></pre></td></tr></table></figure>
@@ -1255,15 +1249,7 @@ y=\left(t_{y} * h_{a}\right)-y_{a}</script><p>这个公式的理解为：当预�
 <li>鼠标释放的时候，flag置为False，表示矩形画完了，准备画下一个了</li>
 </ul>
 <h2 id="代码讲解"><a href="#代码讲解" class="headerlink" title="代码讲解"></a>代码讲解</h2><h3 id="Opencv图像的转换"><a href="#Opencv图像的转换" class="headerlink" title="Opencv图像的转换"></a>Opencv图像的转换</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">img &#x3D; cv2.imread(&#39;xxx.jpg&#39;)</span><br><span class="line">height, width, bytesPerComponent &#x3D; img.shape</span><br><span class="line">bytesPerLine &#x3D; 3 * width</span><br><span class="line">cv2.cvtColor(img, cv2.COLOR_BGR2RGB, img)</span><br><span class="line">QImg &#x3D; QImage(img.data, width, height, bytesPerLine, QImage.Format_RGB888)</span><br><span class="line">pixmap &#x3D; QPixmap.fromImage(QImg)</span><br></pre></td></tr></table></figure>
-<p>这个就是Opencv和PyQt对象的转化了。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">img &#x3D; cv2.imread(&#39;xxx.jpg&#39;)</span><br></pre></td></tr></table></figure>
-<p>使用Opencv读取图像。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">height, width, bytesPerComponent &#x3D; img.shape</span><br></pre></td></tr></table></figure>
-<p>在OpenCV-Python绑定中，图像使用NumPy数组的属性(这就解释了为什么要更新numpy)来表示图像的尺寸和通道信息。此时如果我们输出img.shape，将得到(200, 360, 3)。最后的3表示这是一个RGB图像。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cv2.cvtColor(img, cv2.COLOR_BGR2RGB, img)</span><br></pre></td></tr></table></figure>
-<p>将图像从一个颜色空间转换为另一个颜色空间。<br>Python中的函数要求是这样的：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Python：cv2.cvtColor（src，code [，dst [，dstCn]]）→dst</span><br></pre></td></tr></table></figure>
-<p>参数：</p>
+<p>这个就是Opencv和PyQt对象的转化了。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">img &#x3D; cv2.imread(&#39;xxx.jpg&#39;)</span><br></pre></td></tr></table></figure><br>使用Opencv读取图像。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">height, width, bytesPerComponent &#x3D; img.shape</span><br></pre></td></tr></table></figure><br>在OpenCV-Python绑定中，图像使用NumPy数组的属性(这就解释了为什么要更新numpy)来表示图像的尺寸和通道信息。此时如果我们输出img.shape，将得到(200, 360, 3)。最后的3表示这是一个RGB图像。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cv2.cvtColor(img, cv2.COLOR_BGR2RGB, img)</span><br></pre></td></tr></table></figure><br>将图像从一个颜色空间转换为另一个颜色空间。<br>Python中的函数要求是这样的：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Python：cv2.cvtColor（src，code [，dst [，dstCn]]）→dst</span><br></pre></td></tr></table></figure><br>参数：</p>
 <ol>
 <li>src - 输入图像：8位无符号，16位无符号（CV_16UC …）或单精度浮点数。</li>
 <li>dst - 输出与src相同大小和深度的图像。</li>
@@ -1271,36 +1257,18 @@ y=\left(t_{y} * h_{a}\right)-y_{a}</script><p>这个公式的理解为：当预�
 <li>dstCn - 目标图像中的通道数量；如果参数是0，则通道的数量是从src和代码自动导出的。</li>
 </ol>
 <p>该函数将输入图像从一个颜色空间转换为另一个颜色空间。在从RGB颜色空间转换到RGB颜色空间的情况下，通道的顺序应明确指定（RGB或BGR）。请注意，OpenCV中的默认颜色格式通常被称为RGB，但实际上是BGR（字节相反）。因此，标准（24位）彩色图像中的第一个字节将是一个8位蓝色分量，第二个字节将是绿色，而第三个字节将是红色。第四，五，六字节将是第二个像素（蓝色，然后是绿色，然后是红色），依此类推。</p>
-<p>这里我们就是要求从Opencv的BGR图像转换成RGB图像了。为什么？因为要转换成PyQt5可以识别的啊！</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">bytesPerLine &#x3D; 3 * width</span><br><span class="line">QImg &#x3D; QImage(img.data, width, height, bytesPerLine, QImage.Format_RGB888)</span><br></pre></td></tr></table></figure>
-<p>QImage类提供了独立于硬件的图像表示形式，允许直接访问像素数据，并可用作绘画设备。Qt提供了四个类来处理图像数据：QImage，QPixmap，QBitmap和QPicture。QImage是为I/O设计和优化的，并且可以直接进行像素访问和操作，而QPixmap则是针对在屏幕上显示图像而设计和优化的。 </p>
+<p>这里我们就是要求从Opencv的BGR图像转换成RGB图像了。为什么？因为要转换成PyQt5可以识别的啊！<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">bytesPerLine &#x3D; 3 * width</span><br><span class="line">QImg &#x3D; QImage(img.data, width, height, bytesPerLine, QImage.Format_RGB888)</span><br></pre></td></tr></table></figure><br>QImage类提供了独立于硬件的图像表示形式，允许直接访问像素数据，并可用作绘画设备。Qt提供了四个类来处理图像数据：QImage，QPixmap，QBitmap和QPicture。QImage是为I/O设计和优化的，并且可以直接进行像素访问和操作，而QPixmap则是针对在屏幕上显示图像而设计和优化的。 </p>
 <p>QBitmap只是一个继承QPixmap的便利类，深度为1。最后，QPicture类是一个记录和重放QPainter命令的绘图设备。</p>
 <p>因为QImage是一个QPaintDevice子类，QPainter可以用来直接绘制图像。在QImage上使用QPainter时，可以在当前GUI线程之外的另一个线程中执行绘制。QImage提供了一系列功能，可用于获取有关图像的各种信息。也有几个功能，使图像转换。<br>详见官网介绍：<a href="https://doc.qt.io/qt-5/qimage.html" target="_blank" rel="noopener">QImage Class | Qt GUI 5.10</a></p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">QImg &#x3D; QImage(img.data, width, height, bytesPerLine, QImage.Format_RGB888)</span><br></pre></td></tr></table></figure>
 <p>函数原型是：<strong>QImage(str, int, int, int, QImage.Format)</strong>，用给定的宽度，高度和格式构造一个使用现有内存缓冲区数据的图像。宽度和高度必须以像素指定。bytesPerLine指定每行的字节数。</p>
 <p><strong>这里有个疑问：为什么bytesPerLine = 3 * width？</strong><br>我的理解是：当1个像素占3个字节，此时图像为真彩色图像。</p>
-<p><strong>QImage.Format_RGB888</strong>表示的是图像存储使用8-8-8 24位RGB格式。当然还有更多的格式，详见QImage的官方介绍，限于篇幅这里不展开。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pixmap &#x3D; QPixmap.fromImage(QImg)</span><br></pre></td></tr></table></figure>
-<p>这个很好理解，就是想QImage对象转换成QPixmap对象，便于下步我们将Label标签中设置图像。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">self.lb.setPixmap(pixmap)</span><br></pre></td></tr></table></figure>
-<p>设置标签的图像信息。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">self.lb.setCursor(Qt.CrossCursor)</span><br></pre></td></tr></table></figure>
-<p>设置鼠标在QLabel对象中的样式，只是为了画画好看些而已，没其它的意思。除了这个十字架的，还有其它很多样式，如下图：<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/v2-cf7bf8978adbaa898f059207f52f3d5b_hd.jpg" alt></p>
-<h3 id="鼠标事件"><a href="#鼠标事件" class="headerlink" title="鼠标事件"></a>鼠标事件</h3><p>按照上文中我们介绍的思路，我们自定义了一个QLabel类myLabel，当然是继承了QLabel。然后我们用几个类变量记录鼠标的坐标和矩形是否完成的标志。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">def mousePressEvent(self,event):</span><br><span class="line">    self.flag &#x3D; True</span><br><span class="line">    self.x0 &#x3D; event.x()</span><br><span class="line">    self.y0 &#x3D; event.y()</span><br><span class="line"></span><br><span class="line">def mouseReleaseEvent(self,event):</span><br><span class="line">    self.flag &#x3D; False</span><br><span class="line"></span><br><span class="line">def mouseMoveEvent(self,event):</span><br><span class="line">    if self.flag:</span><br><span class="line">        self.x1 &#x3D; event.x()</span><br><span class="line">        self.y1 &#x3D; event.y()</span><br><span class="line">        self.update()</span><br></pre></td></tr></table></figure>
-<p>这里就是重载了鼠标产生的几个事件，是我们自定义的。分别记录了点击鼠标后初始的鼠标坐标，以及释放鼠标后的鼠标坐标。并在鼠标移动的时候更新UI。也就是我们上面所说的鼠标画矩形的思路。</p>
+<p><strong>QImage.Format_RGB888</strong>表示的是图像存储使用8-8-8 24位RGB格式。当然还有更多的格式，详见QImage的官方介绍，限于篇幅这里不展开。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pixmap &#x3D; QPixmap.fromImage(QImg)</span><br></pre></td></tr></table></figure><br>这个很好理解，就是想QImage对象转换成QPixmap对象，便于下步我们将Label标签中设置图像。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">self.lb.setPixmap(pixmap)</span><br></pre></td></tr></table></figure><br>设置标签的图像信息。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">self.lb.setCursor(Qt.CrossCursor)</span><br></pre></td></tr></table></figure><br>设置鼠标在QLabel对象中的样式，只是为了画画好看些而已，没其它的意思。除了这个十字架的，还有其它很多样式，如下图：<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/v2-cf7bf8978adbaa898f059207f52f3d5b_hd.jpg" alt></p>
+<h3 id="鼠标事件"><a href="#鼠标事件" class="headerlink" title="鼠标事件"></a>鼠标事件</h3><p>按照上文中我们介绍的思路，我们自定义了一个QLabel类myLabel，当然是继承了QLabel。然后我们用几个类变量记录鼠标的坐标和矩形是否完成的标志。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">def mousePressEvent(self,event):</span><br><span class="line">    self.flag &#x3D; True</span><br><span class="line">    self.x0 &#x3D; event.x()</span><br><span class="line">    self.y0 &#x3D; event.y()</span><br><span class="line"></span><br><span class="line">def mouseReleaseEvent(self,event):</span><br><span class="line">    self.flag &#x3D; False</span><br><span class="line"></span><br><span class="line">def mouseMoveEvent(self,event):</span><br><span class="line">    if self.flag:</span><br><span class="line">        self.x1 &#x3D; event.x()</span><br><span class="line">        self.y1 &#x3D; event.y()</span><br><span class="line">        self.update()</span><br></pre></td></tr></table></figure><br>这里就是重载了鼠标产生的几个事件，是我们自定义的。分别记录了点击鼠标后初始的鼠标坐标，以及释放鼠标后的鼠标坐标。并在鼠标移动的时候更新UI。也就是我们上面所说的鼠标画矩形的思路。</p>
 <h3 id="画矩形"><a href="#画矩形" class="headerlink" title="画矩形"></a>画矩形</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">def paintEvent(self, event):</span><br><span class="line">    super().paintEvent(event)</span><br><span class="line">    rect &#x3D;QRect(self.x0, self.y0, abs(self.x1-self.x0), abs(self.y1-self.y0))</span><br><span class="line">    painter &#x3D; QPainter(self)</span><br><span class="line">    painter.setPen(QPen(Qt.red,4,Qt.SolidLine))</span><br><span class="line">    painter.drawRect(rect)</span><br><span class="line"></span><br><span class="line">    pqscreen  &#x3D; QGuiApplication.primaryScreen()</span><br><span class="line">    pixmap2 &#x3D; pqscreen.grabWindow(self.winId(), self.x0, self.y0, abs(self.x1-self.x0), abs(self.y1-self.y0))</span><br><span class="line">    pixmap2.save(&#39;555.png&#39;)</span><br></pre></td></tr></table></figure>
-<p>这个是关键点啊！</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">super().paintEvent(event)</span><br></pre></td></tr></table></figure>
-<p>调用父类的paintEvent()，这个是为了显示你设置的效果。否则会是一片空白。大家可以试试注释这句话，看看效果啊！</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">rect &#x3D;QRect(self.x0, self.y0, abs(self.x1-self.x0), abs(self.y1-self.y0))</span><br></pre></td></tr></table></figure>
-<p>QRect类使用整数精度在平面中定义一个矩形。矩形通常表示为左上角和大小。QRect的大小（宽度和高度）始终等同于构成其渲染基础的数学矩形。QRect可以用一组左，上，宽和高整数，或者从QPoint和QSize构成。以下代码创建两个相同的矩形。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">QRect(100, 200, 11, 16)</span><br><span class="line">QRect(QPoint(100, 200), QSize(11, 16))</span><br><span class="line">painter &#x3D; QPainter(self)</span><br><span class="line">painter.setPen(QPen(Qt.red,4,Qt.SolidLine))</span><br><span class="line">painter.drawRect(rect)</span><br></pre></td></tr></table></figure>
-<p>构建一个QPainter对象，设置它的画笔，然后画一个矩形。貌似感觉好简单！^_^”</p>
+<p>这个是关键点啊！<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">super().paintEvent(event)</span><br></pre></td></tr></table></figure><br>调用父类的paintEvent()，这个是为了显示你设置的效果。否则会是一片空白。大家可以试试注释这句话，看看效果啊！<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">rect &#x3D;QRect(self.x0, self.y0, abs(self.x1-self.x0), abs(self.y1-self.y0))</span><br></pre></td></tr></table></figure><br>QRect类使用整数精度在平面中定义一个矩形。矩形通常表示为左上角和大小。QRect的大小（宽度和高度）始终等同于构成其渲染基础的数学矩形。QRect可以用一组左，上，宽和高整数，或者从QPoint和QSize构成。以下代码创建两个相同的矩形。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">QRect(100, 200, 11, 16)</span><br><span class="line">QRect(QPoint(100, 200), QSize(11, 16))</span><br><span class="line">painter &#x3D; QPainter(self)</span><br><span class="line">painter.setPen(QPen(Qt.red,4,Qt.SolidLine))</span><br><span class="line">painter.drawRect(rect)</span><br></pre></td></tr></table></figure><br>构建一个QPainter对象，设置它的画笔，然后画一个矩形。貌似感觉好简单！^_^”</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pqscreen  &#x3D; QGuiApplication.primaryScreen()</span><br><span class="line">pixmap2 &#x3D; pqscreen.grabWindow(self.winId(), self.x0, self.y0, abs(self.x1-self.x0), abs(self.y1-self.y0))</span><br><span class="line">pixmap2.save(&#39;555.png&#39;)</span><br></pre></td></tr></table></figure>
-<p>截屏的原理呢，主要还是运用QScreen类中的grabWindow方法。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">QScreen.grabWindow(WId window, int x &#x3D; 0, int y &#x3D; 0, int width &#x3D; -1, int height &#x3D; -1)</span><br></pre></td></tr></table></figure>
-<p>大致意思是创建并返回通过抓取由QRect（x，y，width，height）限制的给定窗口构造的像素图。</p>
+<p>截屏的原理呢，主要还是运用QScreen类中的grabWindow方法。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">QScreen.grabWindow(WId window, int x &#x3D; 0, int y &#x3D; 0, int width &#x3D; -1, int height &#x3D; -1)</span><br></pre></td></tr></table></figure><br>大致意思是创建并返回通过抓取由QRect（x，y，width，height）限制的给定窗口构造的像素图。</p>
 <p>参数（x，y）指定窗口中的偏移量，而（宽度，高度）指定要复制的区域。如果宽度为负数，则该函数将所有内容复制到窗口的右边界。如果高度为负数，则该函数将所有内容复制到窗口的底部。</p>
 <p>窗口系统标识符（WId）可以使用QWidget.winId（）函数进行检索。grabWindow（）函数从屏幕抓取像素，而不是从窗口抓取像素，即，如果有另一个窗口部分或全部覆盖抓取的像素，则也会从上面的窗口获取像素。鼠标光标一般不会被抓取。详见官网介绍：QScreen Class | Qt GUI 5.10</p>
 <p>由于QScreen类无构造函数，所以我们使用QGuiApplication.primaryScreen()创建了一个Qscreen类对象。最后使用pixmap2.save(‘555.png’)，保存具体的截图。</p>
@@ -1316,17 +1284,25 @@ y=\left(t_{y} * h_{a}\right)-y_{a}</script><p>这个公式的理解为：当预�
       </tags>
   </entry>
   <entry>
+    <title>Permmision denied解决方法</title>
+    <url>/2019/03/19/Permmision%20denied%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/</url>
+    <content><![CDATA[<p>这是因为要管理员权限的，而ubuntu又不想给普通用户赋予管理员权限。所以这里开启root账号</p>
+<h2 id="首先设置-root-密码"><a href="#首先设置-root-密码" class="headerlink" title=" 首先设置 root 密码"></a><a id="more"></a> 首先设置 root 密码</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo passwd</span><br></pre></td></tr></table></figure>
+<p>会出现以下画面：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[sudo] password for luban:                        &#x2F;&#x2F;输入当前普通用户的密码</span><br><span class="line"></span><br><span class="line">Enter new UNIX password:                          &#x2F;&#x2F;给root设置密码</span><br><span class="line"></span><br><span class="line">Retype new UNIX password:                         &#x2F;&#x2F;确认输入密码</span><br><span class="line"></span><br><span class="line">passwd: password updated successfully</span><br></pre></td></tr></table></figure></p>
+<h2 id="开启root"><a href="#开启root" class="headerlink" title="开启root"></a>开启root</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">su root</span><br></pre></td></tr></table></figure>
+<h2 id="修改文件权限"><a href="#修改文件权限" class="headerlink" title="修改文件权限"></a>修改文件权限</h2><p>为了获得执行权限，借助chmod指令修改文件权限即可。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">chmod 777 文件夹或文件路径</span><br></pre></td></tr></table></figure></p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Python新环境下快速安装依赖包的小技巧</title>
     <url>/2019/03/19/Python%E6%96%B0%E7%8E%AF%E5%A2%83%E4%B8%8B%E5%BF%AB%E9%80%9F%E5%AE%89%E8%A3%85%E4%BE%9D%E8%B5%96%E5%8C%85%E7%9A%84%E5%B0%8F%E6%8A%80%E5%B7%A7/</url>
-    <content><![CDATA[<p>当你新创一个Python环境时，若还用pip一个个装你所需要的库，明显效率十分低下。这里有个小技巧，你可以从已配置好的旧环境中，导出一个requirements.txt 文件，用于记录所有依赖包及其精确的版本号。以便新环境部署。</p>
-<a id="more"></a> 
-<p>在旧环境中执行以下命令，生成requirements.txt文件：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip freeze &gt; requirements.txt</span><br></pre></td></tr></table></figure>
-<p>requirements.txt中的内容类似如下，记录了你旧有环境的依赖包及其精确的版本号：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">appdirs&#x3D;&#x3D;1.4.3</span><br><span class="line">backports.functools-lru-cache&#x3D;&#x3D;1.5</span><br><span class="line">beautifulsoup4&#x3D;&#x3D;4.5.3</span><br><span class="line">bs4&#x3D;&#x3D;0.0.1</span><br><span class="line">cycler&#x3D;&#x3D;0.10.0</span><br><span class="line">kiwisolver&#x3D;&#x3D;1.0.1</span><br><span class="line">lxml&#x3D;&#x3D;3.7.3</span><br><span class="line">matplotlib&#x3D;&#x3D;2.2.0</span><br><span class="line">numpy&#x3D;&#x3D;1.14.1</span><br><span class="line">pandas&#x3D;&#x3D;0.22.0</span><br><span class="line">pyparsing&#x3D;&#x3D;2.2.0</span><br><span class="line">python-dateutil&#x3D;&#x3D;2.6.1</span><br><span class="line">pytz&#x3D;&#x3D;2018.3</span><br><span class="line">six&#x3D;&#x3D;1.11.0</span><br><span class="line">virtualenv&#x3D;&#x3D;15.1.0</span><br></pre></td></tr></table></figure>
-<p>这时你可以把requirements.txt拷入新配置的Python目录下，执行以下命令：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip install -r requirements.txt</span><br></pre></td></tr></table></figure>
-<p>则会按照requirements.txt中所写的依赖包和版本依序进行安装。<br>注意：<br>若迁入的系统不同或Python版本不同，在安装过程中可能会因为找不到相应的依赖包版本而报错<br>这时你可以进入requirements.txt把报错的依赖包后的版本信息去掉，保存，重新执行命令即可，它会自动下载匹配的最新版本。<br>也可以把==改成&lt;=，代表它会搜索不大于此版本的最高版本进行安装。<br>由于pip下载源在国外，若无合适的VPN，此期间下载过程会十分漫长，这里提供几个常用的国内镜像源：</p>
+    <content><![CDATA[<p>当你新创一个Python环境时，若还用pip一个个装你所需要的库，明显效率十分低下。这里有个小技巧，你可以从已配置好的旧环境中，导出一个requirements.txt 文件，用于记录所有依赖包及其精确的版本号。以便新环境部署。<br><a id="more"></a><br>在旧环境中执行以下命令，生成requirements.txt文件：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip freeze &gt; requirements.txt</span><br></pre></td></tr></table></figure><br>requirements.txt中的内容类似如下，记录了你旧有环境的依赖包及其精确的版本号：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">appdirs&#x3D;&#x3D;1.4.3</span><br><span class="line">backports.functools-lru-cache&#x3D;&#x3D;1.5</span><br><span class="line">beautifulsoup4&#x3D;&#x3D;4.5.3</span><br><span class="line">bs4&#x3D;&#x3D;0.0.1</span><br><span class="line">cycler&#x3D;&#x3D;0.10.0</span><br><span class="line">kiwisolver&#x3D;&#x3D;1.0.1</span><br><span class="line">lxml&#x3D;&#x3D;3.7.3</span><br><span class="line">matplotlib&#x3D;&#x3D;2.2.0</span><br><span class="line">numpy&#x3D;&#x3D;1.14.1</span><br><span class="line">pandas&#x3D;&#x3D;0.22.0</span><br><span class="line">pyparsing&#x3D;&#x3D;2.2.0</span><br><span class="line">python-dateutil&#x3D;&#x3D;2.6.1</span><br><span class="line">pytz&#x3D;&#x3D;2018.3</span><br><span class="line">six&#x3D;&#x3D;1.11.0</span><br><span class="line">virtualenv&#x3D;&#x3D;15.1.0</span><br></pre></td></tr></table></figure><br>这时你可以把requirements.txt拷入新配置的Python目录下，执行以下命令：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip install -r requirements.txt</span><br></pre></td></tr></table></figure><br>则会按照requirements.txt中所写的依赖包和版本依序进行安装。<br>注意：<br>若迁入的系统不同或Python版本不同，在安装过程中可能会因为找不到相应的依赖包版本而报错<br>这时你可以进入requirements.txt把报错的依赖包后的版本信息去掉，保存，重新执行命令即可，它会自动下载匹配的最新版本。<br>也可以把==改成&lt;=，代表它会搜索不大于此版本的最高版本进行安装。<br>由于pip下载源在国外，若无合适的VPN，此期间下载过程会十分漫长，这里提供几个常用的国内镜像源：</p>
 <ul>
 <li>清华大学 <a href="https://pypi.tuna.tsinghua.edu.cn/simple/" target="_blank" rel="noopener">https://pypi.tuna.tsinghua.edu.cn/simple/</a></li>
 <li>中国科学技术大学 <a href="http://pypi.mirrors.ustc.edu.cn/simple/" target="_blank" rel="noopener">http://pypi.mirrors.ustc.edu.cn/simple/</a></li>
@@ -1336,68 +1312,12 @@ y=\left(t_{y} * h_{a}\right)-y_{a}</script><p>这个公式的理解为：当预�
 </ul>
 <p>可以在使用pip的时候，加上参数-i和镜像地址，指定下载源，加速下载过程，如：</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip install -r requirements.txt -i https:&#x2F;&#x2F;pypi.tuna.tsinghua.edu.cn&#x2F;simple</span><br></pre></td></tr></table></figure>
-
 ]]></content>
       <categories>
         <category>教程</category>
       </categories>
       <tags>
         <tag>Python</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Permmision denied解决方法</title>
-    <url>/2019/03/19/Permmision%20denied%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/</url>
-    <content><![CDATA[<p>这是因为要管理员权限的，而ubuntu又不想给普通用户赋予管理员权限。所以这里开启root账号</p>
-<h2 id="首先设置-root-密码"><a href="#首先设置-root-密码" class="headerlink" title=" 首先设置 root 密码"></a><a id="more"></a> 首先设置 root 密码</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo passwd</span><br></pre></td></tr></table></figure>
-<p>会出现以下画面：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[sudo] password for luban:                        &#x2F;&#x2F;输入当前普通用户的密码</span><br><span class="line"></span><br><span class="line">Enter new UNIX password:                          &#x2F;&#x2F;给root设置密码</span><br><span class="line"></span><br><span class="line">Retype new UNIX password:                         &#x2F;&#x2F;确认输入密码</span><br><span class="line"></span><br><span class="line">passwd: password updated successfully</span><br></pre></td></tr></table></figure>
-<h2 id="开启root"><a href="#开启root" class="headerlink" title="开启root"></a>开启root</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">su root</span><br></pre></td></tr></table></figure>
-<h2 id="修改文件权限"><a href="#修改文件权限" class="headerlink" title="修改文件权限"></a>修改文件权限</h2><p>为了获得执行权限，借助chmod指令修改文件权限即可。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">chmod 777 文件夹或文件路径</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
-        <tag>Ubuntu</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Ubuntu下如何添加新用户并增加管理员权限</title>
-    <url>/2019/03/19/Ubuntu%E4%B8%8B%E5%A6%82%E4%BD%95%E6%B7%BB%E5%8A%A0%E6%96%B0%E7%94%A8%E6%88%B7%E5%B9%B6%E5%A2%9E%E5%8A%A0%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/</url>
-    <content><![CDATA[<h2 id="添加新用户"><a href="#添加新用户" class="headerlink" title=" 添加新用户"></a><a id="more"></a> 添加新用户</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo adduser xxx #xxx为用户名</span><br></pre></td></tr></table></figure>
-<p>输入密码后，出现如下信息：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">正在添加用户&quot;xxx&quot;…</span><br><span class="line">正在添加新组&quot;xxx&quot; (1003)…</span><br><span class="line">正在添加新用户&quot;xxx&quot; (1003) 到组&quot;xxx&quot;…</span><br><span class="line">创建主目录&quot;&#x2F;home&#x2F;xxx&quot;…</span><br><span class="line">正在从&quot;&#x2F;etc&#x2F;skel&quot;复制文件…</span><br><span class="line">输入新的 UNIX 密码：</span><br><span class="line">重新输入新的 UNIX 密码：</span><br><span class="line">passwd：已成功更新密码</span><br><span class="line">正在改变 xxx 的用户信息</span><br><span class="line">请输入新值，或直接敲回车以使用默认值</span><br><span class="line">        全名 [ ]：</span><br><span class="line">        房间号码 [ ]：</span><br><span class="line">        工作电话 [ ]：</span><br><span class="line">        家庭电话 [ ]：</span><br><span class="line">        其它 [ ]：</span><br><span class="line">这些信息是否正确？ [Y&#x2F;n] y</span><br></pre></td></tr></table></figure>
-<p>到这里，新用户添加成功。</p>
-<h2 id="增加管理员权限"><a href="#增加管理员权限" class="headerlink" title="增加管理员权限"></a>增加管理员权限</h2><p>需要让此用户有root权限，执行命令：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo nano &#x2F;etc&#x2F;sudoers</span><br></pre></td></tr></table></figure>
-<p>往下拉，修改文件并添加：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">xxx ALL&#x3D;(ALL：ALL) ALL #xxx为你之前所创的用户名</span><br></pre></td></tr></table></figure>
-<p>添加完成按下Ctrl + X保存并退出，再次按下Enter,完成<br>现在你可以点击右上角，看到你新创的用户，点击并切换了！</p>
-]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
-        <tag>Ubuntu</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Ubuntu下安装Pycharm</title>
-    <url>/2019/03/19/Ubuntu%E4%B8%8B%E5%AE%89%E8%A3%85Pycharm/</url>
-    <content><![CDATA[<h2 id="下载"><a href="#下载" class="headerlink" title="下载"></a><a id="more"></a>下载</h2><p>有社区版和专业版，专业版需要激活，社区版免费，我下载的是社区版。<br><a href="https://www.jetbrains.com/pycharm/download/#section=linux" target="_blank" rel="noopener">官方下载</a><br><a href="https://www.jianguoyun.com/p/DfZJG3QQlZ_3Bhj8mrEC" target="_blank" rel="noopener">网盘下载</a></p>
-<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>进入download目录，对下载好的Pycharm压缩包进行解压操作，选中文件右键提取到此处即可。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D1664510513%2C942693123%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt><br>进入解压后的Pycharm文件夹，进入bin目录，可以看到很多文件，其中有一个文件叫做pycharm.sh。也就是下图中所选中的文件：<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D101055722%2C4258535600%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt><br>此时在bin文件夹下右键打开终端，输入运行命令, 执行Pycharm程序</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.&#x2F;pycharm.sh</span><br></pre></td></tr></table></figure>
-<p>如果提示没有权限，大家可以添加sudo命令进行操作：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo .&#x2F;pycharm.sh</span><br></pre></td></tr></table></figure>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D805484803%2C1629350165%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt><br>大家点击OK即可进入下一步操作，根据提示的内容进行勾选同意协议，然后点击continue进入下一步，大家可以点击don’t send进入下一步，选择喜欢的界面风格，然后再次点击next进入下一步，直到提示start启动程序。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D227808303%2C3066408894%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D22323540%2C1357101677%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D1914658415%2C2906990210%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt><br>为了方便以后的使用，我们可以将Pycharm的图标（快捷键）锁定到启动器。之后不用再去在终端中启动Pycharm了，直接点击图标启动即可。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D1149108563%2C3867497858%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt></p>
-]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
-        <tag>Python</tag>
-        <tag>Ubuntu</tag>
       </tags>
   </entry>
   <entry>
@@ -1413,126 +1333,49 @@ y=\left(t_{y} * h_{a}\right)-y_{a}</script><p>这个公式的理解为：当预�
 </ul>
 <p>以下教程针对从零开始的用户，若系统中已装有CUDA和cuDNN，却在当前用户下无法使用，请<a href="#添加环境变量">添加环境变量</a></p>
 <h2 id="安装NVIDIA显卡驱动"><a href="#安装NVIDIA显卡驱动" class="headerlink" title="安装NVIDIA显卡驱动"></a>安装NVIDIA显卡驱动</h2><p>1.先在<a href="https://www.nvidia.cn/Download/index.aspx?lang=cn" target="_blank" rel="noopener">NVIDIA官网</a>上下载对应的驱动程序，可根据自己的GPU的型号下载相应的.run文件<br>例如NVIDIA-Linux-x86_64-3xx.xx.run形式的文件名</p>
-<p>2.禁用开源nouveau驱动<strong>（非常重要）</strong><br>Ubuntu系统集成的显卡驱动程序是nouveau，它是第三方为NVIDIA开发的开源驱动，我们需要先将其屏蔽才能安装NVIDIA官方驱动。<br>将驱动添加到黑名单blacklist.conf中，但是由于该文件的属性不允许修改。所以需要先修改文件属性。<br>查看属性</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo ls -lh &#x2F;etc&#x2F;modprobe.d&#x2F;blacklist.conf</span><br></pre></td></tr></table></figure>
-<p>修改属性</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo chmod 666 &#x2F;etc&#x2F;modprobe.d&#x2F;blacklist.conf</span><br></pre></td></tr></table></figure>
-<p>用gedit编辑器打开</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo gedit &#x2F;etc&#x2F;modprobe.d&#x2F;blacklist.conf</span><br></pre></td></tr></table></figure>
-<p>在该文件后添加一下几行：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">blacklist vga16fb</span><br><span class="line">blacklist nouveau</span><br><span class="line">blacklist rivafb</span><br><span class="line">blacklist rivatv</span><br><span class="line">blacklist nvidiafb</span><br></pre></td></tr></table></figure>
-<p>3.开始安装<br>先按Ctrl + Alt + F1到控制台，关闭当前图形环境</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo service lightdm stop</span><br></pre></td></tr></table></figure>
-<p>再安装驱动程序</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo chmod a+x NVIDIA-Linux-x86_64-xxx.run</span><br><span class="line">sudo .&#x2F;NVIDIA-Linux-x86_64-xxx.run -no-x-check -no-nouveau-check -no-opengl-files</span><br></pre></td></tr></table></figure>
-<p>最后重新启动图形环境</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo service lightdm start</span><br></pre></td></tr></table></figure>
-<p>在终端里输入：nvidia-smi ，输出以下图片的代码则安装成功<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/CUDA%26cuDNN/2019051413224071.png" alt></p>
-<h2 id="cuda-10-0安装"><a href="#cuda-10-0安装" class="headerlink" title="cuda 10.0安装"></a>cuda 10.0安装</h2><p><a href="https://developer.nvidia.com/cuda-toolkit-archive" target="_blank" rel="noopener">官方下载</a><br><a href="https://pan.baidu.com/s/1piTbzIIL3wTx1dCeUDDiOw" target="_blank" rel="noopener">网盘下载</a> 提取码: aarn</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo chmod a+x cuda_10.0.130_410.48_linux.run &#x2F;&#x2F; 获取权限</span><br><span class="line">sudo sh cuda_10.0.130_410.48_linux.run --tmpdir&#x3D;&#x2F;home&#x2F;max&#x2F;temp</span><br></pre></td></tr></table></figure>
-<p>这里加 –tmpdir 主要是直接运行后，会提示空间不足的问题<br>接下来进入英文选择界面按住空格键可以快速浏览<br>在安装过程中选项选择：<br>accept #同意安装<br>n #不安装Driver，因为已安装驱动<strong>（这里需要强调一下）</strong><br>y #安装CUDA Toolkit<br>#安装到默认目录<br>y #创建安装目录的软链接<br>n #不复制Samples，因为在安装目录下有/samples</p>
-<h2 id="添加环境变量"><a href="#添加环境变量" class="headerlink" title="添加环境变量"></a>添加环境变量</h2><p>home文件下 ctrl+H显示隐藏文件 打开 .bashrc文件在最后添加</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">export PATH&#x3D;&#x2F;usr&#x2F;local&#x2F;cuda-10.0&#x2F;bin$&#123;PATH:+:$&#123;PATH&#125;&#125;</span><br><span class="line">export LD_LIBRARY_PATH&#x3D;&#x2F;usr&#x2F;local&#x2F;cuda-10.0&#x2F;lib64$&#123;LD_LIBRARY_PATH:+:$&#123;LD_LIBRARY_PATH&#125;&#125;</span><br></pre></td></tr></table></figure>
-<p>终端运行如下命令，保存操作</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">source ~&#x2F;.bashrc</span><br></pre></td></tr></table></figure>
-<p>检查cuda是否安装成功</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">nvcc -V</span><br><span class="line">nvcc --version</span><br></pre></td></tr></table></figure>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/CUDA%26cuDNN/20190514132130343.png" alt></p>
-<h2 id="cuDnn-10-0安装"><a href="#cuDnn-10-0安装" class="headerlink" title="cuDnn 10.0安装"></a>cuDnn 10.0安装</h2><p><a href="https://developer.nvidia.com/rdp/cudnn-archive" target="_blank" rel="noopener">官方下载</a><br><a href="https://www.jianguoyun.com/p/DdS0_A4QlZ_3Bhjw8LEC" target="_blank" rel="noopener">网盘下载</a><br>注意：需跟CUDA版本对应<br>切换到下载目录进行解压：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo tar -zxvf .&#x2F;cudnn-10.0-linux-x64-xxx.tgz</span><br></pre></td></tr></table></figure>
-<p>解压下载的文件，可以看到cuda文件夹，在当前目录打开终端，执行如下命令：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo cp cuda&#x2F;include&#x2F;cudnn.h &#x2F;usr&#x2F;local&#x2F;cuda&#x2F;include&#x2F;</span><br><span class="line"> </span><br><span class="line">sudo cp cuda&#x2F;lib64&#x2F;libcudnn* &#x2F;usr&#x2F;local&#x2F;cuda&#x2F;lib64&#x2F;</span><br><span class="line"> </span><br><span class="line">sudo chmod a+r &#x2F;usr&#x2F;local&#x2F;cuda&#x2F;include&#x2F;cudnn.h</span><br><span class="line"> </span><br><span class="line">sudo chmod a+r &#x2F;usr&#x2F;local&#x2F;cuda&#x2F;lib64&#x2F;libcudnn*</span><br></pre></td></tr></table></figure>
-<p>在终端输入</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cat &#x2F;usr&#x2F;local&#x2F;cuda&#x2F;include&#x2F;cudnn.h | grep CUDNN_MAJOR -A 2</span><br></pre></td></tr></table></figure>
-<p>如果出现下图所示版本信息，说明安装成功<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/CUDA%26cuDNN/20180815114007852.png" alt></p>
+<p>2.禁用开源nouveau驱动<strong>（非常重要）</strong><br>Ubuntu系统集成的显卡驱动程序是nouveau，它是第三方为NVIDIA开发的开源驱动，我们需要先将其屏蔽才能安装NVIDIA官方驱动。<br>将驱动添加到黑名单blacklist.conf中，但是由于该文件的属性不允许修改。所以需要先修改文件属性。<br>查看属性<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo ls -lh &#x2F;etc&#x2F;modprobe.d&#x2F;blacklist.conf</span><br></pre></td></tr></table></figure><br>修改属性<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo chmod 666 &#x2F;etc&#x2F;modprobe.d&#x2F;blacklist.conf</span><br></pre></td></tr></table></figure><br>用gedit编辑器打开<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo gedit &#x2F;etc&#x2F;modprobe.d&#x2F;blacklist.conf</span><br></pre></td></tr></table></figure><br>在该文件后添加一下几行：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">blacklist vga16fb</span><br><span class="line">blacklist nouveau</span><br><span class="line">blacklist rivafb</span><br><span class="line">blacklist rivatv</span><br><span class="line">blacklist nvidiafb</span><br></pre></td></tr></table></figure><br>3.开始安装<br>先按Ctrl + Alt + F1到控制台，关闭当前图形环境<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo service lightdm stop</span><br></pre></td></tr></table></figure><br>再安装驱动程序<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo chmod a+x NVIDIA-Linux-x86_64-xxx.run</span><br><span class="line">sudo .&#x2F;NVIDIA-Linux-x86_64-xxx.run -no-x-check -no-nouveau-check -no-opengl-files</span><br></pre></td></tr></table></figure><br>最后重新启动图形环境<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo service lightdm start</span><br></pre></td></tr></table></figure><br>在终端里输入：nvidia-smi ，输出以下图片的代码则安装成功<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/CUDA%26cuDNN/2019051413224071.png" alt></p>
+<h2 id="cuda-10-0安装"><a href="#cuda-10-0安装" class="headerlink" title="cuda 10.0安装"></a>cuda 10.0安装</h2><p><a href="https://developer.nvidia.com/cuda-toolkit-archive" target="_blank" rel="noopener">官方下载</a><br><a href="https://pan.baidu.com/s/1piTbzIIL3wTx1dCeUDDiOw" target="_blank" rel="noopener">网盘下载</a> 提取码: aarn<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo chmod a+x cuda_10.0.130_410.48_linux.run &#x2F;&#x2F; 获取权限</span><br><span class="line">sudo sh cuda_10.0.130_410.48_linux.run --tmpdir&#x3D;&#x2F;home&#x2F;max&#x2F;temp</span><br></pre></td></tr></table></figure><br>这里加 —tmpdir 主要是直接运行后，会提示空间不足的问题<br>接下来进入英文选择界面按住空格键可以快速浏览<br>在安装过程中选项选择：<br>accept #同意安装<br>n #不安装Driver，因为已安装驱动<strong>（这里需要强调一下）</strong><br>y #安装CUDA Toolkit</p>
+<h1 id="安装到默认目录"><a href="#安装到默认目录" class="headerlink" title="安装到默认目录"></a>安装到默认目录</h1><p>y #创建安装目录的软链接<br>n #不复制Samples，因为在安装目录下有/samples</p>
+<h2 id="添加环境变量"><a href="#添加环境变量" class="headerlink" title="添加环境变量"></a>添加环境变量</h2><p>home文件下 ctrl+H显示隐藏文件 打开 .bashrc文件在最后添加<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">export PATH&#x3D;&#x2F;usr&#x2F;local&#x2F;cuda-10.0&#x2F;bin$&#123;PATH:+:$&#123;PATH&#125;&#125;</span><br><span class="line">export LD_LIBRARY_PATH&#x3D;&#x2F;usr&#x2F;local&#x2F;cuda-10.0&#x2F;lib64$&#123;LD_LIBRARY_PATH:+:$&#123;LD_LIBRARY_PATH&#125;&#125;</span><br></pre></td></tr></table></figure><br>终端运行如下命令，保存操作<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">source ~&#x2F;.bashrc</span><br></pre></td></tr></table></figure><br>检查cuda是否安装成功<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">nvcc -V</span><br><span class="line">nvcc --version</span><br></pre></td></tr></table></figure><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/CUDA%26cuDNN/20190514132130343.png" alt></p>
+<h2 id="cuDnn-10-0安装"><a href="#cuDnn-10-0安装" class="headerlink" title="cuDnn 10.0安装"></a>cuDnn 10.0安装</h2><p><a href="https://developer.nvidia.com/rdp/cudnn-archive" target="_blank" rel="noopener">官方下载</a><br><a href="https://www.jianguoyun.com/p/DdS0_A4QlZ_3Bhjw8LEC" target="_blank" rel="noopener">网盘下载</a><br>注意：需跟CUDA版本对应<br>切换到下载目录进行解压：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo tar -zxvf .&#x2F;cudnn-10.0-linux-x64-xxx.tgz</span><br></pre></td></tr></table></figure><br>解压下载的文件，可以看到cuda文件夹，在当前目录打开终端，执行如下命令：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo cp cuda&#x2F;include&#x2F;cudnn.h &#x2F;usr&#x2F;local&#x2F;cuda&#x2F;include&#x2F;</span><br><span class="line"> </span><br><span class="line">sudo cp cuda&#x2F;lib64&#x2F;libcudnn* &#x2F;usr&#x2F;local&#x2F;cuda&#x2F;lib64&#x2F;</span><br><span class="line"> </span><br><span class="line">sudo chmod a+r &#x2F;usr&#x2F;local&#x2F;cuda&#x2F;include&#x2F;cudnn.h</span><br><span class="line"> </span><br><span class="line">sudo chmod a+r &#x2F;usr&#x2F;local&#x2F;cuda&#x2F;lib64&#x2F;libcudnn*</span><br></pre></td></tr></table></figure><br>在终端输入<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cat &#x2F;usr&#x2F;local&#x2F;cuda&#x2F;include&#x2F;cudnn.h | grep CUDNN_MAJOR -A 2</span><br></pre></td></tr></table></figure><br>如果出现下图所示版本信息，说明安装成功<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/CUDA%26cuDNN/20180815114007852.png" alt></p>
 ]]></content>
       <categories>
         <category>教程</category>
       </categories>
       <tags>
-        <tag>Python</tag>
         <tag>Ubuntu</tag>
+        <tag>Python</tag>
         <tag>CUDA</tag>
         <tag>cuDNN</tag>
       </tags>
   </entry>
   <entry>
-    <title>Ubuntu下安装更新pip</title>
-    <url>/2019/03/19/Ubuntu%E4%B8%8B%E5%AE%89%E8%A3%85%E6%9B%B4%E6%96%B0pip/</url>
-    <content><![CDATA[<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a><a id="more"></a>安装</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt install python-pip</span><br></pre></td></tr></table></figure>
-<p>若同时装有Python2、Python3上条命令装的是pip2，若还需装pip3，则再执行以下命令</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt install python3-pip</span><br></pre></td></tr></table></figure>
-<h2 id="更新"><a href="#更新" class="headerlink" title="更新"></a>更新</h2><p>安装成功后进行更新：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo pip install --upgrade pip</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo pip3 install --upgrade pip</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
-        <tag>Python</tag>
-        <tag>Ubuntu</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Ubuntu下如何安装搜狗输入法</title>
-    <url>/2019/03/19/sougou/</url>
-    <content><![CDATA[<h2 id="Ubuntu系统配置"><a href="#Ubuntu系统配置" class="headerlink" title=" Ubuntu系统配置"></a><a id="more"></a> Ubuntu系统配置</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">system settings-&gt;language support-&gt;install&#x2F;remove languages</span><br></pre></td></tr></table></figure>
-<p>在弹出的菜单中选择Chinese(simplified),点击apply<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/sougou/20180729142927736.png" alt><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/sougou/20180729142927712.png" alt></p>
-<h2 id="配置输入法框架"><a href="#配置输入法框架" class="headerlink" title="配置输入法框架"></a>配置输入法框架</h2><p>搜狗输入法是建立在fcitx框架之上的，所以要将输入法框架选择为fictx<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/sougou/20180729142927666.png" alt><br>注意：如果没有fcitx选项，那么你就需要安装fcitx框架之后在进行配置，安装方法如下：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo add-apt-repository ppa:fcitx-team&#x2F;nightly   &#x2F;&#x2F;添加FCITX仓库</span><br><span class="line"></span><br><span class="line">sudo apt-get update                              &#x2F;&#x2F;更新仓库</span><br><span class="line"></span><br><span class="line">sudo apt-get install fcitx                       &#x2F;&#x2F;安装fcitx输入法框架</span><br></pre></td></tr></table></figure>
-<p>配置好输入法框架之后，重启ubuntu系统。重启之后如果配置成功，在任务栏的右上角会出现fcitx的设置选项（一个小键盘图标）<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/sougou/20180729142927651.png" alt></p>
-<h2 id="去搜狗官网下载输入法for-Linux"><a href="#去搜狗官网下载输入法for-Linux" class="headerlink" title="去搜狗官网下载输入法for Linux"></a>去搜狗官网下载输入法for Linux</h2><p><a href="https://pinyin.sogou.com/linux/" target="_blank" rel="noopener">官方下载</a><br><a href="https://www.jianguoyun.com/p/DeShNo0QlZ_3Bhic5rAC" target="_blank" rel="noopener">网盘下载</a><br>下载完成之后，在download目录下找到下载的文件，双击安装即可，点击install即可<br>或者在终端的命令窗口中输入如下的指令安装：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo dpkg -i 安装包名称.deb</span><br></pre></td></tr></table></figure>
-<p>如果在安装过程中出现相关依赖文件的错误。则需要先安装其依赖的软件包<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/sougou/Snipaste_2019-12-13_14-33-14.jpg" alt><br>在终端窗口来执行以下命令，安装缺少的依赖文件:</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt-get -f install</span><br></pre></td></tr></table></figure>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/sougou/Snipaste_2019-12-13_14-33-49.jpg" alt><br>安装完成后，首先打开右上角系统设置，选择第一行的最后一个选项”Text Entry“，点击左下角的+号，在打开的窗口中找到搜狗输入法Sogou pinyin点击Add添加进去<br>仅显示当前语言一定要去掉那个勾，才可以找到搜狗输入法，然后添加就是<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/sougou/2019050512074094.png" alt><br>这时就可以在右上方小键盘选择搜狗输入法了！</p>
+    <title>Ubuntu16.04下Tensorflow-gpu安装</title>
+    <url>/2019/03/19/Ubuntu16.04%E4%B8%8BTensorflow-gpu%E5%AE%89%E8%A3%85/</url>
+    <content><![CDATA[<p>在开始之前，请先确定安装好显卡驱动、CUDA、cuDNN，可以参考我的<a href="https://qiyuan-z.github.io/2019/03/19/Ubuntu-16.04下配置GPU版CUDA和cuDNN/">另一篇博客</a><br><a id="more"></a><br>1.安装Numpy<br>推荐安装1.16.0版本，若之前已安装，请先卸载<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip uninstall numpy</span><br></pre></td></tr></table></figure><br>然后执行安装<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip install numpy&#x3D;&#x3D;1.16.0</span><br></pre></td></tr></table></figure><br>2.安装Tensorflow-gpu<br>推荐安装1.14.0版本<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip install tensorflow-gpu&#x3D;&#x3D;1.14.0</span><br></pre></td></tr></table></figure></p>
 ]]></content>
       <categories>
         <category>教程</category>
       </categories>
       <tags>
         <tag>Ubuntu</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Ubuntu16.04下Tensorflow-gpu安装</title>
-    <url>/2019/03/19/Ubuntu16.04%E4%B8%8BTensorflow-gpu%E5%AE%89%E8%A3%85/</url>
-    <content><![CDATA[<p>在开始之前，请先确定安装好显卡驱动、CUDA、cuDNN，可以参考我的<a href="https://qiyuan-z.github.io/2019/03/19/Ubuntu-16.04下配置GPU版CUDA和cuDNN/">另一篇博客</a></p>
-<a id="more"></a>
-<p>1.安装Numpy<br>推荐安装1.16.0版本，若之前已安装，请先卸载</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip uninstall numpy</span><br></pre></td></tr></table></figure>
-<p>然后执行安装</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip install numpy&#x3D;&#x3D;1.16.0</span><br></pre></td></tr></table></figure>
-<p>2.安装Tensorflow-gpu<br>推荐安装1.14.0版本</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip install tensorflow-gpu&#x3D;&#x3D;1.14.0</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
         <tag>Python</tag>
-        <tag>Ubuntu</tag>
         <tag>Tensorflow</tag>
       </tags>
   </entry>
   <entry>
     <title>Ubuntu下virtualenv的使用与pycharm的基本配置</title>
     <url>/2019/03/19/Ubuntu%E4%B8%8Bvirtualenv%E7%9A%84%E4%BD%BF%E7%94%A8%E4%B8%8Epycharm%E7%9A%84%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE/</url>
-    <content><![CDATA[<h2 id="安装virtualenv"><a href="#安装virtualenv" class="headerlink" title="安装virtualenv"></a><a id="more"></a>安装virtualenv</h2><p>virtualenv是 Python 多版本管理的利器，不同版本的开发调试全靠它了（没有多版本尽量也装上吧）</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo pip install virtualenv</span><br></pre></td></tr></table></figure>
-<h2 id="创建一个virtualenv环境"><a href="#创建一个virtualenv环境" class="headerlink" title="创建一个virtualenv环境"></a>创建一个virtualenv环境</h2><p>使用如下语句：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">virtualenv + 路径</span><br></pre></td></tr></table></figure>
-<p>以这种方式创建环境将不包含系统的python包，新的环境里面只有pip、setuptools和wheel这些包，则许多包要用pip重新安装。</p>
-<p>若需指定python版本：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">virtualenv –p python3 + 路径</span><br></pre></td></tr></table></figure>
+    <content><![CDATA[<h2 id="安装virtualenv"><a href="#安装virtualenv" class="headerlink" title="安装virtualenv"></a><a id="more"></a>安装virtualenv</h2><p>virtualenv是 Python 多版本管理的利器，不同版本的开发调试全靠它了（没有多版本尽量也装上吧）<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo pip install virtualenv</span><br></pre></td></tr></table></figure></p>
+<h2 id="创建一个virtualenv环境"><a href="#创建一个virtualenv环境" class="headerlink" title="创建一个virtualenv环境"></a>创建一个virtualenv环境</h2><p>使用如下语句：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">virtualenv + 路径</span><br></pre></td></tr></table></figure><br>以这种方式创建环境将不包含系统的python包，新的环境里面只有pip、setuptools和wheel这些包，则许多包要用pip重新安装。</p>
+<p>若需指定python版本：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">virtualenv –p python3 + 路径</span><br></pre></td></tr></table></figure></p>
 <h2 id="激活virtualenv环境"><a href="#激活virtualenv环境" class="headerlink" title="激活virtualenv环境"></a>激活virtualenv环境</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">source 路径&#x2F;bin&#x2F;activate</span><br></pre></td></tr></table></figure>
 <p>也可以直接进到所创环境的bin目录中右键终端，运行source activate<br>注意：激活只对当前终端有效，如果新打开了一个终端的话，重新运行上面的命令。 激活后终端前面会多一个(**)的东西，提示当前virtualenv的名称。</p>
 <p>激活后可以在当前终端通过python 文件名.py的方式运行python脚本，如果脚本中使用了当前环境中没有的包，将会报错。</p>
 <p>可以在激活环境后使用pip安装对应的包。<strong>注意不要使用sudo</strong>，否则包会安装到系统当中去，而不是当前的virtualenv目录中。</p>
 <h2 id="退出virtualenv环境"><a href="#退出virtualenv环境" class="headerlink" title="退出virtualenv环境"></a>退出virtualenv环境</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">deactivate</span><br></pre></td></tr></table></figure>
 <p>也可直接关闭当前终端。</p>
-<h2 id="删除virtualenv环境"><a href="#删除virtualenv环境" class="headerlink" title="删除virtualenv环境"></a>删除virtualenv环境</h2><p>直接删除对应目录即可删除virtualenv环境，不会对系统产生任何影响，所以在virtualenv中可以放心操作。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">rm -rvf  + 路径</span><br></pre></td></tr></table></figure>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/virtualenv/5aafafdaa2aca.webp" alt></p>
+<h2 id="删除virtualenv环境"><a href="#删除virtualenv环境" class="headerlink" title="删除virtualenv环境"></a>删除virtualenv环境</h2><p>直接删除对应目录即可删除virtualenv环境，不会对系统产生任何影响，所以在virtualenv中可以放心操作。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">rm -rvf  + 路径</span><br></pre></td></tr></table></figure><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/virtualenv/5aafafdaa2aca.webp" alt></p>
 <h2 id="Pycharm配置"><a href="#Pycharm配置" class="headerlink" title="Pycharm配置"></a>Pycharm配置</h2><p>新建项目<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/virtualenv/5aafb0d3811f2.webp" alt></p>
 <ul>
 <li><p>New environment using Virtualenv: 将在项目的目录下创建一个virtualenv环境，然后使用它当作当前项目的python解释器，默认不包含系统的python包。<br>相当于： virtualenv + 路径</p>
@@ -1550,38 +1393,61 @@ y=\left(t_{y} * h_{a}\right)-y_{a}</script><p>这个公式的理解为：当预�
         <category>教程</category>
       </categories>
       <tags>
-        <tag>Python</tag>
         <tag>Ubuntu</tag>
+        <tag>Python</tag>
         <tag>virtualenv</tag>
       </tags>
   </entry>
   <entry>
-    <title>矩阵分析（刘丁酉）课后答案及历年试卷</title>
-    <url>/2019/03/19/%E7%9F%A9%E9%98%B5%E5%88%86%E6%9E%90%EF%BC%88%E5%88%98%E4%B8%81%E9%85%89%EF%BC%89%E8%AF%BE%E5%90%8E%E7%AD%94%E6%A1%88%E5%8F%8A%E5%8E%86%E5%B9%B4%E8%AF%95%E5%8D%B7/</url>
-    <content><![CDATA[<p>考虑到刘丁酉版本只有部分习题的解答，还不够详细，于是我在学习过程中，将每道习题做了一遍，并记录了下来，希望能对学习矩阵分析的同学给予一定的参考。由于本人仍在学习阶段，难免答案会有做错的地方，希望大家不要尽信答案，只当作一个思路上的参考来看。顺便附赠历年的卷子与答案（看了一遍历年的卷子，答案有错!@-@）</p>
-<a id="more"></a>  
-<p>下载地址：<a href="https://www.jianguoyun.com/p/DQe8_9kQlZ_3Bhid4LYC" target="_blank" rel="noopener">点击下载</a></p>
+    <title>Ubuntu下如何添加新用户并增加管理员权限</title>
+    <url>/2019/03/19/Ubuntu%E4%B8%8B%E5%A6%82%E4%BD%95%E6%B7%BB%E5%8A%A0%E6%96%B0%E7%94%A8%E6%88%B7%E5%B9%B6%E5%A2%9E%E5%8A%A0%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/</url>
+    <content><![CDATA[<h2 id="添加新用户"><a href="#添加新用户" class="headerlink" title=" 添加新用户"></a><a id="more"></a> 添加新用户</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo adduser xxx #xxx为用户名</span><br></pre></td></tr></table></figure>
+<p>输入密码后，出现如下信息：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">正在添加用户&quot;xxx&quot;…</span><br><span class="line">正在添加新组&quot;xxx&quot; (1003)…</span><br><span class="line">正在添加新用户&quot;xxx&quot; (1003) 到组&quot;xxx&quot;…</span><br><span class="line">创建主目录&quot;&#x2F;home&#x2F;xxx&quot;…</span><br><span class="line">正在从&quot;&#x2F;etc&#x2F;skel&quot;复制文件…</span><br><span class="line">输入新的 UNIX 密码：</span><br><span class="line">重新输入新的 UNIX 密码：</span><br><span class="line">passwd：已成功更新密码</span><br><span class="line">正在改变 xxx 的用户信息</span><br><span class="line">请输入新值，或直接敲回车以使用默认值</span><br><span class="line">        全名 [ ]：</span><br><span class="line">        房间号码 [ ]：</span><br><span class="line">        工作电话 [ ]：</span><br><span class="line">        家庭电话 [ ]：</span><br><span class="line">        其它 [ ]：</span><br><span class="line">这些信息是否正确？ [Y&#x2F;n] y</span><br></pre></td></tr></table></figure><br>到这里，新用户添加成功。</p>
+<h2 id="增加管理员权限"><a href="#增加管理员权限" class="headerlink" title="增加管理员权限"></a>增加管理员权限</h2><p>需要让此用户有root权限，执行命令：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo nano &#x2F;etc&#x2F;sudoers</span><br></pre></td></tr></table></figure><br>往下拉，修改文件并添加：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">xxx ALL&#x3D;(ALL：ALL) ALL #xxx为你之前所创的用户名</span><br></pre></td></tr></table></figure><br>添加完成按下Ctrl + X保存并退出，再次按下Enter,完成<br>现在你可以点击右上角，看到你新创的用户，点击并切换了！</p>
 ]]></content>
       <categories>
-        <category>资源分享</category>
+        <category>教程</category>
       </categories>
       <tags>
-        <tag>矩阵分析</tag>
+        <tag>Ubuntu</tag>
       </tags>
   </entry>
   <entry>
-    <title>如何解决出现 unable to resolve host 问题</title>
-    <url>/2019/03/19/%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3%E5%87%BA%E7%8E%B0-unable-to-resolve-host-%E9%97%AE%E9%A2%98/</url>
-    <content><![CDATA[<h2 id><a href="#" class="headerlink" title></a><a id="more"></a></h2><p>Ubuntu环境，有时候执行sudo 就出现这个警告讯息: </p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo: unable to resolve host abc</span><br></pre></td></tr></table></figure>
-<p>虽然sudo 还是可以正常执行, 但是看到这样的通知还是会觉得烦，怎么去除这个警告呢？</p>
-<p>这个警告是因为系统找不到一个叫做 abc的hostname </p>
-<p>通过 修改 /etc/hosts 设定, 可以解决</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">nano &#x2F;etc&#x2F;hostname</span><br></pre></td></tr></table></figure>
-
-<p>在127.0.0.1 localhost 后面加上主机名称(hostname) 即可:</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">127.0.0.1 localhost abc</span><br></pre></td></tr></table></figure>
-<p>问题解决！</p>
+    <title>Ubuntu下安装Pycharm</title>
+    <url>/2019/03/19/Ubuntu%E4%B8%8B%E5%AE%89%E8%A3%85Pycharm/</url>
+    <content><![CDATA[<h2 id="下载"><a href="#下载" class="headerlink" title="下载"></a><a id="more"></a>下载</h2><p>有社区版和专业版，专业版需要激活，社区版免费，我下载的是社区版。<br><a href="https://www.jetbrains.com/pycharm/download/#section=linux" target="_blank" rel="noopener">官方下载</a><br><a href="https://www.jianguoyun.com/p/DfZJG3QQlZ_3Bhj8mrEC" target="_blank" rel="noopener">网盘下载</a></p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>进入download目录，对下载好的Pycharm压缩包进行解压操作，选中文件右键提取到此处即可。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D1664510513%2C942693123%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt><br>进入解压后的Pycharm文件夹，进入bin目录，可以看到很多文件，其中有一个文件叫做pycharm.sh。也就是下图中所选中的文件：<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D101055722%2C4258535600%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt><br>此时在bin文件夹下右键打开终端，输入运行命令, 执行Pycharm程序<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.&#x2F;pycharm.sh</span><br></pre></td></tr></table></figure><br>如果提示没有权限，大家可以添加sudo命令进行操作：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo .&#x2F;pycharm.sh</span><br></pre></td></tr></table></figure><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D805484803%2C1629350165%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt><br>大家点击OK即可进入下一步操作，根据提示的内容进行勾选同意协议，然后点击continue进入下一步，大家可以点击don’t send进入下一步，选择喜欢的界面风格，然后再次点击next进入下一步，直到提示start启动程序。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D227808303%2C3066408894%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D22323540%2C1357101677%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D1914658415%2C2906990210%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt><br>为了方便以后的使用，我们可以将Pycharm的图标（快捷键）锁定到启动器。之后不用再去在终端中启动Pycharm了，直接点击图标启动即可。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm/u%3D1149108563%2C3867497858%26fm%3D173%26app%3D49%26f%3DJPEG.jpg" alt></p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+        <tag>Python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ubuntu下安装更新pip</title>
+    <url>/2019/03/19/Ubuntu%E4%B8%8B%E5%AE%89%E8%A3%85%E6%9B%B4%E6%96%B0pip/</url>
+    <content><![CDATA[<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a><a id="more"></a>安装</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt install python-pip</span><br></pre></td></tr></table></figure>
+<p>若同时装有Python2、Python3上条命令装的是pip2，若还需装pip3，则再执行以下命令<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt install python3-pip</span><br></pre></td></tr></table></figure></p>
+<h2 id="更新"><a href="#更新" class="headerlink" title="更新"></a>更新</h2><p>安装成功后进行更新：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo pip install --upgrade pip</span><br></pre></td></tr></table></figure><br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo pip3 install --upgrade pip</span><br></pre></td></tr></table></figure></p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+        <tag>Python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ubuntu下如何安装搜狗输入法</title>
+    <url>/2019/03/19/sougou/</url>
+    <content><![CDATA[<h2 id="Ubuntu系统配置"><a href="#Ubuntu系统配置" class="headerlink" title=" Ubuntu系统配置"></a><a id="more"></a> Ubuntu系统配置</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">system settings-&gt;language support-&gt;install&#x2F;remove languages</span><br></pre></td></tr></table></figure>
+<p>在弹出的菜单中选择Chinese(simplified),点击apply<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/sougou/20180729142927736.png" alt><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/sougou/20180729142927712.png" alt></p>
+<h2 id="配置输入法框架"><a href="#配置输入法框架" class="headerlink" title="配置输入法框架"></a>配置输入法框架</h2><p>搜狗输入法是建立在fcitx框架之上的，所以要将输入法框架选择为fictx<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/sougou/20180729142927666.png" alt><br>注意：如果没有fcitx选项，那么你就需要安装fcitx框架之后在进行配置，安装方法如下：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo add-apt-repository ppa:fcitx-team&#x2F;nightly   &#x2F;&#x2F;添加FCITX仓库</span><br><span class="line"></span><br><span class="line">sudo apt-get update                              &#x2F;&#x2F;更新仓库</span><br><span class="line"></span><br><span class="line">sudo apt-get install fcitx                       &#x2F;&#x2F;安装fcitx输入法框架</span><br></pre></td></tr></table></figure><br>配置好输入法框架之后，重启ubuntu系统。重启之后如果配置成功，在任务栏的右上角会出现fcitx的设置选项（一个小键盘图标）<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/sougou/20180729142927651.png" alt></p>
+<h2 id="去搜狗官网下载输入法for-Linux"><a href="#去搜狗官网下载输入法for-Linux" class="headerlink" title="去搜狗官网下载输入法for Linux"></a>去搜狗官网下载输入法for Linux</h2><p><a href="https://pinyin.sogou.com/linux/" target="_blank" rel="noopener">官方下载</a><br><a href="https://www.jianguoyun.com/p/DeShNo0QlZ_3Bhic5rAC" target="_blank" rel="noopener">网盘下载</a><br>下载完成之后，在download目录下找到下载的文件，双击安装即可，点击install即可<br>或者在终端的命令窗口中输入如下的指令安装：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo dpkg -i 安装包名称.deb</span><br></pre></td></tr></table></figure><br>如果在安装过程中出现相关依赖文件的错误。则需要先安装其依赖的软件包<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/sougou/Snipaste_2019-12-13_14-33-14.jpg" alt><br>在终端窗口来执行以下命令，安装缺少的依赖文件:<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt-get -f install</span><br></pre></td></tr></table></figure><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/sougou/Snipaste_2019-12-13_14-33-49.jpg" alt><br>安装完成后，首先打开右上角系统设置，选择第一行的最后一个选项”Text Entry“，点击左下角的+号，在打开的窗口中找到搜狗输入法Sogou pinyin点击Add添加进去<br>仅显示当前语言一定要去掉那个勾，才可以找到搜狗输入法，然后添加就是<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/sougou/2019050512074094.png" alt><br>这时就可以在右上方小键盘选择搜狗输入法了！</p>
 ]]></content>
       <categories>
         <category>教程</category>
@@ -1594,19 +1460,46 @@ y=\left(t_{y} * h_{a}\right)-y_{a}</script><p>这个公式的理解为：当预�
     <title>ubuntu下 teamviewer的安装方法</title>
     <url>/2019/03/19/ubuntu%E4%B8%8B-teamviewer%E7%9A%84%E5%AE%89%E8%A3%85%E6%96%B9%E6%B3%95/</url>
     <content><![CDATA[<h2 id="去官网下载安装包"><a href="#去官网下载安装包" class="headerlink" title=" 去官网下载安装包"></a><a id="more"></a> 去官网下载安装包</h2><p><a href="https://www.teamviewer.com/zhcn/download/linux/" target="_blank" rel="noopener">官网链接</a><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/teamviewer/20180128120840387.png" alt></p>
-<h2 id="在命令行进行安装"><a href="#在命令行进行安装" class="headerlink" title="在命令行进行安装"></a>在命令行进行安装</h2><p>（在下载文件夹下打开命令行，输入：sudo dpkg -i  teamviewer_13.0.6634_amd64.deb）（teamviewer_13.0.6634_amd64.deb为安装包名，根据自己安装包）</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo dpkg -i  teamviewer_13.0.6634_amd64.deb</span><br></pre></td></tr></table></figure>
-<h2 id="安装出错，一行语句搞定依赖关系"><a href="#安装出错，一行语句搞定依赖关系" class="headerlink" title="安装出错，一行语句搞定依赖关系"></a>安装出错，一行语句搞定依赖关系</h2><p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/teamviewer/20180128120923823.png" alt></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt-get install -f</span><br></pre></td></tr></table></figure>
+<h2 id="在命令行进行安装"><a href="#在命令行进行安装" class="headerlink" title="在命令行进行安装"></a>在命令行进行安装</h2><p>（在下载文件夹下打开命令行，输入：sudo dpkg -i  teamviewer_13.0.6634_amd64.deb）（teamviewer_13.0.6634_amd64.deb为安装包名，根据自己安装包）<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo dpkg -i  teamviewer_13.0.6634_amd64.deb</span><br></pre></td></tr></table></figure></p>
+<h2 id="安装出错，一行语句搞定依赖关系"><a href="#安装出错，一行语句搞定依赖关系" class="headerlink" title="安装出错，一行语句搞定依赖关系"></a>安装出错，一行语句搞定依赖关系</h2><p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/teamviewer/20180128120923823.png" alt><br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt-get install -f</span><br></pre></td></tr></table></figure></p>
 <h2 id="再次安装"><a href="#再次安装" class="headerlink" title="再次安装"></a>再次安装</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo dpkg -i  teamviewer_13.0.6634_amd64.deb</span><br></pre></td></tr></table></figure>
-<h2 id="打开teamview"><a href="#打开teamview" class="headerlink" title="打开teamview"></a>打开teamview</h2><p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/teamviewer/20180128121156354.png" alt><br>或用命令行启动：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo teamviewer --daemon start</span><br></pre></td></tr></table></figure>]]></content>
+<h2 id="打开teamview"><a href="#打开teamview" class="headerlink" title="打开teamview"></a>打开teamview</h2><p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/teamviewer/20180128121156354.png" alt><br>或用命令行启动：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo teamviewer --daemon start</span><br></pre></td></tr></table></figure></p>
+]]></content>
       <categories>
         <category>教程</category>
       </categories>
       <tags>
         <tag>Ubuntu</tag>
         <tag>Teamviewer</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>如何解决出现 unable to resolve host 问题</title>
+    <url>/2019/03/19/%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3%E5%87%BA%E7%8E%B0-unable-to-resolve-host-%E9%97%AE%E9%A2%98/</url>
+    <content><![CDATA[<h2 id><a href="#" class="headerlink" title></a><a id="more"></a></h2><p>Ubuntu环境，有时候执行sudo 就出现这个警告讯息: </p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo: unable to resolve host abc</span><br></pre></td></tr></table></figure>
+<p>虽然sudo 还是可以正常执行, 但是看到这样的通知还是会觉得烦，怎么去除这个警告呢？</p>
+<p>这个警告是因为系统找不到一个叫做 abc的hostname </p>
+<p>通过 修改 /etc/hosts 设定, 可以解决<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">nano &#x2F;etc&#x2F;hostname</span><br></pre></td></tr></table></figure></p>
+<p>在127.0.0.1 localhost 后面加上主机名称(hostname) 即可:<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">127.0.0.1 localhost abc</span><br></pre></td></tr></table></figure><br>问题解决！</p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>矩阵分析（刘丁酉）课后答案及历年试卷</title>
+    <url>/2019/03/19/%E7%9F%A9%E9%98%B5%E5%88%86%E6%9E%90%EF%BC%88%E5%88%98%E4%B8%81%E9%85%89%EF%BC%89%E8%AF%BE%E5%90%8E%E7%AD%94%E6%A1%88%E5%8F%8A%E5%8E%86%E5%B9%B4%E8%AF%95%E5%8D%B7/</url>
+    <content><![CDATA[<p>考虑到刘丁酉版本只有部分习题的解答，还不够详细，于是我在学习过程中，将每道习题做了一遍，并记录了下来，希望能对学习矩阵分析的同学给予一定的参考。由于本人仍在学习阶段，难免答案会有做错的地方，希望大家不要尽信答案，只当作一个思路上的参考来看。顺便附赠历年的卷子与答案（看了一遍历年的卷子，答案有错!@-@）<br><a id="more"></a><br>下载地址：<a href="https://www.jianguoyun.com/p/DQe8_9kQlZ_3Bhid4LYC" target="_blank" rel="noopener">点击下载</a></p>
+]]></content>
+      <categories>
+        <category>资源分享</category>
+      </categories>
+      <tags>
+        <tag>矩阵分析</tag>
       </tags>
   </entry>
 </search>

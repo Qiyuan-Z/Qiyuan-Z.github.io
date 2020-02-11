@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 4.1.0">
+<meta name="generator" content="Hexo 4.2.0">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
@@ -22,7 +22,7 @@
   var CONFIG = {
     hostname: new URL('https://Qiyuan-Z.github.io').hostname,
     root: '/',
-    scheme: 'Mist',
+    scheme: 'Gemini',
     version: '7.6.0',
     exturl: false,
     sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
@@ -49,21 +49,21 @@
 
   <meta property="og:type" content="article">
 <meta property="og:title" content="Ubuntu 16.04下配置GPU版CUDA和cuDNN">
-<meta property="og:url" content="https:&#x2F;&#x2F;qiyuan-z.github.io&#x2F;2019&#x2F;03&#x2F;19&#x2F;Ubuntu-16.04%E4%B8%8B%E9%85%8D%E7%BD%AEGPU%E7%89%88CUDA%E5%92%8CcuDNN&#x2F;index.html">
+<meta property="og:url" content="https://qiyuan-z.github.io/2019/03/19/Ubuntu-16.04%E4%B8%8B%E9%85%8D%E7%BD%AEGPU%E7%89%88CUDA%E5%92%8CcuDNN/index.html">
 <meta property="og:site_name" content="Yuan">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;CUDA%26cuDNN&#x2F;2019051413224071.png">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;CUDA%26cuDNN&#x2F;20190514132130343.png">
-<meta property="og:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;CUDA%26cuDNN&#x2F;20180815114007852.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/CUDA%26cuDNN/2019051413224071.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/CUDA%26cuDNN/20190514132130343.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/CUDA%26cuDNN/20180815114007852.png">
 <meta property="article:published_time" content="2019-03-19T08:23:00.000Z">
 <meta property="article:modified_time" content="2019-12-14T12:31:01.089Z">
 <meta property="article:author" content="Qiyuan-Z">
-<meta property="article:tag" content="Python">
 <meta property="article:tag" content="Ubuntu">
+<meta property="article:tag" content="Python">
 <meta property="article:tag" content="CUDA">
 <meta property="article:tag" content="cuDNN">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https:&#x2F;&#x2F;blog-1300912400.cos.ap-shanghai.myqcloud.com&#x2F;CUDA%26cuDNN&#x2F;2019051413224071.png">
+<meta name="twitter:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/CUDA%26cuDNN/2019051413224071.png">
 
 <link rel="canonical" href="https://qiyuan-z.github.io/2019/03/19/Ubuntu-16.04%E4%B8%8B%E9%85%8D%E7%BD%AEGPU%E7%89%88CUDA%E5%92%8CcuDNN/">
 
@@ -138,6 +138,7 @@
         <span class="logo-line-after"><i></i></span>
       </a>
     </div>
+        <p class="site-subtitle">记录学习中的点点滴滴</p>
   </div>
 
   <div class="site-nav-toggle">
@@ -209,6 +210,7 @@
     <i class="fa fa-arrow-up"></i>
     <span>0%</span>
   </div>
+  <div class="reading-progress-bar"></div>
 
 
     <main class="main">
@@ -229,7 +231,7 @@
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/wallhaven-915.png">
       <meta itemprop="name" content="Qiyuan-Z">
-      <meta itemprop="description" content="">
+      <meta itemprop="description" content="偉大な魂は目的を持ち、そうでないものは願望を持つ">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -275,21 +277,7 @@
               </span>
               <span class="post-meta-item-text">阅读次数：</span>
               <span id="busuanzi_value_page_pv"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2019/03/19/Ubuntu-16.04%E4%B8%8B%E9%85%8D%E7%BD%AEGPU%E7%89%88CUDA%E5%92%8CcuDNN/#comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2019/03/19/Ubuntu-16.04%E4%B8%8B%E9%85%8D%E7%BD%AEGPU%E7%89%88CUDA%E5%92%8CcuDNN/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
+            </span><br>
             <span class="post-meta-item" title="本文字数">
               <span class="post-meta-item-icon">
                 <i class="fa fa-file-word-o"></i>
@@ -324,38 +312,11 @@
 </ul>
 <p>以下教程针对从零开始的用户，若系统中已装有CUDA和cuDNN，却在当前用户下无法使用，请<a href="#添加环境变量">添加环境变量</a></p>
 <h2 id="安装NVIDIA显卡驱动"><a href="#安装NVIDIA显卡驱动" class="headerlink" title="安装NVIDIA显卡驱动"></a>安装NVIDIA显卡驱动</h2><p>1.先在<a href="https://www.nvidia.cn/Download/index.aspx?lang=cn" target="_blank" rel="noopener">NVIDIA官网</a>上下载对应的驱动程序，可根据自己的GPU的型号下载相应的.run文件<br>例如NVIDIA-Linux-x86_64-3xx.xx.run形式的文件名</p>
-<p>2.禁用开源nouveau驱动<strong>（非常重要）</strong><br>Ubuntu系统集成的显卡驱动程序是nouveau，它是第三方为NVIDIA开发的开源驱动，我们需要先将其屏蔽才能安装NVIDIA官方驱动。<br>将驱动添加到黑名单blacklist.conf中，但是由于该文件的属性不允许修改。所以需要先修改文件属性。<br>查看属性</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo ls -lh &#x2F;etc&#x2F;modprobe.d&#x2F;blacklist.conf</span><br></pre></td></tr></table></figure>
-<p>修改属性</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo chmod 666 &#x2F;etc&#x2F;modprobe.d&#x2F;blacklist.conf</span><br></pre></td></tr></table></figure>
-<p>用gedit编辑器打开</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo gedit &#x2F;etc&#x2F;modprobe.d&#x2F;blacklist.conf</span><br></pre></td></tr></table></figure>
-<p>在该文件后添加一下几行：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">blacklist vga16fb</span><br><span class="line">blacklist nouveau</span><br><span class="line">blacklist rivafb</span><br><span class="line">blacklist rivatv</span><br><span class="line">blacklist nvidiafb</span><br></pre></td></tr></table></figure>
-<p>3.开始安装<br>先按Ctrl + Alt + F1到控制台，关闭当前图形环境</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo service lightdm stop</span><br></pre></td></tr></table></figure>
-<p>再安装驱动程序</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo chmod a+x NVIDIA-Linux-x86_64-xxx.run</span><br><span class="line">sudo .&#x2F;NVIDIA-Linux-x86_64-xxx.run -no-x-check -no-nouveau-check -no-opengl-files</span><br></pre></td></tr></table></figure>
-<p>最后重新启动图形环境</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo service lightdm start</span><br></pre></td></tr></table></figure>
-<p>在终端里输入：nvidia-smi ，输出以下图片的代码则安装成功<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/CUDA%26cuDNN/2019051413224071.png" alt></p>
-<h2 id="cuda-10-0安装"><a href="#cuda-10-0安装" class="headerlink" title="cuda 10.0安装"></a>cuda 10.0安装</h2><p><a href="https://developer.nvidia.com/cuda-toolkit-archive" target="_blank" rel="noopener">官方下载</a><br><a href="https://pan.baidu.com/s/1piTbzIIL3wTx1dCeUDDiOw" target="_blank" rel="noopener">网盘下载</a> 提取码: aarn</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo chmod a+x cuda_10.0.130_410.48_linux.run &#x2F;&#x2F; 获取权限</span><br><span class="line">sudo sh cuda_10.0.130_410.48_linux.run --tmpdir&#x3D;&#x2F;home&#x2F;max&#x2F;temp</span><br></pre></td></tr></table></figure>
-<p>这里加 –tmpdir 主要是直接运行后，会提示空间不足的问题<br>接下来进入英文选择界面按住空格键可以快速浏览<br>在安装过程中选项选择：<br>accept #同意安装<br>n #不安装Driver，因为已安装驱动<strong>（这里需要强调一下）</strong><br>y #安装CUDA Toolkit<br>#安装到默认目录<br>y #创建安装目录的软链接<br>n #不复制Samples，因为在安装目录下有/samples</p>
-<h2 id="添加环境变量"><a href="#添加环境变量" class="headerlink" title="添加环境变量"></a>添加环境变量</h2><p>home文件下 ctrl+H显示隐藏文件 打开 .bashrc文件在最后添加</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">export PATH&#x3D;&#x2F;usr&#x2F;local&#x2F;cuda-10.0&#x2F;bin$&#123;PATH:+:$&#123;PATH&#125;&#125;</span><br><span class="line">export LD_LIBRARY_PATH&#x3D;&#x2F;usr&#x2F;local&#x2F;cuda-10.0&#x2F;lib64$&#123;LD_LIBRARY_PATH:+:$&#123;LD_LIBRARY_PATH&#125;&#125;</span><br></pre></td></tr></table></figure>
-<p>终端运行如下命令，保存操作</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">source ~&#x2F;.bashrc</span><br></pre></td></tr></table></figure>
-<p>检查cuda是否安装成功</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">nvcc -V</span><br><span class="line">nvcc --version</span><br></pre></td></tr></table></figure>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/CUDA%26cuDNN/20190514132130343.png" alt></p>
-<h2 id="cuDnn-10-0安装"><a href="#cuDnn-10-0安装" class="headerlink" title="cuDnn 10.0安装"></a>cuDnn 10.0安装</h2><p><a href="https://developer.nvidia.com/rdp/cudnn-archive" target="_blank" rel="noopener">官方下载</a><br><a href="https://www.jianguoyun.com/p/DdS0_A4QlZ_3Bhjw8LEC" target="_blank" rel="noopener">网盘下载</a><br>注意：需跟CUDA版本对应<br>切换到下载目录进行解压：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo tar -zxvf .&#x2F;cudnn-10.0-linux-x64-xxx.tgz</span><br></pre></td></tr></table></figure>
-<p>解压下载的文件，可以看到cuda文件夹，在当前目录打开终端，执行如下命令：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">sudo cp cuda&#x2F;include&#x2F;cudnn.h &#x2F;usr&#x2F;local&#x2F;cuda&#x2F;include&#x2F;</span><br><span class="line"> </span><br><span class="line">sudo cp cuda&#x2F;lib64&#x2F;libcudnn* &#x2F;usr&#x2F;local&#x2F;cuda&#x2F;lib64&#x2F;</span><br><span class="line"> </span><br><span class="line">sudo chmod a+r &#x2F;usr&#x2F;local&#x2F;cuda&#x2F;include&#x2F;cudnn.h</span><br><span class="line"> </span><br><span class="line">sudo chmod a+r &#x2F;usr&#x2F;local&#x2F;cuda&#x2F;lib64&#x2F;libcudnn*</span><br></pre></td></tr></table></figure>
-<p>在终端输入</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat &#x2F;usr&#x2F;local&#x2F;cuda&#x2F;include&#x2F;cudnn.h | grep CUDNN_MAJOR -A 2</span><br></pre></td></tr></table></figure>
-<p>如果出现下图所示版本信息，说明安装成功<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/CUDA%26cuDNN/20180815114007852.png" alt></p>
+<p>2.禁用开源nouveau驱动<strong>（非常重要）</strong><br>Ubuntu系统集成的显卡驱动程序是nouveau，它是第三方为NVIDIA开发的开源驱动，我们需要先将其屏蔽才能安装NVIDIA官方驱动。<br>将驱动添加到黑名单blacklist.conf中，但是由于该文件的属性不允许修改。所以需要先修改文件属性。<br>查看属性<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo ls -lh &#x2F;etc&#x2F;modprobe.d&#x2F;blacklist.conf</span><br></pre></td></tr></table></figure><br>修改属性<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo chmod 666 &#x2F;etc&#x2F;modprobe.d&#x2F;blacklist.conf</span><br></pre></td></tr></table></figure><br>用gedit编辑器打开<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo gedit &#x2F;etc&#x2F;modprobe.d&#x2F;blacklist.conf</span><br></pre></td></tr></table></figure><br>在该文件后添加一下几行：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">blacklist vga16fb</span><br><span class="line">blacklist nouveau</span><br><span class="line">blacklist rivafb</span><br><span class="line">blacklist rivatv</span><br><span class="line">blacklist nvidiafb</span><br></pre></td></tr></table></figure><br>3.开始安装<br>先按Ctrl + Alt + F1到控制台，关闭当前图形环境<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo service lightdm stop</span><br></pre></td></tr></table></figure><br>再安装驱动程序<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo chmod a+x NVIDIA-Linux-x86_64-xxx.run</span><br><span class="line">sudo .&#x2F;NVIDIA-Linux-x86_64-xxx.run -no-x-check -no-nouveau-check -no-opengl-files</span><br></pre></td></tr></table></figure><br>最后重新启动图形环境<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo service lightdm start</span><br></pre></td></tr></table></figure><br>在终端里输入：nvidia-smi ，输出以下图片的代码则安装成功<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/CUDA%26cuDNN/2019051413224071.png" alt></p>
+<h2 id="cuda-10-0安装"><a href="#cuda-10-0安装" class="headerlink" title="cuda 10.0安装"></a>cuda 10.0安装</h2><p><a href="https://developer.nvidia.com/cuda-toolkit-archive" target="_blank" rel="noopener">官方下载</a><br><a href="https://pan.baidu.com/s/1piTbzIIL3wTx1dCeUDDiOw" target="_blank" rel="noopener">网盘下载</a> 提取码: aarn<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo chmod a+x cuda_10.0.130_410.48_linux.run &#x2F;&#x2F; 获取权限</span><br><span class="line">sudo sh cuda_10.0.130_410.48_linux.run --tmpdir&#x3D;&#x2F;home&#x2F;max&#x2F;temp</span><br></pre></td></tr></table></figure><br>这里加 —tmpdir 主要是直接运行后，会提示空间不足的问题<br>接下来进入英文选择界面按住空格键可以快速浏览<br>在安装过程中选项选择：<br>accept #同意安装<br>n #不安装Driver，因为已安装驱动<strong>（这里需要强调一下）</strong><br>y #安装CUDA Toolkit</p>
+<h1 id="安装到默认目录"><a href="#安装到默认目录" class="headerlink" title="安装到默认目录"></a>安装到默认目录</h1><p>y #创建安装目录的软链接<br>n #不复制Samples，因为在安装目录下有/samples</p>
+<h2 id="添加环境变量"><a href="#添加环境变量" class="headerlink" title="添加环境变量"></a>添加环境变量</h2><p>home文件下 ctrl+H显示隐藏文件 打开 .bashrc文件在最后添加<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">export PATH&#x3D;&#x2F;usr&#x2F;local&#x2F;cuda-10.0&#x2F;bin$&#123;PATH:+:$&#123;PATH&#125;&#125;</span><br><span class="line">export LD_LIBRARY_PATH&#x3D;&#x2F;usr&#x2F;local&#x2F;cuda-10.0&#x2F;lib64$&#123;LD_LIBRARY_PATH:+:$&#123;LD_LIBRARY_PATH&#125;&#125;</span><br></pre></td></tr></table></figure><br>终端运行如下命令，保存操作<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">source ~&#x2F;.bashrc</span><br></pre></td></tr></table></figure><br>检查cuda是否安装成功<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">nvcc -V</span><br><span class="line">nvcc --version</span><br></pre></td></tr></table></figure><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/CUDA%26cuDNN/20190514132130343.png" alt></p>
+<h2 id="cuDnn-10-0安装"><a href="#cuDnn-10-0安装" class="headerlink" title="cuDnn 10.0安装"></a>cuDnn 10.0安装</h2><p><a href="https://developer.nvidia.com/rdp/cudnn-archive" target="_blank" rel="noopener">官方下载</a><br><a href="https://www.jianguoyun.com/p/DdS0_A4QlZ_3Bhjw8LEC" target="_blank" rel="noopener">网盘下载</a><br>注意：需跟CUDA版本对应<br>切换到下载目录进行解压：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo tar -zxvf .&#x2F;cudnn-10.0-linux-x64-xxx.tgz</span><br></pre></td></tr></table></figure><br>解压下载的文件，可以看到cuda文件夹，在当前目录打开终端，执行如下命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">sudo cp cuda&#x2F;include&#x2F;cudnn.h &#x2F;usr&#x2F;local&#x2F;cuda&#x2F;include&#x2F;</span><br><span class="line"> </span><br><span class="line">sudo cp cuda&#x2F;lib64&#x2F;libcudnn* &#x2F;usr&#x2F;local&#x2F;cuda&#x2F;lib64&#x2F;</span><br><span class="line"> </span><br><span class="line">sudo chmod a+r &#x2F;usr&#x2F;local&#x2F;cuda&#x2F;include&#x2F;cudnn.h</span><br><span class="line"> </span><br><span class="line">sudo chmod a+r &#x2F;usr&#x2F;local&#x2F;cuda&#x2F;lib64&#x2F;libcudnn*</span><br></pre></td></tr></table></figure><br>在终端输入<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat &#x2F;usr&#x2F;local&#x2F;cuda&#x2F;include&#x2F;cudnn.h | grep CUDNN_MAJOR -A 2</span><br></pre></td></tr></table></figure><br>如果出现下图所示版本信息，说明安装成功<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/CUDA%26cuDNN/20180815114007852.png" alt></p>
 
     </div>
 
@@ -368,13 +329,29 @@
         </span>
       </div>
     </div>
+	<div>
 
+	  
+
+		<div>
+
+    
+
+        <div >-------------本文结束感谢您的阅读-------------</div>
+
+    
+
+</div>
+
+	  
+
+	</div>
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/Python/" rel="tag"># Python</a>
-              <a href="/tags/Ubuntu/" rel="tag"># Ubuntu</a>
-              <a href="/tags/CUDA/" rel="tag"># CUDA</a>
-              <a href="/tags/cuDNN/" rel="tag"># cuDNN</a>
+              <a href="/tags/Ubuntu/" rel="tag"><i class="fa fa-tag"></i> Ubuntu</a>
+              <a href="/tags/Python/" rel="tag"><i class="fa fa-tag"></i> Python</a>
+              <a href="/tags/CUDA/" rel="tag"><i class="fa fa-tag"></i> CUDA</a>
+              <a href="/tags/cuDNN/" rel="tag"><i class="fa fa-tag"></i> cuDNN</a>
           </div>
 
         
@@ -383,12 +360,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2019/03/19/Ubuntu%E4%B8%8B%E5%AE%89%E8%A3%85%E6%9B%B4%E6%96%B0pip/" rel="prev" title="Ubuntu下安装更新pip">
-      <i class="fa fa-chevron-left"></i> Ubuntu下安装更新pip
+    <a href="/2019/03/19/Ubuntu16.04%E4%B8%8BTensorflow-gpu%E5%AE%89%E8%A3%85/" rel="prev" title="Ubuntu16.04下Tensorflow-gpu安装">
+      <i class="fa fa-chevron-left"></i> Ubuntu16.04下Tensorflow-gpu安装
     </a></div>
       <div class="post-nav-item">
-    <a href="/2019/03/19/Ubuntu%E4%B8%8B%E5%AE%89%E8%A3%85Pycharm/" rel="next" title="Ubuntu下安装Pycharm">
-      Ubuntu下安装Pycharm <i class="fa fa-chevron-right"></i>
+    <a href="/2019/03/19/Python%E6%96%B0%E7%8E%AF%E5%A2%83%E4%B8%8B%E5%BF%AB%E9%80%9F%E5%AE%89%E8%A3%85%E4%BE%9D%E8%B5%96%E5%8C%85%E7%9A%84%E5%B0%8F%E6%8A%80%E5%B7%A7/" rel="next" title="Python新环境下快速安装依赖包的小技巧">
+      Python新环境下快速安装依赖包的小技巧 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -403,7 +380,6 @@
 
           </div>
           
-    <div class="comments" id="valine-comments"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -450,7 +426,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#null"><span class="nav-number">1.</span> <span class="nav-text"></span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装NVIDIA显卡驱动"><span class="nav-number">2.</span> <span class="nav-text">安装NVIDIA显卡驱动</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cuda-10-0安装"><span class="nav-number">3.</span> <span class="nav-text">cuda 10.0安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#添加环境变量"><span class="nav-number">4.</span> <span class="nav-text">添加环境变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cuDnn-10-0安装"><span class="nav-number">5.</span> <span class="nav-text">cuDnn 10.0安装</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#null"><span class="nav-text"></span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装NVIDIA显卡驱动"><span class="nav-text">安装NVIDIA显卡驱动</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cuda-10-0安装"><span class="nav-text">cuda 10.0安装</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装到默认目录"><span class="nav-text">安装到默认目录</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#添加环境变量"><span class="nav-text">添加环境变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cuDnn-10-0安装"><span class="nav-text">cuDnn 10.0安装</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 	  
@@ -461,14 +437,14 @@
     <img class="site-author-image" itemprop="image" alt="Qiyuan-Z"
       src="/images/wallhaven-915.png">
   <p class="site-author-name" itemprop="name">Qiyuan-Z</p>
-  <div class="site-description" itemprop="description"></div>
+  <div class="site-description" itemprop="description">偉大な魂は目的を持ち、そうでないものは願望を持つ</div>
 </div>
 <div class="site-state-wrap motion-element">
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">34</span>
+          <span class="site-state-item-count">33</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -593,7 +569,7 @@
 <script src="/js/motion.js"></script>
 
 
-<script src="/js/schemes/muse.js"></script>
+<script src="/js/schemes/pisces.js"></script>
 
 
 <script src="/js/next-boot.js"></script>
@@ -636,35 +612,6 @@
         pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
       new needShareButton('#needsharebutton-postbottom', pbOptions);
   </script>
-
-<script>
-NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
-  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
-    var GUEST = ['nick', 'mail', 'link'];
-    var guest = 'nick,mail,link';
-    guest = guest.split(',').filter(item => {
-      return GUEST.includes(item);
-    });
-    new Valine({
-      el: '#valine-comments',
-      verify: false,
-      notify: false,
-      appId: 'Qbpc7uiugdEBCmq9h8ld4Ttd-gzGzoHsz',
-      appKey: 'jqjQ3QRJdnoeCASIA6XkWK1E',
-      placeholder: "欢迎交流讨论...",
-      avatar: 'mm',
-      meta: guest,
-      pageSize: '10' || 10,
-      visitor: false,
-      lang: 'zh-cn' || 'zh-cn',
-      path: location.pathname,
-      recordIP: false,
-      serverURLs: ''
-    });
-  }, window.Valine);
-});
-
-</script>
   <script type="text/javascript" src="/js/src/clicklove.js"></script>
 </body>
 </html>
