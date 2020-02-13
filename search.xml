@@ -1350,20 +1350,6 @@ y=\left(t_{y} * h_{a}\right)-y_{a}</script><p>这个公式的理解为：当预�
       </tags>
   </entry>
   <entry>
-    <title>Ubuntu16.04下Tensorflow-gpu安装</title>
-    <url>/2019/03/19/Ubuntu16.04%E4%B8%8BTensorflow-gpu%E5%AE%89%E8%A3%85/</url>
-    <content><![CDATA[<p>在开始之前，请先确定安装好显卡驱动、CUDA、cuDNN，可以参考我的<a href="https://qiyuan-z.github.io/2019/03/19/Ubuntu-16.04下配置GPU版CUDA和cuDNN/">另一篇博客</a><br><a id="more"></a><br>1.安装Numpy<br>推荐安装1.16.0版本，若之前已安装，请先卸载<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip uninstall numpy</span><br></pre></td></tr></table></figure><br>然后执行安装<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip install numpy&#x3D;&#x3D;1.16.0</span><br></pre></td></tr></table></figure><br>2.安装Tensorflow-gpu<br>推荐安装1.14.0版本<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip install tensorflow-gpu&#x3D;&#x3D;1.14.0</span><br></pre></td></tr></table></figure></p>
-]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
-        <tag>Python</tag>
-        <tag>Ubuntu</tag>
-        <tag>Tensorflow</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Ubuntu下virtualenv的使用与pycharm的基本配置</title>
     <url>/2019/03/19/Ubuntu%E4%B8%8Bvirtualenv%E7%9A%84%E4%BD%BF%E7%94%A8%E4%B8%8Epycharm%E7%9A%84%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE/</url>
     <content><![CDATA[<h2 id="安装virtualenv"><a href="#安装virtualenv" class="headerlink" title="安装virtualenv"></a><a id="more"></a>安装virtualenv</h2><p>virtualenv是 Python 多版本管理的利器，不同版本的开发调试全靠它了（没有多版本尽量也装上吧）<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo pip install virtualenv</span><br></pre></td></tr></table></figure></p>
@@ -1399,16 +1385,31 @@ y=\left(t_{y} * h_{a}\right)-y_{a}</script><p>这个公式的理解为：当预�
       </tags>
   </entry>
   <entry>
-    <title>Ubuntu下如何添加新用户并增加管理员权限</title>
-    <url>/2019/03/19/Ubuntu%E4%B8%8B%E5%A6%82%E4%BD%95%E6%B7%BB%E5%8A%A0%E6%96%B0%E7%94%A8%E6%88%B7%E5%B9%B6%E5%A2%9E%E5%8A%A0%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/</url>
-    <content><![CDATA[<h2 id="添加新用户"><a href="#添加新用户" class="headerlink" title=" 添加新用户"></a><a id="more"></a> 添加新用户</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo adduser xxx #xxx为用户名</span><br></pre></td></tr></table></figure>
-<p>输入密码后，出现如下信息：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">正在添加用户&quot;xxx&quot;…</span><br><span class="line">正在添加新组&quot;xxx&quot; (1003)…</span><br><span class="line">正在添加新用户&quot;xxx&quot; (1003) 到组&quot;xxx&quot;…</span><br><span class="line">创建主目录&quot;&#x2F;home&#x2F;xxx&quot;…</span><br><span class="line">正在从&quot;&#x2F;etc&#x2F;skel&quot;复制文件…</span><br><span class="line">输入新的 UNIX 密码：</span><br><span class="line">重新输入新的 UNIX 密码：</span><br><span class="line">passwd：已成功更新密码</span><br><span class="line">正在改变 xxx 的用户信息</span><br><span class="line">请输入新值，或直接敲回车以使用默认值</span><br><span class="line">        全名 [ ]：</span><br><span class="line">        房间号码 [ ]：</span><br><span class="line">        工作电话 [ ]：</span><br><span class="line">        家庭电话 [ ]：</span><br><span class="line">        其它 [ ]：</span><br><span class="line">这些信息是否正确？ [Y&#x2F;n] y</span><br></pre></td></tr></table></figure><br>到这里，新用户添加成功。</p>
-<h2 id="增加管理员权限"><a href="#增加管理员权限" class="headerlink" title="增加管理员权限"></a>增加管理员权限</h2><p>需要让此用户有root权限，执行命令：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo nano &#x2F;etc&#x2F;sudoers</span><br></pre></td></tr></table></figure><br>往下拉，修改文件并添加：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">xxx ALL&#x3D;(ALL：ALL) ALL #xxx为你之前所创的用户名</span><br></pre></td></tr></table></figure><br>添加完成按下Ctrl + X保存并退出，再次按下Enter,完成<br>现在你可以点击右上角，看到你新创的用户，点击并切换了！</p>
+    <title>Ubuntu16.04下Tensorflow-gpu安装</title>
+    <url>/2019/03/19/Ubuntu16.04%E4%B8%8BTensorflow-gpu%E5%AE%89%E8%A3%85/</url>
+    <content><![CDATA[<p>在开始之前，请先确定安装好显卡驱动、CUDA、cuDNN，可以参考我的<a href="https://qiyuan-z.github.io/2019/03/19/Ubuntu-16.04下配置GPU版CUDA和cuDNN/">另一篇博客</a><br><a id="more"></a><br>1.安装Numpy<br>推荐安装1.16.0版本，若之前已安装，请先卸载<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip uninstall numpy</span><br></pre></td></tr></table></figure><br>然后执行安装<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip install numpy&#x3D;&#x3D;1.16.0</span><br></pre></td></tr></table></figure><br>2.安装Tensorflow-gpu<br>推荐安装1.14.0版本<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip install tensorflow-gpu&#x3D;&#x3D;1.14.0</span><br></pre></td></tr></table></figure></p>
 ]]></content>
       <categories>
         <category>教程</category>
       </categories>
       <tags>
+        <tag>Python</tag>
+        <tag>Ubuntu</tag>
+        <tag>Tensorflow</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ubuntu下安装更新pip</title>
+    <url>/2019/03/19/Ubuntu%E4%B8%8B%E5%AE%89%E8%A3%85%E6%9B%B4%E6%96%B0pip/</url>
+    <content><![CDATA[<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a><a id="more"></a>安装</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt install python-pip</span><br></pre></td></tr></table></figure>
+<p>若同时装有Python2、Python3上条命令装的是pip2，若还需装pip3，则再执行以下命令<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt install python3-pip</span><br></pre></td></tr></table></figure></p>
+<h2 id="更新"><a href="#更新" class="headerlink" title="更新"></a>更新</h2><p>安装成功后进行更新：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo pip install --upgrade pip</span><br></pre></td></tr></table></figure><br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo pip3 install --upgrade pip</span><br></pre></td></tr></table></figure></p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
         <tag>Ubuntu</tag>
       </tags>
   </entry>
@@ -1427,17 +1428,16 @@ y=\left(t_{y} * h_{a}\right)-y_{a}</script><p>这个公式的理解为：当预�
       </tags>
   </entry>
   <entry>
-    <title>Ubuntu下安装更新pip</title>
-    <url>/2019/03/19/Ubuntu%E4%B8%8B%E5%AE%89%E8%A3%85%E6%9B%B4%E6%96%B0pip/</url>
-    <content><![CDATA[<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a><a id="more"></a>安装</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt install python-pip</span><br></pre></td></tr></table></figure>
-<p>若同时装有Python2、Python3上条命令装的是pip2，若还需装pip3，则再执行以下命令<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt install python3-pip</span><br></pre></td></tr></table></figure></p>
-<h2 id="更新"><a href="#更新" class="headerlink" title="更新"></a>更新</h2><p>安装成功后进行更新：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo pip install --upgrade pip</span><br></pre></td></tr></table></figure><br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo pip3 install --upgrade pip</span><br></pre></td></tr></table></figure></p>
+    <title>Ubuntu下如何添加新用户并增加管理员权限</title>
+    <url>/2019/03/19/Ubuntu%E4%B8%8B%E5%A6%82%E4%BD%95%E6%B7%BB%E5%8A%A0%E6%96%B0%E7%94%A8%E6%88%B7%E5%B9%B6%E5%A2%9E%E5%8A%A0%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/</url>
+    <content><![CDATA[<h2 id="添加新用户"><a href="#添加新用户" class="headerlink" title=" 添加新用户"></a><a id="more"></a> 添加新用户</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo adduser xxx #xxx为用户名</span><br></pre></td></tr></table></figure>
+<p>输入密码后，出现如下信息：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">正在添加用户&quot;xxx&quot;…</span><br><span class="line">正在添加新组&quot;xxx&quot; (1003)…</span><br><span class="line">正在添加新用户&quot;xxx&quot; (1003) 到组&quot;xxx&quot;…</span><br><span class="line">创建主目录&quot;&#x2F;home&#x2F;xxx&quot;…</span><br><span class="line">正在从&quot;&#x2F;etc&#x2F;skel&quot;复制文件…</span><br><span class="line">输入新的 UNIX 密码：</span><br><span class="line">重新输入新的 UNIX 密码：</span><br><span class="line">passwd：已成功更新密码</span><br><span class="line">正在改变 xxx 的用户信息</span><br><span class="line">请输入新值，或直接敲回车以使用默认值</span><br><span class="line">        全名 [ ]：</span><br><span class="line">        房间号码 [ ]：</span><br><span class="line">        工作电话 [ ]：</span><br><span class="line">        家庭电话 [ ]：</span><br><span class="line">        其它 [ ]：</span><br><span class="line">这些信息是否正确？ [Y&#x2F;n] y</span><br></pre></td></tr></table></figure><br>到这里，新用户添加成功。</p>
+<h2 id="增加管理员权限"><a href="#增加管理员权限" class="headerlink" title="增加管理员权限"></a>增加管理员权限</h2><p>需要让此用户有root权限，执行命令：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo nano &#x2F;etc&#x2F;sudoers</span><br></pre></td></tr></table></figure><br>往下拉，修改文件并添加：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">xxx ALL&#x3D;(ALL：ALL) ALL #xxx为你之前所创的用户名</span><br></pre></td></tr></table></figure><br>添加完成按下Ctrl + X保存并退出，再次按下Enter,完成<br>现在你可以点击右上角，看到你新创的用户，点击并切换了！</p>
 ]]></content>
       <categories>
         <category>教程</category>
       </categories>
       <tags>
-        <tag>Python</tag>
         <tag>Ubuntu</tag>
       </tags>
   </entry>
