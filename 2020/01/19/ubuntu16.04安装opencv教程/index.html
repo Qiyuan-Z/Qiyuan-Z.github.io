@@ -26,7 +26,7 @@
     version: '7.6.0',
     exturl: false,
     sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
-    copycode: {"enable":true,"show_result":true,"style":null},
+    copycode: {"enable":true,"show_result":true,"style":"mac"},
     back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
     bookmark: {"enable":false,"color":"#222","save":"auto"},
     fancybox: true,
@@ -57,7 +57,7 @@
 <meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/opencv/20171005214847504.png">
 <meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/opencv/20171005215009149.png">
 <meta property="article:published_time" content="2020-01-19T11:27:45.366Z">
-<meta property="article:modified_time" content="2020-02-12T05:39:46.841Z">
+<meta property="article:modified_time" content="2020-02-14T04:05:34.230Z">
 <meta property="article:author" content="Qiyuan-Z">
 <meta property="article:tag" content="Opencv">
 <meta property="article:tag" content="Ubuntu">
@@ -255,7 +255,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-02-12 13:39:46" itemprop="dateModified" datetime="2020-02-12T13:39:46+08:00">2020-02-12</time>
+                <time title="修改时间：2020-02-14 12:05:34" itemprop="dateModified" datetime="2020-02-14T12:05:34+08:00">2020-02-14</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -301,7 +301,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id><a href="#" class="headerlink" title></a><a id="more"></a></h2><p>1.去官网下载opencv，在本教程中选用的时opencv3.4.1，其他版本的配置方法异曲同工。<br><a href="http://opencv.org/releases.html" target="_blank" rel="noopener">下载链接</a>，选择sources版本<br>2.解压下载下来的zip包<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">unzip opencv-3.4.1.zip</span><br></pre></td></tr></table></figure><br>3.进入到解压后的文件包中<br>4.安装依赖库和cmake ，如果提醒需要apt-get update，那就先sudo su进入root权限，再sudo apt-get update，然后在执行下面命令<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install cmake</span><br></pre></td></tr></table></figure><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install build-essential libgtk2.0-dev libavcodec-dev libavformat-dev libjpeg.dev libtiff4.dev libswscale-dev libjasper-dev</span><br></pre></td></tr></table></figure><br>在第二步中若提示依赖版本问题，原因在于apt源太旧，更换新的源，再进行安装。<br>5.安装完cmake之后执行命令 ,创建编译文件夹，不创建的会提示（如下图）<br>In-source builds are not allowed.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mkdir my_build_dir</span><br><span class="line">cd my_build_dir</span><br></pre></td></tr></table></figure><br>6.cmake一下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cmake -D CMAKE_BUILD_TYPE&#x3D;Release -D CMAKE_INSTALL_PREFIX&#x3D;&#x2F;usr&#x2F;local ..</span><br></pre></td></tr></table></figure><br>注意：如果已经在新的文件夹中编译，但是还会出现之前的报错，把cmakecache.txt删了再编译就可<br>期间可能会下载一个东西，等待一会儿就OK<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/opencv/20171005220631735.png" alt><br>7.执行命令，漫长的编译过程<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo make</span><br></pre></td></tr></table></figure><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/opencv/20171005214720292.png" alt><br>8.执行命令<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo make install</span><br></pre></td></tr></table></figure><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/opencv/20171005214847504.png" alt><br>9.sudo make install 执行完毕后OpenCV编译过程就结束了，接下来就需要配置一些OpenCV的编译环境首先将OpenCV的库添加到路径，从而可以让系统找到<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo gedit &#x2F;etc&#x2F;ld.so.conf.d&#x2F;opencv.conf</span><br></pre></td></tr></table></figure><br>执行此命令后打开的可能是一个空白的文件，不用管，只需要在文件末尾添加<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;usr&#x2F;local&#x2F;lib</span><br></pre></td></tr></table></figure><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/opencv/20171005215009149.png" alt><br>10.执行如下命令使得刚才的配置路径生效<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo ldconfig</span><br></pre></td></tr></table></figure><br>11.配置bash<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo gedit &#x2F;etc&#x2F;bash.bashrc</span><br></pre></td></tr></table></figure><br>在最末尾添加<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">PKG_CONFIG_PATH&#x3D;$PKG_CONFIG_PATH:&#x2F;usr&#x2F;local&#x2F;lib&#x2F;pkgconfig  </span><br><span class="line">export PKG_CONFIG_PATH</span><br></pre></td></tr></table></figure><br>保存，执行如下命令使得配置生效<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">source &#x2F;etc&#x2F;bash.bashrc</span><br></pre></td></tr></table></figure><br>更新<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo updatedb</span><br></pre></td></tr></table></figure><br>12.至此所有的配置都已经完成<br>下面用一个小程序测试一下</p>
+        <h2 id><a href="#" class="headerlink" title></a><a id="more"></a></h2><p>1.去官网下载opencv，在本教程中选用的是opencv3.4.1，其他版本的配置方法异曲同工。<br><a href="http://opencv.org/releases.html" target="_blank" rel="noopener">下载链接</a>，选择sources版本<br>2.解压下载下来的zip包<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">unzip opencv-3.4.1.zip</span><br></pre></td></tr></table></figure><br>3.进入到解压后的文件包中<br>4.安装依赖库和cmake ，如果提醒需要apt-get update，那就先sudo su进入root权限，再sudo apt-get update，然后在执行下面命令<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install cmake</span><br></pre></td></tr></table></figure><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install build-essential libgtk2.0-dev libavcodec-dev libavformat-dev libjpeg.dev libtiff4.dev libswscale-dev libjasper-dev</span><br></pre></td></tr></table></figure><br>在第二步中若提示依赖版本问题，原因在于apt源太旧，更换新的源，再进行安装。<br>5.安装完cmake之后执行命令 ,创建编译文件夹，不创建的会提示（如下图）<br>In-source builds are not allowed.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mkdir my_build_dir</span><br><span class="line">cd my_build_dir</span><br></pre></td></tr></table></figure><br>6.cmake一下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cmake -D CMAKE_BUILD_TYPE&#x3D;Release -D CMAKE_INSTALL_PREFIX&#x3D;&#x2F;usr&#x2F;local ..</span><br></pre></td></tr></table></figure><br>注意：如果已经在新的文件夹中编译，但是还会出现之前的报错，把cmakecache.txt删了再编译就可<br>期间可能会下载一个东西，等待一会儿就OK<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/opencv/20171005220631735.png" alt><br>7.执行命令，漫长的编译过程<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo make</span><br></pre></td></tr></table></figure><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/opencv/20171005214720292.png" alt><br>8.执行命令<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo make install</span><br></pre></td></tr></table></figure><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/opencv/20171005214847504.png" alt><br>9.sudo make install 执行完毕后OpenCV编译过程就结束了，接下来就需要配置一些OpenCV的编译环境首先将OpenCV的库添加到路径，从而可以让系统找到<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo gedit &#x2F;etc&#x2F;ld.so.conf.d&#x2F;opencv.conf</span><br></pre></td></tr></table></figure><br>执行此命令后打开的可能是一个空白的文件，不用管，只需要在文件末尾添加<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;usr&#x2F;local&#x2F;lib</span><br></pre></td></tr></table></figure><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/opencv/20171005215009149.png" alt><br>10.执行如下命令使得刚才的配置路径生效<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo ldconfig</span><br></pre></td></tr></table></figure><br>11.配置bash<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo gedit &#x2F;etc&#x2F;bash.bashrc</span><br></pre></td></tr></table></figure><br>在最末尾添加<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">PKG_CONFIG_PATH&#x3D;$PKG_CONFIG_PATH:&#x2F;usr&#x2F;local&#x2F;lib&#x2F;pkgconfig  </span><br><span class="line">export PKG_CONFIG_PATH</span><br></pre></td></tr></table></figure><br>保存，执行如下命令使得配置生效<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">source &#x2F;etc&#x2F;bash.bashrc</span><br></pre></td></tr></table></figure><br>更新<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo updatedb</span><br></pre></td></tr></table></figure><br>12.至此所有的配置都已经完成<br>下面用一个小程序测试一下</p>
 <p>找到<br>cd到opencv-3.4.1/samples/cpp/example_cmake目录下<br>我们可以看到这个目录里官方已经给出了一个cmake的example我们可以拿来测试下<br>按顺序执行<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cmake .</span><br><span class="line">make</span><br><span class="line">.&#x2F;opencv_example</span><br></pre></td></tr></table></figure><br>即可看到打开了摄像头，在左上角有一个hello opencv<br>即表示配置成功</p>
 
     </div>
@@ -431,7 +431,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">33</span>
+          <span class="site-state-item-count">37</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -444,7 +444,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-count">23</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -501,12 +501,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-area-chart"></i>
     </span>
-    <span title="站点总字数">135k</span>
+    <span title="站点总字数">152k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">2:03</span>
+    <span title="站点阅读时长">2:18</span>
 </div>
 
 <!-- 网站运行时间的设置 -->

@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://Qiyuan-Z.github.io').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.6.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":true,"style":"mac"},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta property="og:type" content="article">
+<meta property="og:title" content="目标检测算法之常见评价指标(mAP)的详细计算方法及代码解析">
+<meta property="og:url" content="https://qiyuan-z.github.io/2020/02/14/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E7%AE%97%E6%B3%95%E4%B9%8B%E5%B8%B8%E8%A7%81%E8%AF%84%E4%BB%B7%E6%8C%87%E6%A0%87(mAP)%E7%9A%84%E8%AF%A6%E7%BB%86%E8%AE%A1%E7%AE%97%E6%96%B9%E6%B3%95%E5%8F%8A%E4%BB%A3%E7%A0%81%E8%A7%A3%E6%9E%90/index.html">
+<meta property="og:site_name" content="Yuan">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/map%20code/640.webp">
+<meta property="article:published_time" content="2020-02-14T04:24:16.153Z">
+<meta property="article:modified_time" content="2020-02-14T05:45:03.064Z">
+<meta property="article:author" content="Qiyuan-Z">
+<meta property="article:tag" content="目标检测">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/map%20code/640.webp">
+
+<link rel="canonical" href="https://qiyuan-z.github.io/2020/02/14/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E7%AE%97%E6%B3%95%E4%B9%8B%E5%B8%B8%E8%A7%81%E8%AF%84%E4%BB%B7%E6%8C%87%E6%A0%87(mAP)%E7%9A%84%E8%AF%A6%E7%BB%86%E8%AE%A1%E7%AE%97%E6%96%B9%E6%B3%95%E5%8F%8A%E4%BB%A3%E7%A0%81%E8%A7%A3%E6%9E%90/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.css"><style>
+#needsharebutton-postbottom {
+  cursor: pointer;
+  height: 26px;
+  margin-top: 10px;
+  position: relative;
+}
+#needsharebutton-postbottom .btn {
+  border: 1px solid $btn-default-border-color;
+  border-radius: 3px;
+  display: initial;
+  padding: 1px 4px;
+}
+</style>
+  <title>目标检测算法之常见评价指标(mAP)的详细计算方法及代码解析 | Yuan</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Yuan</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">记录学习中的点点滴滴</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qiyuan-z.github.io/2020/02/14/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E7%AE%97%E6%B3%95%E4%B9%8B%E5%B8%B8%E8%A7%81%E8%AF%84%E4%BB%B7%E6%8C%87%E6%A0%87(mAP)%E7%9A%84%E8%AF%A6%E7%BB%86%E8%AE%A1%E7%AE%97%E6%96%B9%E6%B3%95%E5%8F%8A%E4%BB%A3%E7%A0%81%E8%A7%A3%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/wallhaven-915.png">
+      <meta itemprop="name" content="Qiyuan-Z">
+      <meta itemprop="description" content="偉大な魂は目的を持ち、そうでないものは願望を持つ">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Yuan">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          目标检测算法之常见评价指标(mAP)的详细计算方法及代码解析
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-02-14 12:24:16 / 修改时间：13:45:03" itemprop="dateCreated datePublished" datetime="2020-02-14T12:24:16+08:00">2020-02-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index">
+                    <span itemprop="name">学习</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>7.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>7 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id><a href="#" class="headerlink" title></a><a id="more"></a></h2><p>定义一些评价标准：</p>
+<ul>
+<li><p>准确率(Acc)：准确率(Acc)的计算公式为$A c c=\frac{T P+T N}{N}$，即预测正确的样本比例，$N$代表测试的样本数。在检测任务中没有预测正确的负样本的概念，所以Acc自然用不到了。</p>
+</li>
+<li><p>查准率(Precision)：查准率是针对某一个具体类别而言的，公式为：Precision $=\frac{T P}{T P+F P}=\frac{T P}{N}$，其中$N$代表所有检测到的某个具体类的目标框个数。</p>
+</li>
+<li><p>召回率(Recall)：召回率仍然是针对某一个具体类别而言的，公式为：Recall$=\frac{T P}{T P+F N}$，即预测正确的目标框和所有Ground Truth框的比值。</p>
+</li>
+<li><p>F1 Score：定位查准率和召回率的调和平均，公式如下：</p>
+<script type="math/tex; mode=display">
+F_{1}=2 \times \frac{\text {Precision} * \text {Recall}}{\text {Precision}+\text {Recall}}=\frac{2 T P}{2 T P+F N+F P}</script></li>
+<li><p>IOU：先为计算mAP值做一个铺垫，即IOU阈值是如何影响Precision和Recall值的？比如在PASCAL  VOC竞赛中采用的IoU阈值为0.5，而COCO竞赛中在计算mAP较复杂，其计算了一系列IoU阈值（0.05至0.95）下的mAP当成最后的mAP值。</p>
+</li>
+<li><p>mAP：全称为Average Precision，AP值是Precision-Recall曲线下方的面积。那么问题来了，目标检测中PR曲线怎么来的？可以在这篇论文找到答案，截图如下：</p>
+</li>
+</ul>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/map%20code/640.webp" alt></p>
+<p>我来解释一下，要得到Precision-Recall曲线(以下简称PR)曲线，首先要对检测模型的预测结果按照目标置信度降序排列。然后给定一个<code>rank</code>值，Recall和Precision仅在置信度高于该<code>rank</code>值的预测结果中计算，改变<code>rank</code>值会相应的改变Recall值和Precision值。这里选择了11个不同的<code>rank</code>值，也就得到了11组Precision和Recall值，然后AP值即定义为在这11个Recall下Precision值的平均值，其可以表征整个PR曲线下方的面积。即：</p>
+<script type="math/tex; mode=display">
+A P=\frac{1}{11} \sum_{r \in\{0,0.1, \ldots, 1\}} p_{i n t e r p}(r)</script><p>还有另外一种插值的计算方法，即对于某个Recall值<code>r</code>，Precision取所有Recall值大于<code>r</code>中的最大值，这样保证了PR曲线是单调递减的，避免曲线出现摇摆。另外需要注意的一点是在2010年后计算AP值时是取了所有的数据点，而不仅仅只是11个Recall值。我们在计算出AP之后，对所有类别求平均之后就是mAP值了，也是当前目标检测用的最多的评判标准。</p>
+<ul>
+<li>AP50，AP60，AP70等等代表什么意思？代表IOU阈值分别取0.5，0.6，0.7等对应的AP值。</li>
+</ul>
+<h1 id="代码解析"><a href="#代码解析" class="headerlink" title="代码解析"></a>代码解析</h1><p>下面解析一下Faster-RCNN中对VOC数据集计算每个类别AP值的代码，mAP就是所有类的AP值平均值。代码来自py-faster-rcnn项目。代码解析如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br></pre></td><td class="code"><pre><span class="line"># --------------------------------------------------------</span><br><span class="line"># Fast&#x2F;er R-CNN</span><br><span class="line"># Licensed under The MIT License [see LICENSE for details]</span><br><span class="line"># Written by Bharath Hariharan</span><br><span class="line"># --------------------------------------------------------</span><br><span class="line"></span><br><span class="line">import xml.etree.ElementTree as ET #读取xml文件</span><br><span class="line">import os</span><br><span class="line">import cPickle #序列化存储模块</span><br><span class="line">import numpy as np</span><br><span class="line"></span><br><span class="line">def parse_rec(filename):</span><br><span class="line">    &quot;&quot;&quot; Parse a PASCAL VOC xml file &quot;&quot;&quot;</span><br><span class="line">    tree &#x3D; ET.parse(filename)</span><br><span class="line">    objects &#x3D; []</span><br><span class="line">    # 解析xml文件，将GT框信息放入一个列表</span><br><span class="line">    for obj in tree.findall(&#39;object&#39;):</span><br><span class="line">        obj_struct &#x3D; &#123;&#125;</span><br><span class="line">        obj_struct[&#39;name&#39;] &#x3D; obj.find(&#39;name&#39;).text</span><br><span class="line">        obj_struct[&#39;pose&#39;] &#x3D; obj.find(&#39;pose&#39;).text</span><br><span class="line">        obj_struct[&#39;truncated&#39;] &#x3D; int(obj.find(&#39;truncated&#39;).text)</span><br><span class="line">        obj_struct[&#39;difficult&#39;] &#x3D; int(obj.find(&#39;difficult&#39;).text)</span><br><span class="line">        bbox &#x3D; obj.find(&#39;bndbox&#39;)</span><br><span class="line">        obj_struct[&#39;bbox&#39;] &#x3D; [int(bbox.find(&#39;xmin&#39;).text),</span><br><span class="line">                              int(bbox.find(&#39;ymin&#39;).text),</span><br><span class="line">                              int(bbox.find(&#39;xmax&#39;).text),</span><br><span class="line">                              int(bbox.find(&#39;ymax&#39;).text)]</span><br><span class="line">        objects.append(obj_struct)</span><br><span class="line"></span><br><span class="line">    return objects</span><br><span class="line"></span><br><span class="line"># 单个计算AP的函数，输入参数为精确率和召回率，原理见上面</span><br><span class="line">def voc_ap(rec, prec, use_07_metric&#x3D;False):</span><br><span class="line">    &quot;&quot;&quot; ap &#x3D; voc_ap(rec, prec, [use_07_metric])</span><br><span class="line">    Compute VOC AP given precision and recall.</span><br><span class="line">    If use_07_metric is true, uses the</span><br><span class="line">    VOC 07 11 point method (default:False).</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    # 如果使用2007年的计算AP的方式(插值的方式)</span><br><span class="line">    if use_07_metric:</span><br><span class="line">        # 11 point metric</span><br><span class="line">        ap &#x3D; 0.</span><br><span class="line">        for t in np.arange(0., 1.1, 0.1):</span><br><span class="line">            if np.sum(rec &gt;&#x3D; t) &#x3D;&#x3D; 0:</span><br><span class="line">                p &#x3D; 0</span><br><span class="line">            else:</span><br><span class="line">                p &#x3D; np.max(prec[rec &gt;&#x3D; t])</span><br><span class="line">            ap &#x3D; ap + p &#x2F; 11.</span><br><span class="line">    else:</span><br><span class="line">       # 使用2010年后的计算AP值的方式</span><br><span class="line">        # 这里是新增一个(0,0)，方便计算</span><br><span class="line">        mrec &#x3D; np.concatenate(([0.], rec, [1.]))</span><br><span class="line">        mpre &#x3D; np.concatenate(([0.], prec, [0.]))</span><br><span class="line"></span><br><span class="line">        # compute the precision envelope</span><br><span class="line">        for i in range(mpre.size - 1, 0, -1):</span><br><span class="line">            mpre[i - 1] &#x3D; np.maximum(mpre[i - 1], mpre[i])</span><br><span class="line"></span><br><span class="line">        # to calculate area under PR curve, look for points</span><br><span class="line">        # where X axis (recall) changes value</span><br><span class="line">        i &#x3D; np.where(mrec[1:] !&#x3D; mrec[:-1])[0]</span><br><span class="line"></span><br><span class="line">        # and sum (\Delta recall) * prec</span><br><span class="line">        ap &#x3D; np.sum((mrec[i + 1] - mrec[i]) * mpre[i + 1])</span><br><span class="line">    return ap</span><br><span class="line"></span><br><span class="line"># 主函数</span><br><span class="line">def voc_eval(detpath,</span><br><span class="line">             annopath,</span><br><span class="line">             imagesetfile,</span><br><span class="line">             classname,</span><br><span class="line">             cachedir,</span><br><span class="line">             ovthresh&#x3D;0.5,</span><br><span class="line">             use_07_metric&#x3D;False):</span><br><span class="line">    &quot;&quot;&quot;rec, prec, ap &#x3D; voc_eval(detpath,</span><br><span class="line">                                annopath,</span><br><span class="line">                                imagesetfile,</span><br><span class="line">                                classname,</span><br><span class="line">                                [ovthresh],</span><br><span class="line">                                [use_07_metric])</span><br><span class="line">    Top level function that does the PASCAL VOC evaluation.</span><br><span class="line">    detpath: 产生的txt文件，里面是一张图片的各个检测框结果。</span><br><span class="line">    annopath: xml 文件与对应的图像相呼应。</span><br><span class="line">    imagesetfile: 一个txt文件，里面是每个图片的地址，每行一个地址。</span><br><span class="line">    classname: 种类的名字，即类别。</span><br><span class="line">    cachedir: 缓存标注的目录。</span><br><span class="line">    [ovthresh]: IOU阈值，默认为0.5，即mAP50。</span><br><span class="line">    [use_07_metric]: 是否使用2007的计算AP的方法，默认为Fasle</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    # assumes detections are in detpath.format(classname)</span><br><span class="line">    # assumes annotations are in annopath.format(imagename)</span><br><span class="line">    # assumes imagesetfile is a text file with each line an image name</span><br><span class="line">    # cachedir caches the annotations in a pickle file</span><br><span class="line"></span><br><span class="line">    # 首先加载Ground Truth标注信息。</span><br><span class="line">    if not os.path.isdir(cachedir):</span><br><span class="line">        os.mkdir(cachedir)</span><br><span class="line">    # 即将新建文件的路径</span><br><span class="line">    cachefile &#x3D; os.path.join(cachedir, &#39;annots.pkl&#39;)</span><br><span class="line">    # 读取文本里的所有图片路径</span><br><span class="line">    with open(imagesetfile, &#39;r&#39;) as f:</span><br><span class="line">        lines &#x3D; f.readlines()</span><br><span class="line">    # 获取文件名，strip用来去除头尾字符、空白符(包括\n、\r、\t、&#39; &#39;，即：换行、回车、制表符、空格)</span><br><span class="line">    imagenames &#x3D; [x.strip() for x in lines]</span><br><span class="line">    #如果cachefile文件不存在，则写入</span><br><span class="line">    if not os.path.isfile(cachefile):</span><br><span class="line">        # load annots</span><br><span class="line">        recs &#x3D; &#123;&#125;</span><br><span class="line">        for i, imagename in enumerate(imagenames):</span><br><span class="line">            #annopath.format(imagename): label的xml文件所在的路径</span><br><span class="line">            recs[imagename] &#x3D; parse_rec(annopath.format(imagename))</span><br><span class="line">            if i % 100 &#x3D;&#x3D; 0:</span><br><span class="line">                print &#39;Reading annotation for &#123;:d&#125;&#x2F;&#123;:d&#125;&#39;.format(</span><br><span class="line">                    i + 1, len(imagenames))</span><br><span class="line">        # save</span><br><span class="line">        print &#39;Saving cached annotations to &#123;:s&#125;&#39;.format(cachefile)</span><br><span class="line">        with open(cachefile, &#39;w&#39;) as f:</span><br><span class="line">            #写入cPickle文件里面。写入的是一个字典，左侧为xml文件名，右侧为文件里面个各个参数。</span><br><span class="line">            cPickle.dump(recs, f)</span><br><span class="line">    else:</span><br><span class="line">        # load</span><br><span class="line">        with open(cachefile, &#39;r&#39;) as f:</span><br><span class="line">            recs &#x3D; cPickle.load(f)</span><br><span class="line"></span><br><span class="line">    # 对每张图片的xml获取函数指定类的bbox等</span><br><span class="line">    class_recs &#x3D; &#123;&#125;# 保存的是 Ground Truth的数据</span><br><span class="line">    npos &#x3D; 0</span><br><span class="line">    for imagename in imagenames:</span><br><span class="line">        # 获取Ground Truth每个文件中某种类别的物体</span><br><span class="line">        R &#x3D; [obj for obj in recs[imagename] if obj[&#39;name&#39;] &#x3D;&#x3D; classname]</span><br><span class="line">        bbox &#x3D; np.array([x[&#39;bbox&#39;] for x in R])</span><br><span class="line">        #  different基本都为0&#x2F;False</span><br><span class="line">        difficult &#x3D; np.array([x[&#39;difficult&#39;] for x in R]).astype(np.bool)</span><br><span class="line">        det &#x3D; [False] * len(R)</span><br><span class="line">        npos &#x3D; npos + sum(~difficult) #自增，~difficult取反,统计样本个数</span><br><span class="line">        # # 记录Ground Truth的内容</span><br><span class="line">        class_recs[imagename] &#x3D; &#123;&#39;bbox&#39;: bbox,</span><br><span class="line">                                 &#39;difficult&#39;: difficult,</span><br><span class="line">                                 &#39;det&#39;: det&#125;</span><br><span class="line"></span><br><span class="line">    # read dets 读取某类别预测输出</span><br><span class="line">    detfile &#x3D; detpath.format(classname)</span><br><span class="line">    with open(detfile, &#39;r&#39;) as f:</span><br><span class="line">        lines &#x3D; f.readlines()</span><br><span class="line"></span><br><span class="line">    splitlines &#x3D; [x.strip().split(&#39; &#39;) for x in lines]</span><br><span class="line">    image_ids &#x3D; [x[0] for x in splitlines] # 图片ID</span><br><span class="line">    confidence &#x3D; np.array([float(x[1]) for x in splitlines]) # IOU值</span><br><span class="line">    BB &#x3D; np.array([[float(z) for z in x[2:]] for x in splitlines]) # bounding box数值</span><br><span class="line"></span><br><span class="line">    # 对confidence的index根据值大小进行降序排列。</span><br><span class="line">    sorted_ind &#x3D; np.argsort(-confidence)</span><br><span class="line">    sorted_scores &#x3D; np.sort(-confidence)</span><br><span class="line">    #重排bbox，由大概率到小概率。</span><br><span class="line">    BB &#x3D; BB[sorted_ind, :]</span><br><span class="line">    # 图片重排，由大概率到小概率。</span><br><span class="line">    image_ids &#x3D; [image_ids[x] for x in sorted_ind]</span><br><span class="line"></span><br><span class="line">    # go down dets and mark TPs and FPs</span><br><span class="line">    nd &#x3D; len(image_ids)</span><br><span class="line">    tp &#x3D; np.zeros(nd)</span><br><span class="line">    fp &#x3D; np.zeros(nd)</span><br><span class="line">    for d in range(nd):</span><br><span class="line">        R &#x3D; class_recs[image_ids[d]]</span><br><span class="line">        bb &#x3D; BB[d, :].astype(float)</span><br><span class="line">        ovmax &#x3D; -np.inf</span><br><span class="line">        BBGT &#x3D; R[&#39;bbox&#39;].astype(float)</span><br><span class="line"></span><br><span class="line">        if BBGT.size &gt; 0:</span><br><span class="line">            # compute overlaps</span><br><span class="line">            # intersection</span><br><span class="line">            ixmin &#x3D; np.maximum(BBGT[:, 0], bb[0])</span><br><span class="line">            iymin &#x3D; np.maximum(BBGT[:, 1], bb[1])</span><br><span class="line">            ixmax &#x3D; np.minimum(BBGT[:, 2], bb[2])</span><br><span class="line">            iymax &#x3D; np.minimum(BBGT[:, 3], bb[3])</span><br><span class="line">            iw &#x3D; np.maximum(ixmax - ixmin + 1., 0.)</span><br><span class="line">            ih &#x3D; np.maximum(iymax - iymin + 1., 0.)</span><br><span class="line">            inters &#x3D; iw * ih</span><br><span class="line"></span><br><span class="line">            # union</span><br><span class="line">            uni &#x3D; ((bb[2] - bb[0] + 1.) * (bb[3] - bb[1] + 1.) +</span><br><span class="line">                   (BBGT[:, 2] - BBGT[:, 0] + 1.) *</span><br><span class="line">                   (BBGT[:, 3] - BBGT[:, 1] + 1.) - inters)</span><br><span class="line"></span><br><span class="line">            overlaps &#x3D; inters &#x2F; uni</span><br><span class="line">            ovmax &#x3D; np.max(overlaps)</span><br><span class="line">            jmax &#x3D; np.argmax(overlaps)</span><br><span class="line"></span><br><span class="line">        if ovmax &gt; ovthresh:</span><br><span class="line">            if not R[&#39;difficult&#39;][jmax]:</span><br><span class="line">                if not R[&#39;det&#39;][jmax]:</span><br><span class="line">                    tp[d] &#x3D; 1.</span><br><span class="line">                    R[&#39;det&#39;][jmax] &#x3D; 1</span><br><span class="line">                else:</span><br><span class="line">                    fp[d] &#x3D; 1.</span><br><span class="line">        else:</span><br><span class="line">            fp[d] &#x3D; 1.</span><br><span class="line"></span><br><span class="line">    # compute precision recall</span><br><span class="line">    fp &#x3D; np.cumsum(fp)</span><br><span class="line">    tp &#x3D; np.cumsum(tp)</span><br><span class="line">    rec &#x3D; tp &#x2F; float(npos)</span><br><span class="line">    # avoid divide by zero in case the first detection matches a difficult</span><br><span class="line">    # ground truth</span><br><span class="line">    prec &#x3D; tp &#x2F; np.maximum(tp + fp, np.finfo(np.float64).eps)</span><br><span class="line">    ap &#x3D; voc_ap(rec, prec, use_07_metric)</span><br><span class="line"></span><br><span class="line">	return rec, prec, ap</span><br></pre></td></tr></table></figure>
+<p>这个脚本可以直接调用来计算mAP值，具体例子可以看这个：<a href="https://blog.csdn.net/amusi1994/article/details/81564504" target="_blank" rel="noopener">在Darknet中调用上面的脚本来计算mAP值</a></p>
+
+    </div>
+
+    
+    
+    <div class="post-widgets">
+      <div id="needsharebutton-postbottom">
+        <span class="btn">
+          <i class="fa fa-share-alt" aria-hidden="true"></i>
+        </span>
+      </div>
+    </div>
+	<div>
+
+	  
+
+		<div>
+
+    
+
+        <div >-------------本文结束感谢您的阅读-------------</div>
+
+    
+
+</div>
+
+	  
+
+	</div>
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/" rel="tag"><i class="fa fa-tag"></i> 目标检测</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/02/14/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E7%AE%97%E6%B3%95%E7%9A%84%E8%AF%84%E4%BB%B7%E6%A0%87%E5%87%86%E5%92%8C%E5%B8%B8%E8%A7%81%E6%95%B0%E6%8D%AE%E9%9B%86/" rel="prev" title="目标检测算法的评价标准和常见数据集">
+      <i class="fa fa-chevron-left"></i> 目标检测算法的评价标准和常见数据集
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/02/14/YOLOv3%E7%9A%84cfg%E6%96%87%E4%BB%B6%E8%A7%A3%E6%9E%90/" rel="next" title="YOLOv3的cfg文件解析">
+      YOLOv3的cfg文件解析 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#null"><span class="nav-text"></span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#代码解析"><span class="nav-text">代码解析</span></a></div>
+      </div>
+      <!--/noindex-->
+	  
+     
+	  
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qiyuan-Z"
+      src="/images/wallhaven-915.png">
+  <p class="site-author-name" itemprop="name">Qiyuan-Z</p>
+  <div class="site-description" itemprop="description">偉大な魂は目的を持ち、そうでないものは願望を持つ</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">37</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Qiyuan-Z" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Qiyuan-Z" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:601872068@qq.com" title="E-Mail → mailto:601872068@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://project-inkstone.github.io/project-inkstone/?tdsourcetag=s_pctim_aiomsg" title="https:&#x2F;&#x2F;project-inkstone.github.io&#x2F;project-inkstone&#x2F;?tdsourcetag&#x3D;s_pctim_aiomsg" rel="noopener" target="_blank">project-inkstone</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+	  
+      <div id="music163player">
+		   <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=29784463&auto=1&height=66"></iframe>
+		   </iframe>
+	  </div>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qiyuan-Z</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="站点总字数">152k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">2:18</span>
+</div>
+
+<!-- 网站运行时间的设置 -->
+<span id="timeDate">载入天数...</span>
+<span id="times">载入时分秒...</span> 
+<script>
+    var now = new Date();
+    function createtime() {
+        var grt= new Date("12/01/2019 13:14:21");//此处修改你的建站时间或者网站上线时间
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;}
+        document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 ";
+        document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
+    }
+setInterval("createtime()",250);
+</script>
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+	<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"></script>
+	<script type="text/javascript">
+    		var gitalk = new Gitalk({
+		        clientID: '2d10cfb27783db577e70',
+		        clientSecret: '154292876bb14966f6ae57304b67859617b08c94',
+		        id: md5(location.pathname),
+		        repo: 'gitalk',
+		        owner: 'Qiyuan-Z',
+		        admin: 'Qiyuan-Z',
+			distractionFreeMode: '',
+
+		    });
+	    gitalk.render('gitalk-container');
+	</script>
+
+
+
+  
+
+  
+      
+<script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', () => {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
+
+  
+
+  <script src="//cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.js"></script>
+  <script>
+      pbOptions = {};
+        pbOptions.iconStyle = "box";
+        pbOptions.boxForm = "horizontal";
+        pbOptions.position = "bottomCenter";
+        pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+  </script>
+	<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+	<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"></script>
+	<script type="text/javascript">
+    		var gitalk = new Gitalk({
+		        clientID: '2d10cfb27783db577e70',
+		        clientSecret: '154292876bb14966f6ae57304b67859617b08c94',
+		        id: md5(location.pathname),
+		        repo: 'gitalk',
+		        owner: 'Qiyuan-Z',
+		        admin: 'Qiyuan-Z',
+			distractionFreeMode: '',
+
+		    });
+	    gitalk.render('gitalk-container');
+	</script>
+
+
+  <script type="text/javascript" src="/js/src/clicklove.js"></script>
+</body>
+</html>
+

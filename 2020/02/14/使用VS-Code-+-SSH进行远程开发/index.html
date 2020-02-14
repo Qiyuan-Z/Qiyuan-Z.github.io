@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://Qiyuan-Z.github.io').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.6.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":true,"style":"mac"},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta property="og:type" content="article">
+<meta property="og:title" content="使用VS Code + SSH进行远程开发">
+<meta property="og:url" content="https://qiyuan-z.github.io/2020/02/14/%E4%BD%BF%E7%94%A8VS-Code-+-SSH%E8%BF%9B%E8%A1%8C%E8%BF%9C%E7%A8%8B%E5%BC%80%E5%8F%91/index.html">
+<meta property="og:site_name" content="Yuan">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/20190522113131209.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/20190630104856278.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/20190522115459170.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/20190522114027910.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/20190522114100203.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/20190523120834360.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/20190523120925461.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/20190522120252523.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/20190522120345995.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/20190523121056234.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/20190523115727683.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/20190523115814332.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/20190523122154883.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/20190523122256594.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/20190523122341344.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/20190523122740634.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/20190523122927502.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/20190523123334817.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/20190524091244209.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/2019052409132074.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/20190524091455578.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/20190524091601192.png">
+<meta property="article:published_time" content="2020-02-14T07:35:59.268Z">
+<meta property="article:modified_time" content="2020-02-14T07:56:55.829Z">
+<meta property="article:author" content="Qiyuan-Z">
+<meta property="article:tag" content="C++">
+<meta property="article:tag" content="VSCode">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/20190522113131209.png">
+
+<link rel="canonical" href="https://qiyuan-z.github.io/2020/02/14/%E4%BD%BF%E7%94%A8VS-Code-+-SSH%E8%BF%9B%E8%A1%8C%E8%BF%9C%E7%A8%8B%E5%BC%80%E5%8F%91/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.css"><style>
+#needsharebutton-postbottom {
+  cursor: pointer;
+  height: 26px;
+  margin-top: 10px;
+  position: relative;
+}
+#needsharebutton-postbottom .btn {
+  border: 1px solid $btn-default-border-color;
+  border-radius: 3px;
+  display: initial;
+  padding: 1px 4px;
+}
+</style>
+  <title>使用VS Code + SSH进行远程开发 | Yuan</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Yuan</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">记录学习中的点点滴滴</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qiyuan-z.github.io/2020/02/14/%E4%BD%BF%E7%94%A8VS-Code-+-SSH%E8%BF%9B%E8%A1%8C%E8%BF%9C%E7%A8%8B%E5%BC%80%E5%8F%91/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/wallhaven-915.png">
+      <meta itemprop="name" content="Qiyuan-Z">
+      <meta itemprop="description" content="偉大な魂は目的を持ち、そうでないものは願望を持つ">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Yuan">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          使用VS Code + SSH进行远程开发
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-02-14 15:35:59 / 修改时间：15:56:55" itemprop="dateCreated datePublished" datetime="2020-02-14T15:35:59+08:00">2020-02-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%99%E7%A8%8B/" itemprop="url" rel="index">
+                    <span itemprop="name">教程</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="为什么需要远程开发"><a href="#为什么需要远程开发" class="headerlink" title=" 为什么需要远程开发"></a><a id="more"></a> 为什么需要远程开发</h2><p>在进行Linux开发的时候，为了方便，通常在Windows上使用代码编辑器编辑代码，交叉编译工具在Linux虚拟机或者服务器上，在开发期间需要不停的进行如下的循环操作：</p>
+<ul>
+<li>编辑好代码，使用<strong>基于SSH的ftp</strong>将文件上传到服务器</li>
+<li><strong>使用SSH远程终端</strong>，在服务器上编译出可执行文件</li>
+<li>编译完成后使用<strong>基于SSH的ftp</strong>将文件传回到本地</li>
+</ul>
+<p>这些操作都是基于SSH的，但是需要终端软件，文件传输软件， 并且不停地切换操作，过程很麻烦。</p>
+<p>如果<strong>本地的编辑器可以直接通过SSH打开远程服务器的目录，操作文件，执行命令</strong>，这就称之为远程开发，使用远程开发可以大大方便我们的开发过程。</p>
+<h2 id="Visual-Studio-Code-Remote-SSH扩展"><a href="#Visual-Studio-Code-Remote-SSH扩展" class="headerlink" title="Visual Studio Code Remote - SSH扩展"></a>Visual Studio Code Remote - SSH扩展</h2><p>Remote Development extension pack是VS Code在今年5月份发布的扩展，该扩展包括三个扩展：</p>
+<ul>
+<li>Remote - SSH</li>
+<li>Remote - Containers</li>
+<li>Remote - WSL</li>
+</ul>
+<p>这三个扩展分别支持将远程计算机，容器，或Windows子系统Linux（WSL）用作功能齐全的后台开发环境，本地的VS Code只是一个前端的界面，在本文中我们主要讲述如何使用SSH扩展，如图：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/20190522113131209.png" alt></p>
+<h2 id="确保在命令行可以使用ssh命令"><a href="#确保在命令行可以使用ssh命令" class="headerlink" title="确保在命令行可以使用ssh命令"></a>确保在命令行可以使用ssh命令</h2><ul>
+<li>如果使用的系统是<code>Windows10</code>，系统中已经自带了<code>SSH</code>，<strong>不能再使用Git的ssh</strong>：如图：</li>
+</ul>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/20190630104856278.png" alt></p>
+<ul>
+<li>如果使用的系统是<code>Windows7</code>，<strong>不能安装OpenSSH</strong>，只能使用Git中的ssh命令，将Git安装目录中的<code>usr\bin</code>文件夹添加到系统环境变量中，该目录下包含ssh命令的可执行程序；</li>
+</ul>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/20190522115459170.png" alt></p>
+<h2 id="安装SSH扩展"><a href="#安装SSH扩展" class="headerlink" title="安装SSH扩展"></a>安装SSH扩展</h2><p>在VS  Code扩展市场搜索<code>remote</code>，选择<code>Remote-SSH</code>，点击安装：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/20190522114027910.png" alt></p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/20190522114100203.png" alt></p>
+<h2 id="远程主机安装SSH服务器"><a href="#远程主机安装SSH服务器" class="headerlink" title="远程主机安装SSH服务器"></a>远程主机安装SSH服务器</h2><p>特别注意：<strong>SSH扩展只能连接64位的Linux操作系统。</strong><br>在远程Linux主机上安装ssh服务器：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install openssh-server</span><br></pre></td></tr></table></figure></p>
+<h2 id="设置SSH扩展显示登录终端"><a href="#设置SSH扩展显示登录终端" class="headerlink" title="设置SSH扩展显示登录终端"></a>设置SSH扩展显示登录终端</h2><p>打开命令面板<code>ctrl+shift+p</code>，输入<code>ssh</code>，选择设置：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/20190523120834360.png" alt></p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/20190523120925461.png" alt></p>
+<h2 id="启动SSH连接远程主机"><a href="#启动SSH连接远程主机" class="headerlink" title="启动SSH连接远程主机"></a>启动SSH连接远程主机</h2><p>SSH启动的方式有两种：</p>
+<ul>
+<li>使用<code>Ctrl+Shift+P</code>打开命令面板，输入<code>ssh</code>，选择<code>Connect to Host</code>：</li>
+</ul>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/20190522120252523.png" alt></p>
+<ul>
+<li><p>直接点击左下角的ssh图标：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/20190522120345995.png" alt></p>
+</li>
+</ul>
+<p>启动之后输入远程主机的<code>用户名@ip地址</code>，按回车进行连接：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/20190523121056234.png" alt></p>
+<p>会显示出SSH登录终端，输入用户的密码即可：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/20190523115727683.png" alt></p>
+<p>首次登录后，VS Code会自动弹出一个新的窗口用于远程工作，并且会自动在远程主机上安装VS Code server：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/20190523115814332.png" alt></p>
+<p>登录成功后如图：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/20190523122154883.png" alt></p>
+<h2 id="打开远程目录作为工作区"><a href="#打开远程目录作为工作区" class="headerlink" title="打开远程目录作为工作区"></a>打开远程目录作为工作区</h2><p>点击文件视图：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/20190523122256594.png" alt></p>
+<p>然后选择要打开的目录：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/20190523122341344.png" alt></p>
+<p>打开成功如下：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/20190523122740634.png" alt></p>
+<h2 id="使用远程终端"><a href="#使用远程终端" class="headerlink" title="使用远程终端"></a>使用远程终端</h2><p><strong>直接点击新建终端即可打开Bash</strong>：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/20190523122927502.png" alt></p>
+<h2 id="安装扩展"><a href="#安装扩展" class="headerlink" title="安装扩展"></a>安装扩展</h2><p>注意，在远程开发的时候扩展分为本地扩展和远程扩展：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/20190523123334817.png" alt></p>
+<h2 id="记住常用主机"><a href="#记住常用主机" class="headerlink" title="记住常用主机"></a>记住常用主机</h2><p>如图，打开配置文件：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/20190524091244209.png" alt></p>
+<p>选择 一个配置文件：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/2019052409132074.png" alt></p>
+<p>按如下格式填写内容，保存：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/20190524091455578.png" alt></p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/vscode%20ssh/20190524091601192.png" alt></p>
+
+    </div>
+
+    
+    
+    <div class="post-widgets">
+      <div id="needsharebutton-postbottom">
+        <span class="btn">
+          <i class="fa fa-share-alt" aria-hidden="true"></i>
+        </span>
+      </div>
+    </div>
+	<div>
+
+	  
+
+		<div>
+
+    
+
+        <div >-------------本文结束感谢您的阅读-------------</div>
+
+    
+
+</div>
+
+	  
+
+	</div>
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/C/" rel="tag"><i class="fa fa-tag"></i> C++</a>
+              <a href="/tags/VSCode/" rel="tag"><i class="fa fa-tag"></i> VSCode</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/02/14/YOLOv3%E7%9A%84cfg%E6%96%87%E4%BB%B6%E8%A7%A3%E6%9E%90/" rel="prev" title="YOLOv3的cfg文件解析">
+      <i class="fa fa-chevron-left"></i> YOLOv3的cfg文件解析
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么需要远程开发"><span class="nav-text"> 为什么需要远程开发</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Visual-Studio-Code-Remote-SSH扩展"><span class="nav-text">Visual Studio Code Remote - SSH扩展</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#确保在命令行可以使用ssh命令"><span class="nav-text">确保在命令行可以使用ssh命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装SSH扩展"><span class="nav-text">安装SSH扩展</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#远程主机安装SSH服务器"><span class="nav-text">远程主机安装SSH服务器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#设置SSH扩展显示登录终端"><span class="nav-text">设置SSH扩展显示登录终端</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#启动SSH连接远程主机"><span class="nav-text">启动SSH连接远程主机</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#打开远程目录作为工作区"><span class="nav-text">打开远程目录作为工作区</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用远程终端"><span class="nav-text">使用远程终端</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装扩展"><span class="nav-text">安装扩展</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#记住常用主机"><span class="nav-text">记住常用主机</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+	  
+     
+	  
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qiyuan-Z"
+      src="/images/wallhaven-915.png">
+  <p class="site-author-name" itemprop="name">Qiyuan-Z</p>
+  <div class="site-description" itemprop="description">偉大な魂は目的を持ち、そうでないものは願望を持つ</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">37</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Qiyuan-Z" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Qiyuan-Z" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:601872068@qq.com" title="E-Mail → mailto:601872068@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://project-inkstone.github.io/project-inkstone/?tdsourcetag=s_pctim_aiomsg" title="https:&#x2F;&#x2F;project-inkstone.github.io&#x2F;project-inkstone&#x2F;?tdsourcetag&#x3D;s_pctim_aiomsg" rel="noopener" target="_blank">project-inkstone</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+	  
+      <div id="music163player">
+		   <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=29784463&auto=1&height=66"></iframe>
+		   </iframe>
+	  </div>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qiyuan-Z</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="站点总字数">152k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">2:18</span>
+</div>
+
+<!-- 网站运行时间的设置 -->
+<span id="timeDate">载入天数...</span>
+<span id="times">载入时分秒...</span> 
+<script>
+    var now = new Date();
+    function createtime() {
+        var grt= new Date("12/01/2019 13:14:21");//此处修改你的建站时间或者网站上线时间
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;}
+        document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 ";
+        document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
+    }
+setInterval("createtime()",250);
+</script>
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+	<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"></script>
+	<script type="text/javascript">
+    		var gitalk = new Gitalk({
+		        clientID: '2d10cfb27783db577e70',
+		        clientSecret: '154292876bb14966f6ae57304b67859617b08c94',
+		        id: md5(location.pathname),
+		        repo: 'gitalk',
+		        owner: 'Qiyuan-Z',
+		        admin: 'Qiyuan-Z',
+			distractionFreeMode: '',
+
+		    });
+	    gitalk.render('gitalk-container');
+	</script>
+
+
+
+  
+
+  
+      
+<script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', () => {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
+
+  
+
+  <script src="//cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.js"></script>
+  <script>
+      pbOptions = {};
+        pbOptions.iconStyle = "box";
+        pbOptions.boxForm = "horizontal";
+        pbOptions.position = "bottomCenter";
+        pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+  </script>
+	<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+	<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"></script>
+	<script type="text/javascript">
+    		var gitalk = new Gitalk({
+		        clientID: '2d10cfb27783db577e70',
+		        clientSecret: '154292876bb14966f6ae57304b67859617b08c94',
+		        id: md5(location.pathname),
+		        repo: 'gitalk',
+		        owner: 'Qiyuan-Z',
+		        admin: 'Qiyuan-Z',
+			distractionFreeMode: '',
+
+		    });
+	    gitalk.render('gitalk-container');
+	</script>
+
+
+  <script type="text/javascript" src="/js/src/clicklove.js"></script>
+</body>
+</html>
+
