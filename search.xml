@@ -150,7 +150,7 @@
 <h3 id="3-训练模型"><a href="#3-训练模型" class="headerlink" title="3. 训练模型"></a>3. 训练模型</h3><p>预训练模型：</p>
 <ul>
 <li>Darknet <code>*.weights</code> format: <a href="https://pjreddie.com/media/files/yolov3.weights" target="_blank" rel="noopener">https://pjreddie.com/media/files/yolov3.weights</a></li>
-<li>PyTorch <code>*.pt</code> format: <a href="https://drive.google.com/drive/folders/1uxgUBemJVw9wZsdpboYbzUN4bcRhsuAI" target="_blank" rel="noopener">https://drive.google.com/drive/folders/1uxgUBemJVw9wZsdpboYbzUN4bcRhsuAI</a></li>
+<li>PyTorch <code>*.pt</code> format: <a href="https://drive.google.com/open?id=1LezFG5g3BCW6iYaV89B2i64cqEUZD7e0" target="_blank" rel="noopener">https://drive.google.com/open?id=1LezFG5g3BCW6iYaV89B2i64cqEUZD7e0</a></li>
 </ul>
 <p>开始训练：</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">python train.py --data data&#x2F;coco.data --cfg cfg&#x2F;yolov3.cfg</span><br></pre></td></tr></table></figure>
