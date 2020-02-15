@@ -47,23 +47,24 @@
   };
 </script>
 
-  <meta property="og:type" content="article">
-<meta property="og:title" content="目标检测算法的评价标准和常见数据集">
-<meta property="og:url" content="https://qiyuan-z.github.io/2020/02/14/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E7%AE%97%E6%B3%95%E7%9A%84%E8%AF%84%E4%BB%B7%E6%A0%87%E5%87%86%E5%92%8C%E5%B8%B8%E8%A7%81%E6%95%B0%E6%8D%AE%E9%9B%86/index.html">
+  <meta name="description" content="YOLOv3代码中也提供了参数进化(搜索)，可以为对应的数据集进化一套合适的超参数。本文建档分析一下有关这部分的操作方法以及其参数的具体进化方法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="YOLOv3中的参数进化">
+<meta property="og:url" content="https://qiyuan-z.github.io/2020/02/15/YOLOv3%E4%B8%AD%E7%9A%84%E5%8F%82%E6%95%B0%E8%BF%9B%E5%8C%96/index.html">
 <meta property="og:site_name" content="Yuan">
+<meta property="og:description" content="YOLOv3代码中也提供了参数进化(搜索)，可以为对应的数据集进化一套合适的超参数。本文建档分析一下有关这部分的操作方法以及其参数的具体进化方法。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/metrics%20and%20databases/640.webp">
-<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/metrics%20and%20databases/641.webp">
-<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/metrics%20and%20databases/v2-fc750883be72300fa2373d1c5b81ee9e_hd.jpg">
-<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/metrics%20and%20databases/642.webp">
-<meta property="article:published_time" content="2020-02-14T03:50:54.723Z">
-<meta property="article:modified_time" content="2020-02-14T04:04:32.341Z">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pyyolov3/646.webp">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pyyolov3/647.webp">
+<meta property="article:published_time" content="2020-02-15T05:08:04.427Z">
+<meta property="article:modified_time" content="2020-02-15T05:09:30.471Z">
 <meta property="article:author" content="Qiyuan-Z">
 <meta property="article:tag" content="目标检测">
+<meta property="article:tag" content="YOLOv3">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/metrics%20and%20databases/640.webp">
+<meta name="twitter:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pyyolov3/646.webp">
 
-<link rel="canonical" href="https://qiyuan-z.github.io/2020/02/14/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E7%AE%97%E6%B3%95%E7%9A%84%E8%AF%84%E4%BB%B7%E6%A0%87%E5%87%86%E5%92%8C%E5%B8%B8%E8%A7%81%E6%95%B0%E6%8D%AE%E9%9B%86/">
+<link rel="canonical" href="https://qiyuan-z.github.io/2020/02/15/YOLOv3%E4%B8%AD%E7%9A%84%E5%8F%82%E6%95%B0%E8%BF%9B%E5%8C%96/">
 
 
 <script id="page-configurations">
@@ -88,7 +89,7 @@
   padding: 1px 4px;
 }
 </style>
-  <title>目标检测算法的评价标准和常见数据集 | Yuan</title>
+  <title>YOLOv3中的参数进化 | Yuan</title>
   
 
 
@@ -224,7 +225,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://qiyuan-z.github.io/2020/02/14/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E7%AE%97%E6%B3%95%E7%9A%84%E8%AF%84%E4%BB%B7%E6%A0%87%E5%87%86%E5%92%8C%E5%B8%B8%E8%A7%81%E6%95%B0%E6%8D%AE%E9%9B%86/">
+    <link itemprop="mainEntityOfPage" href="https://qiyuan-z.github.io/2020/02/15/YOLOv3%E4%B8%AD%E7%9A%84%E5%8F%82%E6%95%B0%E8%BF%9B%E5%8C%96/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/wallhaven-915.png">
@@ -237,7 +238,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          目标检测算法的评价标准和常见数据集
+          YOLOv3中的参数进化
         </h1>
 
         <div class="post-meta">
@@ -248,7 +249,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2020-02-14 11:50:54 / 修改时间：12:04:32" itemprop="dateCreated datePublished" datetime="2020-02-14T11:50:54+08:00">2020-02-14</time>
+              <time title="创建时间：2020-02-15 13:08:04 / 修改时间：13:09:30" itemprop="dateCreated datePublished" datetime="2020-02-15T13:08:04+08:00">2020-02-15</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -275,14 +276,14 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>4k</span>
+              <span>3.4k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="fa fa-clock-o"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>4 分钟</span>
+              <span>3 分钟</span>
             </span>
 
         </div>
@@ -294,47 +295,39 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="评价指标"><a href="#评价指标" class="headerlink" title=" 评价指标"></a><a id="more"></a> 评价指标</h2><h3 id="1-准确率-Accuracy"><a href="#1-准确率-Accuracy" class="headerlink" title="1.准确率(Accuracy)"></a>1.准确率(Accuracy)</h3><p>检测时分对的样本数除以所有的样本数。准确率一般被用来评估检测模型的全局准确程度，包含的信息有限，不能完全评价一个模型性能。</p>
-<h3 id="2-混淆矩阵-Confusion-Matrix"><a href="#2-混淆矩阵-Confusion-Matrix" class="headerlink" title="2.混淆矩阵(Confusion Matrix)"></a>2.混淆矩阵(Confusion Matrix)</h3><p>混淆矩阵是以模型预测的类别数量统计信息为横轴，真实标签的数量统计信息为纵轴画出的矩阵。对角线代表了模型预测和数据标签一致的数目，所以准确率也可以用<strong>混淆矩阵对角线之和除以测试集图片数量</strong>来计算。对角线上的数字越大越好，在混淆矩阵可视化结果中颜色越深，代表模型在该类的预测结果更好。其他地方自然是预测错误的地方，自然值越小，颜色越浅说明模型预测的更好。</p>
-<h3 id="3-精确率-Precision-和召回率-Recall-和PR曲线"><a href="#3-精确率-Precision-和召回率-Recall-和PR曲线" class="headerlink" title="3.精确率(Precision)和召回率(Recall)和PR曲线"></a>3.精确率(Precision)和召回率(Recall)和PR曲线</h3><p>一个经典例子是存在一个测试集合，测试集合只有大雁和飞机两种图片组成，假设你的分类系统最终的目的是：能取出测试集中所有飞机的图片，而不是大雁的图片。然后就可以定义：</p>
-<ul>
-<li>True positives: 简称为TP，即正样本被正确识别为正样本，飞机的图片被正确的识别成了飞机。</li>
-<li>True negatives: 简称为TN，即负样本被正确识别为负样本，大雁的图片没有被识别出来，系统正确地认为它们是大雁。</li>
-<li>False Positives: 简称为FP，即负样本被错误识别为正样本，大雁的图片被错误地识别成了飞机。</li>
-<li>False negatives: 简称为FN，即正样本被错误识别为负样本，飞机的图片没有被识别出来，系统错误地认为它们是大雁。</li>
-</ul>
-<p><strong>精确率</strong>就是在识别出来的图片中，True positives所占的比率。也就是本假设中，所有被识别出来的飞机中，真正的飞机所占的比例，公式如下：Precision $=\frac{T P}{T P+F P}=\frac{T P}{N}$ ，其中N代表测试集样本数。</p>
-<p><strong>召回率</strong>是测试集中所有正样本样例中，被正确识别为正样本的比例。也就是本假设中，被正确识别出来的飞机个数与测试集中所有真实飞机的个数的比值，公式如下： Recall$=\frac{T P}{T P+F N}$</p>
-<p>所谓<strong>PR曲线</strong>就是改变识别阈值，使得系统依次能够识别前K张图片，阈值的变化同时会导致Precision与Recall值发生变化，从而得到曲线。曲线图大概如下，这里有3条PR曲线，周志华机器学习的解释如下：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/metrics%20and%20databases/640.webp" alt></p>
-<h3 id="4-平均精度-Average-Precision，AP-和mAP"><a href="#4-平均精度-Average-Precision，AP-和mAP" class="headerlink" title="4.平均精度(Average-Precision，AP)和mAP"></a>4.平均精度(Average-Precision，AP)和mAP</h3><p><strong>AP</strong>就是Precision-recall 曲线下面的面积，通常来说一个越好的分类器，AP值越高。<strong>mAP</strong>是多个类别AP的平均值。这个mean的意思是对每个类的AP再求平均，得到的就是mAP的值，mAP的大小一定在[0,1]区间，越大越好。该指标是目标检测算法中最重要的一个。</p>
-<h3 id="5-ROC曲线"><a href="#5-ROC曲线" class="headerlink" title="5.ROC曲线"></a>5.ROC曲线</h3><p>如下图所示：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/metrics%20and%20databases/641.webp" alt></p>
-<p>ROC的横轴是假正率(False positive rate， FPR)，FPR = FP / [ FP + TN]  ，代表所有负样本中错误预测为正样本的概率，假警报率。ROC的纵轴是真正率(True positive rate， TPR)，TPR  = TP / [ TP + FN]  ，代表所有正样本中预测正确的概率，命中率。ROC曲线的对角线坐标对应于随即猜测，而坐标点(0,1)也即是左上角坐标对应理想模型。曲线越接近左上角代表检测模型的效果越好。</p>
-<p>即：从 (0, 0) 到 (1,1) 的对角线将ROC空间划分为左上／右下两个区域，在这条线的以上的点代表了一个好的分类结果（胜过随机分类），而在这条线以下的点代表了差的分类结果（劣于随机分类）。</p>
-<p>完美的预测是一个在左上角的点，在ROC空间座标 (0,1)点，X=0 代表着没有伪阳性，Y=1  代表着没有伪阴性（所有的阳性都是真阳性）；也就是说，不管分类器输出结果是阳性或阴性，都是100%正确。一个随机的预测会得到位于从 (0, 0) 到 (1, 1) 对角线（也叫无识别率线）上的一个点；最直观的随机预测的例子就是抛硬币。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/metrics%20and%20databases/v2-fc750883be72300fa2373d1c5b81ee9e_hd.jpg" alt></p>
-<p>那么ROC曲线是怎么绘制的呢？有如下几个步骤：</p>
-<ul>
-<li>根据每个测试样本属于正样本的概率值从大到小排序。</li>
-<li>从高到低，依次将“Score”值作为阈值threshold，当测试样本属于正样本的概率大于或等于这个threshold时，我们认为它为正样本，否则为负样本。</li>
-<li>每次选取一个不同的threshold，我们就可以得到一组FPR和TPR，即ROC曲线上的一点。当我们将threshold设置为1和0时，分别可以得到ROC曲线上的(0,0)和(1,1)两个点。将这些(FPR,TPR)对连接起来，就得到了ROC曲线。当threshold取值越多，ROC曲线越平滑。</li>
-</ul>
-<h3 id="6-AUC-Area-Uner-Curve"><a href="#6-AUC-Area-Uner-Curve" class="headerlink" title="6.AUC(Area Uner Curve)"></a>6.AUC(Area Uner Curve)</h3><p>即为ROC曲线下的面积。AUC越接近于1，分类器性能越好。AUC值是一个概率值，当你随机挑选一个正样本以及一个负样本，当前的分类算法根据计算得到的Score值将这个正样本排在负样本前面的概率就是AUC值。当然，AUC值越大，当前的分类算法越有可能将正样本排在负样本前面，即能够更好的分类。AUC的计算公式如下：</p>
-<script type="math/tex; mode=display">
-A U C=\frac{\sum p r e d_{p o s}>p r e d_{n e g}}{p o s i t i v e N u m * n e g a t i v e N  u m}</script><p>即：分别随机从样本集中抽取一个正负样本，正样本的预测值大于负样本的概率。</p>
-<h3 id="PR曲线和ROC曲线选用时机"><a href="#PR曲线和ROC曲线选用时机" class="headerlink" title="PR曲线和ROC曲线选用时机"></a>PR曲线和ROC曲线选用时机</h3><p>目标检测中用的最多的是MAP值，但我们最好再了解一下PR曲线和ROC曲线的应用场景，在不同的数据集中选择合适的评价标准更好的判断我们的模型是否训好了。</p>
-<h3 id="PR曲线"><a href="#PR曲线" class="headerlink" title="PR曲线"></a>PR曲线</h3><p>从PR的计算公式可以看出，PR曲线聚焦于正例。类别不平衡问题中由于主要关心正例，所以在此情况下PR曲线被广泛认为优于ROC曲线。</p>
-<h3 id="ROC曲线"><a href="#ROC曲线" class="headerlink" title="ROC曲线"></a>ROC曲线</h3><p>当测试集中的正负样本的分布发生变化时，ROC曲线可以保持不变。因为TPR聚焦于正例，FPR聚焦于与负例，使其成为一个比较均衡的评估方法。但是在关心正例的预测准确性的场景，ROC曲线就不能更好的反应模型的性能了，因为ROC曲线的横轴采用FPR，根据FPR公式 ，当负例N的数量远超正例P时，FP的大幅增长只能换来FPR的微小改变。结果是虽然大量负例被错判成正例，在ROC曲线上却无法直观地看出来。</p>
-<p>因此，PR曲线和ROC曲线的选用时机可以总结如下：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/metrics%20and%20databases/642.webp" alt></p>
-<p>从目标检测任务来讲，一般关心MAP值即可。</p>
-<h2 id="数据集介绍"><a href="#数据集介绍" class="headerlink" title="数据集介绍"></a>数据集介绍</h2><p>刚才介绍了目标检测算法的常见评价标准，这里再介绍一下目标检测常用的数据集。以下介绍来自于github工程整理：DeepLearning-500-questions</p>
-<h3 id="PASCAL-VOC数据集"><a href="#PASCAL-VOC数据集" class="headerlink" title="PASCAL VOC数据集"></a>PASCAL VOC数据集</h3><p>VOC数据集是目标检测经常用的一个数据集，自2005年起每年举办一次比赛，最开始只有4类，到2007年扩充为20个类，共有两个常用的版本：2007和2012。学术界常用5k的train/val 2007和16k的train/val 2012作为训练集，test 2007作为测试集，用10k的train/val 2007+test  2007和16k的train/val 2012作为训练集，test2012作为测试集，分别汇报结果。</p>
-<h3 id="MSCOCO数据集"><a href="#MSCOCO数据集" class="headerlink" title="MSCOCO数据集"></a>MSCOCO数据集</h3><p>COCO数据集是微软团队发布的一个可以用来图像recognition+segmentation+captioning的数据集，该数据集收集了大量包含常见物体的日常场景图片，并提供像素级的实例标注以更精确地评估检测和分割算法的效果，致力于推动场景理解的研究进展。依托这一数据集，每年举办一次比赛，现已涵盖检测、分割、关键点识别、注释等机器视觉的中心任务，是继ImageNet Chanllenge以来最有影响力的学术竞赛之一。相比ImageNet，COCO更加偏好目标与其场景共同出现的图片，即non-iconic  images。这样的图片能够反映视觉上的语义，更符合图像理解的任务要求。而相对的iconic  images则更适合浅语义的图像分类等任务。COCO的检测任务共含有80个类，在2014年发布的数据规模分train/val/test分别为80k/40k/40k，学术界较为通用的划分是使用train和35k的val子集作为训练集（trainval35k），使用剩余的val作为测试集（minival），同时向官方的evaluation server提交结果（test-dev）。除此之外，COCO官方也保留一部分test数据作为比赛的评测集。</p>
-<h3 id="Google-Open-Image数据集"><a href="#Google-Open-Image数据集" class="headerlink" title="Google Open Image数据集"></a>Google Open Image数据集</h3><p>pen Image是谷歌团队发布的数据集。最新发布的Open Images  V4包含190万图像、600个种类，1540万个bounding-box标注，是当前最大的带物体位置标注信息的数据集。这些边界框大部分都是由专业注释人员手动绘制的，确保了它们的准确性和一致性。另外，这些图像是非常多样化的，并且通常包含有多个对象的复杂场景（平均每个图像 8 个）。</p>
-<h3 id="ImageNet数据集"><a href="#ImageNet数据集" class="headerlink" title="ImageNet数据集"></a>ImageNet数据集</h3><p>ImageNet是一个计算机视觉系统识别项目，  是目前世界上图像识别最大的数据库。ImageNet是美国斯坦福的计算机科学家，模拟人类的识别系统建立的。能够从图片识别物体。Imagenet数据集文档详细，有专门的团队维护，使用非常方便，在计算机视觉领域研究论文中应用非常广，几乎成为了目前深度学习图像领域算法性能检验的“标准”数据集。Imagenet数据集有1400多万幅图片，涵盖2万多个类别；其中有超过百万的图片有明确的类别标注和图像中物体位置的标注。</p>
-<h3 id="DOTA数据集"><a href="#DOTA数据集" class="headerlink" title="DOTA数据集"></a>DOTA数据集</h3><p>DOTA是遥感航空图像检测的常用数据集，包含2806张航空图像，尺寸大约为4k x 4k，包含15个类别共计188282个实例，其中14个主类，small vehicle 和 large  vehicle都是vehicle的子类。其标注方式为四点确定的任意形状和方向的四边形。航空图像区别于传统数据集，有其自己的特点，如：尺度变化性更大；密集的小物体检测；检测目标的不确定性。数据划分为1/6验证集，1/3测试集，1/2训练集。目前发布了训练集和验证集，图像尺寸从800 x 800到4000 x 4000不等。</p>
+        <p>YOLOv3代码中也提供了参数进化(搜索)，可以为对应的数据集进化一套合适的超参数。本文建档分析一下有关这部分的操作方法以及其参数的具体进化方法。</p>
+<h2 id="1-超参数"><a href="#1-超参数" class="headerlink" title=" 1. 超参数"></a><a id="more"></a> 1. 超参数</h2><p>YOLOv3中的超参数在train.py中提供，其中包含了一些数据增强参数设置，具体内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">hyp &#x3D; &#123;&#39;giou&#39;: 3.54,  # giou loss gain</span><br><span class="line">       &#39;cls&#39;: 37.4,  # cls loss gain</span><br><span class="line">       &#39;cls_pw&#39;: 1.0,  # cls BCELoss positive_weight</span><br><span class="line">       &#39;obj&#39;: 49.5,  # obj loss gain (*&#x3D;img_size&#x2F;320 if img_size !&#x3D; 320)</span><br><span class="line">       &#39;obj_pw&#39;: 1.0,  # obj BCELoss positive_weight</span><br><span class="line">       &#39;iou_t&#39;: 0.225,  # iou training threshold</span><br><span class="line">       &#39;lr0&#39;: 0.00579,  # initial learning rate (SGD&#x3D;1E-3, Adam&#x3D;9E-5)</span><br><span class="line">       &#39;lrf&#39;: -4.,  # final LambdaLR learning rate &#x3D; lr0 * (10 ** lrf)</span><br><span class="line">       &#39;momentum&#39;: 0.937,  # SGD momentum</span><br><span class="line">       &#39;weight_decay&#39;: 0.000484,  # optimizer weight decay</span><br><span class="line">       &#39;fl_gamma&#39;: 0.5,  # focal loss gamma</span><br><span class="line">       &#39;hsv_h&#39;: 0.0138,  # image HSV-Hue augmentation (fraction)</span><br><span class="line">       &#39;hsv_s&#39;: 0.678,  # image HSV-Saturation augmentation (fraction)</span><br><span class="line">       &#39;hsv_v&#39;: 0.36,  # image HSV-Value augmentation (fraction)</span><br><span class="line">       &#39;degrees&#39;: 1.98,  # image rotation (+&#x2F;- deg)</span><br><span class="line">       &#39;translate&#39;: 0.05,  # image translation (+&#x2F;- fraction)</span><br><span class="line">       &#39;scale&#39;: 0.05,  # image scale (+&#x2F;- gain)</span><br><span class="line">       &#39;shear&#39;: 0.641&#125;  # image shear (+&#x2F;- deg)</span><br></pre></td></tr></table></figure>
+<h2 id="2-使用方法"><a href="#2-使用方法" class="headerlink" title="2. 使用方法"></a>2. 使用方法</h2><p>在训练的时候，train.py提供了一个可选参数<code>--evolve</code>, 这个参数决定了是否进行超参数搜索与进化（默认是不开启超参数搜索的）。</p>
+<p>具体使用方法也很简单：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">python train.py --data data&#x2F;voc.data</span><br><span class="line">				--cfg cfg&#x2F;yolov3-tiny.cfg</span><br><span class="line">				--img-size 416 </span><br><span class="line">				--epochs 273 </span><br><span class="line">				--evolve</span><br></pre></td></tr></table></figure>
+<p>实际使用的时候，需要进行修改，train.py中的约444行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">for _ in range(1):  # generations to evolve</span><br></pre></td></tr></table></figure>
+<p>将其中的1修改为你想设置的迭代数，比如200代，如果不设置，结果将会如下图所示，实际上就是只有一代。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pyyolov3/646.webp" alt></p>
+<h2 id="3-原理"><a href="#3-原理" class="headerlink" title="3. 原理"></a>3. 原理</h2><p>整个过程比较简单，对于进化过程中的新一代，都选了了适应性最高的前一代（在前几代中）进行突变。以上所有的参数将有约20%的 1-sigma的正态分布几率同时突变。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">s &#x3D; 0.2 # sigma</span><br></pre></td></tr></table></figure>
+<p>整个进化过程需要搞清楚两个点：</p>
+<ol>
+<li>如何评判其中一代的好坏？</li>
+<li>下一代如何根据上一代进行进化？</li>
+</ol>
+<p><strong>第一个问题：</strong>判断好坏的标准。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">def fitness(x):</span><br><span class="line">    w &#x3D; [0.0, 0.0, 0.8, 0.2]</span><br><span class="line">    # weights for [P, R, mAP, F1]@0.5</span><br><span class="line">    return (x[:, :4] * w).sum(1)</span><br></pre></td></tr></table></figure>
+<p>YOLOv3进化部分是通过以上的适应度函数判断的，适应度越高，代表这一代的性能越好。而在适应度中，是通过Precision,Recall ,mAP,F1这四个指标作为适应度的评价标准。</p>
+<p>其中的w是设置的加权，如果更关心mAP的值，可以提高mAP的权重；如果更关心F1,则设置更高的权重在对应的F1上。这里分配mAP权重为0.8、F1权重为0.2。</p>
+<p><strong>第二个问题：</strong>如何进行进化？</p>
+<p>进化过程中有<strong>两个重要的参数</strong>:</p>
+<p>第一个参数为<strong>parent</strong>, 可选值为<code>single</code>或者<code>weighted</code>，这个参数的作用是：决定如何选择上一代。如果选择single，代表只选择上一代中最好的那个。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">if parent &#x3D;&#x3D; &#39;single&#39; or len(x) &#x3D;&#x3D; 1:</span><br><span class="line">	x &#x3D; x[fitness(x).argmax()]</span><br></pre></td></tr></table></figure>
+<p>如果选择weighted，代表选择得分的前10个加权平均的结果作为下一代，具体操作如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">elif parent &#x3D;&#x3D; &#39;weighted&#39;:  # weighted combination</span><br><span class="line">    n &#x3D; min(10, len(x))  # number to merge</span><br><span class="line">    x &#x3D; x[np.argsort(-fitness(x))][:n]  # top n mutations</span><br><span class="line">    w &#x3D; fitness(x) - fitness(x).min()  # weights</span><br><span class="line">    x &#x3D; (x * w.reshape(n, 1)).sum(0) &#x2F; w.sum()  # new parent</span><br></pre></td></tr></table></figure>
+<p>第二个参数为<strong>method</strong>，可选值为<code>1,2,3</code>, 分别代表使用三种模式来进化：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"># Mutate</span><br><span class="line">method &#x3D; 2</span><br><span class="line">s &#x3D; 0.2  # 20% sigma</span><br><span class="line">np.random.seed(int(time.time()))</span><br><span class="line">g &#x3D; np.array([1, 1, 1, 1, 1, 1, 1, 0, .1, \</span><br><span class="line">              1, 0, 1, 1, 1, 1, 1, 1, 1])  # gains</span><br><span class="line"># 这里的g类似加权</span><br><span class="line">ng &#x3D; len(g)</span><br><span class="line">if method &#x3D;&#x3D; 1:</span><br><span class="line">    v &#x3D; (np.random.randn(ng) *</span><br><span class="line">         np.random.random() * g * s + 1) ** 2.0</span><br><span class="line">elif method &#x3D;&#x3D; 2:</span><br><span class="line">    v &#x3D; (np.random.randn(ng) *</span><br><span class="line">         np.random.random(ng) * g * s + 1) ** 2.0</span><br><span class="line">elif method &#x3D;&#x3D; 3:</span><br><span class="line">    v &#x3D; np.ones(ng)</span><br><span class="line">    while all(v &#x3D;&#x3D; 1):</span><br><span class="line">        # 为了防止重复，直到有变化才停下来</span><br><span class="line">         r &#x3D; (np.random.random(ng) &lt; 0.1) * np.random.randn(ng)</span><br><span class="line">         # 10% 的突变几率</span><br><span class="line">         v &#x3D; (g * s * r + 1) ** 2.0</span><br><span class="line"></span><br><span class="line">for i, k in enumerate(hyp.keys()):</span><br><span class="line">    hyp[k] &#x3D; x[i + 7] * v[i]</span><br><span class="line">    # 进行突变</span><br></pre></td></tr></table></figure>
+<p>另外，为了防止突变过程，导致参数出现明显不合理的范围，需要用一个范围进行框定，将超出范围的内容剪切掉。具体方法如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"># Clip to limits</span><br><span class="line">keys &#x3D; [&#39;lr0&#39;, &#39;iou_t&#39;, &#39;momentum&#39;,</span><br><span class="line">        &#39;weight_decay&#39;, &#39;hsv_s&#39;,</span><br><span class="line">        &#39;hsv_v&#39;, &#39;translate&#39;,</span><br><span class="line">        &#39;scale&#39;, &#39;fl_gamma&#39;]</span><br><span class="line">limits &#x3D; [(1e-5, 1e-2), (0.00, 0.70),</span><br><span class="line">          (0.60, 0.98), (0, 0.001),</span><br><span class="line">          (0, .9), (0, .9), (0, .9),</span><br><span class="line">          (0, .9), (0, 3)]</span><br><span class="line"></span><br><span class="line">for k, v in zip(keys, limits):</span><br><span class="line">    hyp[k] &#x3D; np.clip(hyp[k], v[0], v[1])</span><br></pre></td></tr></table></figure>
+<p>最终训练的超参数搜索的结果可视化：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pyyolov3/647.webp" alt></p>
 
     </div>
 
@@ -367,6 +360,7 @@ A U C=\frac{\sum p r e d_{p o s}>p r e d_{n e g}}{p o s i t i v e N u m * n e g 
       <footer class="post-footer">
           <div class="post-tags">
               <a href="/tags/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/" rel="tag"><i class="fa fa-tag"></i> 目标检测</a>
+              <a href="/tags/YOLOv3/" rel="tag"><i class="fa fa-tag"></i> YOLOv3</a>
           </div>
 
         
@@ -375,13 +369,10 @@ A U C=\frac{\sum p r e d_{p o s}>p r e d_{n e g}}{p o s i t i v e N u m * n e g 
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/02/05/Ubuntu-clash%E9%85%8D%E7%BD%AE/" rel="prev" title="Ubuntu clash配置">
-      <i class="fa fa-chevron-left"></i> Ubuntu clash配置
+    <a href="/2020/02/15/YOLOv3%E7%9A%84%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6%E5%92%8C%E5%A2%9E%E5%BC%BA%E6%96%B9%E6%B3%95/" rel="prev" title="YOLOv3的数据加载机制和增强方法">
+      <i class="fa fa-chevron-left"></i> YOLOv3的数据加载机制和增强方法
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2020/02/14/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E7%AE%97%E6%B3%95%E4%B9%8B%E5%B8%B8%E8%A7%81%E8%AF%84%E4%BB%B7%E6%8C%87%E6%A0%87(mAP)%E7%9A%84%E8%AF%A6%E7%BB%86%E8%AE%A1%E7%AE%97%E6%96%B9%E6%B3%95%E5%8F%8A%E4%BB%A3%E7%A0%81%E8%A7%A3%E6%9E%90/" rel="next" title="目标检测算法之常见评价指标(mAP)的详细计算方法及代码解析">
-      目标检测算法之常见评价指标(mAP)的详细计算方法及代码解析 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -444,7 +435,7 @@ A U C=\frac{\sum p r e d_{p o s}>p r e d_{n e g}}{p o s i t i v e N u m * n e g 
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#评价指标"><span class="nav-text"> 评价指标</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-准确率-Accuracy"><span class="nav-text">1.准确率(Accuracy)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-混淆矩阵-Confusion-Matrix"><span class="nav-text">2.混淆矩阵(Confusion Matrix)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-精确率-Precision-和召回率-Recall-和PR曲线"><span class="nav-text">3.精确率(Precision)和召回率(Recall)和PR曲线</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-平均精度-Average-Precision，AP-和mAP"><span class="nav-text">4.平均精度(Average-Precision，AP)和mAP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-ROC曲线"><span class="nav-text">5.ROC曲线</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-AUC-Area-Uner-Curve"><span class="nav-text">6.AUC(Area Uner Curve)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PR曲线和ROC曲线选用时机"><span class="nav-text">PR曲线和ROC曲线选用时机</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PR曲线"><span class="nav-text">PR曲线</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ROC曲线"><span class="nav-text">ROC曲线</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据集介绍"><span class="nav-text">数据集介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#PASCAL-VOC数据集"><span class="nav-text">PASCAL VOC数据集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MSCOCO数据集"><span class="nav-text">MSCOCO数据集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Google-Open-Image数据集"><span class="nav-text">Google Open Image数据集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ImageNet数据集"><span class="nav-text">ImageNet数据集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DOTA数据集"><span class="nav-text">DOTA数据集</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-超参数"><span class="nav-text"> 1. 超参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-使用方法"><span class="nav-text">2. 使用方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-原理"><span class="nav-text">3. 原理</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 	  
