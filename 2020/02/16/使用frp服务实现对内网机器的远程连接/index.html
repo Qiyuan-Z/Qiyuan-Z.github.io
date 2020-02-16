@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://Qiyuan-Z.github.io').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.6.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":true,"style":"mac"},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta property="og:type" content="article">
+<meta property="og:title" content="使用frp服务实现对内网机器的远程连接">
+<meta property="og:url" content="https://qiyuan-z.github.io/2020/02/16/%E4%BD%BF%E7%94%A8frp%E6%9C%8D%E5%8A%A1%E5%AE%9E%E7%8E%B0%E5%AF%B9%E5%86%85%E7%BD%91%E6%9C%BA%E5%99%A8%E7%9A%84%E8%BF%9C%E7%A8%8B%E8%BF%9E%E6%8E%A5/index.html">
+<meta property="og:site_name" content="Yuan">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/frp/Snipaste_2020-02-16_15-19-58.jpg">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/frp/Snipaste_2020-02-16_15-25-08.jpg">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/frp/Snipaste_2020-02-16_15-47-16.jpg">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/frp/TIM%E5%9B%BE%E7%89%8720200216154853.jpg">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/frp/TIM%E5%9B%BE%E7%89%8720200216155354.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/frp/Snipaste_2020-02-16_15-58-29.jpg">
+<meta property="article:published_time" content="2020-02-16T07:40:35.813Z">
+<meta property="article:modified_time" content="2020-02-16T08:06:16.979Z">
+<meta property="article:author" content="Qiyuan-Z">
+<meta property="article:tag" content="frp">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/frp/Snipaste_2020-02-16_15-19-58.jpg">
+
+<link rel="canonical" href="https://qiyuan-z.github.io/2020/02/16/%E4%BD%BF%E7%94%A8frp%E6%9C%8D%E5%8A%A1%E5%AE%9E%E7%8E%B0%E5%AF%B9%E5%86%85%E7%BD%91%E6%9C%BA%E5%99%A8%E7%9A%84%E8%BF%9C%E7%A8%8B%E8%BF%9E%E6%8E%A5/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.css"><style>
+#needsharebutton-postbottom {
+  cursor: pointer;
+  height: 26px;
+  margin-top: 10px;
+  position: relative;
+}
+#needsharebutton-postbottom .btn {
+  border: 1px solid $btn-default-border-color;
+  border-radius: 3px;
+  display: initial;
+  padding: 1px 4px;
+}
+</style>
+  <title>使用frp服务实现对内网机器的远程连接 | Yuan</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Yuan</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">记录学习中的点点滴滴</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qiyuan-z.github.io/2020/02/16/%E4%BD%BF%E7%94%A8frp%E6%9C%8D%E5%8A%A1%E5%AE%9E%E7%8E%B0%E5%AF%B9%E5%86%85%E7%BD%91%E6%9C%BA%E5%99%A8%E7%9A%84%E8%BF%9C%E7%A8%8B%E8%BF%9E%E6%8E%A5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/wallhaven-915.png">
+      <meta itemprop="name" content="Qiyuan-Z">
+      <meta itemprop="description" content="偉大な魂は目的を持ち、そうでないものは願望を持つ">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Yuan">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          使用frp服务实现对内网机器的远程连接
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-02-16 15:40:35 / 修改时间：16:06:16" itemprop="dateCreated datePublished" datetime="2020-02-16T15:40:35+08:00">2020-02-16</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%99%E7%A8%8B/" itemprop="url" rel="index">
+                    <span itemprop="name">教程</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.4k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="为何要用"><a href="#为何要用" class="headerlink" title=" 为何要用"></a><a id="more"></a> 为何要用</h2><p>我们并不是每天都会接触到实验室内网环境。当不在学校时，如何访问内网的资源成了一个头疼的问题。本文旨在提出一种内网穿透解决方案，在外网环境下优雅的访问到内网的任何端口。即使身离学校也可以方便的修改内网模型，访问内网计算资源。 </p>
+<h2 id="特殊需要"><a href="#特殊需要" class="headerlink" title="特殊需要"></a>特殊需要</h2><ul>
+<li><p>一台公网机（有公网ip的vps， 比如阿里云服务器）</p>
+</li>
+<li><p>frp 端口转发软件 :<a href="https://github.com/fatedier/frp/releases" target="_blank" rel="noopener">下载地址</a></p>
+</li>
+</ul>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>windows不用说，这里讲Ubuntu的安装</p>
+<p>选择相应版本，右键复制链接</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/frp/Snipaste_2020-02-16_15-19-58.jpg" alt></p>
+<p>打开终端，输入<code>wget 复制的链接地址</code>即可开始下载</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/frp/Snipaste_2020-02-16_15-25-08.jpg" alt></p>
+<p>下载完成后，找到安装包，解压即可，解压命令为<code>tar -zxvf 包名</code></p>
+<p><strong>公网机、内网机都需要安装，且frp版本要一致。</strong></p>
+<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><h3 id="公网机配置"><a href="#公网机配置" class="headerlink" title="公网机配置"></a>公网机配置</h3><p>修改 <strong>frps.ini</strong> 文件，这里使用了最简化的配置：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># frps.ini</span></span><br><span class="line">[common]</span><br><span class="line">bind_port = 7000 <span class="comment">#这个端口代表内网机连到公网所需端口，默认7000，可自己定义</span></span><br></pre></td></tr></table></figure>
+<p>Windows 启动 frps：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.&#x2F;frps.exe -c .&#x2F;frps.ini</span><br></pre></td></tr></table></figure>
+<p>Ubuntu 启动 frps:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.&#x2F;frps -c .&#x2F;frps.ini</span><br></pre></td></tr></table></figure>
+<p>Ubuntu 在后台开启运行 frp 服务</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup .&#x2F;frps -c frps.ini &gt;&#x2F;dev&#x2F;null 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure>
+<h3 id="内网机器配置"><a href="#内网机器配置" class="headerlink" title="内网机器配置"></a>内网机器配置</h3><p>修改 <strong>frpc.ini</strong> 文件，假设 <strong>frps</strong> 所在服务器的公网 IP 为 x.x.x.x；</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"># frpc.ini</span><br><span class="line">[common]</span><br><span class="line">server_addr &#x3D; x.x.x.x #这里可以是公网机的域名，也可以是ip</span><br><span class="line">server_port &#x3D; 7000 #刚刚公网机配置的与内网机交换的端口</span><br><span class="line"></span><br><span class="line">[ssh]</span><br><span class="line">type &#x3D; tcp</span><br><span class="line">local_ip &#x3D; 127.0.0.1</span><br><span class="line">local_port &#x3D; 22 #本地端口号，本地需要转发的端口 默认22 可自己设定</span><br><span class="line">remote_port &#x3D; 6000  #远程端口号，将端口映射到公网相应的端口 可自己设定</span><br></pre></td></tr></table></figure>
+<p>Windows 启动 frpc：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.&#x2F;frpc.exe -c .&#x2F;frpc.ini</span><br></pre></td></tr></table></figure>
+<p>Ubuntu 启动 frpc：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.&#x2F;frpc -c .&#x2F;frpc.ini</span><br></pre></td></tr></table></figure>
+<p>此时，你就可以通过你的外网 IP + 远程端口号来实现对内网相关服务的访问了。</p>
+<h2 id="设置开机启动"><a href="#设置开机启动" class="headerlink" title="设置开机启动"></a>设置开机启动</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo gedit &#x2F;etc&#x2F;systemd&#x2F;system&#x2F;frpc.service</span><br></pre></td></tr></table></figure>
+<p>按如下修改</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[Unit]</span><br><span class="line">Description&#x3D;frpc daemon</span><br><span class="line">After&#x3D;syslog.target  network.target</span><br><span class="line">Wants&#x3D;network.target</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">Type&#x3D;simple</span><br><span class="line">ExecStart&#x3D;&#x2F;usr&#x2F;sbin&#x2F;frp&#x2F;frpc -c &#x2F;etc&#x2F;frp&#x2F;frpc.ini</span><br><span class="line">Restart&#x3D; always</span><br><span class="line">RestartSec&#x3D;1min</span><br><span class="line">ExecStop&#x3D;&#x2F;usr&#x2F;bin&#x2F;killall frpc</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy&#x3D;multi-user.target</span><br></pre></td></tr></table></figure>
+<p>使用<code>sudo systemctl enable frpc.service</code>启用服务</p>
+<p>服务器端（公网机器）同理</p>
+<h2 id="白嫖简化步骤"><a href="#白嫖简化步骤" class="headerlink" title="白嫖简化步骤"></a>白嫖简化步骤</h2><p>考虑到很多人负担不起公网机的价格，这里提供发布免费公网域名的网站<br><a href="http://www.frps.top/" target="_blank" rel="noopener">frp免费公共服务器列表</a></p>
+<p>由于域名供应商已经配置好了公网机端，所以我们只需要配置我们需要连接的内网机即可</p>
+<p>首先找到可用的服务器，比如</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/frp/Snipaste_2020-02-16_15-47-16.jpg" alt></p>
+<p>上面显示它所用的frp版本为0.14.1，所以我们也必须安装<strong>相应的frp版本</strong>在内网机上，否则由于软件版本不匹配，连不上。</p>
+<p>按照之前的教程，根据所提供的信息，修改<strong>frpc.ini</strong>，如下：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/frp/TIM%E5%9B%BE%E7%89%8720200216154853.jpg" alt></p>
+<p>这里注意0.17.0版本之前用的是<code>privilege_token = xxxx</code>，而之后的版本用的是<code>token = xxxx</code>，<strong>远程端口号必须设置在服务商所提供的范围内</strong>，如图中TCP/UDP端口为1000-65535，则再此区间任取端口填入就行。</p>
+<p>设置完，你便可以通过相应的SSH软件，连接内网机器，主机名为公网域名，端口号为你设置的远程端口</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/frp/TIM%E5%9B%BE%E7%89%8720200216155354.png" alt></p>
+<p>有的服务商还提供了二级或三级域名，如图：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/frp/Snipaste_2020-02-16_15-58-29.jpg" alt></p>
+<p>则 frpc.ini 配置如下格式</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">[common]</span><br><span class="line">#server_addr一定要写域名形式，不要直接写IP地址</span><br><span class="line">server_addr &#x3D; frp1.chuantou.org</span><br><span class="line">server_port &#x3D; 7000</span><br><span class="line">privilege_token &#x3D; www.xxorg.com</span><br><span class="line"># 标注你的代理名字，随便选择一个跟别人不一样即可</span><br><span class="line">user &#x3D; myname</span><br><span class="line"></span><br><span class="line">[xxorg] # 可以自己取</span><br><span class="line">type &#x3D; http</span><br><span class="line">local_ip &#x3D; 127.0.0.1</span><br><span class="line">local_port &#x3D; 80 # 按照图中显示为80</span><br><span class="line"># 自己取一个可用的子域名，你的访问地址将会是http:&#x2F;&#x2F;xxorg.frp1.chuantou.org</span><br><span class="line">subdomain &#x3D; xxorg</span><br><span class="line"></span><br><span class="line">[tcp3389] # 可以自己取</span><br><span class="line">type &#x3D; tcp</span><br><span class="line">local_ip &#x3D; 127.0.0.1</span><br><span class="line">local_port &#x3D; 3389 # 自己设</span><br><span class="line">remote_port &#x3D; 53389 #自己设，图中范围为50000-60000</span><br></pre></td></tr></table></figure>
+<p>设置完，你便可以通过相应的SSH软件，连接内网机器</p>
+<p>如：主机名为<code>http://xxorg.frp1.chuantou.org</code>，端口号为53389</p>
+
+    </div>
+
+    
+    
+    <div class="post-widgets">
+      <div id="needsharebutton-postbottom">
+        <span class="btn">
+          <i class="fa fa-share-alt" aria-hidden="true"></i>
+        </span>
+      </div>
+    </div>
+	<div>
+
+	  
+
+		<div>
+
+    
+
+        <div >-------------本文结束感谢您的阅读-------------</div>
+
+    
+
+</div>
+
+	  
+
+	</div>
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/frp/" rel="tag"><i class="fa fa-tag"></i> frp</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/02/16/%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AESwitchyOmega%E6%8F%92%E4%BB%B6/" rel="prev" title="如何配置SwitchyOmega插件">
+      <i class="fa fa-chevron-left"></i> 如何配置SwitchyOmega插件
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#为何要用"><span class="nav-text"> 为何要用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#特殊需要"><span class="nav-text">特殊需要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装"><span class="nav-text">安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置"><span class="nav-text">配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#公网机配置"><span class="nav-text">公网机配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#内网机器配置"><span class="nav-text">内网机器配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#设置开机启动"><span class="nav-text">设置开机启动</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#白嫖简化步骤"><span class="nav-text">白嫖简化步骤</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+	  
+     
+	  
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qiyuan-Z"
+      src="/images/wallhaven-915.png">
+  <p class="site-author-name" itemprop="name">Qiyuan-Z</p>
+  <div class="site-description" itemprop="description">偉大な魂は目的を持ち、そうでないものは願望を持つ</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Qiyuan-Z" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Qiyuan-Z" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:601872068@qq.com" title="E-Mail → mailto:601872068@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://project-inkstone.github.io/project-inkstone/?tdsourcetag=s_pctim_aiomsg" title="https:&#x2F;&#x2F;project-inkstone.github.io&#x2F;project-inkstone&#x2F;?tdsourcetag&#x3D;s_pctim_aiomsg" rel="noopener" target="_blank">project-inkstone</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+	  
+      <div id="music163player">
+		   <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=29784463&auto=1&height=66"></iframe>
+		   </iframe>
+	  </div>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qiyuan-Z</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="站点总字数">182k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">2:46</span>
+</div>
+
+<!-- 网站运行时间的设置 -->
+<span id="timeDate">载入天数...</span>
+<span id="times">载入时分秒...</span> 
+<script>
+    var now = new Date();
+    function createtime() {
+        var grt= new Date("12/01/2019 13:14:21");//此处修改你的建站时间或者网站上线时间
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;}
+        document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 ";
+        document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
+    }
+setInterval("createtime()",250);
+</script>
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+	<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"></script>
+	<script type="text/javascript">
+    		var gitalk = new Gitalk({
+		        clientID: '2d10cfb27783db577e70',
+		        clientSecret: '154292876bb14966f6ae57304b67859617b08c94',
+		        id: md5(location.pathname),
+		        repo: 'gitalk',
+		        owner: 'Qiyuan-Z',
+		        admin: 'Qiyuan-Z',
+			distractionFreeMode: '',
+
+		    });
+	    gitalk.render('gitalk-container');
+	</script>
+
+
+
+  
+
+  
+      
+<script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', () => {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
+
+  
+
+  <script src="//cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.js"></script>
+  <script>
+      pbOptions = {};
+        pbOptions.iconStyle = "box";
+        pbOptions.boxForm = "horizontal";
+        pbOptions.position = "bottomCenter";
+        pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+  </script>
+	<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+	<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"></script>
+	<script type="text/javascript">
+    		var gitalk = new Gitalk({
+		        clientID: '2d10cfb27783db577e70',
+		        clientSecret: '154292876bb14966f6ae57304b67859617b08c94',
+		        id: md5(location.pathname),
+		        repo: 'gitalk',
+		        owner: 'Qiyuan-Z',
+		        admin: 'Qiyuan-Z',
+			distractionFreeMode: '',
+
+		    });
+	    gitalk.render('gitalk-container');
+	</script>
+
+
+  <script type="text/javascript" src="/js/src/clicklove.js"></script>
+</body>
+</html>
+
