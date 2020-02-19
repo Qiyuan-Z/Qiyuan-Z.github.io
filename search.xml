@@ -1,6 +1,110 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>ECCV 2018 Convolutional Block Attention Module</title>
+    <url>/2020/02/19/ECCV-2018-Convolutional-Block-Attention-Module/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title=" 前言"></a><a id="more"></a> 前言</h2><p>目前cv领域借鉴了nlp领域的attention机制以后生产出了很多有用的基于attention机制的论文，attention机制也是在2019年论文中非常火。这篇cbam虽然是在2018年提出的，但是其影响力比较深远，在很多领域都用到了该模块，所以一起来看一下这个模块有什么独到之处，并学着实现它。</p>
+<h2 id="什么是注意力机制？"><a href="#什么是注意力机制？" class="headerlink" title="什么是注意力机制？"></a>什么是注意力机制？</h2><p>注意力机制（Attention Mechanism）是机器学习中的一种数据处理方法，广泛应用在自然语言处理、图像识别及语音识别等各种不同类型的机器学习任务中。</p>
+<p>通俗来讲：注意力机制就是希望网络能够自动学出来图片或者文字序列中的需要注意的地方。比如人眼在看一幅画的时候，不会将注意力平等地分配给画中的所有像素，而是将更多注意力分配给人们关注的地方。</p>
+<p>从实现的角度来讲：注意力机制通过神经网络的操作生成一个掩码mask,，mask上的值一个打分，评价当前需要关注的点的评分。</p>
+<p>注意力机制可以分为：</p>
+<ul>
+<li>通道注意力机制：对通道生成掩码mask，进行打分，代表是SENet, Channel Attention Module</li>
+<li>空间注意力机制：对空间进行掩码的生成，进行打分，代表是Spatial Attention Module</li>
+<li>混合域注意力机制：同时对通道注意力和空间注意力进行评价打分，代表的有BAM, CBAM</li>
+</ul>
+<h2 id="怎么实现CBAM？-pytorch为例"><a href="#怎么实现CBAM？-pytorch为例" class="headerlink" title="怎么实现CBAM？(pytorch为例)"></a><strong>怎么实现CBAM？(pytorch为例)</strong></h2><p>CBAM全称是Convolutional Block Attention Module, 是在ECCV2018上发表的注意力机制代表作之一，<a href="http://openaccess.thecvf.com/content_ECCV_2018/papers/Sanghyun_Woo_Convolutional_Block_Attention_ECCV_2018_paper.pdf" target="_blank" rel="noopener">论文下载地址</a>。</p>
+<p>在该论文中，作者研究了网络架构中的注意力，注意力不仅要告诉我们重点关注哪里，还要提高关注点的表示。目标是通过使用注意机制来增加表现力，关注重要特征并抑制不必要的特征。为了强调空间和通道这两个维度上的有意义特征，作者依次应用<strong>通道和空间注意模块</strong>，来分别在通道和空间维度上学习关注什么、在哪里关注。此外，通过了解要强调或抑制的信息也有助于网络内的信息流动。</p>
+<p>主要网络架构也很简单，一个是通道注意力模块，另一个是空间注意力模块，CBAM就是先后集成了通道注意力模块和空间注意力模块。</p>
+<h3 id="2-1-通道注意力机制"><a href="#2-1-通道注意力机制" class="headerlink" title="2.1 通道注意力机制"></a>2.1 通道注意力机制</h3><p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/CBAM/640.webp" alt></p>
+<p>通道注意力机制按照上图进行实现：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class ChannelAttention(nn.Module):</span><br><span class="line">    def __init__(self, in_planes, rotio&#x3D;16):</span><br><span class="line">        super(ChannelAttention, self).__init__()</span><br><span class="line">        self.avg_pool &#x3D; nn.AdaptiveAvgPool2d(1)</span><br><span class="line">        self.max_pool &#x3D; nn.AdaptiveMaxPool2d(1)</span><br><span class="line"></span><br><span class="line">        self.sharedMLP &#x3D; nn.Sequential(</span><br><span class="line">            nn.Conv2d(in_planes, in_planes &#x2F;&#x2F; ratio, 1, bias&#x3D;False), nn.ReLU(),</span><br><span class="line">            nn.Conv2d(in_planes &#x2F;&#x2F; rotio, in_planes, 1, bias&#x3D;False))</span><br><span class="line">        self.sigmoid &#x3D; nn.Sigmoid()</span><br><span class="line"></span><br><span class="line">    def forward(self, x):</span><br><span class="line">        avgout &#x3D; self.sharedMLP(self.avg_pool(x))</span><br><span class="line">        maxout &#x3D; self.sharedMLP(self.max_pool(x))</span><br><span class="line">        return self.sigmoid(avgout + maxout)</span><br></pre></td></tr></table></figure>
+<h3 id="2-2-空间注意力机制"><a href="#2-2-空间注意力机制" class="headerlink" title="2.2 空间注意力机制"></a>2.2 空间注意力机制</h3><p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/CBAM/641.png" alt></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class SpatialAttention(nn.Module):</span><br><span class="line">    def __init__(self, kernel_size&#x3D;7):</span><br><span class="line">        super(SpatialAttention, self).__init__()</span><br><span class="line">        assert kernel_size in (3,7), &quot;kernel size must be 3 or 7&quot;</span><br><span class="line">        padding &#x3D; 3 if kernel_size &#x3D;&#x3D; 7 else 1</span><br><span class="line"></span><br><span class="line">        self.conv &#x3D; nn.Conv2d(2,1,kernel_size, padding&#x3D;padding, bias&#x3D;False)</span><br><span class="line">        self.sigmoid &#x3D; nn.Sigmoid()</span><br><span class="line"></span><br><span class="line">    def forward(self, x):</span><br><span class="line">        avgout &#x3D; torch.mean(x, dim&#x3D;1, keepdim&#x3D;True)</span><br><span class="line">        maxout, _ &#x3D; torch.max(x, dim&#x3D;1, keepdim&#x3D;True)</span><br><span class="line">        x &#x3D; torch.cat([avgout, maxout], dim&#x3D;1)</span><br><span class="line">        x &#x3D; self.conv(x)</span><br><span class="line">        return self.sigmoid(x)</span><br></pre></td></tr></table></figure>
+<h3 id="2-3-Convolutional-bottleneck-attention-module"><a href="#2-3-Convolutional-bottleneck-attention-module" class="headerlink" title="2.3 Convolutional bottleneck attention module"></a>2.3 Convolutional bottleneck attention module</h3><p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/CBAM/642.png" alt></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class BasicBlock(nn.Module):</span><br><span class="line">    expansion &#x3D; 1</span><br><span class="line">    def __init__(self, inplanes, planes, stride&#x3D;1, downsample&#x3D;None):</span><br><span class="line">        super(BasicBlock, self).__init__()</span><br><span class="line">        self.conv1 &#x3D; conv3x3(inplanes, planes, stride)</span><br><span class="line">        self.bn1 &#x3D; nn.BatchNorm2d(planes)</span><br><span class="line">        self.relu &#x3D; nn.ReLU(inplace&#x3D;True)</span><br><span class="line">        self.conv2 &#x3D; conv3x3(planes, planes)</span><br><span class="line">        self.bn2 &#x3D; nn.BatchNorm2d(planes)</span><br><span class="line">        self.ca &#x3D; ChannelAttention(planes)</span><br><span class="line">        self.sa &#x3D; SpatialAttention()</span><br><span class="line">        self.downsample &#x3D; downsample</span><br><span class="line">        self.stride &#x3D; stride</span><br><span class="line">    def forward(self, x):</span><br><span class="line">        residual &#x3D; x</span><br><span class="line">        out &#x3D; self.conv1(x)</span><br><span class="line">        out &#x3D; self.bn1(out)</span><br><span class="line">        out &#x3D; self.relu(out)</span><br><span class="line">        out &#x3D; self.conv2(out)</span><br><span class="line">        out &#x3D; self.bn2(out)</span><br><span class="line">        out &#x3D; self.ca(out) * out  # 广播机制</span><br><span class="line">        out &#x3D; self.sa(out) * out  # 广播机制</span><br><span class="line">        if self.downsample is not None:</span><br><span class="line">            residual &#x3D; self.downsample(x)</span><br><span class="line">        out +&#x3D; residual</span><br><span class="line">        out &#x3D; self.relu(out)</span><br><span class="line">        return out</span><br></pre></td></tr></table></figure>
+<p>为何要先使用通道注意力机制然后再使用空间注意力机制？使用顺序使用这两个模块还是并行的使用两个模块？其实是作者已经做过了相关实验，并且证明了先试用通道然后再使用空间注意力机制这样的组合效果比较好，这也是CBAM的通用组合模式。</p>
+<h2 id="在什么情况下可以使用？"><a href="#在什么情况下可以使用？" class="headerlink" title="在什么情况下可以使用？"></a>在什么情况下可以使用？</h2><p>提出CBAM的作者主要对分类网络和目标检测网络进行了实验,证明了CBAM模块确实是有效的。</p>
+<p>以ResNet为例，论文中提供了改造的示意图，如下图所示：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/CBAM/643.webp" alt></p>
+<p>也就是在ResNet中的每个block之间添加了CBAM模块，训练数据来自benchmark ImageNet-1K。检测使用的是Faster  R-CNN， Backbone选择的ResNet34，ResNet50，WideResNet18，ResNet50等，还跟SE等进行了对比。</p>
+<p><strong>消融实验</strong>：消融实验一般是控制变量，最能看出模型变好起作用的部分在那里。分为三个部分：</p>
+<ul>
+<li><p>如何更有效地计算channel attention?</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/CBAM/644.webp" alt>可以看出来，使用avgpool和maxpool可以更好的降低错误率，大概有1-2%的提升，这个组合就是dual pooling，能提供更加精细的信息，有利于提升模型的表现。</p>
+</li>
+<li><p>如何更有效地计算spatial attention?</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/CBAM/645.webp" alt></p>
+<p>这里的空间注意力机制参数也是有avg，max组成，另外还有一个卷积的参数kernel_size(k)，通过以上实验，可以看出，当前使用通道的平均和通道的最大化，并且设置kernel size=7是最好的。</p>
+</li>
+<li><p>如何组织这两个部分？</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/CBAM/646.webp" alt></p>
+<p>可以看出，这里与SENet中的SE模块也进行了比较，这里使用CBAM也是超出了SE的表现。除此以外，还进行了顺序和并行的测试，发现，先channel attention然后spatial attention效果最好，所以也是最终的CBAM模块的组成。</p>
+<p>在MSCOCO数据及使用了ResNet50，ResNet101为backbone，Faster RCNN为检测器的模型进行目标检测，如下图所示：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/CBAM/647.webp" alt></p>
+<p>在VOC2007数据集中采用了StairNet进行了测试，如下图所示：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/CBAM/648.webp" alt></p>
+<p>貌似没有找到目标检测部分的代码，CBAM的作用在于对信息进行精细化分配和处理，所以猜测是在backbone的分类器之前添加的CBAM模块。</p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>目标检测</tag>
+        <tag>Attention机制</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>最简单最易实现的SE模块</title>
+    <url>/2020/02/19/%E6%9C%80%E7%AE%80%E5%8D%95%E6%9C%80%E6%98%93%E5%AE%9E%E7%8E%B0%E7%9A%84SE%E6%A8%A1%E5%9D%97/</url>
+    <content><![CDATA[<h2 id="Squeeze-and-Excitation-Networks"><a href="#Squeeze-and-Excitation-Networks" class="headerlink" title=" Squeeze-and-Excitation Networks"></a><a id="more"></a> Squeeze-and-Excitation Networks</h2><p>SENet是Squeeze-and-Excitation  Networks的简称，拿到了ImageNet2017分类比赛冠军，其效果得到了认可，其提出的SE模块思想简单，易于实现，并且很容易可以加载到现有的网络模型框架中。SENet主要是学习了channel之间的相关性，筛选出了针对通道的注意力，稍微增加了一点计算量，但是效果比较好。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/se/640.webp" alt></p>
+<p>通过上图可以理解他的实现过程，通过对卷积的到的feature  map进行处理，得到一个和通道数一样的一维向量作为每个通道的评价分数，然后将修改的分数分别施加到对应的通道上，得到其结果，就在原有的基础上只添加了一个模块，下边我们用pytorch实现这个很简单的模块。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/se/641.webp" alt></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class SELayer(nn.Module):</span><br><span class="line">    def __init__(self, channel, reduction&#x3D;16):</span><br><span class="line">        super(SELayer, self).__init__()</span><br><span class="line">        self.avg_pool &#x3D; nn.AdaptiveAvgPool2d(1)</span><br><span class="line">        self.fc &#x3D; nn.Sequential(</span><br><span class="line">            nn.Linear(channel, channel &#x2F;&#x2F; reduction, bias&#x3D;False),</span><br><span class="line">            nn.ReLU(inplace&#x3D;True),</span><br><span class="line">            nn.Linear(channel &#x2F;&#x2F; reduction, channel, bias&#x3D;False),</span><br><span class="line">            nn.Sigmoid()</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">    def forward(self, x):</span><br><span class="line">        b, c, _, _ &#x3D; x.size()</span><br><span class="line">        y &#x3D; self.avg_pool(x).view(b, c)</span><br><span class="line">        y &#x3D; self.fc(y).view(b, c, 1, 1)</span><br><span class="line">        return x * y.expand_as(x)</span><br></pre></td></tr></table></figure>
+<p>虽然核心就是以上的内容，不过不能简单地结束，我们需要看一下以下几个点：</p>
+<ul>
+<li><p>作为一个重要的attention机制的文章，这篇文章如何描述attention，related work如何组织？</p>
+<p>attention机制当时已经有一定的研究和发展，也是集中于序列学习，image captioning, understanding in  images这些工作，也已经有很多出色的工作是探索了attention机制。senet这篇文章主要探索了通过对通道间关系进行建模来提升模型的表达能力。related work 主要从更深的网络架构，架构搜索，注意力机制三个角度进行了梳理，确实非常全面。</p>
+</li>
+<li><p>如何解释SE模块？</p>
+<p><strong>Sequeeze</strong>：对$C \times H \times W$进行global average pooling，得到 $1 \times 1 \times C$大小的特征图，这个特征图可以理解为具有全局感受野。</p>
+<p><strong>Excitation</strong>：使用一个全连接神经网络，对Sequeeze之后的结果做一个非线性变换。</p>
+<p><strong>特征重标定</strong>：使用Excitation 得到的结果作为权重，乘到输入特征上。</p>
+</li>
+<li><p>SE模块如何加到分类网络，效果如何？</p>
+<p>分类网络现在一般都是成一个block一个block，se模块就可以加到一个block结束的位置，进行一个信息refine。这里用了一些STOA的分类模型如：resnet50，resnext50，bn-inception等网络。通过添加SE模块，能使模型提升0.5-1.5%,效果还可以，增加的计算量也可以忽略不计。在轻量级网络MobileNet，ShuffleNet上也进行了实验，可以提升的点更多一点大概在1.5-2%。</p>
+</li>
+<li><p>SE模块如何加到目标检测网络，效果如何？</p>
+<p>主要还是将SE模块添加到backbone部分，优化学习到的内容。目标检测数据集使用的是benchmark MSCOCO, 使用的Faster  R-CNN作为目标检测器，使用backbone从ResNet50替换为SE-ResNet50以后带了了两个点的AP提升，确实有效果。</p>
+</li>
+<li><p>这篇文章的实验部分是如何设置的？</p>
+<p>这篇文章中也进行了消融实验，来证明SE模块的有效性，也说明了设置reduction=16的原因。</p>
+<ul>
+<li>squeeze方式：仅仅比较了max和avg，发现avg要好一点。</li>
+<li>excitation方式：使用了ReLU，Tanh，Sigmoid，发现Sigmoid好。</li>
+<li>stage: resnet50有不同的阶段，通过实验发现，将se施加到所有的阶段效果最好。</li>
+<li>集成策略：将se放在残差单元的前部，后部还是平行于残差单元，最终发现，放到前部比较好。</li>
+</ul>
+</li>
+<li><p>如何查看每个通道学到的attention信息并证明其有效性？</p>
+<p>作者选取了ImageNet中的四个类别进行了一个实验，测试backbone最后一个SE层的内容，如下图所示：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/se/642.webp" alt></p>
+<p>可以看出这两个类激活出来的内容有一定的差距，起到了一定的作用。</p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>目标检测</tag>
+        <tag>Attention机制</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Windows如何通过VNC从远程控制Ubuntu</title>
     <url>/2020/02/18/Windows-%E5%A6%82%E4%BD%95%E9%80%9A%E8%BF%87VNC%E4%BB%8E%E8%BF%9C%E7%A8%8B%E6%8E%A7%E5%88%B6Ubuntu/</url>
     <content><![CDATA[<h2 id="简介"><a href="#简介" class="headerlink" title=" 简介"></a><a id="more"></a> 简介</h2><p>VNC 工具是提供你一个可以远程图像化桌面的方式。其实 VNC 是一种软件的统称. 只要你的 Linux 架设好了一个服务器 (Server) 的 VNC, 客户端, 比如你的 Mac, 手机, 只要安装任何一种 VNC 客户端软件就能链接上服务器端的电脑。</p>
