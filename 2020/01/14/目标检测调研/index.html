@@ -95,7 +95,7 @@
 <meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/Snipaste_2020-01-08_16-11-49.jpg">
 <meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/Snipaste_2020-01-08_16-17-17.jpg">
 <meta property="article:published_time" content="2020-01-14T12:47:23.096Z">
-<meta property="article:modified_time" content="2020-01-14T13:24:23.275Z">
+<meta property="article:modified_time" content="2020-02-21T02:51:38.716Z">
 <meta property="article:author" content="Qiyuan-Z">
 <meta property="article:tag" content="目标检测">
 <meta name="twitter:card" content="summary">
@@ -284,10 +284,16 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2020-01-14 20:47:23 / 修改时间：21:24:23" itemprop="dateCreated datePublished" datetime="2020-01-14T20:47:23+08:00">2020-01-14</time>
+              <time title="创建时间：2020-01-14 20:47:23" itemprop="dateCreated datePublished" datetime="2020-01-14T20:47:23+08:00">2020-01-14</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-02-21 10:51:38" itemprop="dateModified" datetime="2020-02-21T10:51:38+08:00">2020-02-21</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -883,8 +889,8 @@
 &t_{h}=\log \left(G_{h} / P_{h}\right)
 \end{aligned}</script><p>目标函数可以表示为$d_{<em>}(P)=w_{</em>}^{T} \Phi_{5}(P)$， $\Phi_{5}(P)$是输入 Proposal 的特征向量， $w_{<em>}$是要学习的参数（</em> 表示 $x,y,w,h$， 也就是每一个变换对应一个目标函数）, $d_{*}(P)$ 是得到的预测值。</p>
 <p>损失函数：要让预测值跟真实值$t_{*}=\left(t_{x}, t_{y}, t_{w}, t_{h}\right)$差距最小</p>
-<p>$Loss=\sum_{i}^{N}\left(t_{<em>}^{i}-\hat{w}_{</em>}^{T} \phi_{5}\left(P^{i}\right)\right)^{2}$</p>
-<p>函数优化目标为：</p>
+<script type="math/tex; mode=display">
+Loss=\sum_{i}^{N}\left(t_{*}^{i}-\hat{w}_{*}^{T} \phi_{5}\left(P^{i}\right)\right)^{2}</script><p>函数优化目标为：</p>
 <script type="math/tex; mode=display">
 W_{*}=\operatorname{argmin}_{w_{*}} \sum_{i}^{N}\left(t_{*}^{i}-\hat{w}_{*}^{T} \phi_{5}\left(P^{i}\right)\right)^{2}+\lambda\left\|\hat{w}_{*}\right\|^{2}</script><h3 id="R-CNN"><a href="#R-CNN" class="headerlink" title="R-CNN"></a>R-CNN</h3><p>Rich feature hierarchies for accurate object detection and semantic segmentation(CVPR 2014)</p>
 <p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/Snipaste_2020-01-07_09-57-14.jpg" alt></p>
@@ -1293,7 +1299,7 @@ y=\left(t_{y} * h_{a}\right)-y_{a}</script><p>这个公式的理解为：当预�
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">50</span>
+          <span class="site-state-item-count">53</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1363,12 +1369,12 @@ y=\left(t_{y} * h_{a}\right)-y_{a}</script><p>这个公式的理解为：当预�
     <span class="post-meta-item-icon">
       <i class="fa fa-area-chart"></i>
     </span>
-    <span title="站点总字数">237k</span>
+    <span title="站点总字数">275k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:36</span>
+    <span title="站点阅读时长">4:10</span>
 </div>
 
 <!-- 网站运行时间的设置 -->

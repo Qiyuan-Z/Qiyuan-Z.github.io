@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://Qiyuan-Z.github.io').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.6.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":true,"style":"mac"},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta property="og:type" content="article">
+<meta property="og:title" content="AlexeyAB DarkNet数据结构解析">
+<meta property="og:url" content="https://qiyuan-z.github.io/2020/02/21/AlexeyAB-DarkNet%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E8%A7%A3%E6%9E%90/index.html">
+<meta property="og:site_name" content="Yuan">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ABDarknet/648.webp">
+<meta property="article:published_time" content="2020-02-21T02:46:51.144Z">
+<meta property="article:modified_time" content="2020-02-21T02:46:51.254Z">
+<meta property="article:author" content="Qiyuan-Z">
+<meta property="article:tag" content="目标检测">
+<meta property="article:tag" content="YOLOv3">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ABDarknet/648.webp">
+
+<link rel="canonical" href="https://qiyuan-z.github.io/2020/02/21/AlexeyAB-DarkNet%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E8%A7%A3%E6%9E%90/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.css"><style>
+#needsharebutton-postbottom {
+  cursor: pointer;
+  height: 26px;
+  margin-top: 10px;
+  position: relative;
+}
+#needsharebutton-postbottom .btn {
+  border: 1px solid $btn-default-border-color;
+  border-radius: 3px;
+  display: initial;
+  padding: 1px 4px;
+}
+</style>
+  <title>AlexeyAB DarkNet数据结构解析 | Yuan</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Yuan</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">记录学习中的点点滴滴</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qiyuan-z.github.io/2020/02/21/AlexeyAB-DarkNet%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E8%A7%A3%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/wallhaven-915.png">
+      <meta itemprop="name" content="Qiyuan-Z">
+      <meta itemprop="description" content="偉大な魂は目的を持ち、そうでないものは願望を持つ">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Yuan">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          AlexeyAB DarkNet数据结构解析
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-02-21 10:46:51" itemprop="dateCreated datePublished" datetime="2020-02-21T10:46:51+08:00">2020-02-21</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index">
+                    <span itemprop="name">学习</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>8.7k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>8 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="基础数据结构"><a href="#基础数据结构" class="headerlink" title=" 基础数据结构"></a><a id="more"></a> 基础数据结构</h2><p>为了解析网络配置参数，DarkNet 中定义了三个关键的数据结构类型。<code>list</code>类型变量保存所有的网络参数, <code>section</code>类型变量保存的是网络中每一层的网络类型和参数, 其中的参数又是使用list类型来表示。<code>kvp</code>键值对类型用来保存解析后的参数变量和参数值。</p>
+<ul>
+<li>list类型定义在<code>src/list.h</code>中，代码如下：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 链表上的节点</span><br><span class="line">typedef struct node&#123;</span><br><span class="line">    void *val;</span><br><span class="line">    struct node *next;</span><br><span class="line">    struct node *prev;</span><br><span class="line">&#125; node;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;双向链表</span><br><span class="line">typedef struct list&#123;</span><br><span class="line">    int size; &#x2F;&#x2F;list的所有节点个数</span><br><span class="line">    node *front; &#x2F;&#x2F;list的首节点</span><br><span class="line">    node *back; &#x2F;&#x2F;list的普通节点</span><br><span class="line">&#125; list;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>section 类型定义在<code>src/parser.c</code>文件中，代码如下：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 定义section</span><br><span class="line">typedef struct&#123;</span><br><span class="line">    char *type;</span><br><span class="line">    list *options;</span><br><span class="line">&#125;section;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>kvp 键值对类型定义在<code>src/option_list.h</code>文件中，具体定义如下：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; kvp 键值对</span><br><span class="line">typedef struct&#123;</span><br><span class="line">    char *key;</span><br><span class="line">    char *val;</span><br><span class="line">    int used;</span><br><span class="line">&#125; kvp;</span><br></pre></td></tr></table></figure>
+<p>在Darknet的网络配置文件(<code>.cfg</code>结尾)中，以<code>[</code>开头的行被称为一个段(<code>section</code>)。所有的网络配置参数保存在<code>list</code>类型变量中，<code>list</code>中有很多的<code>section</code>节点，每个<code>section</code>中又有一个保存层参数的小<code>list</code>，整体上出现了一种大链挂小链的结构。大链的每个节点为<code>section</code>，每个<code>section</code>中包含的参数保存在小链中，小链的节点值的数据类型为kvp键值对，这里有个图片可以解释这种结构。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ABDarknet/648.webp" alt></p>
+<p>我们来大概解释下该参数网，首先创建一个<code>list</code>，取名<code>sections</code>，记录一共有多少个<code>section</code>（一个<code>section</code>存储了某一网络层所需参数）；然后创建一个<code>node</code>，该<code>node</code>的<code>void</code>类型的指针指向一个新创建的<code>section</code>；该<code>section</code>的<code>char</code>类型指针指向<code>.cfg</code>文件中的某一行（<code>line</code>），然后将该<code>section</code>的<code>list</code>指针指向一个新创建的<code>node</code>，该<code>node</code>的<code>void</code>指针指向一个<code>kvp</code>结构体，<code>kvp</code>结构体中的<code>key</code>就是<code>.cfg</code>文件中的关键字（如：<code>batch，subdivisions</code>等），<code>val</code>就是对应的值；如此循环就形成了上述的参数网络图。</p>
+<h2 id="解析并保存网络参数到链表中"><a href="#解析并保存网络参数到链表中" class="headerlink" title="解析并保存网络参数到链表中"></a>解析并保存网络参数到链表中</h2><p>读取配置文件由<code>src/parser.c</code>中的<code>read_cfg()</code>函数实现：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;*</span><br><span class="line"> * 读取神经网络结构配置文件（.cfg文件）中的配置数据， 将每个神经网络层参数读取到每个</span><br><span class="line"> * section 结构体 (每个 section 是 sections 的一个节点) 中， 而后全部插入到</span><br><span class="line"> * list 结构体 sections 中并返回</span><br><span class="line"> *</span><br><span class="line"> * \param: filename    C 风格字符数组， 神经网络结构配置文件路径</span><br><span class="line"> *</span><br><span class="line"> * \return: list 结构体指针，包含从神经网络结构配置文件中读入的所有神经网络层的参数</span><br><span class="line"> * 每个 section 的所在行的开头是 ‘[’ , ‘\0’ , ‘#’ 和 ‘;’ 符号开头的行为无效行, 除此</span><br><span class="line"> *之外的行为 section 对应的参数行. 每一行都是一个等式, 类似键值对的形式.</span><br><span class="line"></span><br><span class="line"> *可以看到, 如果某一行开头是符号 ‘[’ , 说明读到了一个新的 section: current, 然后第1508行</span><br><span class="line"> *list_insert(options, current);&#96; 将该新的 section 保存起来.</span><br><span class="line"></span><br><span class="line"> *在读取到下一个开头符号为 ‘[’ 的行之前的所有行都是该 section 的参数, 在第 1518 行</span><br><span class="line"> *read_option(line, current-&gt;options) 将读取到的参数保存在 current 变量的 options 中.</span><br><span class="line"> *注意, 这里保存在 options 节点中的数据为 kvp 键值对类型.</span><br><span class="line"></span><br><span class="line"> *当然对于 kvp 类型的参数, 需要先将每一行中对应的键和值(用 ‘&#x3D;’ 分割) 分离出来, 然后再</span><br><span class="line"> *构造一个 kvp 类型的变量作为节点元素的数据.</span><br><span class="line"> *&#x2F;</span><br><span class="line">list *read_cfg(char *filename)</span><br><span class="line">&#123;</span><br><span class="line">    FILE *file &#x3D; fopen(filename, &quot;r&quot;);</span><br><span class="line">	&#x2F;&#x2F;一个section表示配置文件中的一个字段，也就是网络结构中的一层</span><br><span class="line">    &#x2F;&#x2F;因此，一个section将读取并存储某一层的参数以及该层的type</span><br><span class="line">    if(file &#x3D;&#x3D; 0) file_error(filename);</span><br><span class="line">    char *line;</span><br><span class="line">    int nu &#x3D; 0; &#x2F;&#x2F;当前读取行号</span><br><span class="line">    list *sections &#x3D; make_list(); &#x2F;&#x2F;sections包含所有的神经网络层参数</span><br><span class="line">    section *current &#x3D; 0;&#x2F;&#x2F;当前读取到某一层</span><br><span class="line">    while((line&#x3D;fgetl(file)) !&#x3D; 0)&#123;</span><br><span class="line">        ++ nu;</span><br><span class="line">        strip(line); &#x2F;&#x2F;去除读入行中含有的空格符</span><br><span class="line">        switch(line[0])&#123;</span><br><span class="line">			 &#x2F;&#x2F; 以 &#39;[&#39; 开头的行是一个新的 section , 其内容是层的 type</span><br><span class="line">            &#x2F;&#x2F; 比如 [net], [maxpool], [convolutional] ...</span><br><span class="line">            case &#39;[&#39;:</span><br><span class="line">                current &#x3D; (section*)xmalloc(sizeof(section));</span><br><span class="line">                list_insert(sections, current);</span><br><span class="line">                current-&gt;options &#x3D; make_list();</span><br><span class="line">                current-&gt;type &#x3D; line;</span><br><span class="line">                break;</span><br><span class="line">            case &#39;\0&#39;: &#x2F;&#x2F;空行</span><br><span class="line">            case &#39;#&#39;: &#x2F;&#x2F;注释</span><br><span class="line">            case &#39;;&#39;: &#x2F;&#x2F;空行</span><br><span class="line">                free(line); &#x2F;&#x2F; 对于上述三种情况直接释放内存即可</span><br><span class="line">                break;</span><br><span class="line">            default:</span><br><span class="line">			    &#x2F;&#x2F; 剩下的才真正是网络结构的数据，调用 read_option() 函数读取</span><br><span class="line">                &#x2F;&#x2F; 返回 0 说明文件中的数据格式有问题，将会提示错误</span><br><span class="line">                if(!read_option(line, current-&gt;options))&#123;</span><br><span class="line">                    fprintf(stderr, &quot;Config file error line %d, could parse: %s\n&quot;, nu, line);</span><br><span class="line">                    free(line);</span><br><span class="line">                &#125;</span><br><span class="line">                break;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">	&#x2F;&#x2F;关闭文件</span><br><span class="line">    fclose(file);</span><br><span class="line">    return sections;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="链表的插入操作"><a href="#链表的插入操作" class="headerlink" title="链表的插入操作"></a>链表的插入操作</h2><p>保存<code>section</code>和每个参数组成的键值对时使用的是<code>list_insert()</code>函数, 前面提到了参数保存的结构其实是大链(节点为<code>section</code>)上边挂着很多小链(每个<code>section</code>节点的各个参数)。<code>list_insert()</code>函数实现了链表插入操作，该函数定义在<code>src/list.c</code>文件中：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;*</span><br><span class="line"> * 简介: 将 val 指针插入 list 结构体 l 中，这里相当于是用 C 实现了 C++ 中的</span><br><span class="line"> *         list 的元素插入功能</span><br><span class="line"> *</span><br><span class="line"> * 参数: l    链表指针</span><br><span class="line"> *         val  链表节点的元素值</span><br><span class="line"> *</span><br><span class="line"> * 流程：list 中保存的是 node 指针. 因此，需要用 node 结构体将 val 包裹起来后才可以</span><br><span class="line"> *       插入 list 指针 l 中</span><br><span class="line"> *</span><br><span class="line"> * 注意: 此函数类似 C++ 的 insert() 插入方式；</span><br><span class="line"> *      而 opion_insert() 函数类似 C++ map 的按值插入方式，比如 map[key]&#x3D; value</span><br><span class="line"> *</span><br><span class="line"> *      两个函数操作对象都是 list 变量， 只是操作方式略有不同。</span><br><span class="line">*&#x2F;</span><br><span class="line">void list_insert(list *l, void *val)</span><br><span class="line">&#123;</span><br><span class="line">    node* newnode &#x3D; (node*)xmalloc(sizeof(node));</span><br><span class="line">    newnode-&gt;val &#x3D; val;</span><br><span class="line">    newnode-&gt;next &#x3D; 0;</span><br><span class="line">    &#x2F;&#x2F; 如果 list 的 back 成员为空(初始化为 0), 说明 l 到目前为止，还没有存入数据</span><br><span class="line">    &#x2F;&#x2F; 另外, 令 l 的 front 为 new （此后 front 将不会再变，除非删除）</span><br><span class="line">    if(!l-&gt;back)&#123;</span><br><span class="line">        l-&gt;front &#x3D; newnode;</span><br><span class="line">        newnode-&gt;prev &#x3D; 0;</span><br><span class="line">    &#125;else&#123;</span><br><span class="line">        l-&gt;back-&gt;next &#x3D; newnode;</span><br><span class="line">        newnode-&gt;prev &#x3D; l-&gt;back;</span><br><span class="line">    &#125;</span><br><span class="line">    l-&gt;back &#x3D; newnode;</span><br><span class="line">    ++l-&gt;size;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到, 插入的数据都会被重新包装在一个新的<code>node</code> : 变量<code>new</code>中，然后再将这个节点插入到链表中。网络结构解析到链表中后还不能直接使用, 因为想使用任意一个参数都不得不每次去遍历整个链表, 这样就会导致程序效率变低, 所以最好的办法是将其保存到一个结构体变量中, 使用的时候按照成员进行访问。复杂度从$O(n)-&gt;O(1)$。</p>
+<h2 id="将链表中的网络结构保存到network结构体"><a href="#将链表中的网络结构保存到network结构体" class="headerlink" title="将链表中的网络结构保存到network结构体"></a>将链表中的网络结构保存到network结构体</h2><ul>
+<li>首先来看看<code>network</code>结构体的定义，在<code>include/darknet.h</code>中：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 定义network结构体</span><br><span class="line">typedef struct network &#123;</span><br><span class="line">    int n; &#x2F;&#x2F;网络的层数，调用make_network(int n)时赋值</span><br><span class="line">    int batch; &#x2F;&#x2F;一批训练中的图片参数，和subdivsions参数相关</span><br><span class="line">    uint64_t *seen; &#x2F;&#x2F;目前已经读入的图片张数(网络已经处理的图片张数)</span><br><span class="line">    int *t;</span><br><span class="line">    float epoch; &#x2F;&#x2F;到目前为止训练了整个数据集的次数</span><br><span class="line">    int subdivisions;</span><br><span class="line">    layer *layers; &#x2F;&#x2F;存储网络中的所有层</span><br><span class="line">    float *output;</span><br><span class="line">    learning_rate_policy policy; &#x2F;&#x2F; 学习率下降策略</span><br><span class="line">    int benchmark_layers;</span><br><span class="line">    &#x2F;&#x2F; 梯度下降法相关参数</span><br><span class="line">    float learning_rate; &#x2F;&#x2F;学习率</span><br><span class="line">    float learning_rate_min; &#x2F;&#x2F;学习率最小值</span><br><span class="line">    float learning_rate_max;  &#x2F;&#x2F;学习率最大值</span><br><span class="line">    int batches_per_cycle; &#x2F;&#x2F;</span><br><span class="line">    int batches_cycle_mult;</span><br><span class="line">    float momentum;</span><br><span class="line">    float decay;</span><br><span class="line">    float gamma;</span><br><span class="line">    float scale;</span><br><span class="line">    float power;</span><br><span class="line">    int time_steps;</span><br><span class="line">    int step;</span><br><span class="line">    int max_batches;</span><br><span class="line">    int num_boxes;</span><br><span class="line">    int train_images_num;</span><br><span class="line">    float *seq_scales;</span><br><span class="line">    float *scales;</span><br><span class="line">    int   *steps;</span><br><span class="line">    int num_steps;</span><br><span class="line">    int burn_in;</span><br><span class="line">    int cudnn_half;</span><br><span class="line">    &#x2F;&#x2F; ADAM优化方法相关策略</span><br><span class="line">    int adam;</span><br><span class="line">    float B1;</span><br><span class="line">    float B2;</span><br><span class="line">    float eps;</span><br><span class="line"></span><br><span class="line">    int inputs;</span><br><span class="line">    int outputs;</span><br><span class="line">    int truths;</span><br><span class="line">    int notruth;</span><br><span class="line">    int h, w, c;</span><br><span class="line">    int max_crop;</span><br><span class="line">    int min_crop;</span><br><span class="line">    float max_ratio;</span><br><span class="line">    float min_ratio;</span><br><span class="line">    int center;</span><br><span class="line">    int flip; &#x2F;&#x2F; horizontal flip 50% probability augmentaiont for classifier training (default &#x3D; 1)</span><br><span class="line">    int blur;</span><br><span class="line">    int mixup;</span><br><span class="line">    float label_smooth_eps;</span><br><span class="line">    int resize_step;</span><br><span class="line">    int letter_box;</span><br><span class="line">    float angle;</span><br><span class="line">    float aspect;</span><br><span class="line">    float exposure;</span><br><span class="line">    float saturation;</span><br><span class="line">    float hue;</span><br><span class="line">    int random;</span><br><span class="line">    int track;</span><br><span class="line">    int augment_speed;</span><br><span class="line">    int sequential_subdivisions;</span><br><span class="line">    int init_sequential_subdivisions;</span><br><span class="line">    int current_subdivision;</span><br><span class="line">    int try_fix_nan;</span><br><span class="line">    &#x2F;&#x2F;darknet 为每个 GPU 维护一个相同的 network, 每个 network 以 gpu_index 区分</span><br><span class="line">    int gpu_index;</span><br><span class="line">    tree *hierarchy;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F;中间变量，用来暂存某层网络的输入（包含一个 batch 的输入，比如某层网络完成前向，</span><br><span class="line">    &#x2F;&#x2F;将其输出赋给该变量，作为下一层的输入，可以参看 network.c 中的forward_network()</span><br><span class="line">    float *input;</span><br><span class="line">	&#x2F;&#x2F; 中间变量，与上面的 input 对应，用来暂存 input 数据对应的标签数据（真实数据）</span><br><span class="line">    float *truth;</span><br><span class="line">	 &#x2F;&#x2F; 中间变量，用来暂存某层网络的敏感度图（反向传播处理当前层时，用来存储上一层的敏</span><br><span class="line">    &#x2F;&#x2F;感度图，因为当前层会计算部分上一层的敏感度图，可以参看 network.c 中的 backward_network() 函数）</span><br><span class="line">    float *delta;</span><br><span class="line">	&#x2F;&#x2F; 网络的工作空间, 指的是所有层中占用运算空间最大的那个层的 workspace_size,</span><br><span class="line">    &#x2F;&#x2F; 因为实际上在 GPU 或 CPU 中某个时刻只有一个层在做前向或反向运算</span><br><span class="line">    float *workspace;</span><br><span class="line">	&#x2F;&#x2F; 网络是否处于训练阶段的标志参数，如果是则值为1. 这个参数一般用于训练与测试阶段有不</span><br><span class="line">    &#x2F;&#x2F; 同操作的情况，比如 dropout 层，在训练阶段才需要进行 forward_dropout_layer()</span><br><span class="line">    &#x2F;&#x2F; 函数， 测试阶段则不需要进入到该函数</span><br><span class="line">    int train;</span><br><span class="line">	&#x2F;&#x2F; 标志参数，当前网络的活跃层</span><br><span class="line">    int index;</span><br><span class="line">	&#x2F;&#x2F;每一层的损失，只有[yolo]层有值</span><br><span class="line">    float *cost;</span><br><span class="line">    float clip;</span><br><span class="line"></span><br><span class="line">#ifdef GPU</span><br><span class="line">    &#x2F;&#x2F;float *input_gpu;</span><br><span class="line">    &#x2F;&#x2F;float *truth_gpu;</span><br><span class="line">    float *delta_gpu;</span><br><span class="line">    float *output_gpu;</span><br><span class="line"></span><br><span class="line">    float *input_state_gpu;</span><br><span class="line">    float *input_pinned_cpu;</span><br><span class="line">    int input_pinned_cpu_flag;</span><br><span class="line"></span><br><span class="line">    float **input_gpu;</span><br><span class="line">    float **truth_gpu;</span><br><span class="line">    float **input16_gpu;</span><br><span class="line">    float **output16_gpu;</span><br><span class="line">    size_t *max_input16_size;</span><br><span class="line">    size_t *max_output16_size;</span><br><span class="line">    int wait_stream;</span><br><span class="line"></span><br><span class="line">    float *global_delta_gpu;</span><br><span class="line">    float *state_delta_gpu;</span><br><span class="line">    size_t max_delta_gpu_size;</span><br><span class="line">#endif</span><br><span class="line">    int optimized_memory;</span><br><span class="line">    size_t workspace_size_limit;</span><br><span class="line">&#125; network;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>为<code>network</code>结构体分配内存空间，函数定义在<code>src/network.c</code>文件中，代码如下：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;为network结构体分配内存空间</span><br><span class="line">network make_network(int n)</span><br><span class="line">&#123;</span><br><span class="line">    network net &#x3D; &#123;0&#125;;</span><br><span class="line">    net.n &#x3D; n;</span><br><span class="line">    net.layers &#x3D; (layer*)xcalloc(net.n, sizeof(layer));</span><br><span class="line">    net.seen &#x3D; (uint64_t*)xcalloc(1, sizeof(uint64_t));</span><br><span class="line">#ifdef GPU</span><br><span class="line">    net.input_gpu &#x3D; (float**)xcalloc(1, sizeof(float*));</span><br><span class="line">    net.truth_gpu &#x3D; (float**)xcalloc(1, sizeof(float*));</span><br><span class="line"></span><br><span class="line">    net.input16_gpu &#x3D; (float**)xcalloc(1, sizeof(float*));</span><br><span class="line">    net.output16_gpu &#x3D; (float**)xcalloc(1, sizeof(float*));</span><br><span class="line">    net.max_input16_size &#x3D; (size_t*)xcalloc(1, sizeof(size_t));</span><br><span class="line">    net.max_output16_size &#x3D; (size_t*)xcalloc(1, sizeof(size_t));</span><br><span class="line">#endif</span><br><span class="line">    return net;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在<code>src/parser.c</code>中的<code>parse_network_cfg()</code>函数中，从<code>net</code>变量开始，依次为其中的指针变量分配内存。由于第一个段<code>[net]</code>中存放的是和网络并不直接相关的配置参数, 因此网络层的数目为<code>sections-&gt;size - 1</code>，即：<code>network *net = make_network(sections-&gt;size - 1);</code></p>
+<ul>
+<li><p>将链表中的网络参数解析后保存到<code>network</code>结构体，配置文件的第一个段一定是<code>[net]</code>段，该段的参数解析由<code>parse_net_options()</code>函数完成，函数定义在<code>src/parser.c</code>中。之后的各段都是网络中的层。比如完成特定特征提取的卷积层，用来降低训练误差的<code>shortcur</code>层和防止过拟合的<code>dropout</code>层等。这些层都有特定的解析函数：比如<code>parse_convolutional()</code>, <code>parse_shortcut()</code>和<code>parse_dropout()</code>。每个解析函数返回一个填充好的层<code>l</code>，将这些层全部添加到<code>network</code>结构体的<code>layers</code>数组中。即是：<code>net-&gt;layers[count] = l</code>;另外需要注意的是这行代码：<code>if (l.workspace_size &gt; workspace_size) workspace_size = l.workspace_size</code>;，其中<code>workspace</code>代表网络的工作空间，指的是所有层中占用运算空间最大那个层的<code>workspace</code>。因为在CPU或GPU中某个时刻只有一个层在做前向或反向传播。输出层只能在网络搭建完毕之后才可以确定，输入层需要考虑<code>batch_size</code>的因素，<code>truth</code>是输入标签，同样需要考虑<code>batch_size</code>的因素。具体层的参数解析后面专门写一篇推文来帮助理解。</p>
+</li>
+<li><p>到这里，网络的宏观解析结束。<code>parse_network_cfg()</code>(<code>src/parser.c</code>中)函数返回解析好的<code>network</code>类型的指针变量。</p>
+</li>
+</ul>
+<h2 id="为啥需要中间数据结构缓存？"><a href="#为啥需要中间数据结构缓存？" class="headerlink" title="为啥需要中间数据结构缓存？"></a>为啥需要中间数据结构缓存？</h2><p>这里可能有个疑问，为什么不将配置文件读取并解析到<code>network</code>结构体变量中, 而要使用一个中间数据结构来缓存读取到的文件呢？因为，如果不使用中间数据结构来缓存. 将读取和解析流程串行进行的话, 如果配置文件较为复杂,  就会长时间使文件处于打开状态。如果此时用户更改了配置文件中的一些条目,  就会导致读取和解析过程出现问题。分开两步进行可以先快速读取文件信息到内存中组织好的结构中, 这时就可以关闭文件.  然后再慢慢的解析参数。这种机制类似于操作系统中断的底半部机制, 先处理重要的中断信号, 然后在系统负荷较小时再处理中断信号中携带的任务。</p>
+
+    </div>
+
+    
+    
+    <div class="post-widgets">
+      <div id="needsharebutton-postbottom">
+        <span class="btn">
+          <i class="fa fa-share-alt" aria-hidden="true"></i>
+        </span>
+      </div>
+    </div>
+	<div>
+
+	  
+
+		<div>
+
+    
+
+        <div >-------------本文结束感谢您的阅读-------------</div>
+
+    
+
+</div>
+
+	  
+
+	</div>
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/" rel="tag"><i class="fa fa-tag"></i> 目标检测</a>
+              <a href="/tags/YOLOv3/" rel="tag"><i class="fa fa-tag"></i> YOLOv3</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/02/21/AlexeyAB-DarkNet%E6%A1%86%E6%9E%B6%E6%80%BB%E8%A7%88/" rel="prev" title="AlexeyAB DarkNet框架总览">
+      <i class="fa fa-chevron-left"></i> AlexeyAB DarkNet框架总览
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/02/21/AlexeyAB-DarkNet%E5%8A%A0%E8%BD%BD%E6%95%B0%E6%8D%AE%E8%BF%9B%E8%A1%8C%E8%AE%AD%E7%BB%83/" rel="next" title="AlexeyAB DarkNet加载数据进行训练">
+      AlexeyAB DarkNet加载数据进行训练 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#基础数据结构"><span class="nav-text"> 基础数据结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解析并保存网络参数到链表中"><span class="nav-text">解析并保存网络参数到链表中</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#链表的插入操作"><span class="nav-text">链表的插入操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#将链表中的网络结构保存到network结构体"><span class="nav-text">将链表中的网络结构保存到network结构体</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#为啥需要中间数据结构缓存？"><span class="nav-text">为啥需要中间数据结构缓存？</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+	  
+     
+	  
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qiyuan-Z"
+      src="/images/wallhaven-915.png">
+  <p class="site-author-name" itemprop="name">Qiyuan-Z</p>
+  <div class="site-description" itemprop="description">偉大な魂は目的を持ち、そうでないものは願望を持つ</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">53</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Qiyuan-Z" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Qiyuan-Z" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:601872068@qq.com" title="E-Mail → mailto:601872068@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://project-inkstone.github.io/project-inkstone/?tdsourcetag=s_pctim_aiomsg" title="https:&#x2F;&#x2F;project-inkstone.github.io&#x2F;project-inkstone&#x2F;?tdsourcetag&#x3D;s_pctim_aiomsg" rel="noopener" target="_blank">project-inkstone</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+	  
+      <div id="music163player">
+		   <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=29784463&auto=1&height=66"></iframe>
+		   </iframe>
+	  </div>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qiyuan-Z</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="站点总字数">275k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">4:10</span>
+</div>
+
+<!-- 网站运行时间的设置 -->
+<span id="timeDate">载入天数...</span>
+<span id="times">载入时分秒...</span> 
+<script>
+    var now = new Date();
+    function createtime() {
+        var grt= new Date("12/01/2019 13:14:21");//此处修改你的建站时间或者网站上线时间
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;}
+        document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 ";
+        document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
+    }
+setInterval("createtime()",250);
+</script>
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+	<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"></script>
+	<script type="text/javascript">
+    		var gitalk = new Gitalk({
+		        clientID: '2d10cfb27783db577e70',
+		        clientSecret: '154292876bb14966f6ae57304b67859617b08c94',
+		        id: md5(location.pathname),
+		        repo: 'gitalk',
+		        owner: 'Qiyuan-Z',
+		        admin: 'Qiyuan-Z',
+			distractionFreeMode: '',
+
+		    });
+	    gitalk.render('gitalk-container');
+	</script>
+
+
+
+  
+
+  
+      
+<script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', () => {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
+
+  
+
+  <script src="//cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.js"></script>
+  <script>
+      pbOptions = {};
+        pbOptions.iconStyle = "box";
+        pbOptions.boxForm = "horizontal";
+        pbOptions.position = "bottomCenter";
+        pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+  </script>
+	<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+	<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"></script>
+	<script type="text/javascript">
+    		var gitalk = new Gitalk({
+		        clientID: '2d10cfb27783db577e70',
+		        clientSecret: '154292876bb14966f6ae57304b67859617b08c94',
+		        id: md5(location.pathname),
+		        repo: 'gitalk',
+		        owner: 'Qiyuan-Z',
+		        admin: 'Qiyuan-Z',
+			distractionFreeMode: '',
+
+		    });
+	    gitalk.render('gitalk-container');
+	</script>
+
+
+  <script type="text/javascript" src="/js/src/clicklove.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://Qiyuan-Z.github.io').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.6.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":true,"style":"mac"},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta property="og:type" content="article">
+<meta property="og:title" content="AlexeyAB DarkNet框架总览">
+<meta property="og:url" content="https://qiyuan-z.github.io/2020/02/21/AlexeyAB-DarkNet%E6%A1%86%E6%9E%B6%E6%80%BB%E8%A7%88/index.html">
+<meta property="og:site_name" content="Yuan">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ABDarknet/647.webp">
+<meta property="article:published_time" content="2020-02-21T02:21:16.251Z">
+<meta property="article:modified_time" content="2020-02-21T02:49:02.014Z">
+<meta property="article:author" content="Qiyuan-Z">
+<meta property="article:tag" content="目标检测">
+<meta property="article:tag" content="YOLOv3">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ABDarknet/647.webp">
+
+<link rel="canonical" href="https://qiyuan-z.github.io/2020/02/21/AlexeyAB-DarkNet%E6%A1%86%E6%9E%B6%E6%80%BB%E8%A7%88/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.css"><style>
+#needsharebutton-postbottom {
+  cursor: pointer;
+  height: 26px;
+  margin-top: 10px;
+  position: relative;
+}
+#needsharebutton-postbottom .btn {
+  border: 1px solid $btn-default-border-color;
+  border-radius: 3px;
+  display: initial;
+  padding: 1px 4px;
+}
+</style>
+  <title>AlexeyAB DarkNet框架总览 | Yuan</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Yuan</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">记录学习中的点点滴滴</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qiyuan-z.github.io/2020/02/21/AlexeyAB-DarkNet%E6%A1%86%E6%9E%B6%E6%80%BB%E8%A7%88/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/wallhaven-915.png">
+      <meta itemprop="name" content="Qiyuan-Z">
+      <meta itemprop="description" content="偉大な魂は目的を持ち、そうでないものは願望を持つ">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Yuan">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          AlexeyAB DarkNet框架总览
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-02-21 10:21:16 / 修改时间：10:49:02" itemprop="dateCreated datePublished" datetime="2020-02-21T10:21:16+08:00">2020-02-21</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index">
+                    <span itemprop="name">学习</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>14k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>12 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="Darknet框架分析主线"><a href="#Darknet框架分析主线" class="headerlink" title=" Darknet框架分析主线"></a><a id="more"></a> Darknet框架分析主线</h2><h3 id="分析主线的确定"><a href="#分析主线的确定" class="headerlink" title="分析主线的确定"></a>分析主线的确定</h3><p>Darknet相比当前训练的C/C++主流框架（如Caffe）来讲，具有编译速度快，依赖少，易部署等众多优点，我们先定位到<code>src/darknet.c</code>里面的<code>main</code>函数，这是这个框架实现分类，定位，回归，分割等功能的初始入口。这一节的核心代码如下，注意一下就是<code>run_yolo</code>只提供了<code>yolo</code>目标检测算法的原始实现。而<code>run_detector</code>函数提供了AlexeyAB添加了各种新特性的目标检测算法，所以之后我们会从这个函数跟进去来解析Darknet框架。Darknet提供的其他功能如<code>run_super</code>（高分辨率重建），<code>run_classifier</code>（图像分类），<code>run_char_rnn</code>（RNN文本识别）有兴趣可以自己去读（这个框架用来做目标检测比较好，其他算法建议还是去其它框架实现吧），本系列只讲目标检测。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line">if (0 &#x3D;&#x3D; strcmp(argv[1], &quot;average&quot;))&#123;</span><br><span class="line">       average(argc, argv);</span><br><span class="line">   &#125; else if (0 &#x3D;&#x3D; strcmp(argv[1], &quot;yolo&quot;))&#123;</span><br><span class="line">       run_yolo(argc, argv);</span><br><span class="line">   &#125; else if (0 &#x3D;&#x3D; strcmp(argv[1], &quot;voxel&quot;))&#123;</span><br><span class="line">       run_voxel(argc, argv);</span><br><span class="line">   &#125; else if (0 &#x3D;&#x3D; strcmp(argv[1], &quot;super&quot;))&#123;</span><br><span class="line">       run_super(argc, argv);</span><br><span class="line">   &#125; else if (0 &#x3D;&#x3D; strcmp(argv[1], &quot;detector&quot;))&#123;</span><br><span class="line">       run_detector(argc, argv);</span><br><span class="line">   &#125; else if (0 &#x3D;&#x3D; strcmp(argv[1], &quot;detect&quot;))&#123;</span><br><span class="line">       float thresh &#x3D; find_float_arg(argc, argv, &quot;-thresh&quot;, .24);</span><br><span class="line">	int ext_output &#x3D; find_arg(argc, argv, &quot;-ext_output&quot;);</span><br><span class="line">       char *filename &#x3D; (argc &gt; 4) ? argv[4]: 0;</span><br><span class="line">       test_detector(&quot;cfg&#x2F;coco.data&quot;, argv[2], argv[3], filename, thresh, 0.5, 0, ext_output, 0, NULL, 0, 0);</span><br><span class="line">   &#125; else if (0 &#x3D;&#x3D; strcmp(argv[1], &quot;cifar&quot;))&#123;</span><br><span class="line">       run_cifar(argc, argv);</span><br><span class="line">   &#125; else if (0 &#x3D;&#x3D; strcmp(argv[1], &quot;go&quot;))&#123;</span><br><span class="line">       run_go(argc, argv);</span><br><span class="line">   &#125; else if (0 &#x3D;&#x3D; strcmp(argv[1], &quot;rnn&quot;))&#123;</span><br><span class="line">       run_char_rnn(argc, argv);</span><br><span class="line">   &#125; else if (0 &#x3D;&#x3D; strcmp(argv[1], &quot;vid&quot;))&#123;</span><br><span class="line">       run_vid_rnn(argc, argv);</span><br><span class="line">   &#125; else if (0 &#x3D;&#x3D; strcmp(argv[1], &quot;coco&quot;))&#123;</span><br><span class="line">       run_coco(argc, argv);</span><br><span class="line">   &#125; else if (0 &#x3D;&#x3D; strcmp(argv[1], &quot;classify&quot;))&#123;</span><br><span class="line">       predict_classifier(&quot;cfg&#x2F;imagenet1k.data&quot;, argv[2], argv[3], argv[4], 5);</span><br><span class="line">   &#125; else if (0 &#x3D;&#x3D; strcmp(argv[1], &quot;classifier&quot;))&#123;</span><br><span class="line">       run_classifier(argc, argv);</span><br><span class="line">   &#125; else if (0 &#x3D;&#x3D; strcmp(argv[1], &quot;art&quot;))&#123;</span><br><span class="line">       run_art(argc, argv);</span><br><span class="line">   &#125; else if (0 &#x3D;&#x3D; strcmp(argv[1], &quot;tag&quot;))&#123;</span><br><span class="line">       run_tag(argc, argv);</span><br><span class="line">   &#125; else if (0 &#x3D;&#x3D; strcmp(argv[1], &quot;compare&quot;))&#123;</span><br><span class="line">       run_compare(argc, argv);</span><br><span class="line">   &#125; else if (0 &#x3D;&#x3D; strcmp(argv[1], &quot;dice&quot;))&#123;</span><br><span class="line">       run_dice(argc, argv);</span><br><span class="line">   &#125; else if (0 &#x3D;&#x3D; strcmp(argv[1], &quot;writing&quot;))&#123;</span><br><span class="line">       run_writing(argc, argv);</span><br><span class="line">   &#125; else if (0 &#x3D;&#x3D; strcmp(argv[1], &quot;3d&quot;))&#123;</span><br><span class="line">       composite_3d(argv[2], argv[3], argv[4], (argc &gt; 5) ? atof(argv[5]) : 0);</span><br><span class="line">   &#125; else if (0 &#x3D;&#x3D; strcmp(argv[1], &quot;test&quot;))&#123;</span><br><span class="line">       test_resize(argv[2]);</span><br><span class="line">   &#125; else if (0 &#x3D;&#x3D; strcmp(argv[1], &quot;captcha&quot;))&#123;</span><br><span class="line">       run_captcha(argc, argv);</span><br><span class="line">   &#125; else if (0 &#x3D;&#x3D; strcmp(argv[1], &quot;nightmare&quot;))&#123;</span><br><span class="line">       run_nightmare(argc, argv);</span><br><span class="line">   &#125; else if (0 &#x3D;&#x3D; strcmp(argv[1], &quot;rgbgr&quot;))&#123;</span><br><span class="line">       rgbgr_net(argv[2], argv[3], argv[4]);</span><br><span class="line">   &#125; else if (0 &#x3D;&#x3D; strcmp(argv[1], &quot;reset&quot;))&#123;</span><br><span class="line">       reset_normalize_net(argv[2], argv[3], argv[4]);</span><br><span class="line">   &#125; else if (0 &#x3D;&#x3D; strcmp(argv[1], &quot;denormalize&quot;))&#123;</span><br><span class="line">       denormalize_net(argv[2], argv[3], argv[4]);</span><br><span class="line">   &#125; else if (0 &#x3D;&#x3D; strcmp(argv[1], &quot;statistics&quot;))&#123;</span><br><span class="line">       statistics_net(argv[2], argv[3]);</span><br><span class="line">   &#125; else if (0 &#x3D;&#x3D; strcmp(argv[1], &quot;normalize&quot;))&#123;</span><br><span class="line">       normalize_net(argv[2], argv[3], argv[4]);</span><br><span class="line">   &#125; else if (0 &#x3D;&#x3D; strcmp(argv[1], &quot;rescale&quot;))&#123;</span><br><span class="line">       rescale_net(argv[2], argv[3], argv[4]);</span><br><span class="line">   &#125; else if (0 &#x3D;&#x3D; strcmp(argv[1], &quot;ops&quot;))&#123;</span><br><span class="line">       operations(argv[2]);</span><br><span class="line">   &#125; else if (0 &#x3D;&#x3D; strcmp(argv[1], &quot;speed&quot;))&#123;</span><br><span class="line">       speed(argv[2], (argc &gt; 3 &amp;&amp; argv[3]) ? atoi(argv[3]) : 0);</span><br><span class="line">   &#125; else if (0 &#x3D;&#x3D; strcmp(argv[1], &quot;oneoff&quot;))&#123;</span><br><span class="line">       oneoff(argv[2], argv[3], argv[4]);</span><br><span class="line">   &#125; else if (0 &#x3D;&#x3D; strcmp(argv[1], &quot;partial&quot;))&#123;</span><br><span class="line">       partial(argv[2], argv[3], argv[4], atoi(argv[5]));</span><br><span class="line">   &#125; else if (0 &#x3D;&#x3D; strcmp(argv[1], &quot;visualize&quot;))&#123;</span><br><span class="line">       visualize(argv[2], (argc &gt; 3) ? argv[3] : 0);</span><br><span class="line">   &#125; else if (0 &#x3D;&#x3D; strcmp(argv[1], &quot;imtest&quot;))&#123;</span><br><span class="line">       test_resize(argv[2]);</span><br><span class="line">   &#125; else &#123;</span><br><span class="line">       fprintf(stderr, &quot;Not an option: %s\n&quot;, argv[1]);</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="跟进run-detector"><a href="#跟进run-detector" class="headerlink" title="跟进run_detector"></a>跟进run_detector</h3><p><code>run_detector</code>函数在<code>src/detector.c</code>里面，这个函数首先有很多超参数可以设置，然后我们可以看到这个函数包含了训练验证，测试，计算Anchors，demo展示，计算map值和recall值等功能。由于训练，测试，验证阶段差不多，我们跟进去一个看看就好，至于后面那几个功能是AlexeyAB添加的，之后再逐一解释。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br></pre></td><td class="code"><pre><span class="line">void run_detector(int argc, char **argv)</span><br><span class="line">&#123;</span><br><span class="line">    int dont_show &#x3D; find_arg(argc, argv, &quot;-dont_show&quot;);&#x2F;&#x2F;展示图像界面</span><br><span class="line">    int benchmark &#x3D; find_arg(argc, argv, &quot;-benchmark&quot;);&#x2F;&#x2F;评估模型的表现</span><br><span class="line">    int benchmark_layers &#x3D; find_arg(argc, argv, &quot;-benchmark_layers&quot;);</span><br><span class="line">    &#x2F;&#x2F;if (benchmark_layers) benchmark &#x3D; 1;</span><br><span class="line">    if (benchmark) dont_show &#x3D; 1;</span><br><span class="line">    int show &#x3D; find_arg(argc, argv, &quot;-show&quot;);</span><br><span class="line">    int letter_box &#x3D; find_arg(argc, argv, &quot;-letter_box&quot;);&#x2F;&#x2F;是否对图像做letter-box变换</span><br><span class="line">    int calc_map &#x3D; find_arg(argc, argv, &quot;-map&quot;);&#x2F;&#x2F;是否计算map值</span><br><span class="line">    int map_points &#x3D; find_int_arg(argc, argv, &quot;-points&quot;, 0);</span><br><span class="line">    check_mistakes &#x3D; find_arg(argc, argv, &quot;-check_mistakes&quot;);&#x2F;&#x2F;检查数据是否有误</span><br><span class="line">    int show_imgs &#x3D; find_arg(argc, argv, &quot;-show_imgs&quot;);&#x2F;&#x2F;显示图片</span><br><span class="line">    int mjpeg_port &#x3D; find_int_arg(argc, argv, &quot;-mjpeg_port&quot;, -1);</span><br><span class="line">    int json_port &#x3D; find_int_arg(argc, argv, &quot;-json_port&quot;, -1);</span><br><span class="line">    char *http_post_host &#x3D; find_char_arg(argc, argv, &quot;-http_post_host&quot;, 0);</span><br><span class="line">    int time_limit_sec &#x3D; find_int_arg(argc, argv, &quot;-time_limit_sec&quot;, 0);</span><br><span class="line">    char *out_filename &#x3D; find_char_arg(argc, argv, &quot;-out_filename&quot;, 0);</span><br><span class="line">    char *outfile &#x3D; find_char_arg(argc, argv, &quot;-out&quot;, 0);</span><br><span class="line">    char *prefix &#x3D; find_char_arg(argc, argv, &quot;-prefix&quot;, 0);&#x2F;&#x2F;模型保存的前缀</span><br><span class="line">    float thresh &#x3D; find_float_arg(argc, argv, &quot;-thresh&quot;, .25);    &#x2F;&#x2F; 置信度</span><br><span class="line">    float iou_thresh &#x3D; find_float_arg(argc, argv, &quot;-iou_thresh&quot;, .5);    &#x2F;&#x2F; 0.5 for mAP</span><br><span class="line">    float hier_thresh &#x3D; find_float_arg(argc, argv, &quot;-hier&quot;, .5);</span><br><span class="line">    int cam_index &#x3D; find_int_arg(argc, argv, &quot;-c&quot;, 0);&#x2F;&#x2F;摄像头编号</span><br><span class="line">    int frame_skip &#x3D; find_int_arg(argc, argv, &quot;-s&quot;, 0);&#x2F;&#x2F;跳帧检测间隔</span><br><span class="line">    int num_of_clusters &#x3D; find_int_arg(argc, argv, &quot;-num_of_clusters&quot;, 5);</span><br><span class="line">    int width &#x3D; find_int_arg(argc, argv, &quot;-width&quot;, -1);&#x2F;&#x2F; 输入网络的图像宽度</span><br><span class="line">    int height &#x3D; find_int_arg(argc, argv, &quot;-height&quot;, -1);&#x2F;&#x2F; 输入网络的图像高度</span><br><span class="line">    &#x2F;&#x2F; extended output in test mode (output of rect bound coords)</span><br><span class="line">    &#x2F;&#x2F; and for recall mode (extended output table-like format with results for best_class fit)</span><br><span class="line">    int ext_output &#x3D; find_arg(argc, argv, &quot;-ext_output&quot;);</span><br><span class="line">    int save_labels &#x3D; find_arg(argc, argv, &quot;-save_labels&quot;);</span><br><span class="line">    if (argc &lt; 4) &#123;</span><br><span class="line">        fprintf(stderr, &quot;usage: %s %s [train&#x2F;test&#x2F;valid&#x2F;demo&#x2F;map] [data] [cfg] [weights (optional)]\n&quot;, argv[0], argv[1]);</span><br><span class="line">        return;</span><br><span class="line">    &#125;</span><br><span class="line">    char *gpu_list &#x3D; find_char_arg(argc, argv, &quot;-gpus&quot;, 0);&#x2F;&#x2F; 多个gpu训练</span><br><span class="line">    int *gpus &#x3D; 0;</span><br><span class="line">    int gpu &#x3D; 0;</span><br><span class="line">    int ngpus &#x3D; 0;</span><br><span class="line">    if (gpu_list) &#123;</span><br><span class="line">        printf(&quot;%s\n&quot;, gpu_list);</span><br><span class="line">        int len &#x3D; (int)strlen(gpu_list);</span><br><span class="line">        ngpus &#x3D; 1;</span><br><span class="line">        int i;</span><br><span class="line">        for (i &#x3D; 0; i &lt; len; ++i) &#123;</span><br><span class="line">            if (gpu_list[i] &#x3D;&#x3D; &#39;,&#39;) ++ngpus;</span><br><span class="line">        &#125;</span><br><span class="line">        gpus &#x3D; (int*)xcalloc(ngpus, sizeof(int));</span><br><span class="line">        for (i &#x3D; 0; i &lt; ngpus; ++i) &#123;</span><br><span class="line">            gpus[i] &#x3D; atoi(gpu_list);</span><br><span class="line">            gpu_list &#x3D; strchr(gpu_list, &#39;,&#39;) + 1;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    else &#123;</span><br><span class="line">        gpu &#x3D; gpu_index;</span><br><span class="line">        gpus &#x3D; &amp;gpu;</span><br><span class="line">        ngpus &#x3D; 1;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    int clear &#x3D; find_arg(argc, argv, &quot;-clear&quot;);</span><br><span class="line"></span><br><span class="line">    char *datacfg &#x3D; argv[3];&#x2F;&#x2F;存储训练集，验证集，以及类别对应名字等信息的cfg文件</span><br><span class="line">    char *cfg &#x3D; argv[4];&#x2F;&#x2F;要训练的网络cfg文件</span><br><span class="line">    char *weights &#x3D; (argc &gt; 5) ? argv[5] : 0;&#x2F;&#x2F;是否有预训练模型</span><br><span class="line">    if (weights)</span><br><span class="line">        if (strlen(weights) &gt; 0)</span><br><span class="line">            if (weights[strlen(weights) - 1] &#x3D;&#x3D; 0x0d) weights[strlen(weights) - 1] &#x3D; 0;</span><br><span class="line">    char *filename &#x3D; (argc &gt; 6) ? argv[6] : 0;</span><br><span class="line">    if (0 &#x3D;&#x3D; strcmp(argv[2], &quot;test&quot;)) test_detector(datacfg, cfg, weights, filename, thresh, hier_thresh, dont_show, ext_output, save_labels, outfile, letter_box, benchmark_layers);&#x2F;&#x2F;执行目标检测模型测试</span><br><span class="line">    else if (0 &#x3D;&#x3D; strcmp(argv[2], &quot;train&quot;)) train_detector(datacfg, cfg, weights, gpus, ngpus, clear, dont_show, calc_map, mjpeg_port, show_imgs, benchmark_layers);&#x2F;&#x2F;目标检测模型训练</span><br><span class="line">    else if (0 &#x3D;&#x3D; strcmp(argv[2], &quot;valid&quot;)) validate_detector(datacfg, cfg, weights, outfile);&#x2F;&#x2F;目标检测模型验证</span><br><span class="line">    else if (0 &#x3D;&#x3D; strcmp(argv[2], &quot;recall&quot;)) validate_detector_recall(datacfg, cfg, weights);&#x2F;&#x2F;&#x2F;计算验证集的召回率</span><br><span class="line">    else if (0 &#x3D;&#x3D; strcmp(argv[2], &quot;map&quot;)) validate_detector_map(datacfg, cfg, weights, thresh, iou_thresh, map_points, letter_box, NULL);&#x2F;&#x2F;计算验证集的map值</span><br><span class="line">    else if (0 &#x3D;&#x3D; strcmp(argv[2], &quot;calc_anchors&quot;)) calc_anchors(datacfg, num_of_clusters, width, height, show);&#x2F;&#x2F;计算验证集的anchors</span><br><span class="line">    else if (0 &#x3D;&#x3D; strcmp(argv[2], &quot;demo&quot;)) &#123;&#x2F;&#x2F;demo展示</span><br><span class="line">        list *options &#x3D; read_data_cfg(datacfg);</span><br><span class="line">        int classes &#x3D; option_find_int(options, &quot;classes&quot;, 20);</span><br><span class="line">        char *name_list &#x3D; option_find_str(options, &quot;names&quot;, &quot;data&#x2F;names.list&quot;);</span><br><span class="line">        char **names &#x3D; get_labels(name_list);</span><br><span class="line">        if (filename)</span><br><span class="line">            if (strlen(filename) &gt; 0)</span><br><span class="line">                if (filename[strlen(filename) - 1] &#x3D;&#x3D; 0x0d) filename[strlen(filename) - 1] &#x3D; 0;</span><br><span class="line">        demo(cfg, weights, thresh, hier_thresh, cam_index, filename, names, classes, frame_skip, prefix, out_filename,</span><br><span class="line">            mjpeg_port, json_port, dont_show, ext_output, letter_box, time_limit_sec, http_post_host, benchmark, benchmark_layers);</span><br><span class="line"></span><br><span class="line">        free_list_contents_kvp(options);</span><br><span class="line">        free_list(options);</span><br><span class="line">    &#125;</span><br><span class="line">    else printf(&quot; There isn&#39;t such command: %s&quot;, argv[2]);</span><br><span class="line"></span><br><span class="line">    if (gpus &amp;&amp; gpu_list &amp;&amp; ngpus &gt; 1) free(gpus);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="跟进train-detector"><a href="#跟进train-detector" class="headerlink" title="跟进train_detector"></a>跟进train_detector</h3><p>由于训练，验证和测试阶段代码几乎是差不多的，只不过训练多了一个反向传播的过程。所以我们主要分析一下训练过程，训练过程是一个比较复杂的过程，不过宏观上大致分为解析网络配置文件，加载训练样本图像和标签，开启训练，结束训练保存模型这样一个过程，部分代码如下（我省略了很多代码，因为这一节是框架总览，后面会详细解释的）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line">void train_detector(char *datacfg, char *cfgfile, char *weightfile, int *gpus, int ngpus, int clear, int dont_show, int calc_map, int mjpeg_port, int show_imgs, int benchmark_layers)</span><br><span class="line">&#123;</span><br><span class="line">    &#x2F;&#x2F; 从options找出训练图片路径信息，如果没找到，默认使用&quot;data&#x2F;train.list&quot;路径下的图片信息（train.list含有标准的信息格式：&lt;object-class&gt; &lt;x&gt; &lt;y&gt; &lt;width&gt; &lt;height&gt;），</span><br><span class="line">    &#x2F;&#x2F; 该文件可以由darknet提供的scripts&#x2F;voc_label.py根据自行在网上下载的voc数据集生成，所以说是默认路径，其实也需要使用者自行调整，也可以任意命名，不一定要为train.list，</span><br><span class="line">    &#x2F;&#x2F; 甚至可以不用voc_label.py生成，可以自己不厌其烦的制作一个（当然规模应该是很小的，不然太累了。。。）</span><br><span class="line">    &#x2F;&#x2F; 读入后，train_images将含有训练图片中所有图片的标签以及定位信息</span><br><span class="line">    list *options &#x3D; read_data_cfg(datacfg);</span><br><span class="line">    char *train_images &#x3D; option_find_str(options, &quot;train&quot;, &quot;data&#x2F;train.txt&quot;);</span><br><span class="line">    char *valid_images &#x3D; option_find_str(options, &quot;valid&quot;, train_images);</span><br><span class="line">    char *backup_directory &#x3D; option_find_str(options, &quot;backup&quot;, &quot;&#x2F;backup&#x2F;&quot;);</span><br><span class="line"></span><br><span class="line">    network net_map;</span><br><span class="line">    &#x2F;&#x2F;如果要计算map</span><br><span class="line">    if (calc_map) &#123;</span><br><span class="line">        FILE* valid_file &#x3D; fopen(valid_images, &quot;r&quot;);</span><br><span class="line">        if (!valid_file) &#123;</span><br><span class="line">            printf(&quot;\n Error: There is no %s file for mAP calculation!\n Don&#39;t use -map flag.\n Or set valid&#x3D;%s in your %s file. \n&quot;, valid_images, train_images, datacfg);</span><br><span class="line">            getchar();</span><br><span class="line">            exit(-1);</span><br><span class="line">        &#125;</span><br><span class="line">        else fclose(valid_file);</span><br><span class="line"></span><br><span class="line">        cuda_set_device(gpus[0]);</span><br><span class="line">        printf(&quot; Prepare additional network for mAP calculation...\n&quot;);</span><br><span class="line">        net_map &#x3D; parse_network_cfg_custom(cfgfile, 1, 1);</span><br><span class="line">        &#x2F;&#x2F;分类数</span><br><span class="line">        const int net_classes &#x3D; net_map.layers[net_map.n - 1].classes;</span><br><span class="line"></span><br><span class="line">        int k;  &#x2F;&#x2F; free memory unnecessary arrays</span><br><span class="line">        for (k &#x3D; 0; k &lt; net_map.n - 1; ++k) free_layer_custom(net_map.layers[k], 1);</span><br><span class="line"></span><br><span class="line">        char *name_list &#x3D; option_find_str(options, &quot;names&quot;, &quot;data&#x2F;names.list&quot;);</span><br><span class="line">        int names_size &#x3D; 0;</span><br><span class="line">        &#x2F;&#x2F;获取类别对应的名字</span><br><span class="line">        char **names &#x3D; get_labels_custom(name_list, &amp;names_size);</span><br><span class="line">        if (net_classes !&#x3D; names_size) &#123;</span><br><span class="line">            printf(&quot; Error: in the file %s number of names %d that isn&#39;t equal to classes&#x3D;%d in the file %s \n&quot;,</span><br><span class="line">                name_list, names_size, net_classes, cfgfile);</span><br><span class="line">            if (net_classes &gt; names_size) getchar();</span><br><span class="line">        &#125;</span><br><span class="line">        free_ptrs((void**)names, net_map.layers[net_map.n - 1].classes);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    srand(time(0));</span><br><span class="line">     &#x2F;&#x2F; 提取配置文件名称中的主要信息，用于输出打印（并无实质作用），比如提取cfg&#x2F;yolo.cfg中的yolo，用于下面的输出打印</span><br><span class="line">    char *base &#x3D; basecfg(cfgfile);</span><br><span class="line">    printf(&quot;%s\n&quot;, base);</span><br><span class="line">    float avg_loss &#x3D; -1;</span><br><span class="line">    &#x2F;&#x2F; 构建网络：用多少块GPU，就会构建多少个相同的网络（不使用GPU时，ngpus&#x3D;1）</span><br><span class="line">    network* nets &#x3D; (network*)xcalloc(ngpus, sizeof(network));</span><br><span class="line">	</span><br><span class="line">	&#x2F;&#x2F;设定随机数种子</span><br><span class="line">    srand(time(0));</span><br><span class="line">    int seed &#x3D; rand();</span><br><span class="line">    int i;</span><br><span class="line">      &#x2F;&#x2F; for循环次数为ngpus，使用多少块GPU，就循环多少次（不使用GPU时，ngpus&#x3D;1，也会循环一次）</span><br><span class="line">    &#x2F;&#x2F; 这里每一次循环都会构建一个相同的神经网络，如果提供了初始训练参数，也会为每个网络导入相同的初始训练参数</span><br><span class="line">    for (i &#x3D; 0; i &lt; ngpus; ++i) &#123;</span><br><span class="line">        srand(seed);</span><br><span class="line">#ifdef GPU</span><br><span class="line">        cuda_set_device(gpus[i]);</span><br><span class="line">#endif</span><br><span class="line">		&#x2F;&#x2F;解析网络配置文件</span><br><span class="line">        nets[i] &#x3D; parse_network_cfg(cfgfile);</span><br><span class="line">        &#x2F;&#x2F;测试某一个网络层的相关指标如运行时间</span><br><span class="line">        nets[i].benchmark_layers &#x3D; benchmark_layers;</span><br><span class="line">        &#x2F;&#x2F;如果有预训练模型则加载</span><br><span class="line">        if (weightfile) &#123;</span><br><span class="line">            load_weights(&amp;nets[i], weightfile);</span><br><span class="line">        &#125;</span><br><span class="line">        &#x2F;&#x2F;</span><br><span class="line">        if (clear) *nets[i].seen &#x3D; 0;</span><br><span class="line">        nets[i].learning_rate *&#x3D; ngpus;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="解析配置文件"><a href="#解析配置文件" class="headerlink" title="解析配置文件"></a>解析配置文件</h3><p>截图部分<code>yolov3.cfg</code>网络配置文件如下：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ABDarknet/647.webp" alt></p>
+<p>可以看到配置参数大概分为2类：</p>
+<ul>
+<li>与训练相关的项，以 [net] 行开头的段. 其中包含的参数有: <code>batch_size, width,height,channel,momentum,decay,angle,saturation,  exposure,hue,learning_rate,burn_in,max_batches,policy,steps,scales</code>。</li>
+<li>不同类型的层的配置参数. 如<code>[convolutional], [short_cut], [yolo], [route], [upsample]</code>层等。</li>
+</ul>
+<p>在src/parse.c中我们会看到一行代码，<code>net-&gt;batch /= net-&gt;subdivisions;</code>，也就是说<code>batch_size</code> 在 darknet 内部又被均分为 <code>net-&gt;subdivisions</code>份, 成为更小的<code>batch_size</code>。 但是这些小的 <code>batch_size</code> 最终又被汇总, 因此 darknet 中的<code>batch_size = net-&gt;batch / net-&gt;subdivisions * net-&gt;subdivisions</code>。此外，和这个参数相关的计算训练图片数目的时候是这样，<code>int imgs = net-&gt;batch * net-&gt;subdivisions * ngpus;</code>，这样可以保证<code>imgs</code>可以被<code>subdivisions</code>整除，因此，通常将这个参数设为8的倍数。从这里也可以看出每个gpu或者cpu都会训练<code>batch</code>个样本。</p>
+<p>我们知道了参数是什么样子，那么darknet是如何保存这些参数的呢？这就要看下基本数据结构了。</p>
+
+    </div>
+
+    
+    
+    <div class="post-widgets">
+      <div id="needsharebutton-postbottom">
+        <span class="btn">
+          <i class="fa fa-share-alt" aria-hidden="true"></i>
+        </span>
+      </div>
+    </div>
+	<div>
+
+	  
+
+		<div>
+
+    
+
+        <div >-------------本文结束感谢您的阅读-------------</div>
+
+    
+
+</div>
+
+	  
+
+	</div>
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/" rel="tag"><i class="fa fa-tag"></i> 目标检测</a>
+              <a href="/tags/YOLOv3/" rel="tag"><i class="fa fa-tag"></i> YOLOv3</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/02/20/AlexeyAB%E7%89%88Darknet%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B/" rel="prev" title="AlexeyAB版Darknet使用教程">
+      <i class="fa fa-chevron-left"></i> AlexeyAB版Darknet使用教程
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/02/21/AlexeyAB-DarkNet%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E8%A7%A3%E6%9E%90/" rel="next" title="AlexeyAB DarkNet数据结构解析">
+      AlexeyAB DarkNet数据结构解析 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Darknet框架分析主线"><span class="nav-text"> Darknet框架分析主线</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#分析主线的确定"><span class="nav-text">分析主线的确定</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#跟进run-detector"><span class="nav-text">跟进run_detector</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#跟进train-detector"><span class="nav-text">跟进train_detector</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解析配置文件"><span class="nav-text">解析配置文件</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+	  
+     
+	  
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qiyuan-Z"
+      src="/images/wallhaven-915.png">
+  <p class="site-author-name" itemprop="name">Qiyuan-Z</p>
+  <div class="site-description" itemprop="description">偉大な魂は目的を持ち、そうでないものは願望を持つ</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">53</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Qiyuan-Z" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Qiyuan-Z" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:601872068@qq.com" title="E-Mail → mailto:601872068@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://project-inkstone.github.io/project-inkstone/?tdsourcetag=s_pctim_aiomsg" title="https:&#x2F;&#x2F;project-inkstone.github.io&#x2F;project-inkstone&#x2F;?tdsourcetag&#x3D;s_pctim_aiomsg" rel="noopener" target="_blank">project-inkstone</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+	  
+      <div id="music163player">
+		   <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=29784463&auto=1&height=66"></iframe>
+		   </iframe>
+	  </div>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qiyuan-Z</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="站点总字数">275k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">4:10</span>
+</div>
+
+<!-- 网站运行时间的设置 -->
+<span id="timeDate">载入天数...</span>
+<span id="times">载入时分秒...</span> 
+<script>
+    var now = new Date();
+    function createtime() {
+        var grt= new Date("12/01/2019 13:14:21");//此处修改你的建站时间或者网站上线时间
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;}
+        document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 ";
+        document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
+    }
+setInterval("createtime()",250);
+</script>
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+	<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"></script>
+	<script type="text/javascript">
+    		var gitalk = new Gitalk({
+		        clientID: '2d10cfb27783db577e70',
+		        clientSecret: '154292876bb14966f6ae57304b67859617b08c94',
+		        id: md5(location.pathname),
+		        repo: 'gitalk',
+		        owner: 'Qiyuan-Z',
+		        admin: 'Qiyuan-Z',
+			distractionFreeMode: '',
+
+		    });
+	    gitalk.render('gitalk-container');
+	</script>
+
+
+
+  
+
+  
+      
+<script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', () => {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
+
+  
+
+  <script src="//cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.js"></script>
+  <script>
+      pbOptions = {};
+        pbOptions.iconStyle = "box";
+        pbOptions.boxForm = "horizontal";
+        pbOptions.position = "bottomCenter";
+        pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+  </script>
+	<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+	<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"></script>
+	<script type="text/javascript">
+    		var gitalk = new Gitalk({
+		        clientID: '2d10cfb27783db577e70',
+		        clientSecret: '154292876bb14966f6ae57304b67859617b08c94',
+		        id: md5(location.pathname),
+		        repo: 'gitalk',
+		        owner: 'Qiyuan-Z',
+		        admin: 'Qiyuan-Z',
+			distractionFreeMode: '',
+
+		    });
+	    gitalk.render('gitalk-container');
+	</script>
+
+
+  <script type="text/javascript" src="/js/src/clicklove.js"></script>
+</body>
+</html>
+
