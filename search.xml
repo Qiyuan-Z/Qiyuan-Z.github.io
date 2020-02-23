@@ -1,6 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Ubuntu配置v2ray详细教程</title>
+    <url>/2020/02/23/Ubuntu%E9%85%8D%E7%BD%AEv2ray%E8%AF%A6%E7%BB%86%E6%95%99%E7%A8%8B/</url>
+    <content><![CDATA[<h2 id="简介"><a href="#简介" class="headerlink" title=" 简介"></a><a id="more"></a> 简介</h2><p>🌟Linux/Windows/macOS 跨平台 v2ray GUI 🔨 使用 c++ 编写，支持订阅，扫描二维码，支持自定义路由编辑 🌟。使用 Qt 框架的跨平台 v2ray 客户端。支持 Windows, Linux, macOS。</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><ul>
+<li><p>下载<code>V2ray</code>客户端，这里以最简单的<code>AppImage</code>文件为例,下载链接：<br><a href="https://github.com/Qv2ray/Qv2ray/releases/download/v1.99.6/Qv2ray-refs.tags.v1.99.6-linux.AppImage" target="_blank" rel="noopener">https://github.com/Qv2ray/Qv2ray/releases/download/v1.99.6/Qv2ray-refs.tags.v1.99.6-linux.AppImage</a><br>或者打开网站：<a href="https://github.com/Qv2ray/Qv2ray/releases/tag/v1.99.6" target="_blank" rel="noopener">https://github.com/Qv2ray/Qv2ray/releases/tag/v1.99.6</a> 选择下图文件<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/v2ray/1580651760-1.png" alt><br><strong>注意：建议下载1.99.6及以上版本，其它版本可能出现找不到openssl库。</strong></p>
+</li>
+<li><p>下载核心文件，下载链接：<br><a href="https://github.com/v2ray/v2ray-core/releases/download/v4.22.1/v2ray-linux-64.zip" target="_blank" rel="noopener">https://github.com/v2ray/v2ray-core/releases/download/v4.22.1/v2ray-linux-64.zip</a><br>或者打开网站：<a href="https://github.com/v2ray/v2ray-core/releases/" target="_blank" rel="noopener">https://github.com/v2ray/v2ray-core/releases/</a> 选择下图文件<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/v2ray/1580651801-2.png" alt></p>
+</li>
+<li><p>进入v2ray下载的根目录，执行以下命令：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo chmod +x .&#x2F;Qv2ray-refs.tags.v1.99.6-linux.AppImage</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>仍然在v2ray根目录下打开终端，输入以下命令：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.&#x2F;Qv2ray-refs.tags.v1.99.6-linux.AppImage</span><br></pre></td></tr></table></figure>
+<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2></li>
+</ul>
+<p>执行后会出现主界面，点击首选项</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/v2ray/1580652261-3-1580634671283.png" alt></p>
+<p>在常规设置里面按照图示操作,最后点击ok保存：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/v2ray/1580652339-4.png" alt></p>
+<p>回到主界面，点击订阅：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/v2ray/1580652363-5.png" alt></p>
+<p>然后按照下图要求填入相应内容,然后点击ok：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/v2ray/1580655824-6.png" alt></p>
+<p>进入网站-&gt;个人中心，按照下图说明复制链接到上图中：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/v2ray/1580652405-7.png" alt></p>
+<p>将软件的代理模式打开，如下图所示；</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/v2ray/1580653297-8.png" alt></p>
+<p>一切准备好后点击主界面的连接，开始科学上网</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/v2ray/1580653343-9.png" alt></p>
+<p>墙外的世界在欢迎你!</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/v2ray/1580653648-tzyy_2020-02-02_22-27-02.png" alt></p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+        <tag>Proxy</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>AlexeyAB DarkNet卷积层的前向传播解析</title>
     <url>/2020/02/23/AlexeyAB-DarkNet%E5%8D%B7%E7%A7%AF%E5%B1%82%E7%9A%84%E5%89%8D%E5%90%91%E4%BC%A0%E6%92%AD%E8%A7%A3%E6%9E%90/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title=" 前言"></a><a id="more"></a> 前言</h2><p>今天来介绍一下DarkNet中卷积层的前向传播和反向传播的实现，卷积层是卷积神经网络中的核心组件，了解它的底层代码实现对我们理解卷积神经网络以及优化卷积神经网络都有一些帮助。</p>

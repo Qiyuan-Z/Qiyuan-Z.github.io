@@ -47,20 +47,30 @@
   };
 </script>
 
-  <meta name="description" content="1sudo rm &#x2F;var&#x2F;lib&#x2F;apt&#x2F;lists&#x2F;lock">
-<meta property="og:type" content="article">
-<meta property="og:title" content="对目录 &#x2F;var&#x2F;lib&#x2F;apt&#x2F;lists&#x2F; 加锁 问题解决方法">
-<meta property="og:url" content="https://qiyuan-z.github.io/2020/01/19/%E5%AF%B9%E7%9B%AE%E5%BD%95-varlibaptlists-%E5%8A%A0%E9%94%81-%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/index.html">
+  <meta property="og:type" content="article">
+<meta property="og:title" content="Ubuntu配置v2ray详细教程">
+<meta property="og:url" content="https://qiyuan-z.github.io/2020/02/23/Ubuntu%E9%85%8D%E7%BD%AEv2ray%E8%AF%A6%E7%BB%86%E6%95%99%E7%A8%8B/index.html">
 <meta property="og:site_name" content="Yuan">
-<meta property="og:description" content="1sudo rm &#x2F;var&#x2F;lib&#x2F;apt&#x2F;lists&#x2F;lock">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2020-01-19T08:32:41.019Z">
-<meta property="article:modified_time" content="2020-01-19T08:32:41.115Z">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/v2ray/1580651760-1.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/v2ray/1580651801-2.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/v2ray/1580652261-3-1580634671283.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/v2ray/1580652339-4.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/v2ray/1580652363-5.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/v2ray/1580655824-6.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/v2ray/1580652405-7.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/v2ray/1580653297-8.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/v2ray/1580653343-9.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/v2ray/1580653648-tzyy_2020-02-02_22-27-02.png">
+<meta property="article:published_time" content="2020-02-23T11:32:07.172Z">
+<meta property="article:modified_time" content="2020-02-23T11:34:55.495Z">
 <meta property="article:author" content="Qiyuan-Z">
 <meta property="article:tag" content="Ubuntu">
+<meta property="article:tag" content="Proxy">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/v2ray/1580651760-1.png">
 
-<link rel="canonical" href="https://qiyuan-z.github.io/2020/01/19/%E5%AF%B9%E7%9B%AE%E5%BD%95-varlibaptlists-%E5%8A%A0%E9%94%81-%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/">
+<link rel="canonical" href="https://qiyuan-z.github.io/2020/02/23/Ubuntu%E9%85%8D%E7%BD%AEv2ray%E8%AF%A6%E7%BB%86%E6%95%99%E7%A8%8B/">
 
 
 <script id="page-configurations">
@@ -85,7 +95,7 @@
   padding: 1px 4px;
 }
 </style>
-  <title>对目录 /var/lib/apt/lists/ 加锁 问题解决方法 | Yuan</title>
+  <title>Ubuntu配置v2ray详细教程 | Yuan</title>
   
 
 
@@ -221,7 +231,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://qiyuan-z.github.io/2020/01/19/%E5%AF%B9%E7%9B%AE%E5%BD%95-varlibaptlists-%E5%8A%A0%E9%94%81-%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/">
+    <link itemprop="mainEntityOfPage" href="https://qiyuan-z.github.io/2020/02/23/Ubuntu%E9%85%8D%E7%BD%AEv2ray%E8%AF%A6%E7%BB%86%E6%95%99%E7%A8%8B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/wallhaven-915.png">
@@ -234,7 +244,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          对目录 /var/lib/apt/lists/ 加锁 问题解决方法
+          Ubuntu配置v2ray详细教程
         </h1>
 
         <div class="post-meta">
@@ -243,8 +253,9 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2020-01-19 16:32:41" itemprop="dateCreated datePublished" datetime="2020-01-19T16:32:41+08:00">2020-01-19</time>
+              <time title="创建时间：2020-02-23 19:32:07 / 修改时间：19:34:55" itemprop="dateCreated datePublished" datetime="2020-02-23T19:32:07+08:00">2020-02-23</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -271,7 +282,7 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>55</span>
+              <span>799</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -290,7 +301,36 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo rm &#x2F;var&#x2F;lib&#x2F;apt&#x2F;lists&#x2F;lock</span><br></pre></td></tr></table></figure>
+        <h2 id="简介"><a href="#简介" class="headerlink" title=" 简介"></a><a id="more"></a> 简介</h2><p>🌟Linux/Windows/macOS 跨平台 v2ray GUI 🔨 使用 c++ 编写，支持订阅，扫描二维码，支持自定义路由编辑 🌟。使用 Qt 框架的跨平台 v2ray 客户端。支持 Windows, Linux, macOS。</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><ul>
+<li><p>下载<code>V2ray</code>客户端，这里以最简单的<code>AppImage</code>文件为例,下载链接：<br><a href="https://github.com/Qv2ray/Qv2ray/releases/download/v1.99.6/Qv2ray-refs.tags.v1.99.6-linux.AppImage" target="_blank" rel="noopener">https://github.com/Qv2ray/Qv2ray/releases/download/v1.99.6/Qv2ray-refs.tags.v1.99.6-linux.AppImage</a><br>或者打开网站：<a href="https://github.com/Qv2ray/Qv2ray/releases/tag/v1.99.6" target="_blank" rel="noopener">https://github.com/Qv2ray/Qv2ray/releases/tag/v1.99.6</a> 选择下图文件<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/v2ray/1580651760-1.png" alt><br><strong>注意：建议下载1.99.6及以上版本，其它版本可能出现找不到openssl库。</strong></p>
+</li>
+<li><p>下载核心文件，下载链接：<br><a href="https://github.com/v2ray/v2ray-core/releases/download/v4.22.1/v2ray-linux-64.zip" target="_blank" rel="noopener">https://github.com/v2ray/v2ray-core/releases/download/v4.22.1/v2ray-linux-64.zip</a><br>或者打开网站：<a href="https://github.com/v2ray/v2ray-core/releases/" target="_blank" rel="noopener">https://github.com/v2ray/v2ray-core/releases/</a> 选择下图文件<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/v2ray/1580651801-2.png" alt></p>
+</li>
+<li><p>进入v2ray下载的根目录，执行以下命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo chmod +x .&#x2F;Qv2ray-refs.tags.v1.99.6-linux.AppImage</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>仍然在v2ray根目录下打开终端，输入以下命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.&#x2F;Qv2ray-refs.tags.v1.99.6-linux.AppImage</span><br></pre></td></tr></table></figure>
+<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2></li>
+</ul>
+<p>执行后会出现主界面，点击首选项</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/v2ray/1580652261-3-1580634671283.png" alt></p>
+<p>在常规设置里面按照图示操作,最后点击ok保存：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/v2ray/1580652339-4.png" alt></p>
+<p>回到主界面，点击订阅：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/v2ray/1580652363-5.png" alt></p>
+<p>然后按照下图要求填入相应内容,然后点击ok：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/v2ray/1580655824-6.png" alt></p>
+<p>进入网站-&gt;个人中心，按照下图说明复制链接到上图中：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/v2ray/1580652405-7.png" alt></p>
+<p>将软件的代理模式打开，如下图所示；</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/v2ray/1580653297-8.png" alt></p>
+<p>一切准备好后点击主界面的连接，开始科学上网</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/v2ray/1580653343-9.png" alt></p>
+<p>墙外的世界在欢迎你!</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/v2ray/1580653648-tzyy_2020-02-02_22-27-02.png" alt></p>
+
     </div>
 
     
@@ -322,6 +362,7 @@
       <footer class="post-footer">
           <div class="post-tags">
               <a href="/tags/Ubuntu/" rel="tag"><i class="fa fa-tag"></i> Ubuntu</a>
+              <a href="/tags/Proxy/" rel="tag"><i class="fa fa-tag"></i> Proxy</a>
           </div>
 
         
@@ -330,13 +371,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/01/19/ubuntu-apt-%E6%9B%B4%E6%8D%A2%E4%B8%BA%E5%9B%BD%E5%86%85%E7%9A%84%E6%BA%90/" rel="prev" title="ubuntu apt 更换为国内的源">
-      <i class="fa fa-chevron-left"></i> ubuntu apt 更换为国内的源
+    <a href="/2020/02/23/AlexeyAB-DarkNet%E5%8D%B7%E7%A7%AF%E5%B1%82%E7%9A%84%E5%89%8D%E5%90%91%E4%BC%A0%E6%92%AD%E8%A7%A3%E6%9E%90/" rel="prev" title="AlexeyAB DarkNet卷积层的前向传播解析">
+      <i class="fa fa-chevron-left"></i> AlexeyAB DarkNet卷积层的前向传播解析
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2020/01/19/CMake%20Error/" rel="next" title="CMake Error at /usr/share/cmake-3.5/Modules/FindQt4.cmake:634 (message)">
-      CMake Error at /usr/share/cmake-3.5/Modules/FindQt4.cmake:634 (message) <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -399,6 +437,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-text"> 简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装"><span class="nav-text">安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置"><span class="nav-text">配置</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 	  
