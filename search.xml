@@ -1,6 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Windows下VSCode使用SSH连接报Bad owner or permissions on C:\\Users\\Administrator/.ssh/config错误问题解决</title>
+    <url>/2020/02/25/Windows%E4%B8%8BVSCode%E4%BD%BF%E7%94%A8SSH%E8%BF%9E%E6%8E%A5%E6%8A%A5Bad-owner-or-permissions-on-CUsersAdministrator.sshconfig%E9%94%99%E8%AF%AF%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3/</url>
+    <content><![CDATA[<h2 id="问题描述"><a href="#问题描述" class="headerlink" title=" 问题描述"></a><a id="more"></a> 问题描述</h2><p>在 Windows 系统下的 VSCode 安装 <strong>Remote - SSH</strong> 扩展后，使用扩展配置 SSH 并进行远程连接，可能会发生 <strong>Bad owner or permissions on C:\Users\Administrator/.ssh/config</strong> 错误，造成无法进行 SSH 远程连接的问题。</p>
+<p>原因是由于使用 <strong>Remote - SSH</strong> 扩展所依赖的 <strong>Remote - SSH: Editing Configuration Files</strong> 扩展编辑了 <strong>C:\Users\Administrator.ssh\config</strong> 文件后，此文件的权限发生了改变：<br> <img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/Bad%20owner%20or%20permissions%20on/image-2fd80730.png.jfif" alt></p>
+<p>如上图所示，编辑了 <strong>%USER_HOME%.ssh\config</strong> 文件后，不但在 VSCode 中由于配置文件权限问题而无法进行 SSH 远程连接，就连使用系统的 <strong>PowerShell</strong> 进行 SSH 连接时也会报此错误，而把此配置文件删除后，使用  <strong>PowerShell</strong> 即可正常进行远程连接。但 VSCode 的 SSH 连接又依赖此配置文件，所以就产生了冲突，要么只有 <strong>PowerShell</strong> 能用，要么就都不能用。</p>
+<h2 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h2><h3 id="方法一"><a href="#方法一" class="headerlink" title="方法一"></a>方法一</h3><ol>
+<li><p>在 GitHub 上下载 <a href="https://github.com/PowerShell/openssh-portable" target="_blank" rel="noopener"><strong>openssh-portable</strong></a> 项目，其 Git 命令如下：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git clone https://github.com/PowerShell/openssh-portable.git</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>下载完成后进入 <strong>openssh-portable</strong> 项目中的 <a href="https://github.com/PowerShell/openssh-portable/tree/latestw_all/contrib/win32/openssh" target="_blank" rel="noopener"><code>contrib\win32\openssh</code></a> 目录，在此目录中打开 PowerShell 命令行，执行以下命令：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">.\FixUserFilePermissions.ps1 -Confirm:$false</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>执行此命令时若提示错误 </p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">无法加载文件 FixUserFil ePermissions.ps1，因为在此系统上禁止运行脚本</span><br></pre></td></tr></table></figure>
+<p>则先执行以下命令</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Set-ExecutionPolicy RemoteSigned</span><br></pre></td></tr></table></figure>
+<p>然后输入 </p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Y</span><br></pre></td></tr></table></figure>
+<p> 回车确认后再重新执行，执行完毕后可以再执行<code>Set-ExecutionPolicy RemoteSigned</code>输入 </p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">N</span><br></pre></td></tr></table></figure>
+<p> 恢复默认配置</p>
+</li>
+</ul>
+</li>
+<li><p>操作完成后，在 VSCode 中编辑 <strong>C:\Users\Administrator.ssh\config</strong> 文件将不会影响此文件的权限，在 VSCode 和 PowerShell 中均可正常进行 SSH 远程连接：</p>
+<ul>
+<li><p>在 VSCode 中通过 Remote - SSH 进行 SSH 远程连接：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/Bad%20owner%20or%20permissions%20on/image-c923ced8.png" alt></p>
+</li>
+<li><p>在 PowerShell 中进行 SSH 远程连接：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/Bad%20owner%20or%20permissions%20on/93310FA6D4F64FA7BF7BEBE7357A79E6-cf86116a.jpeg" alt></p>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="方法二"><a href="#方法二" class="headerlink" title="方法二"></a>方法二</h3><p>在其他位置建好config文件，并在插件设置中添加路径即可</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/Bad%20owner%20or%20permissions%20on/20200212142410779.png" alt></p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>VSCode</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Fast RCNN</title>
     <url>/2020/02/24/Fast-RCNN/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title=" 前言"></a><a id="more"></a> 前言</h2><p>我们知道RCNN需要把每一个可能有目标的候选框搜索出来，然后把每个候选框传入CNN提取特征，每一张图片要产生大约2K个候选框，而每个框对应的图像都要传入CNN，这个时间开销肯定是很难承受的。基于RCNN这个致命问题，Fast-RCNN出现了。</p>
