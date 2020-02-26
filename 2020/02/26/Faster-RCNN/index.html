@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://Qiyuan-Z.github.io').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.6.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":true,"style":"mac"},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta property="og:type" content="article">
+<meta property="og:title" content="Faster-RCNN">
+<meta property="og:url" content="https://qiyuan-z.github.io/2020/02/26/Faster-RCNN/index.html">
+<meta property="og:site_name" content="Yuan">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/Faster%20RCNN/640.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/Faster%20RCNN/641.jfif">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/Faster%20RCNN/642.jfif">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/Faster%20RCNN/643.webp">
+<meta property="article:published_time" content="2020-02-26T05:41:21.531Z">
+<meta property="article:modified_time" content="2020-02-26T05:59:33.097Z">
+<meta property="article:author" content="Qiyuan-Z">
+<meta property="article:tag" content="目标检测">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/Faster%20RCNN/640.png">
+
+<link rel="canonical" href="https://qiyuan-z.github.io/2020/02/26/Faster-RCNN/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.css"><style>
+#needsharebutton-postbottom {
+  cursor: pointer;
+  height: 26px;
+  margin-top: 10px;
+  position: relative;
+}
+#needsharebutton-postbottom .btn {
+  border: 1px solid $btn-default-border-color;
+  border-radius: 3px;
+  display: initial;
+  padding: 1px 4px;
+}
+</style>
+  <title>Faster-RCNN | Yuan</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Yuan</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">记录学习中的点点滴滴</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qiyuan-z.github.io/2020/02/26/Faster-RCNN/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/wallhaven-915.png">
+      <meta itemprop="name" content="Qiyuan-Z">
+      <meta itemprop="description" content="偉大な魂は目的を持ち、そうでないものは願望を持つ">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Yuan">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Faster-RCNN
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-02-26 13:41:21 / 修改时间：13:59:33" itemprop="dateCreated datePublished" datetime="2020-02-26T13:41:21+08:00">2020-02-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index">
+                    <span itemprop="name">学习</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.4k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title=" 前言"></a><a id="more"></a> 前言</h2><p>我们知道RCNN和Fast-RCNN都是双阶段的算法，依赖于候选框搜索算法。而搜索算法是很慢的，这就导致这两个算法不能实时。基于这个重大缺点，Faster-RCNN算法问世。</p>
+<h2 id="贡献"><a href="#贡献" class="headerlink" title="贡献"></a>贡献</h2><p>Fast-RCNN仍依赖于搜索候选框方法，其中以Selective  Search为主。在Fast-RCNN给出的时间测试结果中，一张图片需要2.3s的前向推理时间，其中2s用于生成2000个ROI。可以看到整个算法的时间消耗几乎都在区域候选框搜索这个步骤了，如果我们能去掉候选框搜索这个过程是不是实时有希望了？Faster-RCNN就干了这件事，论文提出在内部使用深层网络代替候选区域。新的候选区域网络(RPN)在生成ROI的效率大大提升，一张图片只需要10毫秒！！！</p>
+<h2 id="网络结构"><a href="#网络结构" class="headerlink" title="网络结构"></a>网络结构</h2><p>Faster-RCNN的网络结构如下图表示：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/Faster%20RCNN/640.png" alt></p>
+<p>我们可以发现除了添加一个RPN网络之外，其他地方和Fast-RCNN是完全一致的。引用知乎上看到的一张更详细的网络结构如下：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/Faster%20RCNN/641.jfif" alt></p>
+<h2 id="RPN网络"><a href="#RPN网络" class="headerlink" title="RPN网络"></a>RPN网络</h2><p>RPN网络将第一个卷积网络(backbone，如VGG16,ResNet)的输出特征图作为输入。它在特征图上滑动一个$3 \times 3$的卷积核，以使用卷积网络构建与类别无关的候选区域（候选框建议网络只用关心建议出来的框是否包含物体，而不用关系那个物体是哪一类的），我们将RPN产生的每个框叫做Anchor。</p>
+<p>这里这样说肯定还是比较模糊，我引用一张训练时候的RPN的结构图然后固定输入分辨率和backbone为VGG16来解释一下。下面这张图是RPN架构：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/Faster%20RCNN/642.jfif" alt></p>
+<p>我们可以看到anchor的数量是和Feature Map的大小相关，对于特征图中的每一个位置，RPN会做$k$次预测。因此，在这里对每个像素，RPN将输出$4 \times k$个坐标和$2 \times k$个得分。然后由于使用了VGG16做Backbone，所以输入到RPN的特征图大小是原图的$H, W$的$\frac{1}{16}$。对于一个$512 \times 62 \times 37$的feature map，有$62 \times 37 \times 9$约等于20000个anchor。也就是对一张图片，有20000个左右的anchor。这里可以看到RPN的高明之处，一张图片20000个候选框就是猜也能猜得七七八八。但是并不是20000个框我们都需要，我们只需要选取其中的256个。具体的选取规则如下：</p>
+<ul>
+<li>对于每一个Ground Truth Bounding Box，选择和它IOU最高的一个anchor作为正样本。</li>
+<li>对于剩下的anchor，选择和任意一个Ground Truth Bounding Box 的IOU大于0.7的anchor作为正样本，正样本的数目不超过128个。</li>
+<li>负样本直接选择和Ground Truth Bounding Box 的IOU&lt;0.3的anchor。正负样本的总数保证为256个。</li>
+</ul>
+<p>RPN在产生正负样本训练的时候，还会产生ROIs作为Faster-RCNN(ROI-Head)的训练样本。RPN生成ROIs的过程（网络结构图中的ProposalCreator）如下：</p>
+<ul>
+<li>对于每张图片，利用它的feature map， 计算 (H/16)× (W/16)×9（大概20000）个anchor属于前景的概率，以及对应的位置参数。</li>
+<li>选取概率较大的12000个anchor</li>
+<li>利用回归的位置参数，修正这12000个anchor的位置，得到RoIs</li>
+<li>利用非极大值（(Non-maximum suppression, NMS）抑制，选出概率最大的2000个RoIs</li>
+</ul>
+<p>在前向推理阶段，12000和2000分别变为6000和3000以提高速度，这个过程不需要反向传播，所以更容易实现。</p>
+<p>最后RPN的输出维度是$2000 \times 4$或者$300 \times 4$的tensor。</p>
+<h2 id="损失函数"><a href="#损失函数" class="headerlink" title="损失函数"></a>损失函数</h2><p>在RPN网络中，对于每个Anchor，它们对应的gt_label（就是筛选到这个Anchor的那个ground truth框的label）要么是1要么是0，1代表前景，0代表背景。而gt_loc则是由4个位置参数$(t x, t y, t w, t h)$组成，这样比直接回归坐标更好。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/Faster%20RCNN/643.webp" alt></p>
+<p>计算分类用的是交叉熵损失，而计算回归损失用的是SmoothL1Loss。在计算回归损失的时候只统计前景的损失，忽略背景的损失。</p>
+<p>网络在最后对每一个框都有两种损失，即物体属于哪一类的分类损失(21类，加了个背景)，位置在哪的回归损失。所以整个Faster-RCNN的损失是这4个损失之和。网络的目标就是最小化这四个损失之和。</p>
+<h2 id="训练"><a href="#训练" class="headerlink" title="训练"></a>训练</h2><p>上面讲了，RPN会产生大约2000个ROIs，这2000个ROIs并不都拿去训练，而是利用Proposal Target Creator选择128个ROIs用以训练。选择的规则如下：</p>
+<ul>
+<li>RoIs和gt_bboxes 的IoU大于0.5的，选择一些（比如32个）</li>
+<li>选择 RoIs和gt_bboxes的IoU小于等于0（或者0.1）的选择一些（比如 128-32=96个）作为负样本</li>
+</ul>
+<p>同时为了便于训练，对选择出的128个ROIs的对应的ground truth  bbox的坐标进行标准化处理，即减去均值除以标准差。对于分类问题,直接利用交叉熵损失。而对于位置的回归损失，一样采用Smooth_L1Loss，只不过只对正样本计算损失。而且是只对正样本中的这个类别4个参数计算损失。举例来说:</p>
+<ul>
+<li>一个RoI在经过FC 84后会输出一个84维的loc 向量。如果这个RoI是负样本,则这84维向量不参与计算 L1_Loss。</li>
+<li>如果这个RoI是正样本,属于label K,那么它的第 K×4，K×4+1，K×4+2， K×4+3 这4个数参与计算损失，其余的不参与计算损失。</li>
+</ul>
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>测试的时候保留大约300个ROIs，对每一个计算概率，并利用位置参数调整候选框的位置。最后用NMS筛一遍，就得到结果了。</p>
+
+    </div>
+
+    
+    
+    <div class="post-widgets">
+      <div id="needsharebutton-postbottom">
+        <span class="btn">
+          <i class="fa fa-share-alt" aria-hidden="true"></i>
+        </span>
+      </div>
+    </div>
+	<div>
+
+	  
+
+		<div>
+
+    
+
+        <div >-------------本文结束感谢您的阅读-------------</div>
+
+    
+
+</div>
+
+	  
+
+	</div>
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/" rel="tag"><i class="fa fa-tag"></i> 目标检测</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/02/26/YOLOV1%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E4%BB%A3%E7%A0%81%E8%AF%A6%E8%A7%A3(detection_layer.c)/" rel="prev" title="YOLOV1损失函数代码详解(detection_layer.c)">
+      <i class="fa fa-chevron-left"></i> YOLOV1损失函数代码详解(detection_layer.c)
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#贡献"><span class="nav-text">贡献</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#网络结构"><span class="nav-text">网络结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RPN网络"><span class="nav-text">RPN网络</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#损失函数"><span class="nav-text">损失函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#训练"><span class="nav-text">训练</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#测试"><span class="nav-text">测试</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+	  
+     
+	  
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qiyuan-Z"
+      src="/images/wallhaven-915.png">
+  <p class="site-author-name" itemprop="name">Qiyuan-Z</p>
+  <div class="site-description" itemprop="description">偉大な魂は目的を持ち、そうでないものは願望を持つ</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">62</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Qiyuan-Z" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Qiyuan-Z" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:601872068@qq.com" title="E-Mail → mailto:601872068@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://project-inkstone.github.io/project-inkstone/?tdsourcetag=s_pctim_aiomsg" title="https:&#x2F;&#x2F;project-inkstone.github.io&#x2F;project-inkstone&#x2F;?tdsourcetag&#x3D;s_pctim_aiomsg" rel="noopener" target="_blank">project-inkstone</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+	  
+      <div id="music163player">
+		   <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=29784463&auto=1&height=66"></iframe>
+		   </iframe>
+	  </div>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qiyuan-Z</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="站点总字数">353k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">5:21</span>
+</div>
+
+<!-- 网站运行时间的设置 -->
+<span id="timeDate">载入天数...</span>
+<span id="times">载入时分秒...</span> 
+<script>
+    var now = new Date();
+    function createtime() {
+        var grt= new Date("12/01/2019 13:14:21");//此处修改你的建站时间或者网站上线时间
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;}
+        document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 ";
+        document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
+    }
+setInterval("createtime()",250);
+</script>
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+	<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"></script>
+	<script type="text/javascript">
+    		var gitalk = new Gitalk({
+		        clientID: '2d10cfb27783db577e70',
+		        clientSecret: '154292876bb14966f6ae57304b67859617b08c94',
+		        id: md5(location.pathname),
+		        repo: 'gitalk',
+		        owner: 'Qiyuan-Z',
+		        admin: 'Qiyuan-Z',
+			distractionFreeMode: '',
+
+		    });
+	    gitalk.render('gitalk-container');
+	</script>
+
+
+
+  
+
+  
+      
+<script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', () => {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
+
+  
+
+  <script src="//cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.js"></script>
+  <script>
+      pbOptions = {};
+        pbOptions.iconStyle = "box";
+        pbOptions.boxForm = "horizontal";
+        pbOptions.position = "bottomCenter";
+        pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+  </script>
+	<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+	<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"></script>
+	<script type="text/javascript">
+    		var gitalk = new Gitalk({
+		        clientID: '2d10cfb27783db577e70',
+		        clientSecret: '154292876bb14966f6ae57304b67859617b08c94',
+		        id: md5(location.pathname),
+		        repo: 'gitalk',
+		        owner: 'Qiyuan-Z',
+		        admin: 'Qiyuan-Z',
+			distractionFreeMode: '',
+
+		    });
+	    gitalk.render('gitalk-container');
+	</script>
+
+
+  <script type="text/javascript" src="/js/src/clicklove.js"></script>
+</body>
+</html>
+
