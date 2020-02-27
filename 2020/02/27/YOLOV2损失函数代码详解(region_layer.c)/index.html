@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://Qiyuan-Z.github.io').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.6.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":true,"style":"mac"},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta property="og:type" content="article">
+<meta property="og:title" content="YOLOV2损失函数代码详解(region_layer.c)">
+<meta property="og:url" content="https://qiyuan-z.github.io/2020/02/27/YOLOV2%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E4%BB%A3%E7%A0%81%E8%AF%A6%E8%A7%A3(region_layer.c)/index.html">
+<meta property="og:site_name" content="Yuan">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ABDarknet/661.webp">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ABDarknet/662.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ABDarknet/663.webp">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ABDarknet/664.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ABDarknet/665.webp">
+<meta property="article:published_time" content="2020-02-27T02:37:37.359Z">
+<meta property="article:modified_time" content="2020-02-27T02:50:18.260Z">
+<meta property="article:author" content="Qiyuan-Z">
+<meta property="article:tag" content="目标检测">
+<meta property="article:tag" content="YOLOv3">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ABDarknet/661.webp">
+
+<link rel="canonical" href="https://qiyuan-z.github.io/2020/02/27/YOLOV2%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E4%BB%A3%E7%A0%81%E8%AF%A6%E8%A7%A3(region_layer.c)/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.css"><style>
+#needsharebutton-postbottom {
+  cursor: pointer;
+  height: 26px;
+  margin-top: 10px;
+  position: relative;
+}
+#needsharebutton-postbottom .btn {
+  border: 1px solid $btn-default-border-color;
+  border-radius: 3px;
+  display: initial;
+  padding: 1px 4px;
+}
+</style>
+  <title>YOLOV2损失函数代码详解(region_layer.c) | Yuan</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Yuan</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">记录学习中的点点滴滴</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qiyuan-z.github.io/2020/02/27/YOLOV2%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E4%BB%A3%E7%A0%81%E8%AF%A6%E8%A7%A3(region_layer.c)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/wallhaven-915.png">
+      <meta itemprop="name" content="Qiyuan-Z">
+      <meta itemprop="description" content="偉大な魂は目的を持ち、そうでないものは願望を持つ">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Yuan">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          YOLOV2损失函数代码详解(region_layer.c)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-02-27 10:37:37 / 修改时间：10:50:18" itemprop="dateCreated datePublished" datetime="2020-02-27T10:37:37+08:00">2020-02-27</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index">
+                    <span itemprop="name">学习</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>23k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>21 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="YOLOV2损失函数"><a href="#YOLOV2损失函数" class="headerlink" title=" YOLOV2损失函数"></a><a id="more"></a> YOLOV2损失函数</h2><p>YOLOV2对每个预测<code>box</code>的<code>[x,y]</code>，<code>confidence</code>进行逻辑回归，类别进行<code>softmax</code>回归；</p>
+<p>在Darknet中，损失函数可以用下图来进行表示：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ABDarknet/661.webp" alt></p>
+<p>可以看到这个损失函数是相当复杂的，损失函数的定义在Darknet/src/region_layer.c中。对于上面这一堆公式，我们先简单看一下，然后我们在源码中去找到对应部分。这里的$W$和$H$代表的是特征图的高宽，都为13，而$A$指的是Anchor个数，YOLOv2中是5，各个$\lambda$值是各个loss部分的权重系数。我们将损失函数分成3大部分来解释：</p>
+<ul>
+<li><p>第一部分：<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ABDarknet/662.png" alt><br>第一项需要好好解释一下，这个loss是计算background的置信度误差，这也是YOLO系列算法的特色，但是用哪些预测框来预测背景呢？这里需要计算各个预测框和所有的ground  truth之间的IOU值，并且取最大值记作MaxIOU，如果该值小于一定的阈值，YOLOv2论文取了0.6，那么这个预测框就标记为background，需要计算$\lambda_{n o o b j}$这么多倍的损失函数。为什么这个公式可以这样表达呢？因为我们有物体的话，那么$\lambda_{n o o b j}=0$，如果没有物体$\lambda_{\text {noob} j}=1$，我们把这个值带入到下面的公式就可以推出第一项啦！<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ABDarknet/663.webp" alt></p>
+</li>
+<li><p>第二部分：<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ABDarknet/664.png" alt><br>这一部分是计算Anchor boxes和预测框的坐标误差，但是只在前12800个iter计算，这一项应该是促进网络学习到Anchor的形状。</p>
+</li>
+<li><p>第三部分：<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ABDarknet/665.webp" alt><br>这一部分计算的是和ground truth匹配的预测框各部分的损失总和，包括坐标损失，置信度损失以及分类损失。<br><strong>3.1 坐标损失</strong> 这里的匹配原则是指对于某个特定的ground truth，首先要计算其中心点落在哪个cell上，然后计算这个cell的5个先验框和grond  truth的IOU值，计算IOU值的时候不考虑坐标只考虑形状，所以先将Anchor boxes和ground  truth的中心都偏移到同一位置，然后计算出对应的IOU值，IOU值最大的先验框和ground  truth匹配，对应的预测框用来预测这个ground truth。<br><strong>3.2 置信度损失</strong> 在计算obj置信度时， 增加了一项权重系数，也被称为rescore参数，当其为1时，损失是预测框和ground truth的真实IOU值(darknet中采用了这种实现方式)。而对于没有和ground  truth匹配的先验框，除去那些Max_IOU低于阈值的，其它就全部忽略。YOLOv2和SSD与RPN网络的处理方式有很大不同，因为它们可以将一个ground truth分配给多个先验框。<br><strong>3.3 分类损失</strong> 这个和YOLOv1一致，没什么好说的了。</p>
+</li>
+</ul>
+<p>我看了一篇讲解YOLOv2损失函数非常好的文章：<a href="https://www.cnblogs.com/YiXiaoZhou/p/7429481.html" target="_blank" rel="noopener">https://www.cnblogs.com/YiXiaoZhou/p/7429481.html</a> 。里面还有一个关键点：</p>
+<p>在计算boxes的$w$和$h$误差时，YOLOv1中采用的是平方根以降低boxes的大小对误差的影响，而YOLOv2是直接计算，但是根据ground truth的大小对权重系数进行修正：l.coord_scale x (2 - truth.w x truth.h)（这里和都归一化到(0,1))，这样对于尺度较小的boxes其权重系数会更大一些，可以放大误差，起到和YOLOv1计算平方根相似的效果。</p>
+<h2 id="代码详解"><a href="#代码详解" class="headerlink" title="代码详解"></a>代码详解</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br><span class="line">306</span><br><span class="line">307</span><br><span class="line">308</span><br><span class="line">309</span><br><span class="line">310</span><br><span class="line">311</span><br><span class="line">312</span><br><span class="line">313</span><br><span class="line">314</span><br><span class="line">315</span><br><span class="line">316</span><br><span class="line">317</span><br><span class="line">318</span><br><span class="line">319</span><br><span class="line">320</span><br><span class="line">321</span><br><span class="line">322</span><br><span class="line">323</span><br><span class="line">324</span><br><span class="line">325</span><br><span class="line">326</span><br><span class="line">327</span><br><span class="line">328</span><br><span class="line">329</span><br><span class="line">330</span><br><span class="line">331</span><br><span class="line">332</span><br><span class="line">333</span><br><span class="line">334</span><br><span class="line">335</span><br><span class="line">336</span><br><span class="line">337</span><br><span class="line">338</span><br><span class="line">339</span><br><span class="line">340</span><br><span class="line">341</span><br><span class="line">342</span><br><span class="line">343</span><br><span class="line">344</span><br><span class="line">345</span><br><span class="line">346</span><br><span class="line">347</span><br><span class="line">348</span><br><span class="line">349</span><br><span class="line">350</span><br><span class="line">351</span><br><span class="line">352</span><br><span class="line">353</span><br><span class="line">354</span><br><span class="line">355</span><br><span class="line">356</span><br><span class="line">357</span><br><span class="line">358</span><br><span class="line">359</span><br><span class="line">360</span><br><span class="line">361</span><br><span class="line">362</span><br><span class="line">363</span><br><span class="line">364</span><br><span class="line">365</span><br><span class="line">366</span><br><span class="line">367</span><br><span class="line">368</span><br><span class="line">369</span><br><span class="line">370</span><br><span class="line">371</span><br><span class="line">372</span><br><span class="line">373</span><br><span class="line">374</span><br><span class="line">375</span><br><span class="line">376</span><br><span class="line">377</span><br><span class="line">378</span><br><span class="line">379</span><br><span class="line">380</span><br><span class="line">381</span><br><span class="line">382</span><br><span class="line">383</span><br><span class="line">384</span><br><span class="line">385</span><br><span class="line">386</span><br><span class="line">387</span><br><span class="line">388</span><br><span class="line">389</span><br><span class="line">390</span><br><span class="line">391</span><br><span class="line">392</span><br><span class="line">393</span><br><span class="line">394</span><br><span class="line">395</span><br><span class="line">396</span><br><span class="line">397</span><br><span class="line">398</span><br><span class="line">399</span><br><span class="line">400</span><br><span class="line">401</span><br><span class="line">402</span><br><span class="line">403</span><br><span class="line">404</span><br><span class="line">405</span><br><span class="line">406</span><br><span class="line">407</span><br><span class="line">408</span><br><span class="line">409</span><br><span class="line">410</span><br><span class="line">411</span><br><span class="line">412</span><br><span class="line">413</span><br><span class="line">414</span><br><span class="line">415</span><br><span class="line">416</span><br><span class="line">417</span><br><span class="line">418</span><br><span class="line">419</span><br><span class="line">420</span><br><span class="line">421</span><br><span class="line">422</span><br><span class="line">423</span><br><span class="line">424</span><br><span class="line">425</span><br><span class="line">426</span><br><span class="line">427</span><br><span class="line">428</span><br><span class="line">429</span><br><span class="line">430</span><br><span class="line">431</span><br><span class="line">432</span><br><span class="line">433</span><br><span class="line">434</span><br><span class="line">435</span><br><span class="line">436</span><br><span class="line">437</span><br><span class="line">438</span><br><span class="line">439</span><br><span class="line">440</span><br><span class="line">441</span><br><span class="line">442</span><br><span class="line">443</span><br><span class="line">444</span><br><span class="line">445</span><br><span class="line">446</span><br><span class="line">447</span><br><span class="line">448</span><br><span class="line">449</span><br><span class="line">450</span><br><span class="line">451</span><br><span class="line">452</span><br><span class="line">453</span><br><span class="line">454</span><br><span class="line">455</span><br><span class="line">456</span><br><span class="line">457</span><br><span class="line">458</span><br><span class="line">459</span><br><span class="line">460</span><br><span class="line">461</span><br><span class="line">462</span><br><span class="line">463</span><br><span class="line">464</span><br><span class="line">465</span><br><span class="line">466</span><br><span class="line">467</span><br><span class="line">468</span><br><span class="line">469</span><br><span class="line">470</span><br><span class="line">471</span><br><span class="line">472</span><br><span class="line">473</span><br><span class="line">474</span><br><span class="line">475</span><br><span class="line">476</span><br><span class="line">477</span><br><span class="line">478</span><br><span class="line">479</span><br><span class="line">480</span><br><span class="line">481</span><br><span class="line">482</span><br><span class="line">483</span><br><span class="line">484</span><br><span class="line">485</span><br><span class="line">486</span><br><span class="line">487</span><br><span class="line">488</span><br><span class="line">489</span><br><span class="line">490</span><br><span class="line">491</span><br><span class="line">492</span><br><span class="line">493</span><br><span class="line">494</span><br><span class="line">495</span><br><span class="line">496</span><br><span class="line">497</span><br><span class="line">498</span><br><span class="line">499</span><br></pre></td><td class="code"><pre><span class="line">#define DOABS 1</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 构建YOLOv2 region_layer层</span><br><span class="line">&#x2F;&#x2F; batch 一个batch中包含的图片数</span><br><span class="line">&#x2F;&#x2F; w 输入特征图的宽度</span><br><span class="line">&#x2F;&#x2F; h 输入特征图的高度</span><br><span class="line">&#x2F;&#x2F; n 一个cell预测多少个bbox</span><br><span class="line">&#x2F;&#x2F; classes 网络需要识别的物体类别数</span><br><span class="line">&#x2F;&#x2F; coord 一个bbox包含的[x,y,w,h]</span><br><span class="line">region_layer make_region_layer(int batch, int w, int h, int n, int classes, int coords, int max_boxes)</span><br><span class="line">&#123;</span><br><span class="line">    region_layer l &#x3D; &#123; (LAYER_TYPE)0 &#125;;</span><br><span class="line">    l.type &#x3D; REGION; &#x2F;&#x2F;层类别</span><br><span class="line">	&#x2F;&#x2F; 这些变量都可以参考darknet.h中的注释</span><br><span class="line">    l.n &#x3D; n; &#x2F;&#x2F;一个cell中预测多少个box</span><br><span class="line">    l.batch &#x3D; batch; &#x2F;&#x2F;一个batch中包含的图片数</span><br><span class="line">    l.h &#x3D; h; &#x2F;&#x2F;输入图片的宽度</span><br><span class="line">    l.w &#x3D; w; &#x2F;&#x2F;输入图片的宽度</span><br><span class="line">    l.classes &#x3D; classes; &#x2F;&#x2F;网络需要识别的物体类数</span><br><span class="line">    l.coords &#x3D; coords; &#x2F;&#x2F;定位一个物体所需的参数个数（一般值为4,包括矩形中心点坐标x,y以及长宽w,h）</span><br><span class="line">    l.cost &#x3D; (float*)xcalloc(1, sizeof(float)); &#x2F;&#x2F;目标函数值，为单精度浮点型指针</span><br><span class="line">    l.biases &#x3D; (float*)xcalloc(n * 2, sizeof(float));</span><br><span class="line">    l.bias_updates &#x3D; (float*)xcalloc(n * 2, sizeof(float));</span><br><span class="line">    l.outputs &#x3D; h*w*n*(classes + coords + 1);  &#x2F;&#x2F;一张训练图片经过region_layer层后得到的输出元素个数（等于网格数*每个网格预测的矩形框数*每个矩形框的参数个数）</span><br><span class="line">    l.inputs &#x3D; l.outputs;   &#x2F;&#x2F;一张训练图片输入到reigon_layer层的元素个数（注意是一张图片，对于region_layer，输入和输出的元素个数相等）</span><br><span class="line">    &#x2F;&#x2F;每张图片含有的真实矩形框参数的个数（max_boxes表示一张图片中最多有max_boxes个ground truth矩形框，每个真实矩形框有</span><br><span class="line">    &#x2F;&#x2F;5个参数，包括x,y,w,h四个定位参数，以及物体类别）,注意max_boxes是darknet程序内写死的，实际上每张图片可能</span><br><span class="line">    &#x2F;&#x2F;并没有max_boxes个真实矩形框，也能没有这么多参数，但为了保持一致性，还是会留着这么大的存储空间，只是其中的</span><br><span class="line">    &#x2F;&#x2F;值为空而已.</span><br><span class="line">	l.max_boxes &#x3D; max_boxes;</span><br><span class="line">	&#x2F;&#x2F; GT: max_boxes*(4+1) 存储max_boxes个bbox的信息，这里是假设图片中GT bbox的数量是</span><br><span class="line">	&#x2F;&#x2F;小于max_boxes的，这里是写死的；此处与yolov1是不同的</span><br><span class="line">    l.truths &#x3D; max_boxes*(5);</span><br><span class="line">	&#x2F;&#x2F;  region层误差项（包含整个batch的）</span><br><span class="line">    l.delta &#x3D; (float*)xcalloc(batch * l.outputs, sizeof(float));</span><br><span class="line">	&#x2F;&#x2F; region层所有输出（包含整个batch的）</span><br><span class="line">    &#x2F;&#x2F;region_layer的输出维度是l.out_w*l.out_h，等于输出的维度，输出的通道数为l.out_c，也即是输入的通道数，具体为：n*(classes+coords+1)</span><br><span class="line">	&#x2F;&#x2F;YOLO检测模型将图片分成S*S个网格，每个网格又预测B个矩形框，最后一层输出的就是这些网格中包含的所有矩形框的信息</span><br><span class="line">	l.output &#x3D; (float*)xcalloc(batch * l.outputs, sizeof(float));</span><br><span class="line">    int i;</span><br><span class="line">	&#x2F;&#x2F;存储bbox的Anchor box的[w,h]的初始化,在src&#x2F;parse.c中parse_yolo函数会加载cfg中Anchor尺寸</span><br><span class="line">    for(i &#x3D; 0; i &lt; n*2; ++i)&#123;</span><br><span class="line">        l.biases[i] &#x3D; .5;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    l.forward &#x3D; forward_region_layer;</span><br><span class="line">    l.backward &#x3D; backward_region_layer;</span><br><span class="line">#ifdef GPU</span><br><span class="line">    l.forward_gpu &#x3D; forward_region_layer_gpu;</span><br><span class="line">    l.backward_gpu &#x3D; backward_region_layer_gpu;</span><br><span class="line">    l.output_gpu &#x3D; cuda_make_array(l.output, batch*l.outputs);</span><br><span class="line">    l.delta_gpu &#x3D; cuda_make_array(l.delta, batch*l.outputs);</span><br><span class="line">#endif</span><br><span class="line"></span><br><span class="line">    fprintf(stderr, &quot;detection\n&quot;);</span><br><span class="line">    srand(time(0));</span><br><span class="line"></span><br><span class="line">    return l;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">void resize_region_layer(layer *l, int w, int h)</span><br><span class="line">&#123;</span><br><span class="line">#ifdef GPU</span><br><span class="line">    int old_w &#x3D; l-&gt;w;</span><br><span class="line">    int old_h &#x3D; l-&gt;h;</span><br><span class="line">#endif</span><br><span class="line">    l-&gt;w &#x3D; w;</span><br><span class="line">    l-&gt;h &#x3D; h;</span><br><span class="line"></span><br><span class="line">    l-&gt;outputs &#x3D; h*w*l-&gt;n*(l-&gt;classes + l-&gt;coords + 1);</span><br><span class="line">    l-&gt;inputs &#x3D; l-&gt;outputs;</span><br><span class="line"></span><br><span class="line">    l-&gt;output &#x3D; (float*)xrealloc(l-&gt;output, l-&gt;batch * l-&gt;outputs * sizeof(float));</span><br><span class="line">    l-&gt;delta &#x3D; (float*)xrealloc(l-&gt;delta, l-&gt;batch * l-&gt;outputs * sizeof(float));</span><br><span class="line"></span><br><span class="line">#ifdef GPU</span><br><span class="line">    if (old_w &lt; w || old_h &lt; h) &#123;</span><br><span class="line">        cuda_free(l-&gt;delta_gpu);</span><br><span class="line">        cuda_free(l-&gt;output_gpu);</span><br><span class="line"></span><br><span class="line">        l-&gt;delta_gpu &#x3D; cuda_make_array(l-&gt;delta, l-&gt;batch*l-&gt;outputs);</span><br><span class="line">        l-&gt;output_gpu &#x3D; cuda_make_array(l-&gt;output, l-&gt;batch*l-&gt;outputs);</span><br><span class="line">    &#125;</span><br><span class="line">#endif</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;获取某个矩形框的4个定位信息，即根据输入的矩形框索引从l.output中获取该矩形框的定位信息x,y,w,h</span><br><span class="line">&#x2F;&#x2F;x  region_layer的输出，即l.output，包含所有batch预测得到的矩形框信息</span><br><span class="line">&#x2F;&#x2F;biases 表示Anchor框的长和宽</span><br><span class="line">&#x2F;&#x2F;index 矩形框的首地址（索引，矩形框中存储的首个参数x在l.output中的索引）</span><br><span class="line">&#x2F;&#x2F;i 第几行（region_layer维度为l.out_w*l.out_c）</span><br><span class="line">&#x2F;&#x2F;j 第几列</span><br><span class="line">&#x2F;&#x2F;w 特征图的宽度</span><br><span class="line">&#x2F;&#x2F;h 特征图的高度</span><br><span class="line">box get_region_box(float *x, float *biases, int n, int index, int i, int j, int w, int h)</span><br><span class="line">&#123;</span><br><span class="line">    box b;</span><br><span class="line">    b.x &#x3D; (i + logistic_activate(x[index + 0])) &#x2F; w;</span><br><span class="line">    b.y &#x3D; (j + logistic_activate(x[index + 1])) &#x2F; h;</span><br><span class="line">    b.w &#x3D; exp(x[index + 2]) * biases[2*n];</span><br><span class="line">    b.h &#x3D; exp(x[index + 3]) * biases[2*n+1];</span><br><span class="line">    if(DOABS)&#123;</span><br><span class="line">        b.w &#x3D; exp(x[index + 2]) * biases[2*n]   &#x2F; w;</span><br><span class="line">        b.h &#x3D; exp(x[index + 3]) * biases[2*n+1] &#x2F; h;</span><br><span class="line">    &#125;</span><br><span class="line">    return b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">float delta_region_box(box truth, float *x, float *biases, int n, int index, int i, int j, int w, int h, float *delta, float scale)</span><br><span class="line">&#123;</span><br><span class="line">	&#x2F;&#x2F; 获得第j*w+i个cell第n个bbox在当前特征图上位置和宽高</span><br><span class="line">    box pred &#x3D; get_region_box(x, biases, n, index, i, j, w, h);</span><br><span class="line">	&#x2F;&#x2F; 计算pred bbox 与 GT bbox的IOU【前12800GT boox为当前cell第n个bbox的Anchor】</span><br><span class="line">    float iou &#x3D; box_iou(pred, truth);</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F; 计算GT bbox的tx,ty,tw,th</span><br><span class="line">    float tx &#x3D; (truth.x*w - i);</span><br><span class="line">    float ty &#x3D; (truth.y*h - j);</span><br><span class="line">    float tw &#x3D; log(truth.w &#x2F; biases[2*n]);</span><br><span class="line">    float th &#x3D; log(truth.h &#x2F; biases[2*n + 1]);</span><br><span class="line">    if(DOABS)&#123;</span><br><span class="line">        tw &#x3D; log(truth.w*w &#x2F; biases[2*n]);</span><br><span class="line">        th &#x3D; log(truth.h*h &#x2F; biases[2*n + 1]);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F; 计算tx,ty,tw,th梯度</span><br><span class="line">    delta[index + 0] &#x3D; scale * (tx - logistic_activate(x[index + 0])) * logistic_gradient(logistic_activate(x[index + 0]));</span><br><span class="line">    delta[index + 1] &#x3D; scale * (ty - logistic_activate(x[index + 1])) * logistic_gradient(logistic_activate(x[index + 1]));</span><br><span class="line">    delta[index + 2] &#x3D; scale * (tw - x[index + 2]);</span><br><span class="line">    delta[index + 3] &#x3D; scale * (th - x[index + 3]);</span><br><span class="line">    return iou;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">void delta_region_class(float *output, float *delta, int index, int class_id, int classes, tree *hier, float scale, float *avg_cat, int focal_loss)</span><br><span class="line">&#123;</span><br><span class="line">    int i, n;</span><br><span class="line">    if(hier)&#123; &#x2F;&#x2F; 在yolov2 中region层, 此部分不参与计算【这是在yolo9000才参与计算】</span><br><span class="line">        float pred &#x3D; 1;</span><br><span class="line">        while(class_id &gt;&#x3D; 0)&#123;</span><br><span class="line">            pred *&#x3D; output[index + class_id];</span><br><span class="line">            int g &#x3D; hier-&gt;group[class_id];</span><br><span class="line">            int offset &#x3D; hier-&gt;group_offset[g];</span><br><span class="line">            for(i &#x3D; 0; i &lt; hier-&gt;group_size[g]; ++i)&#123;</span><br><span class="line">                delta[index + offset + i] &#x3D; scale * (0 - output[index + offset + i]);</span><br><span class="line">            &#125;</span><br><span class="line">            delta[index + class_id] &#x3D; scale * (1 - output[index + class_id]);</span><br><span class="line"></span><br><span class="line">            class_id &#x3D; hier-&gt;parent[class_id];</span><br><span class="line">        &#125;</span><br><span class="line">        *avg_cat +&#x3D; pred;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        &#x2F;&#x2F; Focal loss</span><br><span class="line">        if (focal_loss) &#123; &#x2F;&#x2F;如果使用focal loss</span><br><span class="line">            &#x2F;&#x2F; Focal Loss</span><br><span class="line">            float alpha &#x3D; 0.5;    &#x2F;&#x2F; 0.25 or 0.5</span><br><span class="line">            &#x2F;&#x2F;float gamma &#x3D; 2;    &#x2F;&#x2F; hardcoded in many places of the grad-formula</span><br><span class="line"></span><br><span class="line">            int ti &#x3D; index + class_id;</span><br><span class="line">            float pt &#x3D; output[ti] + 0.000000000000001F;</span><br><span class="line">            &#x2F;&#x2F; http:&#x2F;&#x2F;fooplot.com&#x2F;#W3sidHlwZSI6MCwiZXEiOiItKDEteCkqKDIqeCpsb2coeCkreC0xKSIsImNvbG9yIjoiIzAwMDAwMCJ9LHsidHlwZSI6MTAwMH1d</span><br><span class="line">            float grad &#x3D; -(1 - pt) * (2 * pt*logf(pt) + pt - 1);    &#x2F;&#x2F; http:&#x2F;&#x2F;blog.csdn.net&#x2F;linmingan&#x2F;article&#x2F;details&#x2F;77885832</span><br><span class="line">            &#x2F;&#x2F;float grad &#x3D; (1 - pt) * (2 * pt*logf(pt) + pt - 1);    &#x2F;&#x2F; https:&#x2F;&#x2F;github.com&#x2F;unsky&#x2F;focal-loss</span><br><span class="line"></span><br><span class="line">            for (n &#x3D; 0; n &lt; classes; ++n) &#123;</span><br><span class="line">				&#x2F;&#x2F; focal loss的梯度</span><br><span class="line">                delta[index + n] &#x3D; scale * (((n &#x3D;&#x3D; class_id) ? 1 : 0) - output[index + n]);</span><br><span class="line"></span><br><span class="line">                delta[index + n] *&#x3D; alpha*grad;</span><br><span class="line"></span><br><span class="line">                if (n &#x3D;&#x3D; class_id) *avg_cat +&#x3D; output[index + n];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        else &#123;</span><br><span class="line">            &#x2F;&#x2F; default</span><br><span class="line">            for (n &#x3D; 0; n &lt; classes; ++n) &#123;</span><br><span class="line">				&#x2F;&#x2F; 计算类别损失的梯度, 反向传递到误差项l.delta中, 在yolo v2中scale&#x3D;1</span><br><span class="line">                delta[index + n] &#x3D; scale * (((n &#x3D;&#x3D; class_id) ? 1 : 0) - output[index + n]);</span><br><span class="line">                if (n &#x3D;&#x3D; class_id) *avg_cat +&#x3D; output[index + n];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">float logit(float x)</span><br><span class="line">&#123;</span><br><span class="line">    return log(x&#x2F;(1.-x));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">float tisnan(float x)</span><br><span class="line">&#123;</span><br><span class="line">    return (x !&#x3D; x);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @brief 计算某个矩形框中某个参数在l.output中的索引。一个矩形框包含了x,y,w,h,c,C1,C2...,Cn信息，</span><br><span class="line"> *        前四个用于定位，第五个为矩形框含有物体的置信度信息c，即矩形框中存在物体的概率为多大，而C1到Cn</span><br><span class="line"> *        为矩形框中所包含的物体分别属于这n类物体的概率。本函数负责获取该矩形框首个定位信息也即x值在</span><br><span class="line"> *        l.output中索引、获取该矩形框置信度信息c在l.output中的索引、获取该矩形框分类所属概率的首个</span><br><span class="line"> *        概率也即C1值的索引，具体是获取矩形框哪个参数的索引，取决于输入参数entry的值，这些在</span><br><span class="line"> *        forward_region_layer()函数中都有用到，由于l.output的存储方式，当entry&#x3D;0时，就是获取矩形框</span><br><span class="line"> *        x参数在l.output中的索引；当entry&#x3D;4时，就是获取矩形框置信度信息c在l.output中的索引；当</span><br><span class="line"> *        entry&#x3D;5时，就是获取矩形框首个所属概率C1在l.output中的索引，具体可以参考forward_region_layer()</span><br><span class="line"> *        中调用本函数时的注释.</span><br><span class="line"> * @param l 当前region_layer</span><br><span class="line"> * @param batch 当前照片是整个batch中的第几张，因为l.output中包含整个batch的输出，所以要定位某张训练图片</span><br><span class="line"> *              输出的众多网格中的某个矩形框，当然需要该参数.</span><br><span class="line"> * @param location 这个参数，说实话，感觉像个鸡肋参数，函数中用这个参数获取n和loc的值，这个n就是表示网格中</span><br><span class="line"> *                 的第几个预测矩形框（比如每个网格预测5个矩形框，那么n取值范围就是从0~4，loc就是某个</span><br><span class="line"> *                 通道上的元素偏移（region_layer输出的通道数为l.out_c &#x3D; (classes + coords + 1)，</span><br><span class="line"> *                 这样说可能没有说明白，这都与l.output的存储结构相关，见下面详细注释以及其他说明。总之，</span><br><span class="line"> *                 查看一下调用本函数的父函数forward_region_layer()就知道了，可以直接输入n和j*l.w+i的，</span><br><span class="line"> *                 没有必要输入location，这样还得重新计算一次n和loc.</span><br><span class="line"> * @param entry 切入点偏移系数，关于这个参数，就又要扯到l.output的存储结构了，见下面详细注释以及其他说明.</span><br><span class="line"> * @details l.output这个参数的存储内容以及存储方式已经在多个地方说明了，再多的文字都不及图文说明，此处再</span><br><span class="line"> *          简要罗嗦几句，更为具体的参考图文说明。l.output中存储了整个batch的训练输出，每张训练图片都会输出</span><br><span class="line"> *          l.out_w*l.out_h个网格，每个网格会预测l.n个矩形框，每个矩形框含有l.classes+l.coords+1个参数，</span><br><span class="line"> *          而最后一层的输出通道数为l.n*(l.classes+l.coords+1)，可以想象下最终输出的三维张量是个什么样子的。</span><br><span class="line"> *          展成一维数组存储时，l.output可以首先分成batch个大段，每个大段存储了一张训练图片的所有输出；进一步细分，</span><br><span class="line"> *          取其中第一大段分析，该大段中存储了第一张训练图片所有输出网格预测的矩形框信息，每个网格预测了l.n个矩形框，</span><br><span class="line"> *          存储时，l.n个矩形框是分开存储的，也就是先存储所有网格中的第一个矩形框，而后存储所有网格中的第二个矩形框，</span><br><span class="line"> *          依次类推，如果每个网格中预测5个矩形框，则可以继续把这一大段分成5个中段。继续细分，5个中段中取第</span><br><span class="line"> *          一个中段来分析，这个中段中按行（有l.out_w*l.out_h个网格，按行存储）依次存储了这张训练图片所有输出网格中</span><br><span class="line"> *          的第一个矩形框信息，要注意的是，这个中段存储的顺序并不是挨个挨个存储每个矩形框的所有信息，</span><br><span class="line"> *          而是先存储所有矩形框的x，而后是所有的y,然后是所有的w,再是h，c，最后的的概率数组也是拆分进行存储，</span><br><span class="line"> *          并不是一下子存储完一个矩形框所有类的概率，而是先存储所有网格所属第一类的概率，再存储所属第二类的概率，</span><br><span class="line"> *          具体来说这一中段首先存储了l.out_w*l.out_h个x，然后是l.out_w*l.out_c个y，依次下去，</span><br><span class="line"> *          最后是l.out_w*l.out_h个C1（属于第一类的概率，用C1表示，下面类似），l.out_w*l.outh个C2,...,</span><br><span class="line"> *          l.out_w*l.out_c*Cn（假设共有n类），所以可以继续将中段分成几个小段，依次为x,y,w,h,c,C1,C2,...Cn</span><br><span class="line"> *          小段，每小段的长度都为l.out_w*l.out_c.</span><br><span class="line"> *          现在回过来看本函数的输入参数，batch就是大段的偏移数（从第几个大段开始，对应是第几张训练图片），</span><br><span class="line"> *          由location计算得到的n就是中段的偏移数（从第几个中段开始，对应是第几个矩形框），</span><br><span class="line"> *          entry就是小段的偏移数（从几个小段开始，对应具体是那种参数，x,c还是C1），而loc则是最后的定位，</span><br><span class="line"> *          前面确定好第几大段中的第几中段中的第几小段的首地址，loc就是从该首地址往后数loc个元素，得到最终定位</span><br><span class="line"> *          某个具体参数（x或c或C1）的索引值，比如l.output中存储的数据如下所示（这里假设只存了一张训练图片的输出，</span><br><span class="line"> *          因此batch只能为0；并假设l.out_w&#x3D;l.out_h&#x3D;2,l.classes&#x3D;2）：</span><br><span class="line"> *          xxxxyyyywwwwhhhhccccC1C1C1C1C2C2C2C2-#-xxxxyyyywwwwhhhhccccC1C1C1C1C2C2C2C2，</span><br><span class="line"> *          n&#x3D;0则定位到-#-左边的首地址（表示每个网格预测的第一个矩形框），n&#x3D;1则定位到-#-右边的首地址（表示每个网格预测的第二个矩形框）</span><br><span class="line"> *          entry&#x3D;0,loc&#x3D;0获取的是x的索引，且获取的是第一个x也即l.out_w*l.out_h个网格中第一个网格中第一个矩形框x参数的索引；</span><br><span class="line"> *          entry&#x3D;4,loc&#x3D;1获取的是c的索引，且获取的是第二个c也即l.out_w*l.out_h个网格中第二个网格中第一个矩形框c参数的索引；</span><br><span class="line"> *          entry&#x3D;5,loc&#x3D;2获取的是C1的索引，且获取的是第三个C1也即l.out_w*l.out_h个网格中第三个网格中第一个矩形框C1参数的索引；</span><br><span class="line"> *          如果要获取第一个网格中第一个矩形框w参数的索引呢？如果已经获取了其x值的索引，显然用x的索引加上3*l.out_w*l.out_h即可获取到，</span><br><span class="line"> *          这正是delta_region_box()函数的做法；</span><br><span class="line"> *          如果要获取第三个网格中第一个矩形框C2参数的索引呢？如果已经获取了其C1值的索引，显然用C1的索引加上l.out_w*l.out_h即可获取到，</span><br><span class="line"> *          这正是delta_region_class()函数中的做法；</span><br><span class="line"> *          由上可知，entry&#x3D;0时,即偏移0个小段，是获取x的索引；entry&#x3D;4,是获取自信度信息c的索引；entry&#x3D;5，是获取C1的索引.</span><br><span class="line"> *          l.output的存储方式大致就是这样，个人觉得说的已经很清楚了，但可视化效果终究不如图文说明～</span><br><span class="line">*&#x2F;</span><br><span class="line">static int entry_index(layer l, int batch, int location, int entry)</span><br><span class="line">&#123;</span><br><span class="line">    int n &#x3D; location &#x2F; (l.w*l.h);</span><br><span class="line">    int loc &#x3D; location % (l.w*l.h);</span><br><span class="line">    return batch*l.outputs + n*l.w*l.h*(l.coords + l.classes + 1) + entry*l.w*l.h + loc;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">void softmax_tree(float *input, int batch, int inputs, float temp, tree *hierarchy, float *output);</span><br><span class="line">&#x2F;&#x2F;本函数多次调用了entry_index()函数，且使用的参数不尽相同，尤其是最后一个参数，通过最后一个参数，</span><br><span class="line">&#x2F;&#x2F;可以确定出region_layer输出l.output的数据存储方式。为方便叙述，假设本层输出参数l.w &#x3D; 2, l.h&#x3D; 3,</span><br><span class="line">&#x2F;&#x2F;l.n &#x3D; 2, l.classes &#x3D; 2, l.coords &#x3D; 4, l.c &#x3D; l.n * (l.coords + l.classes + 1) &#x3D; 21,</span><br><span class="line">&#x2F;&#x2F;l.output中存储了所有矩形框的信息参数，每个矩形框包括4条定位信息参数x,y,w,h，一条置信度（confidience）</span><br><span class="line">&#x2F;&#x2F;参数c，以及所有类别的概率C1,C2（本例中，假设就只有两个类别，l.classes&#x3D;2），那么一张样本图片最终会有</span><br><span class="line">&#x2F;&#x2F;l.w*l.h*l.n个矩形框（l.w*l.h即为最终图像划分层网格的个数，每个网格预测l.n个矩形框），那么</span><br><span class="line">&#x2F;&#x2F;l.output中存储的元素个数共有l.w*l.h*l.n*(l.coords + 1 + l.classes)，这些元素全部拉伸成一维数组</span><br><span class="line">&#x2F;&#x2F;的形式存储在l.output中，存储的顺序为：</span><br><span class="line">&#x2F;&#x2F;xxxxxx-yyyyyy-wwwwww-hhhhhh-cccccc-C1C1C1C1C1C1C2C2C2C2C2C2-##-xxxxxx-yyyyyy-wwwwww-hhhhhh-cccccc-C1C2C1C2C1C2C1C2C1C2C1C2</span><br><span class="line">&#x2F;&#x2F;文字说明如下：-##-隔开分成两段，左右分别是代表所有网格的第1个box和第2个box（因为l.n&#x3D;2，表示每个网格预测两个box）</span><br><span class="line">&#x2F;&#x2F;总共有l.w*l.h个网格，且存储时，把所有网格的x,y,w,h,c信息聚到一起再拼接起来，因此xxxxxx及其他信息都有l.w*l.h&#x3D;6个，</span><br><span class="line">&#x2F;&#x2F;因为每个有l.classes个物体类别，而且也是和xywh一样，每一类都集中存储，先存储l.w*l.h&#x3D;6个C1类，而后存储6个C2类，</span><br><span class="line">&#x2F;&#x2F;置信度参数c表示的是该矩形框内存在物体的概率，而C1，C2分别表示矩形框内存在物体时属于物体1和物体2的概率，</span><br><span class="line">&#x2F;&#x2F;因此c*C1即得矩形框内存在物体1的概率，c*C2即得矩形框内存在物体2的概率</span><br><span class="line">void forward_region_layer(const region_layer l, network_state state)</span><br><span class="line">&#123;</span><br><span class="line">    int i,j,b,t,n;</span><br><span class="line">    int size &#x3D; l.coords + l.classes + 1;</span><br><span class="line">	&#x2F;&#x2F;内存拷贝, l.output &#x3D; state.input</span><br><span class="line">    memcpy(l.output, state.input, l.outputs*l.batch*sizeof(float));</span><br><span class="line">	&#x2F;&#x2F;这个#ifndef预编译指令没有必要用的，因为forward_region_layer()函数本身就对应没有定义gpu版的，所以肯定会执行其中的语句</span><br><span class="line">    #ifndef GPU</span><br><span class="line">    flatten(l.output, l.w*l.h, size*l.n, l.batch, 1);</span><br><span class="line">    #endif</span><br><span class="line">    for (b &#x3D; 0; b &lt; l.batch; ++b)&#123;</span><br><span class="line">        for(i &#x3D; 0; i &lt; l.h*l.w*l.n; ++i)&#123;</span><br><span class="line">            int index &#x3D; size*i + b*l.outputs;</span><br><span class="line">			&#x2F;&#x2F; 对confidence进行逻辑回归</span><br><span class="line">            l.output[index + 4] &#x3D; logistic_activate(l.output[index + 4]);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#ifndef GPU</span><br><span class="line">    if (l.softmax_tree)&#123;</span><br><span class="line">        for (b &#x3D; 0; b &lt; l.batch; ++b)&#123;</span><br><span class="line">            for(i &#x3D; 0; i &lt; l.h*l.w*l.n; ++i)&#123;</span><br><span class="line">                int index &#x3D; size*i + b*l.outputs;</span><br><span class="line">                softmax_tree(l.output + index + 5, 1, 0, 1, l.softmax_tree, l.output + index + 5);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; else if (l.softmax)&#123;</span><br><span class="line">        for (b &#x3D; 0; b &lt; l.batch; ++b)&#123;</span><br><span class="line">            for(i &#x3D; 0; i &lt; l.h*l.w*l.n; ++i)&#123;</span><br><span class="line">                int index &#x3D; size*i + b*l.outputs;</span><br><span class="line">				&#x2F;&#x2F; l.softmax 对class进行softmax回归</span><br><span class="line">                softmax(l.output + index + 5, l.classes, 1, l.output + index + 5, 1);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">#endif</span><br><span class="line">	&#x2F;&#x2F; inference阶段，则到此结束</span><br><span class="line">    if(!state.train) return;</span><br><span class="line">	&#x2F;&#x2F; 将reorg层的误差项进行初始化（包含整个batch的）</span><br><span class="line">    memset(l.delta, 0, l.outputs * l.batch * sizeof(float));</span><br><span class="line">    float avg_iou &#x3D; 0; &#x2F;&#x2F;平均IoU（Intersection over Union）</span><br><span class="line">    float recall &#x3D; 0; &#x2F;&#x2F;召回率</span><br><span class="line">    float avg_cat &#x3D; 0;</span><br><span class="line">    float avg_obj &#x3D; 0;</span><br><span class="line">    float avg_anyobj &#x3D; 0; &#x2F;&#x2F;一张训练图片所有预测矩形框的平均置信度（矩形框中含有物体的概率），该参数没有实际用处，仅用于输出打印</span><br><span class="line">    int count &#x3D; 0;</span><br><span class="line">    int class_count &#x3D; 0;</span><br><span class="line">	&#x2F;&#x2F; region层的总损失初始化为0</span><br><span class="line">    *(l.cost) &#x3D; 0;</span><br><span class="line">	&#x2F;&#x2F; 遍历batch中每一张图片</span><br><span class="line">    for (b &#x3D; 0; b &lt; l.batch; ++b) &#123;</span><br><span class="line">        if(l.softmax_tree)&#123; &#x2F;&#x2F;【这是在yolo9000才参与计算】</span><br><span class="line">            int onlyclass_id &#x3D; 0;</span><br><span class="line">			&#x2F;&#x2F; 循环max_boxes次，每张图片固定处理max_boxes个矩形框</span><br><span class="line">            for(t &#x3D; 0; t &lt; l.max_boxes; ++t)&#123;</span><br><span class="line">				&#x2F;&#x2F; 通过移位来获取每一个真实矩形框的信息，net.truth存储了网络吞入的所有图片的真实矩形框信息（一次吞入一个batch的训练图片），</span><br><span class="line">                &#x2F;&#x2F; net.truth作为这一个大数组的首地址，l.truths参数是每一张图片含有的真实值参数个数（可参考layer.h中的truths参数中的注释），</span><br><span class="line">                &#x2F;&#x2F; b是batch中已经处理完图片的图片的张数，5是每个真实矩形框需要5个参数值（也即每条矩形框真值有5个参数），t是本张图片已经处理</span><br><span class="line">                &#x2F;&#x2F; 过的矩形框的个数（每张图片最多处理max_boxes个矩形框），明白了上面的参数之后对于下面的移位获取对应矩形框真实值的代码就不难了</span><br><span class="line">                box truth &#x3D; float_to_box(state.truth + t*5 + b*l.truths);</span><br><span class="line">                &#x2F;&#x2F; 这个if语句是用来判断一下是否有读到真实矩形框值（每个矩形框有5个参数,float_to_box只读取其中的4个定位参数，</span><br><span class="line">                &#x2F;&#x2F; 只要验证x的值不为0,那肯定是4个参数值都读取到了，要么全部读取到了，要么一个也没有），另外，因为程序中写死了每张图片处理max_boxes个矩形框，</span><br><span class="line">                &#x2F;&#x2F; 那么有些图片没有这么多矩形框，就会出现没有读到的情况。</span><br><span class="line">				if(!truth.x) break; &#x2F;&#x2F; continue;</span><br><span class="line">				&#x2F;&#x2F;float_to_box()中没有读取矩形框中包含的物体类别编号的信息，就在此处获取。（darknet中，物体类别标签值为编号，</span><br><span class="line">				&#x2F;&#x2F;每一个类别都有一个编号值，这些物体具体的字符名称存储在一个文件中，如data&#x2F;*.names文件，其所在行数就是其编号值）</span><br><span class="line">                int class_id &#x3D; state.truth[t*5 + b*l.truths + 4];</span><br><span class="line">                float maxp &#x3D; 0;</span><br><span class="line">                int maxi &#x3D; 0;</span><br><span class="line">                if(truth.x &gt; 100000 &amp;&amp; truth.y &gt; 100000)&#123;</span><br><span class="line">                    for(n &#x3D; 0; n &lt; l.n*l.w*l.h; ++n)&#123;</span><br><span class="line">                        int index &#x3D; size*n + b*l.outputs + 5;</span><br><span class="line">                        float scale &#x3D;  l.output[index-1];</span><br><span class="line">                        float p &#x3D; scale*get_hierarchy_probability(l.output + index, l.softmax_tree, class_id);</span><br><span class="line">                        if(p &gt; maxp)&#123;</span><br><span class="line">                            maxp &#x3D; p;</span><br><span class="line">                            maxi &#x3D; n;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                    int index &#x3D; size*maxi + b*l.outputs + 5;</span><br><span class="line">                    delta_region_class(l.output, l.delta, index, class_id, l.classes, l.softmax_tree, l.class_scale, &amp;avg_cat, l.focal_loss);</span><br><span class="line">                    ++class_count;</span><br><span class="line">                    onlyclass_id &#x3D; 1;</span><br><span class="line">                    break;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            if(onlyclass_id) continue;</span><br><span class="line">        &#125;</span><br><span class="line">		</span><br><span class="line">        for (j &#x3D; 0; j &lt; l.h; ++j) &#123;</span><br><span class="line">            for (i &#x3D; 0; i &lt; l.w; ++i) &#123; &#x2F;&#x2F; 遍历每个cell, 当前cell编号为[j, i]</span><br><span class="line">                for (n &#x3D; 0; n &lt; l.n; ++n) &#123; &#x2F;&#x2F; 遍历每个bbox，当前bbox编号为[n]</span><br><span class="line">					&#x2F;&#x2F;根据i,j,n计算该矩形框的索引，实际是矩形框中存储的x参数在l.output中的索引，矩形框中包含多个参数，</span><br><span class="line">					&#x2F;&#x2F;x是其存储的首个参数，所以也可以说是获取该矩形框的首地址。</span><br><span class="line">                    int index &#x3D; size*(j*l.w*l.n + i*l.n + n) + b*l.outputs;</span><br><span class="line">					&#x2F;&#x2F; 根据矩形框的索引，获取矩形框的定位信息</span><br><span class="line">                    box pred &#x3D; get_region_box(l.output, l.biases, n, index, i, j, l.w, l.h);</span><br><span class="line">                    &#x2F;&#x2F; 最高IoU，赋初值0</span><br><span class="line">					float best_iou &#x3D; 0;</span><br><span class="line">                    int best_class_id &#x3D; -1;</span><br><span class="line">					&#x2F;&#x2F; 遍历每一个GT bbox</span><br><span class="line">                    for(t &#x3D; 0; t &lt; l.max_boxes; ++t)&#123;</span><br><span class="line">						&#x2F;&#x2F;将第t个bbox由float数组转bbox结构体,方便计算IOU</span><br><span class="line">                        box truth &#x3D; float_to_box(state.truth + t*5 + b*l.truths);</span><br><span class="line">						&#x2F;&#x2F;获取第t个bbox的物体类别</span><br><span class="line">                        int class_id &#x3D; state.truth[t * 5 + b*l.truths + 4];</span><br><span class="line">                        if (class_id &gt;&#x3D; l.classes) continue; &#x2F;&#x2F; if label contains class_id more than number of classes in the cfg-file</span><br><span class="line">                        if(!truth.x) break; &#x2F;&#x2F; continue;</span><br><span class="line">						&#x2F;&#x2F; 计算pred与第t个GT之间的IOU</span><br><span class="line">                        float iou &#x3D; box_iou(pred, truth);</span><br><span class="line">                        if (iou &gt; best_iou) &#123;</span><br><span class="line">                            best_class_id &#x3D; state.truth[t*5 + b*l.truths + 4];</span><br><span class="line">                            best_iou &#x3D; iou; &#x2F;&#x2F; 最大IOU更新</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">					&#x2F;&#x2F; 统计有目标的概率</span><br><span class="line">                    avg_anyobj +&#x3D; l.output[index + 4];</span><br><span class="line">					&#x2F;&#x2F; 与yolov1相似, 先将所有pred bbox都当做noobject，计算其confidence损失梯度</span><br><span class="line">                    l.delta[index + 4] &#x3D; l.noobject_scale * ((0 - l.output[index + 4]) * logistic_gradient(l.output[index + 4]));</span><br><span class="line">                    &#x2F;&#x2F; 在yolov2中并没有执行</span><br><span class="line">					if(l.classfix &#x3D;&#x3D; -1) l.delta[index + 4] &#x3D; l.noobject_scale * ((best_iou - l.output[index + 4]) * logistic_gradient(l.output[index + 4]));</span><br><span class="line">                    else&#123;</span><br><span class="line">						&#x2F;&#x2F; best_iou大于阈值则说明有object, 在yolo v2中阈值为0.6</span><br><span class="line">                        if (best_iou &gt; l.thresh) &#123;</span><br><span class="line">                            l.delta[index + 4] &#x3D; 0;</span><br><span class="line">                            if(l.classfix &gt; 0)&#123;</span><br><span class="line">                                delta_region_class(l.output, l.delta, index + 5, best_class_id, l.classes, l.softmax_tree, l.class_scale*(l.classfix &#x3D;&#x3D; 2 ? l.output[index + 4] : 1), &amp;avg_cat, l.focal_loss);</span><br><span class="line">                                ++class_count;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">					&#x2F;&#x2F; net.seen 保存当前是训练第多少张图片</span><br><span class="line">                    if(*(state.net.seen) &lt; 12800)&#123;</span><br><span class="line">						&#x2F;&#x2F; 对于训练阶段的前12800张图片,GT bbox 直接用了anchor box</span><br><span class="line">                        box truth &#x3D; &#123;0&#125;; &#x2F;&#x2F; 计算第[j, i]cell, 第n个bbox的anchor bbox</span><br><span class="line">                        truth.x &#x3D; (i + .5)&#x2F;l.w; &#x2F;&#x2F; +0.5是因为x位于几何中心, 然后计算x相对整张特征图的位置</span><br><span class="line">                        truth.y &#x3D; (j + .5)&#x2F;l.h;</span><br><span class="line">                        truth.w &#x3D; l.biases[2*n];</span><br><span class="line">                        truth.h &#x3D; l.biases[2*n+1];</span><br><span class="line">                        if(DOABS)&#123;</span><br><span class="line">                            truth.w &#x3D; l.biases[2*n]&#x2F;l.w;</span><br><span class="line">                            truth.h &#x3D; l.biases[2*n+1]&#x2F;l.h;</span><br><span class="line">                        &#125;</span><br><span class="line">						&#x2F;&#x2F; 将pred bbox的tx,ty,tw,th和上面的truth box的差值反向传递到l.detla</span><br><span class="line">                        delta_region_box(truth, l.output, l.biases, n, index, i, j, l.w, l.h, l.delta, .01);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">		&#x2F;&#x2F; 遍历每一个GT bbox</span><br><span class="line">        for(t &#x3D; 0; t &lt; l.max_boxes; ++t)&#123;</span><br><span class="line">			&#x2F;&#x2F; 将第t个bbox由float数组转bbox结构体,方便计算IOU</span><br><span class="line">            box truth &#x3D; float_to_box(state.truth + t*5 + b*l.truths);</span><br><span class="line">			</span><br><span class="line">            int class_id &#x3D; state.truth[t * 5 + b*l.truths + 4];</span><br><span class="line">            if (class_id &gt;&#x3D; l.classes) &#123;</span><br><span class="line">                printf(&quot; Warning: in txt-labels class_id&#x3D;%d &gt;&#x3D; classes&#x3D;%d in cfg-file. In txt-labels class_id should be [from 0 to %d] \n&quot;, class_id, l.classes, l.classes-1);</span><br><span class="line">                getchar();</span><br><span class="line">                continue; &#x2F;&#x2F; if label contains class_id more than number of classes in the cfg-file</span><br><span class="line">            &#125;</span><br><span class="line">			&#x2F;&#x2F; 如果x坐标为0则取消, 因为yolov2这里定义了30 bbox, 可能实际上没有bbox</span><br><span class="line">            if(!truth.x) break; &#x2F;&#x2F; continue;</span><br><span class="line">            float best_iou &#x3D; 0; &#x2F;&#x2F; 保存最大IOU</span><br><span class="line">            int best_index &#x3D; 0;&#x2F;&#x2F; 保存最大IOU的bbox index</span><br><span class="line">            int best_n &#x3D; 0;</span><br><span class="line">            i &#x3D; (truth.x * l.w); &#x2F;&#x2F; 获得当前第t个GT bbox所在cell</span><br><span class="line">            j &#x3D; (truth.y * l.h);</span><br><span class="line">            &#x2F;&#x2F;printf(&quot;%d %f %d %f\n&quot;, i, truth.x*l.w, j, truth.y*l.h);</span><br><span class="line">            box truth_shift &#x3D; truth; &#x2F;&#x2F; 将truth_shift的box移动到0,0</span><br><span class="line">            truth_shift.x &#x3D; 0;</span><br><span class="line">            truth_shift.y &#x3D; 0;</span><br><span class="line">            &#x2F;&#x2F;printf(&quot;index %d %d\n&quot;,i, j);</span><br><span class="line">            for(n &#x3D; 0; n &lt; l.n; ++n)&#123; &#x2F;&#x2F; 遍历cell[j,i]所在的n个预测bbox</span><br><span class="line">				&#x2F;&#x2F; 获得第j*w+i个cell第n个bbox的index</span><br><span class="line">                int index &#x3D; size*(j*l.w*l.n + i*l.n + n) + b*l.outputs;</span><br><span class="line">				&#x2F;&#x2F; 获得第j*w+i个cell第n个bbox在当前特征图上位置和宽高</span><br><span class="line">                box pred &#x3D; get_region_box(l.output, l.biases, n, index, i, j, l.w, l.h);</span><br><span class="line">                if(l.bias_match)&#123;&#x2F;&#x2F; yolov2 reorg层 bias_match &#x3D; 1</span><br><span class="line">                    pred.w &#x3D; l.biases[2*n];</span><br><span class="line">                    pred.h &#x3D; l.biases[2*n+1];</span><br><span class="line">                    if(DOABS)&#123;</span><br><span class="line">                        pred.w &#x3D; l.biases[2*n]&#x2F;l.w; &#x2F;&#x2F; 然后计算pred box的w相对整张特征图的位置</span><br><span class="line">                        pred.h &#x3D; l.biases[2*n+1]&#x2F;l.h;  &#x2F;&#x2F; 然后计算pred box的h相对整张特征图的位置</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                &#x2F;&#x2F;printf(&quot;pred: (%f, %f) %f x %f\n&quot;, pred.x, pred.y, pred.w, pred.h);</span><br><span class="line">                pred.x &#x3D; 0; &#x2F;&#x2F; 将预测的bbox移动到0,0</span><br><span class="line">                pred.y &#x3D; 0;</span><br><span class="line">                float iou &#x3D; box_iou(pred, truth_shift); &#x2F;&#x2F; 计算GT box truth_shift 与 预测bbox pred 二者之间的IOU</span><br><span class="line">                if (iou &gt; best_iou)&#123;</span><br><span class="line">                    best_index &#x3D; index;  &#x2F;&#x2F; 记录best_iou对应bbox的index</span><br><span class="line">                    best_iou &#x3D; iou; &#x2F;&#x2F; 记录IOU最大的IOU</span><br><span class="line">                    best_n &#x3D; n; &#x2F;&#x2F; 以及记录该bbox的编号n</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            &#x2F;&#x2F;printf(&quot;%d %f (%f, %f) %f x %f\n&quot;, best_n, best_iou, truth.x, truth.y, truth.w, truth.h);</span><br><span class="line">			&#x2F;&#x2F; 计算获得best_iou的pred bbox 与 GT bbox之间的真实iou, 之前best_iou是方便计算,以及加速,</span><br><span class="line">            &#x2F;&#x2F; 同时完成坐标损失的反向传递</span><br><span class="line">            float iou &#x3D; delta_region_box(truth, l.output, l.biases, best_n, best_index, i, j, l.w, l.h, l.delta, l.coord_scale);</span><br><span class="line">            &#x2F;&#x2F; 如果iou大于0.5, recall ++;</span><br><span class="line">			if(iou &gt; .5) recall +&#x3D; 1;</span><br><span class="line">            avg_iou +&#x3D; iou;</span><br><span class="line"></span><br><span class="line">            &#x2F;&#x2F;l.delta[best_index + 4] &#x3D; iou - l.output[best_index + 4];</span><br><span class="line">			&#x2F;&#x2F; 统计有目标的概率</span><br><span class="line">            avg_obj +&#x3D; l.output[best_index + 4];</span><br><span class="line">			&#x2F;&#x2F; 与yolov1相似, 该pred bbox中是有object，计算其confidence损失梯度; object_scale &#x3D; 5</span><br><span class="line">            l.delta[best_index + 4] &#x3D; l.object_scale * (1 - l.output[best_index + 4]) * logistic_gradient(l.output[best_index + 4]);</span><br><span class="line">            if (l.rescore) &#123; &#x2F;&#x2F; yolov2 reorg层中rescore &#x3D; 1, 参于计算</span><br><span class="line">				&#x2F;&#x2F;定义了rescore表示同时对confidence score进行回归</span><br><span class="line">				&#x2F;&#x2F; 该pred bbox中是有object，计算其confidence损失梯度的方法发生变化; object_scale &#x3D; 5,</span><br><span class="line">				l.delta[best_index + 4] &#x3D; l.object_scale * (iou - l.output[best_index + 4]) * logistic_gradient(l.output[best_index + 4]);</span><br><span class="line">            &#125;</span><br><span class="line">			&#x2F;&#x2F; yolov2 reorg层中map &#x3D; 0, 不参与计算 【这是在yolo9000才参与计算】</span><br><span class="line">            if (l.map) class_id &#x3D; l.map[class_id];</span><br><span class="line">			 &#x2F;&#x2F; 与yolov1相似, 该pred bbox中是有object，计算其class损失梯度; class_scale &#x3D; 1</span><br><span class="line">            delta_region_class(l.output, l.delta, best_index + 5, class_id, l.classes, l.softmax_tree, l.class_scale, &amp;avg_cat, l.focal_loss);</span><br><span class="line">            ++count;&#x2F;&#x2F; 正样本个数+1</span><br><span class="line">            ++class_count;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F;printf(&quot;\n&quot;);</span><br><span class="line">    #ifndef GPU</span><br><span class="line">    flatten(l.delta, l.w*l.h, size*l.n, l.batch, 0);</span><br><span class="line">    #endif</span><br><span class="line">    *(l.cost) &#x3D; pow(mag_array(l.delta, l.outputs * l.batch), 2);</span><br><span class="line">    printf(&quot;Region Avg IOU: %f, Class: %f, Obj: %f, No Obj: %f, Avg Recall: %f,  count: %d\n&quot;, avg_iou&#x2F;count, avg_cat&#x2F;class_count, avg_obj&#x2F;count, avg_anyobj&#x2F;(l.w*l.h*l.n*l.batch), recall&#x2F;count, count);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    <div class="post-widgets">
+      <div id="needsharebutton-postbottom">
+        <span class="btn">
+          <i class="fa fa-share-alt" aria-hidden="true"></i>
+        </span>
+      </div>
+    </div>
+	<div>
+
+	  
+
+		<div>
+
+    
+
+        <div >-------------本文结束感谢您的阅读-------------</div>
+
+    
+
+</div>
+
+	  
+
+	</div>
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/" rel="tag"><i class="fa fa-tag"></i> 目标检测</a>
+              <a href="/tags/YOLOv3/" rel="tag"><i class="fa fa-tag"></i> YOLOv3</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/02/26/Faster-RCNN/" rel="prev" title="Faster-RCNN">
+      <i class="fa fa-chevron-left"></i> Faster-RCNN
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/02/27/YOLOv1/" rel="next" title="YOLOv1">
+      YOLOv1 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#YOLOV2损失函数"><span class="nav-text"> YOLOV2损失函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码详解"><span class="nav-text">代码详解</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+	  
+     
+	  
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qiyuan-Z"
+      src="/images/wallhaven-915.png">
+  <p class="site-author-name" itemprop="name">Qiyuan-Z</p>
+  <div class="site-description" itemprop="description">偉大な魂は目的を持ち、そうでないものは願望を持つ</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">64</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Qiyuan-Z" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Qiyuan-Z" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:601872068@qq.com" title="E-Mail → mailto:601872068@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://project-inkstone.github.io/project-inkstone/?tdsourcetag=s_pctim_aiomsg" title="https:&#x2F;&#x2F;project-inkstone.github.io&#x2F;project-inkstone&#x2F;?tdsourcetag&#x3D;s_pctim_aiomsg" rel="noopener" target="_blank">project-inkstone</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+	  
+      <div id="music163player">
+		   <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=29784463&auto=1&height=66"></iframe>
+		   </iframe>
+	  </div>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qiyuan-Z</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="站点总字数">381k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">5:46</span>
+</div>
+
+<!-- 网站运行时间的设置 -->
+<span id="timeDate">载入天数...</span>
+<span id="times">载入时分秒...</span> 
+<script>
+    var now = new Date();
+    function createtime() {
+        var grt= new Date("12/01/2019 13:14:21");//此处修改你的建站时间或者网站上线时间
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;}
+        document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 ";
+        document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
+    }
+setInterval("createtime()",250);
+</script>
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+	<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"></script>
+	<script type="text/javascript">
+    		var gitalk = new Gitalk({
+		        clientID: '2d10cfb27783db577e70',
+		        clientSecret: '154292876bb14966f6ae57304b67859617b08c94',
+		        id: md5(location.pathname),
+		        repo: 'gitalk',
+		        owner: 'Qiyuan-Z',
+		        admin: 'Qiyuan-Z',
+			distractionFreeMode: '',
+
+		    });
+	    gitalk.render('gitalk-container');
+	</script>
+
+
+
+  
+
+  
+      
+<script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', () => {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
+
+  
+
+  <script src="//cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.js"></script>
+  <script>
+      pbOptions = {};
+        pbOptions.iconStyle = "box";
+        pbOptions.boxForm = "horizontal";
+        pbOptions.position = "bottomCenter";
+        pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+  </script>
+	<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+	<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"></script>
+	<script type="text/javascript">
+    		var gitalk = new Gitalk({
+		        clientID: '2d10cfb27783db577e70',
+		        clientSecret: '154292876bb14966f6ae57304b67859617b08c94',
+		        id: md5(location.pathname),
+		        repo: 'gitalk',
+		        owner: 'Qiyuan-Z',
+		        admin: 'Qiyuan-Z',
+			distractionFreeMode: '',
+
+		    });
+	    gitalk.render('gitalk-container');
+	</script>
+
+
+  <script type="text/javascript" src="/js/src/clicklove.js"></script>
+</body>
+</html>
+
