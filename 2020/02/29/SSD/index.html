@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://Qiyuan-Z.github.io').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.6.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":true,"style":"mac"},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta property="og:type" content="article">
+<meta property="og:title" content="SSD">
+<meta property="og:url" content="https://qiyuan-z.github.io/2020/02/29/SSD/index.html">
+<meta property="og:site_name" content="Yuan">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/Snipaste_2020-01-08_14-51-11.jpg">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SSD/640.jfif">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SSD/641.webp">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SSD/642.webp">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SSD/643.webp">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SSD/644.webp">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SSD/645.png">
+<meta property="article:published_time" content="2020-02-29T02:47:42.375Z">
+<meta property="article:modified_time" content="2020-02-29T03:26:49.437Z">
+<meta property="article:author" content="Qiyuan-Z">
+<meta property="article:tag" content="目标检测">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/Snipaste_2020-01-08_14-51-11.jpg">
+
+<link rel="canonical" href="https://qiyuan-z.github.io/2020/02/29/SSD/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.css"><style>
+#needsharebutton-postbottom {
+  cursor: pointer;
+  height: 26px;
+  margin-top: 10px;
+  position: relative;
+}
+#needsharebutton-postbottom .btn {
+  border: 1px solid $btn-default-border-color;
+  border-radius: 3px;
+  display: initial;
+  padding: 1px 4px;
+}
+</style>
+  <title>SSD | Yuan</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Yuan</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">记录学习中的点点滴滴</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qiyuan-z.github.io/2020/02/29/SSD/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/wallhaven-915.png">
+      <meta itemprop="name" content="Qiyuan-Z">
+      <meta itemprop="description" content="偉大な魂は目的を持ち、そうでないものは願望を持つ">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Yuan">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          SSD
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-02-29 10:47:42 / 修改时间：11:26:49" itemprop="dateCreated datePublished" datetime="2020-02-29T10:47:42+08:00">2020-02-29</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index">
+                    <span itemprop="name">学习</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="摘要"><a href="#摘要" class="headerlink" title=" 摘要"></a><a id="more"></a> 摘要</h2><p>本文提出了仅需要单个卷积神经网络就能完成目标检测的算法，并命名为SSD(Single Shot Detector)。SSD算法将目标框的输出空间离散化为一组在每个特征图位置不同大小和形状的默认框。预测时，网络对位于每个默认框类的物体类别进行打分，并修正默认框位置来更好的匹配物体的位置。此外，SSD网络在不同分辨率的特征图上预测，这样就可以处理大小不同的物体。SSD比那些需要搜索物体候选框的算法简单，因为它完全去除了proposal生成和随后的特征再筛选的过程，把所有的计算封装在一个网络里面。这使得SSD训练起来很容易，可以直接加入到检测系统里面。在PASCAL VOC，COCO,和ILSVRC数据集上的实验也证明，与那些需要object  proposal的算法相比，SSD在保证准确性的同时，速度更快。SSD只需一个完整的框架来训练和测试。在NVIDIA Titan  X对于一个大小是300 x 300的输入图像，SSD在VOC2007测试上的MAP是74.3%，速度是59FPS。对于512 x 512的输入，SSD的MAP是76.9%，比Faster RCNN更准。和其他单阶段的方法比，即便是输入较小的图像，SSD的准确性也会更高。</p>
+<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>目前，目标检测系统基本采用以下的流程：假设物体边框，对每个边框内进行特征再采样，最后使用分类器进行分类。这个流程比较流行，基于Faster-RCNN的方法通过选择性搜索在PASCAL VOC,  COCO和ILSVRC上检测效果都很好。但是这些方法对于嵌入式设备来说计算量过大，甚至需要高端硬件的支持，对于实时系统来说太慢。最快的检测器Faster  RCNN的检测速度也只能到7FPS。人们尝试了很多其他方法来构建更快的检测器，但是增加速度大多以损失检测精度为代价。本文提出了基于目标检测器的网络(object detector)，它不需要为边框进行搜索，但是精度却不降反升。此方法实现了高精度和高速度，在VOC2007  上的测试速度是59FPS，mAP是74.3%；而Faster  R-CNN的mAP是73.2%，速度是7FPS；YOLO的mAP是63.4%，速度的是45FPS。速度的提升得益于去除了边框提议(RPN或者Selective  Search)和随后的特征再采样。使用了一个小卷积滤波器来预测目标分类和边框位置的偏移，对于不同横纵比检测使用不同的滤波器去处理，然后把这些滤波器应用在后面网络阶段的特征图上，这是为了用检测器检测不同比例的图片，这样我们在相对低分辨率的图像上也能获得高精度的输出，还提升了检测速度。本文的贡献如下：</p>
+<ul>
+<li>提出了SSD算法—-多类别单阶检测器， 要比其它的单阶段检测器（YOLO）快，而且更准确；</li>
+<li>SSD的核心部分是，在特征图上应用小卷积滤波器，预测分类得分和一个固定集合的默认边界框的偏移；</li>
+<li>为了实现高检测精度，在不同比例的特征图上产生不同的预测，通过纵横比来分开预测；</li>
+<li>以上的设计可以端到端训练，精度还高，甚至在低分辨率的图像上效果也不错；</li>
+<li>关于速度和精度的试验，主要在PASCAL VOC, COCO 和 ILSVRC数据集上进行，与其它方法进行比较。</li>
+</ul>
+<h2 id="SSD"><a href="#SSD" class="headerlink" title="SSD"></a>SSD</h2><h3 id="模型"><a href="#模型" class="headerlink" title="模型"></a>模型</h3><p>SSD基于前馈式卷积神经网络，针对那些方框里的目标检测实例，产生一个固定大小边界框集合和分数，紧接着是一个非极大值抑制步骤来产生最后的检测。网络前半部分是个标准结构(用于高质量图片分类)，成为基网络。然后对网络增加了辅助结构来实现以下特征：</p>
+<ul>
+<li><p><strong>多比例特征图检测</strong>：在基网络后增加卷积特征层，这些层按大小减少的次序连接，能够进行多尺度预测。</p>
+</li>
+<li><p><strong>卷积检测预测器</strong>：通过一个卷积滤波器集合，每个新增的特征层可以产生一个预测集合。假设特征层大小为m x n，p个通道，预测参数的基本单元是一个3 x 3 x p的小核，它要么产生一个类别的得分，要么产生一个相对于默认方框的位置偏移。核一共要应用在m x n个位置上，在每个位置上它都有一个输出值。边界框的偏移输出值是相对于默认的位置的。</p>
+</li>
+</ul>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/Snipaste_2020-01-08_14-51-11.jpg" alt></p>
+<ul>
+<li><strong>默认方框和纵横比</strong>：将每个特征图单元(cell) 与默认边界框的集合关联起来，这是对于网络顶层的多特征图来说的。默认方框用卷积的方式覆盖特征图，这样，每个方框对应的单元(cell)是固定的。在每个特征映射单元上，我们预测相对于默认方框形状的偏移，以及每一类别的分数（表明每一个方框中一个类的出现）。在给定的位置有k个框，对于其中的每一个，计算c类类别的分数，和相对于原来默认方框形状的4个偏移。这就一共有(c + 4) x k个滤波器被应用到特征图的每个位置上；对于m x n的特征图，产生(c + 4) x k x m x n个输出。默认方框跟Faster R-CNN中的Anchor类似，但是作者将它们应用到不同分辨率的特征图上时，由于在一些特征图上有不同的默认框形状，这使得算法对不同尺度的目标有较好的探测作用。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SSD/640.jfif" alt><br>SSD在训练中只需一张输入图像和图像中每个目标的ground truth边界框信息。在卷积操作中，我们产生一个默认方框的集合，这些方框在每个位置有不同的纵横比，在一些特征图中有不同的比例，如上图所示。对于每个默认方框，预测它形状的偏移和类别的置信度$\left(c_{1}, c_{2}, c_{3}, \dots, c_{p}\right)$。训练时，首先将这些默认方框和 ground truth 边界框对应上。就像图中，作者匹配了2个默认方框，一个是猫，一个是狗，它们被认定为positive, 其余部分被认定为 negative. 模型损失函数是 localization loss(smooth L1) 和 confidence  loss(Softmax) 的加权之和。</li>
+</ul>
+<h2 id="怎么设置default-boxes？"><a href="#怎么设置default-boxes？" class="headerlink" title="怎么设置default boxes？"></a>怎么设置default boxes？</h2><p>SSD中default box的概念有点类似于Faster R-CNN中的anchor。不同于Faster  R-CNN只在最后一个特征层取anchor，SSD在多个特征层上取default box，可以得到不同尺度的default  box。在特征图的每个单元上取不同宽高比的default  box,一般宽高比在{1，2，3，1/2，1/3}中选取，有时还会额外增加一个宽高比为1但具有特殊尺度的box。上面那张图展示了在8 x 8的feature map和4 x 4的feature map上的每个单元取4个不同的default box。原文对于300 x 300的输入，分别在conv4_3，conv7，conv8_2，conv9_2，conv10_2，conv11_2的特征图上的每个单元取4，6，6，6，4，4个default  box.  由于以上特征图的大小分别是38x38，19x19，10x10，5x5，3x3，1x1，所以一共得到38 x 38 x 4 + 19 x 19 x 6 + 10 x 10 x 6 + 5 x 5 x 6 + 3 x 3 x 4 + 1 x 1 x 4 = 8732个default box.对一张300x300的图片输入网络将会针对这8732个default  box预测8732个边界框。</p>
+<h2 id="训练"><a href="#训练" class="headerlink" title="训练"></a>训练</h2><p>训练SSD和训练其他使用区域提议检测器的主要区别是，ground  truth信息在固定检测器输出的情况下需要指定到特定的输出。这样，损失函数和反向传播就可以端到端的应用。训练需要选择默认方框的集合，检测比例，以及hard negative mining（也就是不存在目标的样本集合）和数据增强策略。</p>
+<ul>
+<li><p><strong>Matching strategy</strong>， 在训练中，需要决定哪个默认框匹配一个 ground truth，由此来训练网络。对于每个从默认方框（不同位置，不同纵横比，不同比例上）中选择的 ground truth 边界框，开始时，根据最高的 jaccard overlap 来匹配 ground truth  边界框和默认方框（与MultiBox一样）。实际操作中，与 MultiBox 不同，当它们的 jaccard  overlap高于阈值0.5时，作者就将默认方框认为 ground  truth。这简化了学习问题，使得网络可以对多个重叠的默认方框预测得到高分，而不是仅挑选一个重合度最高的方框。</p>
+</li>
+<li><p><strong>Training objective</strong>， SSD的训练目标来自于MultiBox，但是作者将之扩展成可处理多目标分类的问题。$x_{i j}^{p}=1,0$表示匹配第$i$个默认方框和$p$类别第$j$个ground truth边界框。这种匹配策略会出现$\sum_{i} x_{i, j}^{p}&gt;=1$。整体的目标损失函数是定位损失加分类损失： $L(x, c, l, g)=\frac{1}{N}\left(L_{c o n f}(x, c)+\alpha L_{l o c}(x, l, g)\right)$，其中$N$是匹配默认框的个数，如果$N=0$，loss设为0。定位损失是预测边界框$l$和真值边界框参数$g$的Smooth L1 loss。与Faster R-CNN类似，对默认边界框$d$中心$(cx, cy)$的偏移量进行回归，$w$是宽，$h$是高。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SSD/641.webp" alt><br>分类损失是多个类别置信度的 softmax loss：<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SSD/642.webp" alt><br>$\alpha$在交叉验证中设为1。</p>
+</li>
+<li><p><strong>Choosing scales and aspect ratio for default boxes</strong>，为了处理不同的目标比例，有些方法是把图片处理成不同的大小，然后结合不同大小图片的结果。但是在一个网络中利用多个不同层产生的特征图来预测也能产生类似的结果，所有比例的目标还可以共享参数。前面的研究已经证明使用底层的特征图可以提升语义分割质量，因为底层能捕捉到输入图像中的细节信息。受这些方法启发，本文使用了特征图中的高层和低层特征来进行目标检测。网络中不同层级的特征图会有不同的感受野，在SSD中，默认框不一定要和每层中的实际感受野对应。假设我们要用$m$个特征图来预测，每个特征图的默认框尺度计算如下：$s_{k}=s_{\min }+\frac{s_{\max }-s_{\min }}{m-1}(k-1, k \in[1, m])$ ，其中$s_{m i n}$是0.2，$s_{m a x}$是0.9，意味着最低的层的尺度是0.2，最高的层的尺度是0.9，中间层正常间隔分布。对于默认框，使用不同的高宽比，$a_{r} \in 1,2,3, \frac{1}{2}, \frac{1}{3}$。可以计算每个默认框的宽度$w_{k}^{a}=s_{k} \sqrt{a}_{r}$和高度$h_{k}^{a}=s_{k} / \sqrt{a_{r}}$。对于宽高比是1的情况，增加一个尺度是$s_{k}^{\prime}=\sqrt{s_{k} s_{k+1}}$的默认框，这样就在每个特征图位置有6个默认框。将框的中心设为$\left(\frac{i+0.5}{\left|f_{k}\right|}, \frac{j+0.5}{\left|f_{k}\right|}\right)$，其中$\left|f_{k}\right|$是第$k$个正方形特征图的大小。结合诸多特征图的不同位置下所有不同尺度和宽高比的默认框，就有了一个预测结果的集合，覆盖不同大小和形状的输入对象。例如图一中，那条狗与特征图中4 x 4的默认框匹配，但是不和任何8 x 8特征图中的默认框匹配，因为这些默认框有着不同的尺度，与狗的默认框不匹配，因此在训练中被认为是negative。</p>
+</li>
+<li><p><strong>Hard Negative Mining</strong> ，匹配步骤后，默认框中的大多数都是negative，尤其是候选框个数众多的时候。这就导致 positive 和 negative 训练样本不平衡。这些 negative 样本不全用，而是对于每一个默认框，通过最高置信度损失来对它们进行排序，选择最高的几个，这样negative 和 positive的比例最多是3:1。这样训练更稳定也更快。</p>
+</li>
+<li><p><strong>Data augmentation</strong> 为了让模型对不同的输入大小和形状更鲁棒，每张训练图片都通过以下步骤随机选择：(1)使用整张原始图片输入；(2)选择图片中的一块，与物体最低的  jaccard overlap 值为0.1, 0.3, 0.5, 0.7,  0.9；(3)随机采样某一块。采样区块的大小在原图片[0.1,1]之间，高宽比介于0.5和2之间。保留真值边界框中的重叠部分，如果它的中心在采样区块内。在采样步骤后，每个采样区块缩放到固定大小，以0.5的概率来水平翻转。</p>
+</li>
+</ul>
+<h2 id="实验结果"><a href="#实验结果" class="headerlink" title="实验结果"></a>实验结果</h2><p>在PSCAL VOC2012上面：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SSD/643.webp" alt></p>
+<p>在COCO数据集上面：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SSD/644.webp" alt></p>
+<p>速度和精度的整体对比：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SSD/645.png" alt></p>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>SSD优势是速度比较快，整个过程只需要一步，首先在图片不同位置按照不同尺度和宽高比进行密集抽样，然后利用CNN提取特征后直接进行分类与回归，所以速度比较快，但均匀密集采样会造成正负样本不均衡的情况使得训练比较困难，导致模型准确度有所降低。另外，SSD对小目标的检测没有大目标好，因为随着网络的加深，在高层特征图中小目标的信息丢失掉了，适当增大输入图片的尺寸可以提升小目标的检测效果。</p>
+<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><p><a href="https://github.com/weiliu89/caffe/tree/ssd" target="_blank" rel="noopener">https://github.com/weiliu89/caffe/tree/ssd</a></p>
+
+    </div>
+
+    
+    
+    <div class="post-widgets">
+      <div id="needsharebutton-postbottom">
+        <span class="btn">
+          <i class="fa fa-share-alt" aria-hidden="true"></i>
+        </span>
+      </div>
+    </div>
+	<div>
+
+	  
+
+		<div>
+
+    
+
+        <div >-------------本文结束感谢您的阅读-------------</div>
+
+    
+
+</div>
+
+	  
+
+	</div>
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/" rel="tag"><i class="fa fa-tag"></i> 目标检测</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/02/29/AlexeyAB-DarkNet%E6%B1%A0%E5%8C%96%E5%B1%82%E4%BB%A3%E7%A0%81%E8%AF%A6%E8%A7%A3(maxpool_layer.c)/" rel="prev" title="AlexeyAB DarkNet池化层代码详解(maxpool_layer.c)">
+      <i class="fa fa-chevron-left"></i> AlexeyAB DarkNet池化层代码详解(maxpool_layer.c)
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#摘要"><span class="nav-text"> 摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#介绍"><span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SSD"><span class="nav-text">SSD</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#模型"><span class="nav-text">模型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#怎么设置default-boxes？"><span class="nav-text">怎么设置default boxes？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#训练"><span class="nav-text">训练</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实验结果"><span class="nav-text">实验结果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结论"><span class="nav-text">结论</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码"><span class="nav-text">代码</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+	  
+     
+	  
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qiyuan-Z"
+      src="/images/wallhaven-915.png">
+  <p class="site-author-name" itemprop="name">Qiyuan-Z</p>
+  <div class="site-description" itemprop="description">偉大な魂は目的を持ち、そうでないものは願望を持つ</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">68</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Qiyuan-Z" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Qiyuan-Z" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:601872068@qq.com" title="E-Mail → mailto:601872068@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://project-inkstone.github.io/project-inkstone/?tdsourcetag=s_pctim_aiomsg" title="https:&#x2F;&#x2F;project-inkstone.github.io&#x2F;project-inkstone&#x2F;?tdsourcetag&#x3D;s_pctim_aiomsg" rel="noopener" target="_blank">project-inkstone</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+	  
+      <div id="music163player">
+		   <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=29784463&auto=1&height=66"></iframe>
+		   </iframe>
+	  </div>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qiyuan-Z</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="站点总字数">433k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">6:34</span>
+</div>
+
+<!-- 网站运行时间的设置 -->
+<span id="timeDate">载入天数...</span>
+<span id="times">载入时分秒...</span> 
+<script>
+    var now = new Date();
+    function createtime() {
+        var grt= new Date("12/01/2019 13:14:21");//此处修改你的建站时间或者网站上线时间
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;}
+        document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 ";
+        document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
+    }
+setInterval("createtime()",250);
+</script>
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+	<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"></script>
+	<script type="text/javascript">
+    		var gitalk = new Gitalk({
+		        clientID: '2d10cfb27783db577e70',
+		        clientSecret: '154292876bb14966f6ae57304b67859617b08c94',
+		        id: md5(location.pathname),
+		        repo: 'gitalk',
+		        owner: 'Qiyuan-Z',
+		        admin: 'Qiyuan-Z',
+			distractionFreeMode: '',
+
+		    });
+	    gitalk.render('gitalk-container');
+	</script>
+
+
+
+  
+
+  
+      
+<script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', () => {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
+
+  
+
+  <script src="//cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.js"></script>
+  <script>
+      pbOptions = {};
+        pbOptions.iconStyle = "box";
+        pbOptions.boxForm = "horizontal";
+        pbOptions.position = "bottomCenter";
+        pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+  </script>
+	<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+	<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"></script>
+	<script type="text/javascript">
+    		var gitalk = new Gitalk({
+		        clientID: '2d10cfb27783db577e70',
+		        clientSecret: '154292876bb14966f6ae57304b67859617b08c94',
+		        id: md5(location.pathname),
+		        repo: 'gitalk',
+		        owner: 'Qiyuan-Z',
+		        admin: 'Qiyuan-Z',
+			distractionFreeMode: '',
+
+		    });
+	    gitalk.render('gitalk-container');
+	</script>
+
+
+  <script type="text/javascript" src="/js/src/clicklove.js"></script>
+</body>
+</html>
+
