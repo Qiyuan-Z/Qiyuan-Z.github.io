@@ -1,6 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>盘点不同类型的池化层、1x1卷积的作用和卷积核是否一定越大越好？</title>
+    <url>/2020/03/03/%E7%9B%98%E7%82%B9%E4%B8%8D%E5%90%8C%E7%B1%BB%E5%9E%8B%E7%9A%84%E6%B1%A0%E5%8C%96%E5%B1%82%E3%80%811x1%E5%8D%B7%E7%A7%AF%E7%9A%84%E4%BD%9C%E7%94%A8%E5%92%8C%E5%8D%B7%E7%A7%AF%E6%A0%B8%E6%98%AF%E5%90%A6%E4%B8%80%E5%AE%9A%E8%B6%8A%E5%A4%A7%E8%B6%8A%E5%A5%BD%EF%BC%9F/</url>
+    <content><![CDATA[<h2 id="池化层的不同类型"><a href="#池化层的不同类型" class="headerlink" title=" 池化层的不同类型"></a><a id="more"></a> 池化层的不同类型</h2><p>池化通常也被称为下采样(Downsampling)，一般是用在卷积层之后，通过池化来降低卷积层输出特征图的维度，有效减少网络参数的同时还可以防止过拟合现象。池化层实际上真正起作用的地方在于他的非线性映射能力和可以保持一定量的平移不变性的能力。这个能力是因为在一个图像区域有用的特征很有可能在另一个区域同样有用。因此，为了描述一个大分辨率的图像特征，一个直观的方法就是对大分辨率图像中的不同位置的特征进行聚合统计。具体来说，常见池化的方法有以下几种：</p>
+<ul>
+<li>标准池化</li>
+<li>重叠池化</li>
+<li>空间金字塔池化</li>
+</ul>
+<p>接下来我们就仔细介绍一下每种池化。</p>
+<h2 id="标准池化"><a href="#标准池化" class="headerlink" title="标准池化"></a>标准池化</h2><p>通常包括最大池化(MaxPooling)和平均池化(AveragePooling)。以最大池化为例，池化核尺寸为2 x 2，池化步长为2，可以看到特征图中的每一个像素点只会参与一次特征提取工作。这个过程可以用下图表示：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pooling/640.webp" alt></p>
+<h2 id="重叠池化"><a href="#重叠池化" class="headerlink" title="重叠池化"></a>重叠池化</h2><p>操作和标准池化相同，但唯一不同地方在于滑动步长stride小于池化核的尺寸k，可以想象到这样的话特征图中的某些区域会参与到多次特征提取工作，最后得到的特征表达能力更强。这个过程可以表示为下图：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pooling/641.webp" alt></p>
+<h2 id="空间金字塔池化"><a href="#空间金字塔池化" class="headerlink" title="空间金字塔池化"></a>空间金字塔池化</h2><p>这种池化是在进行多尺度训练的时候，第一次看到这种操作的时候是读目标检测算法之Fast RCNN算法的时候。对不同输出尺度采用不同的滑窗大小和步长以确保输出尺度相同($w i n_{s i z e}=\left\lceil\frac{i n}{o u t}\right\rceil$;$stride =\left\lfloor\frac{i n}{o u t}\right\rfloor$)，同时用如金字塔式叠加的多种池化尺度组合，以提取更加丰富的图像特征。常用于多尺度训练和目标检测中的区域提议网络(Region Proposal Network)的兴趣区域(Region of Interest)提取。空间金字塔池化可以用下图表示：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pooling/642.gif" alt></p>
+<h2 id="1-1卷积的作用"><a href="#1-1卷积的作用" class="headerlink" title="1*1卷积的作用"></a>1*1卷积的作用</h2><p>我最开始接触到1 x 1卷积应该是在阅读经典论文GoogleNet的时候，当然我说的是我第一次接触，并不代表GoogleNet(包含了InceptionV1-V4)是第一个使用卷积的。在InceptionV1网络中，Inception模块长下面这样：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pooling/643.webp" alt></p>
+<p>可以看到这个Inception模块中，由于每一层网络采用了更多的卷积核，大大增加了模型的参数量。这时候为了减少模型参数量，在每一个较大卷积核的卷积层前引入1 x 1卷积，将宽高和通道方向的卷积进行了分离。修改后的Inception模块表示为下图：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pooling/644.webp" alt></p>
+<p>这样就实现了在不影响模型的特征表达能力条件下大大减少了模型的参数量。我们定量计算一下上下两个Inception模块的参数量，假设输入$C_1$输出$C_2$通道数都是16，则原始的Inception模块的参数量是：$(1 \times 1+3 \times 3+5 \times 5+0) \times C_{1} \times C_{2}=8960$，而使用了1 x 1卷积的Inception模块的参数量为：$\left(1 \times 1 \times\left(3 C_{1}+C_{2}\right)+3 \times 3 \times C_{2}+5 \times 5 \times C_{2}\right) \times C_{1}=5248$，可以看到计算量减少了接近一半。</p>
+<p>因此，1 x 1卷积的作用可以总结为可以实现信息的通道整合和交互，以及具有升维/降维的能力。</p>
+<h2 id="卷积核是否越大越好？"><a href="#卷积核是否越大越好？" class="headerlink" title="卷积核是否越大越好？"></a>卷积核是否越大越好？</h2><p>这是本文的最后一个问题，显然这个问题我们肯定会回答否。但你是否真的认真思考过其中的原因？在早期的一些经典网络中如Lenet-5和AlexNet，用到了一些大的卷积核例如11 x 11，5 x 5，受限于当时的计算资源，无法将网络堆叠得很深，因此需要将卷积核设得比较大以获得更大的感受野。但这种大卷积核导致计算量大幅增加，训练过程缓慢，更不利于训练深层模型。后来VGGNet，GoogleNet时代发现通过堆叠2个3 x 3卷积核可以获得和5 x 5卷积核相同的感受野，同时参数量也会减少，如$2 \times 3 \times 3&lt;5 \times 5$。因此，3 x 3卷积核被广泛应用在许多卷积神经网络中。所以基本可以认为在大多数情况下通过堆叠较小的卷积核比直接采用单个更大的卷积核更加有效并且能获得计算资源节约。因此我们可以认为，CV领域小卷积核堆叠是好于大卷积核的。</p>
+<p>那么是不是其他领域也是这样呢？并不是。在NLP领域，由于文本内容不像图像数据一样可以对特征进行很深层的抽象，因此该领域的特征提取网络都是比较浅的。这个时候为了获得较大的感受野，就需要使用大的卷积核。因此，我们可以认为在NLP领域大卷积是好于小卷积核的。</p>
+<p>总结一下，卷积核是否越大越好呢？这个要具体问题具体分析，在不同的领域大卷积核和小卷积核分别能取得不错的效果。并且在设置卷积核的时候一个常识是不能设得过大也不能过小，1 x 1卷积只适合做分离卷积任务而不能对输入的原始特征做有效的特征抽取，而极大的卷积核通常会组合过多无用的特征浪费大量的计算资源。</p>
+]]></content>
+      <categories>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>目标检测</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>NMS后处理相关</title>
+    <url>/2020/03/03/NMS%E5%90%8E%E5%A4%84%E7%90%86%E7%9B%B8%E5%85%B3/</url>
+    <content><![CDATA[<h2 id="介绍"><a href="#介绍" class="headerlink" title=" 介绍"></a><a id="more"></a> 介绍</h2><p>非极大值抑制(Non-Maximum  Suppression，NMS)，顾名思义就是抑制不是极大值的元素。在目标检测任务，例如行人检测中，滑动窗口经过特征提取和分类器识别后，每个窗口都会得到一个分数。但滑动窗口会导致很多窗口和其它窗口存在包含大部分交叉的情况。这个时候就需要用到NMS来选取那些邻域里分数最高，同时抑制那些分数低的窗口。</p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>在目标检测任务中，定义最后的候选框集合为$B$，每个候选框对应的置信度是$S$，IOU阈值设为$T$，然后NMS的算法过程可以表示如下：</p>
+<ul>
+<li><p>选择具有最大score的候选框$M$</p>
+</li>
+<li><p>将$M$从集合$B$中移除并加入到最终的检测结果$D$中</p>
+</li>
+<li><p>将$B$中剩余检测框中和$M$的交并比(IOU)大于阈值$T$的框从$B$中移除</p>
+</li>
+<li><p>重复上面的步骤，直到$B$为空</p>
+</li>
+</ul>
+<h2 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h2><p>rgb大神实现Faster-RCNN中的单类别物体nms代码解释如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"> --------------------------------------------------------</span><br><span class="line"># Fast R-CNN</span><br><span class="line"># Copyright (c) 2015 Microsoft</span><br><span class="line"># Licensed under The MIT License [see LICENSE for details]</span><br><span class="line"># Written by Ross Girshick</span><br><span class="line"># --------------------------------------------------------</span><br><span class="line"></span><br><span class="line">import numpy as np</span><br><span class="line"></span><br><span class="line">def py_cpu_nms(dets, thresh):</span><br><span class="line">    &quot;&quot;&quot;Pure Python NMS baseline.&quot;&quot;&quot;</span><br><span class="line">    #x1、y1、x2、y2、以及score赋值</span><br><span class="line">    x1 &#x3D; dets[:, 0]</span><br><span class="line">    y1 &#x3D; dets[:, 1]</span><br><span class="line">    x2 &#x3D; dets[:, 2]</span><br><span class="line">    y2 &#x3D; dets[:, 3]</span><br><span class="line">    scores &#x3D; dets[:, 4]</span><br><span class="line">	#每一个检测框的面积</span><br><span class="line">    areas &#x3D; (x2 - x1 + 1) * (y2 - y1 + 1)</span><br><span class="line">    #按照score置信度降序排序</span><br><span class="line">    order &#x3D; scores.argsort()[::-1]</span><br><span class="line">    #保留的结果框集合</span><br><span class="line">    keep &#x3D; []</span><br><span class="line">    while order.size &gt; 0:</span><br><span class="line">        i &#x3D; order[0]</span><br><span class="line">        #保留该类剩余box中得分最高的一个</span><br><span class="line">        keep.append(i)</span><br><span class="line">        # 得到相交区域,左上及右下</span><br><span class="line">        xx1 &#x3D; np.maximum(x1[i], x1[order[1:]])</span><br><span class="line">        yy1 &#x3D; np.maximum(y1[i], y1[order[1:]])</span><br><span class="line">        xx2 &#x3D; np.minimum(x2[i], x2[order[1:]])</span><br><span class="line">        yy2 &#x3D; np.minimum(y2[i], y2[order[1:]])</span><br><span class="line">	    #计算相交的面积,不重叠时面积为0</span><br><span class="line">        w &#x3D; np.maximum(0.0, xx2 - xx1 + 1)</span><br><span class="line">        h &#x3D; np.maximum(0.0, yy2 - yy1 + 1)</span><br><span class="line">        inter &#x3D; w * h</span><br><span class="line">        #计算IoU：重叠面积 &#x2F;（面积1+面积2-重叠面积）</span><br><span class="line">        ovr &#x3D; inter &#x2F; (areas[i] + areas[order[1:]] - inter)</span><br><span class="line">		# 保留IoU小于阈值的box</span><br><span class="line">        inds &#x3D; np.where(ovr &lt;&#x3D; thresh)[0]</span><br><span class="line">        # 因为ovr数组的长度比order数组少一个,所以这里要将所有下标后移一位</span><br><span class="line">        order &#x3D; order[inds + 1]</span><br><span class="line"></span><br><span class="line">	return keep</span><br></pre></td></tr></table></figure>
+<h2 id="效果"><a href="#效果" class="headerlink" title="效果"></a>效果</h2><p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/nms/640.webp" alt></p>
+<h2 id="Soft-NMS"><a href="#Soft-NMS" class="headerlink" title="Soft-NMS"></a>Soft-NMS</h2><p>上面说的NMS算法有一个缺点就是当两个候选框的重叠度很高时，NMS会将具有较低置信度的框去掉，也就是将其置信度变成0，如下图所示，红色框和绿色框是当前的检测结果，二者的得分分别是0.95和0.80。如果按照传统的NMS进行处理，首先选中得分最高的红色框，然后绿色框就会因为与之重叠面积过大而被删掉。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/nms/641.webp" alt></p>
+<p>因此为了改善这个缺点，Soft-NMS被提出，核心思路就是不要粗鲁地删除所有IOU大于阈值的框，而是降低其置信度。这个方法的论文地址为：<a href="https://arxiv.org/pdf/1704.04503.pdf" target="_blank" rel="noopener">https://arxiv.org/pdf/1704.04503.pdf</a> 。算法伪代码如下：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/nms/642.jpg" alt></p>
+<p>正如作者所说，改一行代码就OK了。这里的$f$函数可以是线性函数，也可以是高斯函数。我们来对比一下：</p>
+<ul>
+<li><p>线性函数：</p>
+<script type="math/tex; mode=display">
+s_{i}=\left\{\begin{array}{ll}s_{i}, & \text { iou }\left(\mathcal{M}, b_{i}\right)<N_{t} \\ s_{i}\left(1-\mathrm{i} o \mathrm{u}\left(\mathcal{M}, b_{i}\right)\right), & \text { iou }\left(\mathcal{M}, b_{i}\right) \geq N_{t}\end{array}\right.</script></li>
+<li><p>高斯函数：</p>
+<script type="math/tex; mode=display">
+\boldsymbol{s}_{i}=\boldsymbol{s}_{i} e^{\frac{-\mathrm{iou}\left(\mathcal{M}, \boldsymbol{b}_{i}\right)^{2}}{\sigma}}, \forall b_{i} \notin \mathcal{D}</script></li>
+</ul>
+<h2 id="代码实现-1"><a href="#代码实现-1" class="headerlink" title="代码实现"></a>代码实现</h2><p>作者的代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">def cpu_soft_nms(np.ndarray[float, ndim&#x3D;2] boxes, float sigma&#x3D;0.5, float Nt&#x3D;0.3, float threshold&#x3D;0.001, unsigned int method&#x3D;0):</span><br><span class="line">    cdef unsigned int N &#x3D; boxes.shape[0]</span><br><span class="line">    cdef float iw, ih, box_area</span><br><span class="line">    cdef float ua</span><br><span class="line">    cdef int pos &#x3D; 0</span><br><span class="line">    cdef float maxscore &#x3D; 0</span><br><span class="line">    cdef int maxpos &#x3D; 0</span><br><span class="line">    cdef float x1,x2,y1,y2,tx1,tx2,ty1,ty2,ts,area,weight,ov</span><br><span class="line"></span><br><span class="line">    for i in range(N):</span><br><span class="line">        maxscore &#x3D; boxes[i, 4]</span><br><span class="line">        maxpos &#x3D; i</span><br><span class="line"></span><br><span class="line">        tx1 &#x3D; boxes[i,0]</span><br><span class="line">        ty1 &#x3D; boxes[i,1]</span><br><span class="line">        tx2 &#x3D; boxes[i,2]</span><br><span class="line">        ty2 &#x3D; boxes[i,3]</span><br><span class="line">        ts &#x3D; boxes[i,4]</span><br><span class="line"></span><br><span class="line">        pos &#x3D; i + 1</span><br><span class="line">    # get max box</span><br><span class="line">        while pos &lt; N:</span><br><span class="line">            if maxscore &lt; boxes[pos, 4]:</span><br><span class="line">                maxscore &#x3D; boxes[pos, 4]</span><br><span class="line">                maxpos &#x3D; pos</span><br><span class="line">            pos &#x3D; pos + 1</span><br><span class="line"></span><br><span class="line">    # add max box as a detection</span><br><span class="line">        boxes[i,0] &#x3D; boxes[maxpos,0]</span><br><span class="line">        boxes[i,1] &#x3D; boxes[maxpos,1]</span><br><span class="line">        boxes[i,2] &#x3D; boxes[maxpos,2]</span><br><span class="line">        boxes[i,3] &#x3D; boxes[maxpos,3]</span><br><span class="line">        boxes[i,4] &#x3D; boxes[maxpos,4]</span><br><span class="line"></span><br><span class="line">    # swap ith box with position of max box</span><br><span class="line">        boxes[maxpos,0] &#x3D; tx1</span><br><span class="line">        boxes[maxpos,1] &#x3D; ty1</span><br><span class="line">        boxes[maxpos,2] &#x3D; tx2</span><br><span class="line">        boxes[maxpos,3] &#x3D; ty2</span><br><span class="line">        boxes[maxpos,4] &#x3D; ts</span><br><span class="line"></span><br><span class="line">        tx1 &#x3D; boxes[i,0]</span><br><span class="line">        ty1 &#x3D; boxes[i,1]</span><br><span class="line">        tx2 &#x3D; boxes[i,2]</span><br><span class="line">        ty2 &#x3D; boxes[i,3]</span><br><span class="line">        ts &#x3D; boxes[i,4]</span><br><span class="line"></span><br><span class="line">        pos &#x3D; i + 1</span><br><span class="line">    # NMS iterations, note that N changes if detection boxes fall below threshold</span><br><span class="line">        while pos &lt; N:</span><br><span class="line">            x1 &#x3D; boxes[pos, 0]</span><br><span class="line">            y1 &#x3D; boxes[pos, 1]</span><br><span class="line">            x2 &#x3D; boxes[pos, 2]</span><br><span class="line">            y2 &#x3D; boxes[pos, 3]</span><br><span class="line">            s &#x3D; boxes[pos, 4]</span><br><span class="line"></span><br><span class="line">            area &#x3D; (x2 - x1 + 1) * (y2 - y1 + 1)</span><br><span class="line">            iw &#x3D; (min(tx2, x2) - max(tx1, x1) + 1)</span><br><span class="line">            if iw &gt; 0:</span><br><span class="line">                ih &#x3D; (min(ty2, y2) - max(ty1, y1) + 1)</span><br><span class="line">                if ih &gt; 0:</span><br><span class="line">                    ua &#x3D; float((tx2 - tx1 + 1) * (ty2 - ty1 + 1) + area - iw * ih)</span><br><span class="line">                    ov &#x3D; iw * ih &#x2F; ua #iou between max box and detection box</span><br><span class="line"></span><br><span class="line">                    if method &#x3D;&#x3D; 1: # linear</span><br><span class="line">                        if ov &gt; Nt:</span><br><span class="line">                            weight &#x3D; 1 - ov</span><br><span class="line">                        else:</span><br><span class="line">                            weight &#x3D; 1</span><br><span class="line">                    elif method &#x3D;&#x3D; 2: # gaussian</span><br><span class="line">                        weight &#x3D; np.exp(-(ov * ov)&#x2F;sigma)</span><br><span class="line">                    else: # original NMS</span><br><span class="line">                        if ov &gt; Nt:</span><br><span class="line">                            weight &#x3D; 0</span><br><span class="line">                        else:</span><br><span class="line">                            weight &#x3D; 1</span><br><span class="line"></span><br><span class="line">                    boxes[pos, 4] &#x3D; weight*boxes[pos, 4]</span><br><span class="line"></span><br><span class="line">            # if box score falls below threshold, discard the box by swapping with last box</span><br><span class="line">            # update N</span><br><span class="line">                    if boxes[pos, 4] &lt; threshold:</span><br><span class="line">                        boxes[pos,0] &#x3D; boxes[N-1, 0]</span><br><span class="line">                        boxes[pos,1] &#x3D; boxes[N-1, 1]</span><br><span class="line">                        boxes[pos,2] &#x3D; boxes[N-1, 2]</span><br><span class="line">                        boxes[pos,3] &#x3D; boxes[N-1, 3]</span><br><span class="line">                        boxes[pos,4] &#x3D; boxes[N-1, 4]</span><br><span class="line">                        N &#x3D; N - 1</span><br><span class="line">                        pos &#x3D; pos - 1</span><br><span class="line"></span><br><span class="line">            pos &#x3D; pos + 1</span><br><span class="line"></span><br><span class="line">    keep &#x3D; [i for i in range(N)]</span><br><span class="line">    return keep</span><br></pre></td></tr></table></figure>
+<h2 id="效果-1"><a href="#效果-1" class="headerlink" title="效果"></a>效果</h2><p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/nms/643.webp" alt></p>
+<p>左边是使用了NMS的效果，右边是使用了Soft-NMS的效果</p>
+<h2 id="论文的实验结果"><a href="#论文的实验结果" class="headerlink" title="论文的实验结果"></a>论文的实验结果</h2><p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/nms/644.jpg" alt></p>
+<p>可以看到在MS-COCO数据集上mAP[0.5:0.95]可以获得大约1%的提升，如果应用到训练阶段的proposal选取过程理论上也能获得提升。顺便说一句，soft-NMS在不是基于Proposal的方法如SSD，YOLO中没什么提升。这里猜测原因可能是因为YOLO和SSD产生的框重叠率较低引起的。</p>
+]]></content>
+      <categories>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>目标检测</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>FPN</title>
     <url>/2020/03/02/FPN/</url>
     <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title=" 背景"></a><a id="more"></a> 背景</h2><p>Faster-RCNN选取一个特征提取网络如VGG16做backbone，然后在高层特征（如VGG16后面的conv4）接RPN和检测头进行网络。正是由于Faster-RCNN基于图像的高级特征，这就导致对小目标的检测效果很差。而CV领域常用的处理尺度问题的办法就是特征金字塔，将原图以不同的比例采样，然后得到不同分辨率的图像进行训练和测试，在多数情况下确实是有效的。但是特征金字塔的时间开销非常大，导致在工程中应用是及其困难。FPN从新的角度出发提出了一个独特的特征金字塔网络来避免图像金字塔产生的超高计算量，同时可以较好的处理目标检测中的尺度变化问题，对小目标检测更鲁棒，同时在VOC和COCO数据集上MAP值均超过了Faster-RCNN。</p>
