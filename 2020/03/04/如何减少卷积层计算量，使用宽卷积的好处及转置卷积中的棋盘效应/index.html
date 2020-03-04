@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://Qiyuan-Z.github.io').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.6.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":true,"style":"mac"},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta property="og:type" content="article">
+<meta property="og:title" content="如何减少卷积层计算量，使用宽卷积的好处及转置卷积中的棋盘效应">
+<meta property="og:url" content="https://qiyuan-z.github.io/2020/03/04/%E5%A6%82%E4%BD%95%E5%87%8F%E5%B0%91%E5%8D%B7%E7%A7%AF%E5%B1%82%E8%AE%A1%E7%AE%97%E9%87%8F%EF%BC%8C%E4%BD%BF%E7%94%A8%E5%AE%BD%E5%8D%B7%E7%A7%AF%E7%9A%84%E5%A5%BD%E5%A4%84%E5%8F%8A%E8%BD%AC%E7%BD%AE%E5%8D%B7%E7%A7%AF%E4%B8%AD%E7%9A%84%E6%A3%8B%E7%9B%98%E6%95%88%E5%BA%94/index.html">
+<meta property="og:site_name" content="Yuan">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/convolution/643.webp">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/convolution/644.webp">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/convolution/645.webp">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/convolution/20190809192609235.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/convolution/646.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/convolution/647.webp">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/convolution/648.webp">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/convolution/649.webp">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/convolution/650.png">
+<meta property="article:published_time" content="2020-03-04T04:30:04.762Z">
+<meta property="article:modified_time" content="2020-03-04T04:44:34.740Z">
+<meta property="article:author" content="Qiyuan-Z">
+<meta property="article:tag" content="目标检测">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/convolution/643.webp">
+
+<link rel="canonical" href="https://qiyuan-z.github.io/2020/03/04/%E5%A6%82%E4%BD%95%E5%87%8F%E5%B0%91%E5%8D%B7%E7%A7%AF%E5%B1%82%E8%AE%A1%E7%AE%97%E9%87%8F%EF%BC%8C%E4%BD%BF%E7%94%A8%E5%AE%BD%E5%8D%B7%E7%A7%AF%E7%9A%84%E5%A5%BD%E5%A4%84%E5%8F%8A%E8%BD%AC%E7%BD%AE%E5%8D%B7%E7%A7%AF%E4%B8%AD%E7%9A%84%E6%A3%8B%E7%9B%98%E6%95%88%E5%BA%94/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.css"><style>
+#needsharebutton-postbottom {
+  cursor: pointer;
+  height: 26px;
+  margin-top: 10px;
+  position: relative;
+}
+#needsharebutton-postbottom .btn {
+  border: 1px solid $btn-default-border-color;
+  border-radius: 3px;
+  display: initial;
+  padding: 1px 4px;
+}
+</style>
+  <title>如何减少卷积层计算量，使用宽卷积的好处及转置卷积中的棋盘效应 | Yuan</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Yuan</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">记录学习中的点点滴滴</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qiyuan-z.github.io/2020/03/04/%E5%A6%82%E4%BD%95%E5%87%8F%E5%B0%91%E5%8D%B7%E7%A7%AF%E5%B1%82%E8%AE%A1%E7%AE%97%E9%87%8F%EF%BC%8C%E4%BD%BF%E7%94%A8%E5%AE%BD%E5%8D%B7%E7%A7%AF%E7%9A%84%E5%A5%BD%E5%A4%84%E5%8F%8A%E8%BD%AC%E7%BD%AE%E5%8D%B7%E7%A7%AF%E4%B8%AD%E7%9A%84%E6%A3%8B%E7%9B%98%E6%95%88%E5%BA%94/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/wallhaven-915.png">
+      <meta itemprop="name" content="Qiyuan-Z">
+      <meta itemprop="description" content="偉大な魂は目的を持ち、そうでないものは願望を持つ">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Yuan">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          如何减少卷积层计算量，使用宽卷积的好处及转置卷积中的棋盘效应
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-03-04 12:30:04 / 修改时间：12:44:34" itemprop="dateCreated datePublished" datetime="2020-03-04T12:30:04+08:00">2020-03-04</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index">
+                    <span itemprop="name">学习</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="如何减少卷积层计算量？"><a href="#如何减少卷积层计算量？" class="headerlink" title=" 如何减少卷积层计算量？"></a><a id="more"></a> 如何减少卷积层计算量？</h2><p>减少卷积层的计算量主要有以下几种方法：</p>
+<ul>
+<li>使用池化操作。在卷积层前使用池化操作降低特征图分辨率。</li>
+<li><p>使用堆叠的小卷积核代替大卷积核。VGG16中使用2个3 x 3卷积代替一个5 x 5卷积。</p>
+</li>
+<li><p>使用深度可分离卷积。将原始的$K \times K \times C$的卷积核分成$K \times K \times 1$和$1 \times 1 \times C$两部分操作。</p>
+</li>
+<li><p>应用1 x 1卷积。将1 x 1卷积（假设通道数为$C_2$）直接应用在某个卷积层（假设维度为$K \times K \times C_{1}$）之前</p>
+</li>
+</ul>
+<h2 id="使用宽卷积的好处？"><a href="#使用宽卷积的好处？" class="headerlink" title="使用宽卷积的好处？"></a>使用宽卷积的好处？</h2><p>所谓宽卷积就是指在卷积操作时填充方式为<code>same</code>方式。而与之对应的窄卷积就是指在卷积操作时填充方式为<code>valid</code>方式。<code>same</code>方式的填充通常使用0填充的方式对卷积核不满足整除条件的输入特征图进行补全，使得卷积层的输出维度和输入维度一致。<code>valid</code>方式的填充就是不进行任何填充，在输入特征边缘位置若不足以进行卷积操作，则对边缘信息进行舍弃，因此在步长为1的情况下该填充方式的卷积层输出特征维度可能会略小于输入特征的维度。我们可以发现宽卷积(<code>same</code>填充方式卷积)的好处就是通过补0操作可以有效的保留原始输入特征图的边界特征信息。</p>
+<h2 id="转置卷积和棋盘效应？"><a href="#转置卷积和棋盘效应？" class="headerlink" title="转置卷积和棋盘效应？"></a>转置卷积和棋盘效应？</h2><p>当我们在用反卷积（转置卷积）做图像生成或者上采样的时候或许我们会观察到我们生成的图片会出现一些奇怪的棋盘图案或者说你感觉到你生成的图片有颗粒感。棋盘格效应趋向于出现在<strong>图像中最显著的地方 (颜色最强烈)</strong>，如下图所示：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/convolution/643.webp" alt></p>
+<p>这种现象之所以会发生是因为在上采样使用反卷积的时候，卷积核的大小不能被步长整除导致的。先看一下没有棋盘效应的情况：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/convolution/644.webp" alt></p>
+<p>再看一下出现棋盘效应的情况：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/convolution/645.webp" alt></p>
+<p>即它很容易遇到一种叫做 <strong>“uneven overlap”(不均匀重叠)</strong> 的现象。具体来说, 当kernel_size 无法被 stride整除时, 反卷积就会出现这种不均匀重叠的现象。原则上，神经网络可以通过仔细学习权值来避免这种情况，但在实践中，神经网络很难完全避免这种情况.</p>
+<p>并且在二维图片上棋盘效应会更加严重。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/convolution/20190809192609235.png" alt></p>
+<p>因此为了避免棋盘效应的发生，一般有一下几种解决方案：</p>
+<ul>
+<li><p>方法1：现在，神经网络在创建图像时通常使用多层反卷积，从一系列较低分辨率的描述中迭代地构建较大的图像。虽然这些堆叠的反卷积可能会消除棋盘效应，但它们通常会复合，从而在各种尺度上产生棋盘效应。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/convolution/646.png" alt></p>
+</li>
+<li><p>方法2：在反卷积后面，再接一个步长为1的卷积，效果有限。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/convolution/647.webp" alt></p>
+</li>
+<li><p>方法3：调整卷积核的权重，适当加大重叠部分少的权重，虽然理论有效，但在实际操作中，不仅有困难也会减弱模型的表达力。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/convolution/648.webp" alt></p>
+</li>
+<li><p>方法4：使得卷积核大小能被步长整除，但卷积核权重的学习不均匀也会导致棋盘效应现象（下图为步长为2，核大小为4所产生的棋盘效应现象）<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/convolution/649.webp" alt></p>
+</li>
+<li><p>方法5：调整图像大小（使用最近邻插值或双线性插值），然后执行卷积操作。这似乎是一种自然的方法，大致相似的方法在图像超分辨率方面表现良好。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/convolution/650.png" alt></p>
+</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>假设反卷积生成的图像中，包含1只黑猫，黑猫身体部分的像素颜色应该是平滑过渡的。或者极端的说，身体部分应该全部都是黑色的。而在实际生成的图像中，该部分却是由深深浅浅的近黑方块组成的，很像棋盘的网络。这就是所谓的棋盘效应。之所以会出现棋盘效应是因为插入的值为0，使得卷积的input feature map本身就是棋盘状，所以得到的大分辨率feature map也会产生棋盘格。反卷积产生的棋盘格，在stride和卷积核size是整数倍的时候能够有所缓解，因为二者整除关系使得卷积核每次滑动能用到的非零像素的个数是一样的或者中间区域向两边逐渐减少(而不是随着滑动反复变化产生棋盘格形状)，但是依然不能完全消除。</p>
+<p>从原始英文博客上的实验结论来看，使用上采样+卷积层的图像放大方法有效的改善了棋盘效应，即不是将小分辨率的feature map的像素之间插0，而是采用插值的方法，所以要是图像生成的时候遇到了棋盘效应你知道怎么做了吗？Upsamping+Convolution来帮你。</p>
+
+    </div>
+
+    
+    
+    <div class="post-widgets">
+      <div id="needsharebutton-postbottom">
+        <span class="btn">
+          <i class="fa fa-share-alt" aria-hidden="true"></i>
+        </span>
+      </div>
+    </div>
+	<div>
+
+	  
+
+		<div>
+
+    
+
+        <div >-------------本文结束感谢您的阅读-------------</div>
+
+    
+
+</div>
+
+	  
+
+	</div>
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/" rel="tag"><i class="fa fa-tag"></i> 目标检测</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/03/04/%E5%8D%B7%E7%A7%AF%E5%B1%82%E6%9C%89%E5%93%AA%E4%BA%9B%E5%8F%82%E6%95%B0%E5%8F%8A%E5%B8%B8%E7%94%A8%E5%8D%B7%E7%A7%AF%E6%A0%B8%E7%B1%BB%E5%9E%8B%E7%9B%98%E7%82%B9/" rel="prev" title="卷积层有哪些参数及常用卷积核类型盘点">
+      <i class="fa fa-chevron-left"></i> 卷积层有哪些参数及常用卷积核类型盘点
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#如何减少卷积层计算量？"><span class="nav-text"> 如何减少卷积层计算量？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用宽卷积的好处？"><span class="nav-text">使用宽卷积的好处？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#转置卷积和棋盘效应？"><span class="nav-text">转置卷积和棋盘效应？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+	  
+     
+	  
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qiyuan-Z"
+      src="/images/wallhaven-915.png">
+  <p class="site-author-name" itemprop="name">Qiyuan-Z</p>
+  <div class="site-description" itemprop="description">偉大な魂は目的を持ち、そうでないものは願望を持つ</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">77</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Qiyuan-Z" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Qiyuan-Z" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:601872068@qq.com" title="E-Mail → mailto:601872068@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://project-inkstone.github.io/project-inkstone/?tdsourcetag=s_pctim_aiomsg" title="https:&#x2F;&#x2F;project-inkstone.github.io&#x2F;project-inkstone&#x2F;?tdsourcetag&#x3D;s_pctim_aiomsg" rel="noopener" target="_blank">project-inkstone</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+	  
+      <div id="music163player">
+		   <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=29784463&auto=1&height=66"></iframe>
+		   </iframe>
+	  </div>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qiyuan-Z</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="站点总字数">469k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">7:06</span>
+</div>
+
+<!-- 网站运行时间的设置 -->
+<span id="timeDate">载入天数...</span>
+<span id="times">载入时分秒...</span> 
+<script>
+    var now = new Date();
+    function createtime() {
+        var grt= new Date("12/01/2019 13:14:21");//此处修改你的建站时间或者网站上线时间
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;}
+        document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 ";
+        document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
+    }
+setInterval("createtime()",250);
+</script>
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+	<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"></script>
+	<script type="text/javascript">
+    		var gitalk = new Gitalk({
+		        clientID: '2d10cfb27783db577e70',
+		        clientSecret: '154292876bb14966f6ae57304b67859617b08c94',
+		        id: md5(location.pathname),
+		        repo: 'gitalk',
+		        owner: 'Qiyuan-Z',
+		        admin: 'Qiyuan-Z',
+			distractionFreeMode: '',
+
+		    });
+	    gitalk.render('gitalk-container');
+	</script>
+
+
+
+  
+
+  
+      
+<script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', () => {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
+
+  
+
+  <script src="//cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.js"></script>
+  <script>
+      pbOptions = {};
+        pbOptions.iconStyle = "box";
+        pbOptions.boxForm = "horizontal";
+        pbOptions.position = "bottomCenter";
+        pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+  </script>
+	<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+	<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"></script>
+	<script type="text/javascript">
+    		var gitalk = new Gitalk({
+		        clientID: '2d10cfb27783db577e70',
+		        clientSecret: '154292876bb14966f6ae57304b67859617b08c94',
+		        id: md5(location.pathname),
+		        repo: 'gitalk',
+		        owner: 'Qiyuan-Z',
+		        admin: 'Qiyuan-Z',
+			distractionFreeMode: '',
+
+		    });
+	    gitalk.render('gitalk-container');
+	</script>
+
+
+  <script type="text/javascript" src="/js/src/clicklove.js"></script>
+</body>
+</html>
+

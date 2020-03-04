@@ -1,6 +1,134 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>如何减少卷积层计算量，使用宽卷积的好处及转置卷积中的棋盘效应</title>
+    <url>/2020/03/04/%E5%A6%82%E4%BD%95%E5%87%8F%E5%B0%91%E5%8D%B7%E7%A7%AF%E5%B1%82%E8%AE%A1%E7%AE%97%E9%87%8F%EF%BC%8C%E4%BD%BF%E7%94%A8%E5%AE%BD%E5%8D%B7%E7%A7%AF%E7%9A%84%E5%A5%BD%E5%A4%84%E5%8F%8A%E8%BD%AC%E7%BD%AE%E5%8D%B7%E7%A7%AF%E4%B8%AD%E7%9A%84%E6%A3%8B%E7%9B%98%E6%95%88%E5%BA%94/</url>
+    <content><![CDATA[<h2 id="如何减少卷积层计算量？"><a href="#如何减少卷积层计算量？" class="headerlink" title=" 如何减少卷积层计算量？"></a><a id="more"></a> 如何减少卷积层计算量？</h2><p>减少卷积层的计算量主要有以下几种方法：</p>
+<ul>
+<li>使用池化操作。在卷积层前使用池化操作降低特征图分辨率。</li>
+<li><p>使用堆叠的小卷积核代替大卷积核。VGG16中使用2个3 x 3卷积代替一个5 x 5卷积。</p>
+</li>
+<li><p>使用深度可分离卷积。将原始的$K \times K \times C$的卷积核分成$K \times K \times 1$和$1 \times 1 \times C$两部分操作。</p>
+</li>
+<li><p>应用1 x 1卷积。将1 x 1卷积（假设通道数为$C_2$）直接应用在某个卷积层（假设维度为$K \times K \times C_{1}$）之前</p>
+</li>
+</ul>
+<h2 id="使用宽卷积的好处？"><a href="#使用宽卷积的好处？" class="headerlink" title="使用宽卷积的好处？"></a>使用宽卷积的好处？</h2><p>所谓宽卷积就是指在卷积操作时填充方式为<code>same</code>方式。而与之对应的窄卷积就是指在卷积操作时填充方式为<code>valid</code>方式。<code>same</code>方式的填充通常使用0填充的方式对卷积核不满足整除条件的输入特征图进行补全，使得卷积层的输出维度和输入维度一致。<code>valid</code>方式的填充就是不进行任何填充，在输入特征边缘位置若不足以进行卷积操作，则对边缘信息进行舍弃，因此在步长为1的情况下该填充方式的卷积层输出特征维度可能会略小于输入特征的维度。我们可以发现宽卷积(<code>same</code>填充方式卷积)的好处就是通过补0操作可以有效的保留原始输入特征图的边界特征信息。</p>
+<h2 id="转置卷积和棋盘效应？"><a href="#转置卷积和棋盘效应？" class="headerlink" title="转置卷积和棋盘效应？"></a>转置卷积和棋盘效应？</h2><p>当我们在用反卷积（转置卷积）做图像生成或者上采样的时候或许我们会观察到我们生成的图片会出现一些奇怪的棋盘图案或者说你感觉到你生成的图片有颗粒感。棋盘格效应趋向于出现在<strong>图像中最显著的地方 (颜色最强烈)</strong>，如下图所示：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/convolution/643.webp" alt></p>
+<p>这种现象之所以会发生是因为在上采样使用反卷积的时候，卷积核的大小不能被步长整除导致的。先看一下没有棋盘效应的情况：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/convolution/644.webp" alt></p>
+<p>再看一下出现棋盘效应的情况：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/convolution/645.webp" alt></p>
+<p>即它很容易遇到一种叫做 <strong>“uneven overlap”(不均匀重叠)</strong> 的现象。具体来说, 当kernel_size 无法被 stride整除时, 反卷积就会出现这种不均匀重叠的现象。原则上，神经网络可以通过仔细学习权值来避免这种情况，但在实践中，神经网络很难完全避免这种情况.</p>
+<p>并且在二维图片上棋盘效应会更加严重。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/convolution/20190809192609235.png" alt></p>
+<p>因此为了避免棋盘效应的发生，一般有一下几种解决方案：</p>
+<ul>
+<li><p>方法1：现在，神经网络在创建图像时通常使用多层反卷积，从一系列较低分辨率的描述中迭代地构建较大的图像。虽然这些堆叠的反卷积可能会消除棋盘效应，但它们通常会复合，从而在各种尺度上产生棋盘效应。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/convolution/646.png" alt></p>
+</li>
+<li><p>方法2：在反卷积后面，再接一个步长为1的卷积，效果有限。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/convolution/647.webp" alt></p>
+</li>
+<li><p>方法3：调整卷积核的权重，适当加大重叠部分少的权重，虽然理论有效，但在实际操作中，不仅有困难也会减弱模型的表达力。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/convolution/648.webp" alt></p>
+</li>
+<li><p>方法4：使得卷积核大小能被步长整除，但卷积核权重的学习不均匀也会导致棋盘效应现象（下图为步长为2，核大小为4所产生的棋盘效应现象）<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/convolution/649.webp" alt></p>
+</li>
+<li><p>方法5：调整图像大小（使用最近邻插值或双线性插值），然后执行卷积操作。这似乎是一种自然的方法，大致相似的方法在图像超分辨率方面表现良好。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/convolution/650.png" alt></p>
+</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>假设反卷积生成的图像中，包含1只黑猫，黑猫身体部分的像素颜色应该是平滑过渡的。或者极端的说，身体部分应该全部都是黑色的。而在实际生成的图像中，该部分却是由深深浅浅的近黑方块组成的，很像棋盘的网络。这就是所谓的棋盘效应。之所以会出现棋盘效应是因为插入的值为0，使得卷积的input feature map本身就是棋盘状，所以得到的大分辨率feature map也会产生棋盘格。反卷积产生的棋盘格，在stride和卷积核size是整数倍的时候能够有所缓解，因为二者整除关系使得卷积核每次滑动能用到的非零像素的个数是一样的或者中间区域向两边逐渐减少(而不是随着滑动反复变化产生棋盘格形状)，但是依然不能完全消除。</p>
+<p>从原始英文博客上的实验结论来看，使用上采样+卷积层的图像放大方法有效的改善了棋盘效应，即不是将小分辨率的feature map的像素之间插0，而是采用插值的方法，所以要是图像生成的时候遇到了棋盘效应你知道怎么做了吗？Upsamping+Convolution来帮你。</p>
+]]></content>
+      <categories>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>目标检测</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>卷积层有哪些参数及常用卷积核类型盘点</title>
+    <url>/2020/03/04/%E5%8D%B7%E7%A7%AF%E5%B1%82%E6%9C%89%E5%93%AA%E4%BA%9B%E5%8F%82%E6%95%B0%E5%8F%8A%E5%B8%B8%E7%94%A8%E5%8D%B7%E7%A7%AF%E6%A0%B8%E7%B1%BB%E5%9E%8B%E7%9B%98%E7%82%B9/</url>
+    <content><![CDATA[<h2 id="卷积核的基本参数"><a href="#卷积核的基本参数" class="headerlink" title=" 卷积核的基本参数"></a><a id="more"></a> 卷积核的基本参数</h2><p>卷积神经网络的核心操作就是卷积层，这里以caffe框架为例子来介绍一下卷积核都有哪些基本的参数。下面先上一段代码，是caffe的卷积层的配置文件：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">layer &#123;</span><br><span class="line">  name: &quot;conv1&quot;</span><br><span class="line">  type: &quot;Convolution&quot;</span><br><span class="line">  bottom: &quot;data&quot;</span><br><span class="line">  top: &quot;conv1&quot;</span><br><span class="line">  param &#123;</span><br><span class="line">    lr_mult: 1</span><br><span class="line">  &#125;</span><br><span class="line">  param &#123;</span><br><span class="line">    lr_mult: 2</span><br><span class="line">  &#125;</span><br><span class="line">  convolution_param &#123;</span><br><span class="line">    num_output: 20</span><br><span class="line">    kernel_size: 5</span><br><span class="line">    stride: 1</span><br><span class="line">    weight_filler &#123;</span><br><span class="line">      type: &quot;xavier&quot;</span><br><span class="line">    &#125;</span><br><span class="line">    bias_filler &#123;</span><br><span class="line">      type: &quot;constant&quot;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>从上面我们可以看到卷积层的参数有：</p>
+<ul>
+<li><code>lr_mult</code>：学习率的系数，最终的学习率是这个参数乘以caffe的solver.prototxt配置文件中的基础学习率<code>base_lr</code>。如果有2个<code>lr_mult</code>，则第一个表示权值的学习率，第二个表示偏置项的学习率。一般偏置项的学习率是权值项的学习率的2倍。</li>
+<li><code>num_output</code>：卷积核的输出通道数。若设置为与输入通道数一样的大小，可以保持输入输出维度的一致性；若采用比输入通道数更小的值，则可以减少整体网络的参数量</li>
+<li><code>kernel_size</code>：卷积核的大小。如果卷积核的长和宽不等，需要用<code>kernel_h</code>和<code>kernel_w</code>分别设定其它参数。</li>
+<li><code>stride</code>：卷积核的步长，默认为1。当然也可以用<code>stride_h</code>和<code>stride_w</code>来设置。</li>
+<li><p><code>pad</code>：扩充边缘，默认为0，不扩充。扩充的时候是左右、上下对称的，比如卷积核的大小为5 x 5，那么<code>pad</code>设置为2，则四个边缘都扩充2个像素，即宽度和高度都扩充了4个像素,这样卷积运算之后的特征图就不会变小。也可以通过<code>pad_h</code>和<code>pad_w</code>来分别设定。</p>
+</li>
+<li><p><code>weight_filler</code>：权重初始化方式。有<code>xavier</code>，<code>gaussian</code>，及<code>constant</code>等方式。</p>
+</li>
+<li><p><code>bias_filler</code>: 偏置项的初始化。一般设置为<code>constant</code>,值全为0。</p>
+</li>
+<li><p><code>bias_term</code>：是否开启偏置项，默认为true，开启。</p>
+</li>
+<li><p><code>group</code>：分组，默认为1组。如果大于1，我们限制卷积的连接操作在一个子集内。如果我们根据图像的通道来分组，那么第<code>i</code>个输出分组只能与第<code>i</code>个输入分组进行连接。</p>
+</li>
+<li><p><code>num_input</code>：输入通道数，这个包含在bottom中，所以实际上没有这个参数哦，只是可以这样理解。</p>
+</li>
+</ul>
+<p>现在设输入通道数为<code>c0</code>，输出通道数为<code>c1</code>，那么输入可以表示为$[n, c 0, w 0, h 0]$，输出可以表示为：$[n, c 1, w 1, h 1]$。其中$w 0, h 0$表示输入特征图的长宽，那么输出特征图的长宽$w 1, h 1$可以用下面的公式计算：  </p>
+<script type="math/tex; mode=display">
+w 1=\left(w 0+2 \times p a d-k e r n e l_{w}\right) / s t r i d e+1</script><script type="math/tex; mode=display">
+h 1=\left(h 0+2 \times p a d-\text {kernel}_{h}\right) /stride+1</script><p>如果将<code>stride</code>设为1，前后两次卷积部分存在重叠，如果设置<code>pad=(kernel_size-1)/2</code>，那么输出特征图的高宽都不变。</p>
+<h2 id="常用卷积核类型盘点"><a href="#常用卷积核类型盘点" class="headerlink" title="常用卷积核类型盘点"></a>常用卷积核类型盘点</h2><p>卷积核的类型有很多，在工业上做的一些任务来看，最常用的卷积核类型大概有4种，分别是标准卷积，扩张卷积，转置卷积和深度可分离卷积。这里要先说一个感受野的概念，所谓感受野就是是卷积神经网络每一层输出的特征图（feature map）上的像素点在输入图片上映射的区域大小。再通俗点的解释是，特征图上的一个点对应输入图上的区域。</p>
+<h3 id="标准卷积"><a href="#标准卷积" class="headerlink" title="标准卷积"></a>标准卷积</h3><p>这是最常用的卷积，连续紧密的矩阵形式可以提取图像区域中相邻像素之间的关联性，例如一个3 x 3的卷积核可以获得3 x 3的感受野。如下图所示：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/convolution/640.webp" alt></p>
+<h3 id="转置卷积"><a href="#转置卷积" class="headerlink" title="转置卷积"></a>转置卷积</h3><p>转置卷积是先对原始特征矩阵进行填充使其维度扩大到目标输出维度，然后进行普通的卷积操作的过程，其输入到输出的维度变换关系恰好和普通的卷积变换关系相反，但这个变换并不是卷积真正的逆变换操作，我们通常将其称为转置卷积(Transpose  Convolution)而不是反卷积(Deconvolution)。转置卷积常见于目标检测领域中对小目标的检测以及图像分割领域还原输入图像尺度如FCN中。如下图所示，其中下图是输入，上图是输出：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/convolution/641.webp" alt></p>
+<h3 id="扩张卷积（带孔卷积或空洞卷积）"><a href="#扩张卷积（带孔卷积或空洞卷积）" class="headerlink" title="扩张卷积（带孔卷积或空洞卷积）"></a>扩张卷积（带孔卷积或空洞卷积）</h3><p>这是一种特殊的卷积，引入了一个称为扩展率(Dilation Rate)的参数，使得同样尺寸的卷积核可以获得更大的感受野，相应的在相同感受视野的前提下比普通卷积采用更少的参数。举个例子，同样是3 x 3卷积核，扩张卷积可以获得范围的区域特征，在图像分割领域被广泛应用。如下图所示：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/convolution/642.webp" alt></p>
+<h3 id="深度可分离卷积"><a href="#深度可分离卷积" class="headerlink" title="深度可分离卷积"></a>深度可分离卷积</h3><p>这是在轻量级模型算法优化中经常会使用到的一种卷积方式，标准的卷积操作是对原始图像$H \times W \times C$三个方向的卷积运算，假设现在有$K$个相同尺寸卷积核，这样的操作计算量为$H \times W \times C \times K$个。若将长宽与深度方向的卷积操作分离出变为$H \times W$与$C$的两个卷积操作，则同样的卷积核数量$K$，现在的计算量变成了$(H \times W+C) \times K$个，也可以得到相同维度的输出。深度可分离卷积在模型压缩和一些轻量级卷积神经网络中被广泛应用。</p>
+]]></content>
+      <categories>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>目标检测</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>深度学习中的batch大小对学习效果的影响</title>
+    <url>/2020/03/04/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E4%B8%AD%E7%9A%84batch%E5%A4%A7%E5%B0%8F%E5%AF%B9%E5%AD%A6%E4%B9%A0%E6%95%88%E6%9E%9C%E6%9C%89%E4%BD%95%E5%BD%B1%E5%93%8D%EF%BC%9F/</url>
+    <content><![CDATA[<h2 id="谈谈深度学习中的Batch-Size"><a href="#谈谈深度学习中的Batch-Size" class="headerlink" title=" 谈谈深度学习中的Batch_Size"></a><a id="more"></a> 谈谈深度学习中的Batch_Size</h2><p>Batch_Size（批尺寸）是机器学习中一个重要参数，涉及诸多矛盾，下面逐一展开。</p>
+<h2 id="首先，为什么需要有-Batch-Size-这个参数？"><a href="#首先，为什么需要有-Batch-Size-这个参数？" class="headerlink" title="首先，为什么需要有 Batch_Size 这个参数？"></a>首先，为什么需要有 Batch_Size 这个参数？</h2><p>Batch 的选择，<strong>首先决定的是下降的方向</strong>。如果数据集比较小，完全可以采用<strong>全数据集 （ Full Batch Learning ）</strong>的形式，这样做至少有 2 个好处：其一，由全数据集确定的方向能够更好地代表样本总体，从而更准确地朝向极值所在的方向。其二，由于不同权重的梯度值差别巨大，因此选取一个全局的学习率很困难。 Full Batch Learning 可以使用 <strong>Rprop</strong> 只基于梯度符号并且针对性单独更新各权值。</p>
+<p>对于更大的数据集，以上 2 个好处又变成了 2 个坏处：其一，随着数据集的海量增长和内存限制，一次性载入所有的数据进来变得越来越不可行。其二，以 Rprop 的方式迭代，会由于各个 Batch 之间的采样差异性，各次梯度修正值相互抵消，无法修正。这才有了后来 <strong>RMSProp</strong> 的妥协方案。</p>
+<h2 id="既然-Full-Batch-Learning-并不适用大数据集，那么走向另一个极端怎么样？"><a href="#既然-Full-Batch-Learning-并不适用大数据集，那么走向另一个极端怎么样？" class="headerlink" title="既然 Full Batch Learning 并不适用大数据集，那么走向另一个极端怎么样？"></a>既然 Full Batch Learning 并不适用大数据集，那么走向另一个极端怎么样？</h2><p>所谓另一个极端，就是每次只训练一个样本，即 Batch_Size = 1。这就是<strong>在线学习（Online Learning）</strong>。线性神经元在均方误差代价函数的错误面是一个抛物面，横截面是椭圆。对于多层神经元、非线性网络，在局部依然近似是抛物面。使用在线学习，每次修正方向以各自样本的梯度方向修正，横冲直撞各自为政，<strong>难以达到收敛</strong>。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/Batch/640.jpg" alt></p>
+<h2 id="可不可以选择一个适中的-Batch-Size-值呢？"><a href="#可不可以选择一个适中的-Batch-Size-值呢？" class="headerlink" title="可不可以选择一个适中的 Batch_Size 值呢？"></a>可不可以选择一个适中的 Batch_Size 值呢？</h2><p>当然可以，这就是<strong>批梯度下降法（Mini-batches Learning）</strong>。因为如果数据集足够充分，那么用一半（甚至少得多）的数据训练算出来的梯度与用全部数据训练出来的梯度是几乎一样的。</p>
+<h2 id="在合理范围内，增大-Batch-Size-有何好处？"><a href="#在合理范围内，增大-Batch-Size-有何好处？" class="headerlink" title="在合理范围内，增大 Batch_Size 有何好处？"></a>在合理范围内，增大 Batch_Size 有何好处？</h2><ul>
+<li>内存利用率提高了，大矩阵乘法的并行化效率提高。</li>
+<li>跑完一次 epoch（全数据集）所需的迭代次数减少，对于相同数据量的处理速度进一步加快。</li>
+<li>在一定范围内，一般来说 Batch_Size 越大，其确定的下降方向越准，引起训练震荡越小。</li>
+</ul>
+<h2 id="盲目增大-Batch-Size-有何坏处？"><a href="#盲目增大-Batch-Size-有何坏处？" class="headerlink" title="盲目增大 Batch_Size 有何坏处？"></a>盲目增大 Batch_Size 有何坏处？</h2><ul>
+<li>内存利用率提高了，但是内存容量可能撑不住了。</li>
+<li>跑完一次 epoch（全数据集）所需的迭代次数减少，要想达到相同的精度，其所花费的时间大大增加了，从而对参数的修正也就显得更加缓慢。</li>
+<li>Batch_Size 增大到一定程度，其确定的下降方向已经基本不再变化。</li>
+</ul>
+<h2 id="调节-Batch-Size-对训练效果影响到底如何？"><a href="#调节-Batch-Size-对训练效果影响到底如何？" class="headerlink" title="调节 Batch_Size 对训练效果影响到底如何？"></a>调节 Batch_Size 对训练效果影响到底如何？</h2><p>这里是一个 LeNet 在 MNIST 数据集上的效果。MNIST 是一个手写体标准库，使用的是 Theano 框架。这是一个 Python  的深度学习库。安装方便（几行命令而已），调试简单（自带 Profile），GPU / CPU  通吃，官方教程相当完备，支持模块十分丰富（除了 CNNs，更是支持 RBM / DBN / LSTM / RBM-RNN / SdA / MLPs）。在其上层有 Keras 封装，支持 GRU / JZS1,  JZS2, JZS3 等较新结构，支持 Adagrad / Adadelta / RMSprop / Adam 等优化算法。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/Batch/641.jpg" alt></p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/Batch/642.jpg" alt></p>
+<p>运行结果如上图所示，其中绝对时间做了标幺化处理。运行结果与上文分析相印证：</p>
+<ul>
+<li>Batch_Size 太小，算法在 200 epoches 内不收敛。</li>
+<li>随着 Batch_Size 增大，处理相同数据量的速度越快。</li>
+<li>随着 Batch_Size 增大，达到相同精度所需要的 epoch 数量越来越多。</li>
+<li>由于上述两种因素的矛盾， Batch_Size 增大到某个时候，达到<strong>时间上</strong>的最优。</li>
+<li>由于最终收敛精度会陷入不同的局部极值，因此 Batch_Size 增大到某些时候，达到最终收敛<strong>精度上</strong>的最优。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>目标检测</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>盘点不同类型的池化层、1x1卷积的作用和卷积核是否一定越大越好？</title>
     <url>/2020/03/03/%E7%9B%98%E7%82%B9%E4%B8%8D%E5%90%8C%E7%B1%BB%E5%9E%8B%E7%9A%84%E6%B1%A0%E5%8C%96%E5%B1%82%E3%80%811x1%E5%8D%B7%E7%A7%AF%E7%9A%84%E4%BD%9C%E7%94%A8%E5%92%8C%E5%8D%B7%E7%A7%AF%E6%A0%B8%E6%98%AF%E5%90%A6%E4%B8%80%E5%AE%9A%E8%B6%8A%E5%A4%A7%E8%B6%8A%E5%A5%BD%EF%BC%9F/</url>
     <content><![CDATA[<h2 id="池化层的不同类型"><a href="#池化层的不同类型" class="headerlink" title=" 池化层的不同类型"></a><a id="more"></a> 池化层的不同类型</h2><p>池化通常也被称为下采样(Downsampling)，一般是用在卷积层之后，通过池化来降低卷积层输出特征图的维度，有效减少网络参数的同时还可以防止过拟合现象。池化层实际上真正起作用的地方在于他的非线性映射能力和可以保持一定量的平移不变性的能力。这个能力是因为在一个图像区域有用的特征很有可能在另一个区域同样有用。因此，为了描述一个大分辨率的图像特征，一个直观的方法就是对大分辨率图像中的不同位置的特征进行聚合统计。具体来说，常见池化的方法有以下几种：</p>
