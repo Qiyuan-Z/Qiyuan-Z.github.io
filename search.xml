@@ -1,6 +1,224 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Ubuntu下screen的使用</title>
+    <url>/2020/03/05/Ubuntu%E4%B8%8Bscreen%E7%9A%84%E4%BD%BF%E7%94%A8/</url>
+    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title=" 背景"></a><a id="more"></a> 背景</h2><p>系统管理员经常需要SSH或者telent远程登录到linux服务器，经常运行一些需要很长时间才能完成的任务，比如系统备份、ftp 传输等等。通常情况下我们都是为每一个这样的任务开一个远程终端窗口，因为它们执行的时间太长了。必须等待它们执行完毕，在此期间不能关掉窗口或者断开连接，否则这个任务就会被杀掉，一切半途而废了。</p>
+<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>GNU Screen是一款由GNU计划开发的用于命令行终端切换的自由软件。用户可以通过该软件同时连接多个本地或远程的命令行会话，并在其间自由切换。</p>
+<p>GNU Screen可以看作是窗口管理器的命令行界面版本。它提供了统一的管理多个会话的界面和相应的功能。</p>
+<p>我们可以使用screen命令，来让保证退出ssh之后程序继续在后台跑。</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>首先可以先查看是否安装screen，通过命令<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">screen -ls</span><br></pre></td></tr></table></figure><br>若出现</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">The program &#39;screen&#39; is currently not installed. You can install it by typing:</span><br><span class="line">sudo apt install screen</span><br></pre></td></tr></table></figure>
+<p>说明尚未安装，按照提示，通过命令，安装screen：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt install screen</span><br></pre></td></tr></table></figure></p>
+<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><ul>
+<li><p>新建窗口<br>1）可直接通过命令<code>screen</code>新建一个窗口，并进入窗口。但通过这种方式新建的窗口没有名字，只有系统分配给它的一个id。当需要恢复窗口时，只能通过id号来恢复。<br>2）通过命令<code>screen -S name</code>，这样就可以新建一个名字为name的窗口，同样系统也会分配给它一个id，当恢复该窗口时既可以通过id号也可以通过窗口名。</p>
+</li>
+<li><p>分离会话<br>退出当前新建的窗口，通过快键键Ctrl+a+d实现分离，此时窗口会跳出[detached]的提示，并回到主窗口。</p>
+</li>
+<li><p>恢复会话窗口<br>首先查看当前有哪些screen窗口，通过命令：<br><code>screen -ls</code> 将列出窗口列表</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/787798-20181026175344791-956631152.png" alt></p>
+<p>由以上可知，当前有两个窗口，其中test窗口已经被杀死，test2窗口分离。可以通过以下命令恢复test2窗口：<code>screen -r test2</code> 或 <code>screen -r 27582</code>这样就返回了test2窗口</p>
+</li>
+<li><p>杀死会话窗口<br>通过命令<code>kill -9 threadnum</code><br>注意此处只能通过id号来杀死窗口。</p>
+</li>
+<li><p>清除死去窗口<br>通过命令<code>screen -wipe</code><br>这个命令将自动清除所有处于dead状态的窗口</p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>卷积神经网络参数设置，提高泛化能力</title>
+    <url>/2020/03/05/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%8F%82%E6%95%B0%E8%AE%BE%E7%BD%AE%EF%BC%8C%E6%8F%90%E9%AB%98%E6%B3%9B%E5%8C%96%E8%83%BD%E5%8A%9B/</url>
+    <content><![CDATA[<h2 id="卷积神经网络的参数设置"><a href="#卷积神经网络的参数设置" class="headerlink" title=" 卷积神经网络的参数设置"></a><a id="more"></a> 卷积神经网络的参数设置</h2><p>这个举个例子来说是最好的，因为直接说会抽象一些，在网上找了一个caffe-ssd的参数设置配置文件<code>solver.prototxt</code>，内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">train_net:&quot;train.prototxt&quot;</span><br><span class="line">test_net:&quot;test.prototxt&quot;</span><br><span class="line">test_iter: 299</span><br><span class="line">test_interval: 200</span><br><span class="line">base_lr: 0.01</span><br><span class="line">display: 20</span><br><span class="line">max_iter: 6720</span><br><span class="line">lr_policy: &quot;step&quot;</span><br><span class="line">gamma: 0.1</span><br><span class="line">power: 0.75</span><br><span class="line">momentum: 0.9</span><br><span class="line">weight_decay: 0.0001</span><br><span class="line">snapshot: 224</span><br><span class="line">snapshot_prefix: &quot;snapshot&quot;</span><br><span class="line">solver_mode: GPU</span><br><span class="line">device_id:0</span><br><span class="line">debug_info:false</span><br><span class="line">snapshot_after_train:true</span><br><span class="line">test_initialization:false</span><br><span class="line">average_loss:10</span><br><span class="line">iter_size:1</span><br><span class="line">stepsize:2000</span><br><span class="line">type: SGD</span><br><span class="line">eval_type:&quot;detection&quot;</span><br><span class="line">ap_version:&quot;11point&quot;</span><br><span class="line">show_per_class_result:true</span><br></pre></td></tr></table></figure>
+<p>我们就一个个来解析一下。</p>
+<ul>
+<li><code>train_net</code>：训练的模型文件的路径。</li>
+<li><code>test_net</code>：测试的模型文件的路径。</li>
+<li><code>test_iter</code>：网络的迭代测试次数。网络一次测试<code>batch_size</code>张图片，因为为了可以将验证集中所有图片都测试一次，这个参数乘以<code>batch_size</code>应该等于验证集中的图片数。</li>
+<li><code>test_interval</code>：网络迭代多少次进行一次测试。一次迭代即是将一个<code>batch_size</code>的图片进行训练。这个文件中<code>test_interval</code>设为了<code>200</code>，也就是说每隔<code>200</code>次对网络的准确率进行一次验证。一般来讲，我们是需要将训练集合中的所有图片都跑一次再对准确率进行测试，也就是<code>test_interval</code>乘以<code>batch_size</code>不小于训练集中的图片总数。</li>
+<li><code>base_lr</code>：表示网络的基础学习率，学习率过高可能会无法梯度下降，loss保持不变，也可能loss不能收敛。而学习率过低会使网络收敛速度缓慢，也可能导致梯度消失。一般初始学习率设为<code>0.01</code>。</li>
+<li><code>display</code>：每隔多少次显示一次。也就是在屏幕上打印一次<code>loss</code>和准确率。</li>
+<li><code>max_iter</code>：网络的最大迭代次数。训练集中的图片需要训练多次，所以这个参数一般比较大。</li>
+<li><code>lr_policy</code>：学习率变化策略，这里面又分为如下几类：<ul>
+<li><code>fixed</code>：保持<code>base_lr</code>不变。</li>
+<li><code>step</code>：如果设置为<code>step</code>,则还需要设置一个<code>stepsize</code>,  返回 <code>base_lr * gamma ^ (floor(iter / stepsize))</code>,其中<code>iter</code>表示当前的迭代次数。</li>
+<li><code>exp</code>：返回<code>base_lr * gamma^ iter</code>，<code>iter</code>表示当前的迭代次数。</li>
+<li><code>inv</code>: 如果设置为<code>inv</code>,还需要设置一个<code>power</code>, 返回<code>base_lr * (1 + gamma * iter) ^ (- power)</code>。</li>
+<li><code>multistep</code>：如果设置为<code>multistep</code>,则还需要设置一个<code>stepvalue</code>。这个参数和<code>step</code>很相似，<code>step</code>是均匀等间隔变化，而<code>multistep</code>则是根据 <code>stepvalue</code>值变化。</li>
+<li><code>poly</code>：学习率进行多项式误差, 返回 <code>base_lr (1 - iter/max_iter) ^ (power)</code></li>
+<li><code>sigmoid</code>：学习率进行<code>sigmod</code>衰减，返回 <code>base_lr ( 1/(1 + exp(-gamma * (iter - stepsize))))</code></li>
+</ul>
+</li>
+<li><code>gamma</code>：因为这里学习率衰减策略为<code>step</code>，所以需要设置<code>gamma</code>和<code>power</code>两个参数。</li>
+<li><code>power</code>：同上。</li>
+<li><code>momentum</code>：上一次梯度更新的权重，一般取值在<code>0.5--0.99</code>之间。通常设为<code>0.9</code>，<code>momentum</code>可以让使用<code>SGD</code>的深度学习方法更加稳定以及快速。</li>
+<li><code>weight_decay</code>：权重衰减项，防止过拟合的一个参数。在损失函数中，<code>weight decay</code>是放在正则项（<code>regularization</code>）前面的一个系数，正则项一般指示模型的复杂度，所以<code>weight decay</code>的作用是调节模型复杂度对损失函数的影响，若<code>weight decay</code>很大，则复杂的模型损失函数的值也就大。</li>
+<li><code>sanpshot</code>：每多少次保存一次学习的结果，在caffe框架下就是<code>caffemodel</code>。</li>
+<li><code>snapshot_prefix</code>：模型保存的路径。</li>
+<li><code>solver_model</code>：设置使用<code>GPU</code>还是<code>CPU</code>进行学习训练。</li>
+<li><code>device_id</code>：GPU序列号，默认从<code>０</code>开始。</li>
+<li><code>debug_info</code>：是否显示<code>debug</code>信息。</li>
+<li><code>snapshot_after_train</code>：是否在训练结束后保存一个snapshot文件。便于以后可以在此基础上继续训练。</li>
+<li><code>test_initialization</code>：确保内存可以用并输出<code>loss</code>的初始值。</li>
+<li><code>average_loss</code>：显示<code>loss</code>为之前<code>average_loss</code>个<code>loss</code>的平均值。</li>
+<li><code>iter_size</code>：每处理<code>iter_size*batch_size</code>张图片后进行一次梯度计算。</li>
+<li><code>stepsize</code>：每多少次学习率递减。这里是迭代<code>2000</code>次学习率递减。</li>
+<li><code>type</code>：优化算法的选择，一共有六种可选：<code>SGD、AdaDelta、AdaGrad、Adam、Nesterov和RMSProp</code>。默认为<code>SGD</code>。</li>
+<li><code>eval_type</code>：评价类型。</li>
+<li><code>ap_version</code>：计算平均准确率(map值)的方法，有<code>11point、MaxIntegral、Integral</code>三种，<code>l1point</code>是SSD在VOC2007中计算AP的方法，使用了简单的均值计算。<code>MaxInterral</code>是SSD在VOC2012中使用的最大值积分法。<code>Integral</code>是普通积分方法。</li>
+<li><code>show_per_class_result</code>：在终端输出每一类的AP（每一类的检测精度）信息。</li>
+</ul>
+<h2 id="提高卷积神经网络的泛化能力"><a href="#提高卷积神经网络的泛化能力" class="headerlink" title="提高卷积神经网络的泛化能力"></a>提高卷积神经网络的泛化能力</h2><p>在做工程的时候如何提高自己训练出来的模型的泛化能力是一项具有挑战性同时也是一件充满”玄学”的事情。大概可以总结为下面这几点。</p>
+<ul>
+<li>使用更多的数据。竟可能标注更多的训练数据，这是提高泛化能力最理想的方法，更多的数据让模型得到更充分的学习，自然提高了泛化能力，但实际场景中考虑到标注成本的问题，可能并不能无脑加数据。</li>
+<li>使用更大的<code>batch_size</code>。在相同迭代次数和学习率的条件下，每批次采用更多的数据将有助于模型更好的学习到正确的模式，模型输出结果也会更加稳定。</li>
+<li>数据过采样。很多情况下我们拿到手的数据都存在类别不均匀的情况，模型这个时候过多的拟合某类数量多的数据导致其输出结果偏向于该类数据，此时如果我们过采样其他类别的数据，使得数据量比较均衡可以一定程度提高泛化能力。</li>
+<li>数据增强。数据增强是指在数据有限的情况通过一些几何操作对图像进行变换，使得同类数据的表现形式更加丰富，以此提高模型的泛化能力。数据增强是一门比较大的学问，在分类，检测，分割中数据增强的方式都有区别，我们可以通过研究优秀的开源代码实现的数据增强策略来应用到我们自己的任务中。</li>
+<li>修改损失函数。这方面有大量的工作，如目标检测中的Focal Loss, GHM Loss，IOU Loss等都是为了提升模型的泛化能力。</li>
+<li>修改网络。如果网络过浅并且参数量过少往往会使得模型的泛化能力不足导致欠拟合，此时一般考虑使用简单的堆叠卷积层增加网络的参数，提高模型的特征提取能力。而如果网络过深且训练数据量比较少，那么就容易导致模型过拟合，此时一般需要简化网络结构减少网络层数或者使用<code>resnet</code>的残差结构以及<code>bn</code>层。</li>
+<li>权重惩罚。权重惩罚也即是正则化操作，一般是在损失函数中添加一项权重矩阵的正则项作为惩罚项，用来惩罚损失值较小时网络权重过大的情况，此时往往是网络权值过拟合了数据样本。</li>
+<li>Dropout策略。如果网络最后有全连接层可以使用<code>Dropout</code>策略，相当于对深度学习模型做了<code>Ensemble</code>，有助于提高模型的泛化能力。</li>
+</ul>
+<h2 id="一些调参技巧"><a href="#一些调参技巧" class="headerlink" title="一些调参技巧"></a>一些调参技巧</h2><h3 id="做工程"><a href="#做工程" class="headerlink" title="做工程"></a>做工程</h3><ul>
+<li><p>3 x 3卷积是CNN的主流组件。平时有设计一些解决分类，回归任务的网络，里面的卷积核基本都设置为3 x 3，要说原因的话应该去问问<code>VGG16</code>吧。两个3 x 3的卷积核堆叠能获得5 x 5卷积核的感受野并且参数比5 x 5卷积核少，所以是大量推荐使用的。</p>
+</li>
+<li><p>可以适当使用1 x N卷积。为什么要提这一点呢，这是因为1 X N卷积可以减少计算量，并且1 X N卷积可以在某个方向强调感受野，也就是说假如如果你要对一个长方形形状的目标进行分类，你可以使用1 X N的卷积核搭配3 X 3的卷积核对长边方向设定更大的感受野，或许可以获得泛化性能的提升。</p>
+</li>
+<li>ACNet结构。这个研究来自于ICCV2019，可以在3 X 3卷积的基础上加上1 X 3和3 X 1的旁路卷积核，最后在推理阶段把三个卷积核都<code>fusion</code>到3 X 3卷积核上，在许多经典CV任务上都可以获得大概1个点的提升。</li>
+<li>卷积核权重初始化方式。对于<code>weight</code>的初始化一般都是使用<code>xavier</code>初始化。当然也可以可以尝试何凯明大神的He初始化。对于bias的初始化全置于0。</li>
+<li><code>Batch Normalization</code>。这是一直在使用的技巧，可以很大程度的加快收敛速度。建议搭建自己网络的时候尽量加上<code>BN</code>，如果有<code>BN</code>了全连接层就没必要加<code>Dropout</code>了。</li>
+<li>目标检测不能盲目去掉<code>fpn</code>结构。在针对自己的数据调检测任务如<code>yolov3</code>的时候不能盲目砍掉<code>fpn</code>结构，尽管你分析出某个分支的Anchor基本不可能会对你预测的目标起作用，但如果你直接去掉分支很可能会带来漏检。</li>
+<li>优化器的选择。基本都是带动量的<code>SGD</code>。如果优化不动可以试试<code>Adam</code>。</li>
+<li>激活函数。可以先用<code>ReLU</code>做一版，如果想再提升精度可以将<code>ReLU</code>改成<code>PReLU</code>试试。我更倾向于直接使用<code>ReLU</code>。</li>
+<li><code>batch_size</code>：在不同类型的任务中，<code>batch_size</code>的影响也不同。</li>
+<li>初始学习率。一般是从<code>0.01</code>开始设置，个人认为这个学习率和学习率衰减策略是相关的，但不宜设置的过大过小，<code>0.01</code>和<code>0.1</code>应该是比较常用的。学习率衰减策略一般使用<code>multistep</code>方式，<code>step_size</code>的设置要看视你的的<code>max_iter</code>而定。</li>
+<li>数据与处理之<code>zero-center</code>。主要有2个步骤，第一个是减均值，第二个是除以方差。这样做下来最后的输入值域为<code>[-1,1]</code>，一般减均值是最常用的，后面的除以方差用不用可能需要自己动手试验一下看看效果。</li>
+<li>残差结构和密集连接。<code>resnet</code>的残差结构和<code>dense net</code>密集连接结构，做工程的时候考虑到速度近乎不可能说完全使用完整版本的<code>resnet</code>和<code>densenet</code>的完整结构，但我们可以自己动手将我们网络的某些模块替换为残差结构和密集连接，替换的时候可以适当降低这俩结构的复杂度，类似于通道数减半，密集连接中只保留一半连接等等。这里需要做一些消融实验来验证改进后的精度。</li>
+<li>关于loss。优秀的<code>loss</code>一般是对模型的泛化性能有所改善的，但在用<code>loss</code>的时候往往并不是直接替换<code>loss</code>那么简单，需要仔细思考<code>loss</code>背后的数学原理，要用对地方才可有提升。</li>
+<li>找到模型调参时的可靠评价指标。在调整参数训练模型时一定要找到正确的评价指标，没调整一个参数就要记录一下模型的评价指标如准确率，<code>map</code>值，<code>miou</code>值等。并且在调参时建议将调整的参数和在测试集上的精度组合成一个字符串给模型重命令，方便之后快速<code>review</code>。</li>
+<li>使用了带<code>backbone</code>的网络，如训练<code>VGG16-SSD</code>建议选择<code>finetune</code>的方式，从头训练不仅费时费力，甚至难以收敛。</li>
+</ul>
+<h3 id="做比赛"><a href="#做比赛" class="headerlink" title="做比赛"></a>做比赛</h3><ul>
+<li><p>特征提取。VGG16，VGG19，ResNet50，Xception是非常好用的几个特征提取模型。建议使用训练好的经典模型对数据集提取特征向量存储到本地，更方便使用，同时可以大幅度降低显存消耗。</p>
+</li>
+<li><p>ensemle：</p>
+<ul>
+<li>将不同的经典网络提取出的特征向量，假设<code>VGG16</code>提取出的特征向量维度是<code>[N,c1]</code>,<code>ResNet50</code>提取的特征向量维度是<code>[N，c2]</code>,<code>Xception</code>提取的特征向量维度是<code>[N, c3]</code>，那么我们可以使用三个系数<code>a、b、c</code>将其组合为形状为<code>[N, a*c1+b*c2+c*c3]</code>，其中<code>a、b、c</code>三个参数的取值代表我们使用哪个模型的特征多一些，如果是分类回归比赛，我们在后面接特征处理网络就可以了。可以取不同的<code>a、b、c</code>得到不同的特征，然后对结果做<code>voting</code>，<code>soft-voting</code>等多种处理，一般结果不会太差。</li>
+<li>可以使用不同的初始化方式训练出模型，然后做ensemble。</li>
+<li>可以使用用不同超参数(如学习率，<code>batch_size</code>，优化器)训练出不同模型，然后做ensemble。</li>
+</ul>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>目标检测</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>NIPS 2016 R-FCN（来自微软何凯明团队）</title>
+    <url>/2020/03/05/NIPS-2016-R-FCN%EF%BC%88%E6%9D%A5%E8%87%AA%E5%BE%AE%E8%BD%AF%E4%BD%95%E5%87%AF%E6%98%8E%E5%9B%A2%E9%98%9F%EF%BC%89/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title=" 前言"></a><a id="more"></a> 前言</h2><p>R-FCN全称为Region-based Fully Convolutional Networks，是由微软的何凯明团队在NIPS 2016上提出来的，仍然是双阶段的目标检检测算法。论文地址和官方开源代码见文后。</p>
+<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>R-FCN论文的发表时间比YOLO,SSD出来的都晚一些，并且这个算法更像是针对Faster-RCNN的一种改进，并且扔属于two-stage算法。那个R-FCN具体要解决什么问题呢？我们不妨先来看看R-FCN之前的典型的two-stage算法分别是在解决什么？</p>
+<ul>
+<li>rcnn证明cnn具有良好的特征提取能力，也是第一个将cnn用来做目标检测任务的算法。</li>
+<li>fast-rcnn提出ROI-Pooling将需要应用到多个候选框的骨干CNN网络进行共享，加快速度的同时也提升了准确率。</li>
+<li>faster-rcnn解决了候选框搜索耗时过多的问题，提出RPN全卷积网络用于学习提取候选框，速度更快且精度更高。</li>
+</ul>
+<p>而Faster-RCNN的一个缺点在于在ROI Pooling之后全是全连接层，从而将ROI  Pooling之后的特征图映射为分类和回归两个任务。而越来越多的基础CNN架构如GoogleNet，ResNet等全卷积网络证明不要全连接层，网络的效果不仅会更好并且还可以适应不同尺度的输入图片。因为着眼于Faster-RCNN的全连接层负载很重这一痛点，R-FCN出世了。</p>
+<h2 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h2><p>R-FCN中主要有2个重要的点，第一个是将ROI Pooling后面的全连接层都用卷积层所代替，第二个是对ROI Pooling的魔改。</p>
+<h2 id="R-FCN整体结构"><a href="#R-FCN整体结构" class="headerlink" title="R-FCN整体结构"></a>R-FCN整体结构</h2><p>我们知道，对于Faster-RCNN是会对每一个候选框区域执行ROI  Pooling操作之后单独跑后面的分类和回归分支的。实际上是分成了几个subnetwork，第一个用来在整张图上做比较耗时的conv，这些操作与region无关，是计算共享的。第二个subnetwork是用来产生候选的boundingbox（如RPN），第三个subnetwork用来分类或进一步对box进行regression（如Fast RCNN），这个subnetwork和region是有关系的，必须每个region单独跑网络，衔接在这个subnetwork和前两个subnetwork中间的就是ROI pooling。我们希望的是，耗时的卷积都尽量移到前面共享的subnetwork上。因此R-FCN希望耗时的卷积都尽量移动到前面共享的网络中。基于此，和Faster-RCNN用ResNet做Backbone的处理方式不同(前面<code>91</code>层共享，然后插入<code>ROIPooling</code>，后面<code>10</code>层不共享)，R-FCN把所有的<code>101</code>层都设置为共享网络，最后用来做预测的只有一个卷积层，大大减少了计算量。这一点参见Table1。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/R-FCN/640.webp" alt></p>
+<p>R-FCN可以分成以下四个部分：</p>
+<ul>
+<li>Backbone网络，如ResNet101网络。</li>
+<li>一个区域建议网络(RPN)。</li>
+<li>一个正例敏感的预测层。</li>
+<li>最后的ROI Pooling+投票的决策层。</li>
+</ul>
+<p>R-FCN的网络结构图如下所示：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/R-FCN/641.jpg" alt></p>
+<p>可以看到整体结构和Faster-RCNN比较像，都有RPN网络来训练生成候选框，而ROI Pooling是不一样的，接下来就仔细讲讲。</p>
+<h2 id="R-FCN的ROIPooling"><a href="#R-FCN的ROIPooling" class="headerlink" title="R-FCN的ROIPooling"></a>R-FCN的ROIPooling</h2><p>我们省略一下R-FCN和Faster-RCNN网络结构完全相同的部分，着眼于R-FCN的变化之处即ROIPooling，关键部分如论文中的Figure1所示。我们接下来就针对这张图来仔细分析。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/R-FCN/642.webp" alt></p>
+<ul>
+<li><strong>Backbone architecture</strong>: ResNet 101—去掉原始ResNet101的最后一层全连接层，保留前100层，再接一个1 x 1 x 1024的全卷积层（100层输出是2048，为了降维，再引入了一个1 x 1的卷积层）。</li>
+<li><strong>$k^{2} \times(C+1)$的conv</strong>: ResNet101的输出是W x H x 1024，用$k^{2} \times(C+1)$个1024 x 1 x 1的卷积核去卷积即可得到$k^{2} \times(C+1)$个大小为W x H的position sensitive的score map。这步的卷积操作就是在做prediction。k = 3，表示把一个ROI划分成3 x 3，对应的9个位置分别是：上左（左上角），上中，上右，中左，中中，中右，下左，下中，下右（右下角）</li>
+<li><strong>$k^{2} \times(C+1)$个feature map的物理意义</strong>: 共有k x k = 9个颜色，每个颜色的立体块（W x H x (C+1)）表示的是不同位置存在目标的概率值（第一块黄色表示的是左上角位置，最后一块淡蓝色表示的是右下角位置）。共有$k^{2} \times(C+1)$个feature map。每个feature map，z(i,j,c)是第i+k(j-1)个立体块上的第c个map（1&lt;= i,j &lt;=3）。(i,j)决定了9种位置的某一种位置，假设为左上角位置（i=j=1），c决定了哪一类，假设为person类。在z(i,j,c)这个feature map上的某一个像素的位置是（x,y），像素值是value，则value表示的是原图对应的(x,y)这个位置上可能是人（c=‘person’）且是人的左上部位（i=j=1）的概率值。</li>
+<li><strong>ROI pooling</strong>: 就是faster RCNN中的ROI pooling，也就是一层的SPP结构。主要用来将不同大小的ROI对应的feature map映射成同样维度的特征，思路是不论对多大的ROI，规定在上面画一个n x n 个bin的网格，每个网格里的所有像素值做一个pooling（平均），这样不论图像多大，pooling后的ROI特征维度都是n x n。注意一点ROI pooling是每个feature map单独做，不是多个channel一起的。</li>
+<li><strong>vote投票</strong>：k x k个bin直接进行求和（每个类单独做）得到每一类的score，并进行softmax得到每类的最终得分，并用于计算损失</li>
+</ul>
+<p>可以看到原始图像经过Backbone的卷积神经网络之后得到了最后一层特征图，接下来就应该是提取当前特征图的ROI区域了。这个地方ROIPooling不像Faster-RCNN那样直接提取，而是重新设计了一个位置敏感的ROIPooling：将Faster-RCNN中的ROI划分成k x k大小，即是说将ROI区域分成k x k个小区域（论文中取k = 3，即将ROI区域分成9个部分）。然后假设目标检测数据集的目标类别一共有C类，同时加上一个背景类就是C + 1类，最后我们希望网络对每个类别都有各自的位置响应。因此最后ROIPooling层的特征维度是$k^{2} \times(C+1)$代表每一个类别在某个位置(一共9个)的位置敏感度map，其中每个map的大小和ROIPooling前面那个Backbone网络得到的特征图尺寸完全一致。</p>
+<p>那么具体是如何从位置敏感<code>map</code>得到最后那个C + 1个通道，并且尺寸为k x k的特征图呢？如下所示：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/R-FCN/643.jpg" alt></p>
+<p>Figure3展示了在人这<strong>一类</strong>目标上是如何从位置敏感map得到最后输出图，这里k = 3，那么位置敏感<code>map</code>可以用下面的表格来表示：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/R-FCN/644.webp" alt></p>
+<p>其中$\operatorname{Pos}_{x}^{y}$代表位置为$x$（即图中的<code>左上</code>，<code>中上</code>，<code>右下</code>，<code>左中</code>，<code>中间</code>，<code>右中</code>，<code>左下</code>，<code>中下</code>，<code>右下</code>9个位置）对应的类别集合为$y$的位置敏感<code>map</code>，每个表格的内容对应位置敏感<code>map</code>中一种颜色的部分特征图(C + 1个通道)，位置敏感<code>map</code>每个C + 1通道分别从上到下，从左到右对应了上面的表格。这里假设Figure3中的Person类对应的是第一个分类，那么Figure3的处理过程就是对下表对应的特征图进行操作：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/R-FCN/645.webp" alt></p>
+<p>具体的操作流程表示为：</p>
+<ul>
+<li><p>1、抽取特定类别(这里为人这个类别)对应的$k \times k=3 \times 3=9$个位置的特征图，如Figure3中部所示。</p>
+</li>
+<li><p>2、对抽取出来的部分进行求均值，然后按照位置组成一个$k \times k=3 \times 3$大小的矩阵。</p>
+</li>
+<li><p>3、对这个$k \times k$大小的矩阵求和，得到一个值。</p>
+</li>
+<li><p>4、对其他每个类别都执行1-3步骤，最终得到一个$1 \times(C+1)$的向量。将这个向量进行<code>softmax</code>，从而判别特征图上的这个ROI区域对应的目标类别是什么。</p>
+</li>
+</ul>
+<h2 id="R-FCN的目标框回归"><a href="#R-FCN的目标框回归" class="headerlink" title="R-FCN的目标框回归"></a><strong>R-FCN的目标框回归</strong></h2><p>上面详细讲解了R-FCN提出的ROIPooling的改进之处以及对于目标分类的处理方法，不要忘记目标检测还有一个框回归的过程，所以这里来说一下如何微调ROI区域使得框更加精确，这部分和分类实际上是类似的。我们知道位置敏感<code>map</code>是有$k^{2}(C+1)$个通道的，我们依然从Backbone的最后一个特征层部分接触一个有$4 \times k^{2}$个通道的特征图(和位置敏感map并列)，用来做ROI框回归，如下面的表格所示：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/R-FCN/646.webp" alt></p>
+<p>然后执行和分类一样的步骤得到一个1 x 4的向量即代表ROI区域的$x, y, w, h$。计算损失函数和前面Faster-RCNN的一致，均为多任务损失联合训练，分类使用交叉熵，定位使用L1-smooth损失函数。</p>
+<h2 id="训练"><a href="#训练" class="headerlink" title="训练"></a>训练</h2><ul>
+<li><p>训练的样本选择策略：使用OHEM策略，原理就是对样本按loss进行排序，选择前面loss较小的，这个策略主要用来对负样本进行筛选，使得正负样本更加平衡。</p>
+</li>
+<li><p>训练细节：</p>
+<ul>
+<li>SGD+带动量的优化方式，其中动量momentum = 0.9。</li>
+<li>权重惩罚为0.0005。</li>
+<li>单尺度训练，将图片$\min (\text {height}, \text {width})$设置为600。</li>
+<li>8块GPU，每一块GPU训练一张图片并且随机选择128个ROI区域进行梯度下降。</li>
+<li>在前20k次迭代，学习率为0.001，后面10k次迭代为0.0001。</li>
+<li>使用和Faster-RCNN中一致的训练方式。</li>
+<li>使用<code>atrous</code>（hole）算法。增加感受野的同时降低下采样次数。并且使用了这一策略在VOC 2007上可以提升2个点的map。</li>
+</ul>
+</li>
+</ul>
+<h2 id="实验结果"><a href="#实验结果" class="headerlink" title="实验结果"></a>实验结果</h2><p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/R-FCN/647.webp" alt></p>
+<p>可以看到R-FCN在没有OHEM的策略下精度完全吊打了Faster-RCNN，其中<code>fail</code>表示的应该是当k = 1的时候应该是模型无法收敛。</p>
+<h3 id="在PASCAL-VOC数据集上的测试结果"><a href="#在PASCAL-VOC数据集上的测试结果" class="headerlink" title="在PASCAL VOC数据集上的测试结果"></a>在PASCAL VOC数据集上的测试结果</h3><p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/R-FCN/648.jpg" alt></p>
+<p>可以看到R-FCN使用ResNet101做特征提取网络，最终在VOC的测试集上获得了83.6%的map值，并且相比于Faster-RCNN测试时间加速了2倍以上。论文还给出了一些消融研究：</p>
+<ul>
+<li><p>深度影响对比，可以看出ResNet-101表现最好。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/R-FCN/649.png" alt></p>
+</li>
+<li><p>候选区域选择算法对比：RPN比SS，EB好。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/R-FCN/650.png" alt></p>
+</li>
+</ul>
+<h3 id="在MS-COCO数据集的测试结果"><a href="#在MS-COCO数据集的测试结果" class="headerlink" title="在MS COCO数据集的测试结果"></a>在MS COCO数据集的测试结果</h3><p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/R-FCN/651.png" alt></p>
+<h2 id="可视化效果展示"><a href="#可视化效果展示" class="headerlink" title="可视化效果展示"></a>可视化效果展示</h2><p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/R-FCN/652.webp" alt></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>R-FCN在Faster-RCNN的基础上致力于解决全连接网络做分类和回归速度过慢的问题，将分类和回归分支换成了全卷积网络，并提出了一个位置敏感ROIPooling用于指定不同特征图是负责检测目标的不同位置，然后ROIPooling之后把不同位置得到的特征图进行组合就能复现原来的位置信息。不仅在精度上大幅度超越Faster-RCNN，并且速度是Faster-RCNN的2倍以上。</p>
+<h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><p>论文原文：<a href="https://arxiv.org/pdf/1605.06409v2.pdf" target="_blank" rel="noopener">https://arxiv.org/pdf/1605.06409v2.pdf</a></p>
+<p>官方源码复现：<a href="https://github.com/daijifeng001/r-fcn" target="_blank" rel="noopener">https://github.com/daijifeng001/r-fcn</a></p>
+]]></content>
+      <categories>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>目标检测</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>如何减少卷积层计算量，使用宽卷积的好处及转置卷积中的棋盘效应</title>
     <url>/2020/03/04/%E5%A6%82%E4%BD%95%E5%87%8F%E5%B0%91%E5%8D%B7%E7%A7%AF%E5%B1%82%E8%AE%A1%E7%AE%97%E9%87%8F%EF%BC%8C%E4%BD%BF%E7%94%A8%E5%AE%BD%E5%8D%B7%E7%A7%AF%E7%9A%84%E5%A5%BD%E5%A4%84%E5%8F%8A%E8%BD%AC%E7%BD%AE%E5%8D%B7%E7%A7%AF%E4%B8%AD%E7%9A%84%E6%A3%8B%E7%9B%98%E6%95%88%E5%BA%94/</url>
     <content><![CDATA[<h2 id="如何减少卷积层计算量？"><a href="#如何减少卷积层计算量？" class="headerlink" title=" 如何减少卷积层计算量？"></a><a id="more"></a> 如何减少卷积层计算量？</h2><p>减少卷积层的计算量主要有以下几种方法：</p>

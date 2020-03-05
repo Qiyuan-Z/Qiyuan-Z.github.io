@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://Qiyuan-Z.github.io').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.6.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":true,"style":"mac"},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta property="og:type" content="article">
+<meta property="og:title" content="卷积神经网络参数设置，提高泛化能力">
+<meta property="og:url" content="https://qiyuan-z.github.io/2020/03/05/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%8F%82%E6%95%B0%E8%AE%BE%E7%BD%AE%EF%BC%8C%E6%8F%90%E9%AB%98%E6%B3%9B%E5%8C%96%E8%83%BD%E5%8A%9B/index.html">
+<meta property="og:site_name" content="Yuan">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-03-05T04:07:37.617Z">
+<meta property="article:modified_time" content="2020-03-05T04:07:37.782Z">
+<meta property="article:author" content="Qiyuan-Z">
+<meta property="article:tag" content="目标检测">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://qiyuan-z.github.io/2020/03/05/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%8F%82%E6%95%B0%E8%AE%BE%E7%BD%AE%EF%BC%8C%E6%8F%90%E9%AB%98%E6%B3%9B%E5%8C%96%E8%83%BD%E5%8A%9B/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.css"><style>
+#needsharebutton-postbottom {
+  cursor: pointer;
+  height: 26px;
+  margin-top: 10px;
+  position: relative;
+}
+#needsharebutton-postbottom .btn {
+  border: 1px solid $btn-default-border-color;
+  border-radius: 3px;
+  display: initial;
+  padding: 1px 4px;
+}
+</style>
+  <title>卷积神经网络参数设置，提高泛化能力 | Yuan</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Yuan</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">记录学习中的点点滴滴</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qiyuan-z.github.io/2020/03/05/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%8F%82%E6%95%B0%E8%AE%BE%E7%BD%AE%EF%BC%8C%E6%8F%90%E9%AB%98%E6%B3%9B%E5%8C%96%E8%83%BD%E5%8A%9B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/wallhaven-915.png">
+      <meta itemprop="name" content="Qiyuan-Z">
+      <meta itemprop="description" content="偉大な魂は目的を持ち、そうでないものは願望を持つ">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Yuan">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          卷积神经网络参数设置，提高泛化能力
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-03-05 12:07:37" itemprop="dateCreated datePublished" datetime="2020-03-05T12:07:37+08:00">2020-03-05</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index">
+                    <span itemprop="name">学习</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="卷积神经网络的参数设置"><a href="#卷积神经网络的参数设置" class="headerlink" title=" 卷积神经网络的参数设置"></a><a id="more"></a> 卷积神经网络的参数设置</h2><p>这个举个例子来说是最好的，因为直接说会抽象一些，在网上找了一个caffe-ssd的参数设置配置文件<code>solver.prototxt</code>，内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">train_net:&quot;train.prototxt&quot;</span><br><span class="line">test_net:&quot;test.prototxt&quot;</span><br><span class="line">test_iter: 299</span><br><span class="line">test_interval: 200</span><br><span class="line">base_lr: 0.01</span><br><span class="line">display: 20</span><br><span class="line">max_iter: 6720</span><br><span class="line">lr_policy: &quot;step&quot;</span><br><span class="line">gamma: 0.1</span><br><span class="line">power: 0.75</span><br><span class="line">momentum: 0.9</span><br><span class="line">weight_decay: 0.0001</span><br><span class="line">snapshot: 224</span><br><span class="line">snapshot_prefix: &quot;snapshot&quot;</span><br><span class="line">solver_mode: GPU</span><br><span class="line">device_id:0</span><br><span class="line">debug_info:false</span><br><span class="line">snapshot_after_train:true</span><br><span class="line">test_initialization:false</span><br><span class="line">average_loss:10</span><br><span class="line">iter_size:1</span><br><span class="line">stepsize:2000</span><br><span class="line">type: SGD</span><br><span class="line">eval_type:&quot;detection&quot;</span><br><span class="line">ap_version:&quot;11point&quot;</span><br><span class="line">show_per_class_result:true</span><br></pre></td></tr></table></figure>
+<p>我们就一个个来解析一下。</p>
+<ul>
+<li><code>train_net</code>：训练的模型文件的路径。</li>
+<li><code>test_net</code>：测试的模型文件的路径。</li>
+<li><code>test_iter</code>：网络的迭代测试次数。网络一次测试<code>batch_size</code>张图片，因为为了可以将验证集中所有图片都测试一次，这个参数乘以<code>batch_size</code>应该等于验证集中的图片数。</li>
+<li><code>test_interval</code>：网络迭代多少次进行一次测试。一次迭代即是将一个<code>batch_size</code>的图片进行训练。这个文件中<code>test_interval</code>设为了<code>200</code>，也就是说每隔<code>200</code>次对网络的准确率进行一次验证。一般来讲，我们是需要将训练集合中的所有图片都跑一次再对准确率进行测试，也就是<code>test_interval</code>乘以<code>batch_size</code>不小于训练集中的图片总数。</li>
+<li><code>base_lr</code>：表示网络的基础学习率，学习率过高可能会无法梯度下降，loss保持不变，也可能loss不能收敛。而学习率过低会使网络收敛速度缓慢，也可能导致梯度消失。一般初始学习率设为<code>0.01</code>。</li>
+<li><code>display</code>：每隔多少次显示一次。也就是在屏幕上打印一次<code>loss</code>和准确率。</li>
+<li><code>max_iter</code>：网络的最大迭代次数。训练集中的图片需要训练多次，所以这个参数一般比较大。</li>
+<li><code>lr_policy</code>：学习率变化策略，这里面又分为如下几类：<ul>
+<li><code>fixed</code>：保持<code>base_lr</code>不变。</li>
+<li><code>step</code>：如果设置为<code>step</code>,则还需要设置一个<code>stepsize</code>,  返回 <code>base_lr * gamma ^ (floor(iter / stepsize))</code>,其中<code>iter</code>表示当前的迭代次数。</li>
+<li><code>exp</code>：返回<code>base_lr * gamma^ iter</code>，<code>iter</code>表示当前的迭代次数。</li>
+<li><code>inv</code>: 如果设置为<code>inv</code>,还需要设置一个<code>power</code>, 返回<code>base_lr * (1 + gamma * iter) ^ (- power)</code>。</li>
+<li><code>multistep</code>：如果设置为<code>multistep</code>,则还需要设置一个<code>stepvalue</code>。这个参数和<code>step</code>很相似，<code>step</code>是均匀等间隔变化，而<code>multistep</code>则是根据 <code>stepvalue</code>值变化。</li>
+<li><code>poly</code>：学习率进行多项式误差, 返回 <code>base_lr (1 - iter/max_iter) ^ (power)</code></li>
+<li><code>sigmoid</code>：学习率进行<code>sigmod</code>衰减，返回 <code>base_lr ( 1/(1 + exp(-gamma * (iter - stepsize))))</code></li>
+</ul>
+</li>
+<li><code>gamma</code>：因为这里学习率衰减策略为<code>step</code>，所以需要设置<code>gamma</code>和<code>power</code>两个参数。</li>
+<li><code>power</code>：同上。</li>
+<li><code>momentum</code>：上一次梯度更新的权重，一般取值在<code>0.5--0.99</code>之间。通常设为<code>0.9</code>，<code>momentum</code>可以让使用<code>SGD</code>的深度学习方法更加稳定以及快速。</li>
+<li><code>weight_decay</code>：权重衰减项，防止过拟合的一个参数。在损失函数中，<code>weight decay</code>是放在正则项（<code>regularization</code>）前面的一个系数，正则项一般指示模型的复杂度，所以<code>weight decay</code>的作用是调节模型复杂度对损失函数的影响，若<code>weight decay</code>很大，则复杂的模型损失函数的值也就大。</li>
+<li><code>sanpshot</code>：每多少次保存一次学习的结果，在caffe框架下就是<code>caffemodel</code>。</li>
+<li><code>snapshot_prefix</code>：模型保存的路径。</li>
+<li><code>solver_model</code>：设置使用<code>GPU</code>还是<code>CPU</code>进行学习训练。</li>
+<li><code>device_id</code>：GPU序列号，默认从<code>０</code>开始。</li>
+<li><code>debug_info</code>：是否显示<code>debug</code>信息。</li>
+<li><code>snapshot_after_train</code>：是否在训练结束后保存一个snapshot文件。便于以后可以在此基础上继续训练。</li>
+<li><code>test_initialization</code>：确保内存可以用并输出<code>loss</code>的初始值。</li>
+<li><code>average_loss</code>：显示<code>loss</code>为之前<code>average_loss</code>个<code>loss</code>的平均值。</li>
+<li><code>iter_size</code>：每处理<code>iter_size*batch_size</code>张图片后进行一次梯度计算。</li>
+<li><code>stepsize</code>：每多少次学习率递减。这里是迭代<code>2000</code>次学习率递减。</li>
+<li><code>type</code>：优化算法的选择，一共有六种可选：<code>SGD、AdaDelta、AdaGrad、Adam、Nesterov和RMSProp</code>。默认为<code>SGD</code>。</li>
+<li><code>eval_type</code>：评价类型。</li>
+<li><code>ap_version</code>：计算平均准确率(map值)的方法，有<code>11point、MaxIntegral、Integral</code>三种，<code>l1point</code>是SSD在VOC2007中计算AP的方法，使用了简单的均值计算。<code>MaxInterral</code>是SSD在VOC2012中使用的最大值积分法。<code>Integral</code>是普通积分方法。</li>
+<li><code>show_per_class_result</code>：在终端输出每一类的AP（每一类的检测精度）信息。</li>
+</ul>
+<h2 id="提高卷积神经网络的泛化能力"><a href="#提高卷积神经网络的泛化能力" class="headerlink" title="提高卷积神经网络的泛化能力"></a>提高卷积神经网络的泛化能力</h2><p>在做工程的时候如何提高自己训练出来的模型的泛化能力是一项具有挑战性同时也是一件充满”玄学”的事情。大概可以总结为下面这几点。</p>
+<ul>
+<li>使用更多的数据。竟可能标注更多的训练数据，这是提高泛化能力最理想的方法，更多的数据让模型得到更充分的学习，自然提高了泛化能力，但实际场景中考虑到标注成本的问题，可能并不能无脑加数据。</li>
+<li>使用更大的<code>batch_size</code>。在相同迭代次数和学习率的条件下，每批次采用更多的数据将有助于模型更好的学习到正确的模式，模型输出结果也会更加稳定。</li>
+<li>数据过采样。很多情况下我们拿到手的数据都存在类别不均匀的情况，模型这个时候过多的拟合某类数量多的数据导致其输出结果偏向于该类数据，此时如果我们过采样其他类别的数据，使得数据量比较均衡可以一定程度提高泛化能力。</li>
+<li>数据增强。数据增强是指在数据有限的情况通过一些几何操作对图像进行变换，使得同类数据的表现形式更加丰富，以此提高模型的泛化能力。数据增强是一门比较大的学问，在分类，检测，分割中数据增强的方式都有区别，我们可以通过研究优秀的开源代码实现的数据增强策略来应用到我们自己的任务中。</li>
+<li>修改损失函数。这方面有大量的工作，如目标检测中的Focal Loss, GHM Loss，IOU Loss等都是为了提升模型的泛化能力。</li>
+<li>修改网络。如果网络过浅并且参数量过少往往会使得模型的泛化能力不足导致欠拟合，此时一般考虑使用简单的堆叠卷积层增加网络的参数，提高模型的特征提取能力。而如果网络过深且训练数据量比较少，那么就容易导致模型过拟合，此时一般需要简化网络结构减少网络层数或者使用<code>resnet</code>的残差结构以及<code>bn</code>层。</li>
+<li>权重惩罚。权重惩罚也即是正则化操作，一般是在损失函数中添加一项权重矩阵的正则项作为惩罚项，用来惩罚损失值较小时网络权重过大的情况，此时往往是网络权值过拟合了数据样本。</li>
+<li>Dropout策略。如果网络最后有全连接层可以使用<code>Dropout</code>策略，相当于对深度学习模型做了<code>Ensemble</code>，有助于提高模型的泛化能力。</li>
+</ul>
+<h2 id="一些调参技巧"><a href="#一些调参技巧" class="headerlink" title="一些调参技巧"></a>一些调参技巧</h2><h3 id="做工程"><a href="#做工程" class="headerlink" title="做工程"></a>做工程</h3><ul>
+<li><p>3 x 3卷积是CNN的主流组件。平时有设计一些解决分类，回归任务的网络，里面的卷积核基本都设置为3 x 3，要说原因的话应该去问问<code>VGG16</code>吧。两个3 x 3的卷积核堆叠能获得5 x 5卷积核的感受野并且参数比5 x 5卷积核少，所以是大量推荐使用的。</p>
+</li>
+<li><p>可以适当使用1 x N卷积。为什么要提这一点呢，这是因为1 X N卷积可以减少计算量，并且1 X N卷积可以在某个方向强调感受野，也就是说假如如果你要对一个长方形形状的目标进行分类，你可以使用1 X N的卷积核搭配3 X 3的卷积核对长边方向设定更大的感受野，或许可以获得泛化性能的提升。</p>
+</li>
+<li>ACNet结构。这个研究来自于ICCV2019，可以在3 X 3卷积的基础上加上1 X 3和3 X 1的旁路卷积核，最后在推理阶段把三个卷积核都<code>fusion</code>到3 X 3卷积核上，在许多经典CV任务上都可以获得大概1个点的提升。</li>
+<li>卷积核权重初始化方式。对于<code>weight</code>的初始化一般都是使用<code>xavier</code>初始化。当然也可以可以尝试何凯明大神的He初始化。对于bias的初始化全置于0。</li>
+<li><code>Batch Normalization</code>。这是一直在使用的技巧，可以很大程度的加快收敛速度。建议搭建自己网络的时候尽量加上<code>BN</code>，如果有<code>BN</code>了全连接层就没必要加<code>Dropout</code>了。</li>
+<li>目标检测不能盲目去掉<code>fpn</code>结构。在针对自己的数据调检测任务如<code>yolov3</code>的时候不能盲目砍掉<code>fpn</code>结构，尽管你分析出某个分支的Anchor基本不可能会对你预测的目标起作用，但如果你直接去掉分支很可能会带来漏检。</li>
+<li>优化器的选择。基本都是带动量的<code>SGD</code>。如果优化不动可以试试<code>Adam</code>。</li>
+<li>激活函数。可以先用<code>ReLU</code>做一版，如果想再提升精度可以将<code>ReLU</code>改成<code>PReLU</code>试试。我更倾向于直接使用<code>ReLU</code>。</li>
+<li><code>batch_size</code>：在不同类型的任务中，<code>batch_size</code>的影响也不同。</li>
+<li>初始学习率。一般是从<code>0.01</code>开始设置，个人认为这个学习率和学习率衰减策略是相关的，但不宜设置的过大过小，<code>0.01</code>和<code>0.1</code>应该是比较常用的。学习率衰减策略一般使用<code>multistep</code>方式，<code>step_size</code>的设置要看视你的的<code>max_iter</code>而定。</li>
+<li>数据与处理之<code>zero-center</code>。主要有2个步骤，第一个是减均值，第二个是除以方差。这样做下来最后的输入值域为<code>[-1,1]</code>，一般减均值是最常用的，后面的除以方差用不用可能需要自己动手试验一下看看效果。</li>
+<li>残差结构和密集连接。<code>resnet</code>的残差结构和<code>dense net</code>密集连接结构，做工程的时候考虑到速度近乎不可能说完全使用完整版本的<code>resnet</code>和<code>densenet</code>的完整结构，但我们可以自己动手将我们网络的某些模块替换为残差结构和密集连接，替换的时候可以适当降低这俩结构的复杂度，类似于通道数减半，密集连接中只保留一半连接等等。这里需要做一些消融实验来验证改进后的精度。</li>
+<li>关于loss。优秀的<code>loss</code>一般是对模型的泛化性能有所改善的，但在用<code>loss</code>的时候往往并不是直接替换<code>loss</code>那么简单，需要仔细思考<code>loss</code>背后的数学原理，要用对地方才可有提升。</li>
+<li>找到模型调参时的可靠评价指标。在调整参数训练模型时一定要找到正确的评价指标，没调整一个参数就要记录一下模型的评价指标如准确率，<code>map</code>值，<code>miou</code>值等。并且在调参时建议将调整的参数和在测试集上的精度组合成一个字符串给模型重命令，方便之后快速<code>review</code>。</li>
+<li>使用了带<code>backbone</code>的网络，如训练<code>VGG16-SSD</code>建议选择<code>finetune</code>的方式，从头训练不仅费时费力，甚至难以收敛。</li>
+</ul>
+<h3 id="做比赛"><a href="#做比赛" class="headerlink" title="做比赛"></a>做比赛</h3><ul>
+<li><p>特征提取。VGG16，VGG19，ResNet50，Xception是非常好用的几个特征提取模型。建议使用训练好的经典模型对数据集提取特征向量存储到本地，更方便使用，同时可以大幅度降低显存消耗。</p>
+</li>
+<li><p>ensemle：</p>
+<ul>
+<li>将不同的经典网络提取出的特征向量，假设<code>VGG16</code>提取出的特征向量维度是<code>[N,c1]</code>,<code>ResNet50</code>提取的特征向量维度是<code>[N，c2]</code>,<code>Xception</code>提取的特征向量维度是<code>[N, c3]</code>，那么我们可以使用三个系数<code>a、b、c</code>将其组合为形状为<code>[N, a*c1+b*c2+c*c3]</code>，其中<code>a、b、c</code>三个参数的取值代表我们使用哪个模型的特征多一些，如果是分类回归比赛，我们在后面接特征处理网络就可以了。可以取不同的<code>a、b、c</code>得到不同的特征，然后对结果做<code>voting</code>，<code>soft-voting</code>等多种处理，一般结果不会太差。</li>
+<li>可以使用不同的初始化方式训练出模型，然后做ensemble。</li>
+<li>可以使用用不同超参数(如学习率，<code>batch_size</code>，优化器)训练出不同模型，然后做ensemble。</li>
+</ul>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    <div class="post-widgets">
+      <div id="needsharebutton-postbottom">
+        <span class="btn">
+          <i class="fa fa-share-alt" aria-hidden="true"></i>
+        </span>
+      </div>
+    </div>
+	<div>
+
+	  
+
+		<div>
+
+    
+
+        <div >-------------本文结束感谢您的阅读-------------</div>
+
+    
+
+</div>
+
+	  
+
+	</div>
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/" rel="tag"><i class="fa fa-tag"></i> 目标检测</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/03/05/NIPS-2016-R-FCN%EF%BC%88%E6%9D%A5%E8%87%AA%E5%BE%AE%E8%BD%AF%E4%BD%95%E5%87%AF%E6%98%8E%E5%9B%A2%E9%98%9F%EF%BC%89/" rel="prev" title="NIPS 2016 R-FCN（来自微软何凯明团队）">
+      <i class="fa fa-chevron-left"></i> NIPS 2016 R-FCN（来自微软何凯明团队）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/03/05/Ubuntu%E4%B8%8Bscreen%E7%9A%84%E4%BD%BF%E7%94%A8/" rel="next" title="Ubuntu下screen的使用">
+      Ubuntu下screen的使用 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#卷积神经网络的参数设置"><span class="nav-text"> 卷积神经网络的参数设置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#提高卷积神经网络的泛化能力"><span class="nav-text">提高卷积神经网络的泛化能力</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一些调参技巧"><span class="nav-text">一些调参技巧</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#做工程"><span class="nav-text">做工程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#做比赛"><span class="nav-text">做比赛</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+	  
+     
+	  
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qiyuan-Z"
+      src="/images/wallhaven-915.png">
+  <p class="site-author-name" itemprop="name">Qiyuan-Z</p>
+  <div class="site-description" itemprop="description">偉大な魂は目的を持ち、そうでないものは願望を持つ</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">80</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Qiyuan-Z" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Qiyuan-Z" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:601872068@qq.com" title="E-Mail → mailto:601872068@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://project-inkstone.github.io/project-inkstone/?tdsourcetag=s_pctim_aiomsg" title="https:&#x2F;&#x2F;project-inkstone.github.io&#x2F;project-inkstone&#x2F;?tdsourcetag&#x3D;s_pctim_aiomsg" rel="noopener" target="_blank">project-inkstone</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+	  
+      <div id="music163player">
+		   <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=29784463&auto=1&height=66"></iframe>
+		   </iframe>
+	  </div>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qiyuan-Z</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="站点总字数">479k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">7:16</span>
+</div>
+
+<!-- 网站运行时间的设置 -->
+<span id="timeDate">载入天数...</span>
+<span id="times">载入时分秒...</span> 
+<script>
+    var now = new Date();
+    function createtime() {
+        var grt= new Date("12/01/2019 13:14:21");//此处修改你的建站时间或者网站上线时间
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;}
+        document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 ";
+        document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
+    }
+setInterval("createtime()",250);
+</script>
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+	<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"></script>
+	<script type="text/javascript">
+    		var gitalk = new Gitalk({
+		        clientID: '2d10cfb27783db577e70',
+		        clientSecret: '154292876bb14966f6ae57304b67859617b08c94',
+		        id: md5(location.pathname),
+		        repo: 'gitalk',
+		        owner: 'Qiyuan-Z',
+		        admin: 'Qiyuan-Z',
+			distractionFreeMode: '',
+
+		    });
+	    gitalk.render('gitalk-container');
+	</script>
+
+
+
+  
+
+  
+      
+<script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', () => {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
+
+  
+
+  <script src="//cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.js"></script>
+  <script>
+      pbOptions = {};
+        pbOptions.iconStyle = "box";
+        pbOptions.boxForm = "horizontal";
+        pbOptions.position = "bottomCenter";
+        pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+  </script>
+	<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+	<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"></script>
+	<script type="text/javascript">
+    		var gitalk = new Gitalk({
+		        clientID: '2d10cfb27783db577e70',
+		        clientSecret: '154292876bb14966f6ae57304b67859617b08c94',
+		        id: md5(location.pathname),
+		        repo: 'gitalk',
+		        owner: 'Qiyuan-Z',
+		        admin: 'Qiyuan-Z',
+			distractionFreeMode: '',
+
+		    });
+	    gitalk.render('gitalk-container');
+	</script>
+
+
+  <script type="text/javascript" src="/js/src/clicklove.js"></script>
+</body>
+</html>
+
