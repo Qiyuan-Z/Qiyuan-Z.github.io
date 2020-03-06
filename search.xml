@@ -1,6 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>RetinaNet（引入Focal Loss）</title>
+    <url>/2020/03/06/RetinaNet%EF%BC%88%E5%BC%95%E5%85%A5Focal-Loss%EF%BC%89/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title=" 前言"></a><a id="more"></a> 前言</h2><p>今天来介绍一下目标检测算法中RetinaNet，这篇论文是CVPR2018的作品，Kaiming He大神也是作者之一，同时这篇论文提出的Focal  Loss也对工程上训练更好的目标检测模型做出了很大贡献，论文地址为：<a href="https://arxiv.org/pdf/1708.02002.pdf" target="_blank" rel="noopener">https://arxiv.org/pdf/1708.02002.pdf</a></p>
+<h2 id="研究背景"><a href="#研究背景" class="headerlink" title="研究背景"></a>研究背景</h2><p>前面介绍了一些One-Stage目标检测算法和Two-Stage目标检测算法，这些算法在精度和速度上都各有特点，现在画个图总结一下之前介绍的各种算法的速度和精度：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RetinaNet/640.png" alt></p>
+<p>可以看到One-Stage算法的精度相对于Two_Stage偏低，然后作者把这种问题的原因归结于<strong>正负类别不平衡</strong>（简单难分类别不平衡）。因此论文通过重新设计标准的交叉熵损失来解决这种难易样本不平衡的问题，即文章的核心Focal Loss。结合了Focal  Loss的One-Stage的目标检测器被称为RetinaNet，该检测器在COCO数据集上MAP值可以和FPN（特征金字塔目标检测器）和MaskRCNN接近。</p>
+<h2 id="一些问题"><a href="#一些问题" class="headerlink" title="一些问题"></a>一些问题</h2><h3 id="什么是hard-esay-postive-negtive-example"><a href="#什么是hard-esay-postive-negtive-example" class="headerlink" title="什么是hard/esay postive/negtive example"></a>什么是hard/esay postive/negtive example</h3><p>网上找到一张图解释在目标检测任务的一张图中什么是hard/easy postive/negtive example。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RetinaNet/641.webp" alt></p>
+<p>候选框可以分成postive/negtive两类。当bbox(由anchor加上偏移量得到)与ground  truth间的IOU大于我们设置的阈值（一般取0.5）时，会认为该bbox属于positive  example，如果IOU小于下门限就认为该bbox属于negative example。</p>
+<h3 id="为什么One-Stage检测算法精度偏低"><a href="#为什么One-Stage检测算法精度偏低" class="headerlink" title="为什么One-Stage检测算法精度偏低"></a>为什么One-Stage检测算法精度偏低</h3><p>论文认为One-Stage算法准确度低是由于类别失衡引起的。因为在一张普通图片中，目标的所占的比例远远小于背景所占的比例，所以两类候选框例子中以negtive example为主。这就导致了：</p>
+<ul>
+<li>(1)针对所有的negtive example，数量过多造成它的loss太大，以至于主导了损失函数，不利于收敛。</li>
+<li>(2)针对单个negtive example来说，大多数的negative example不在前景和背景的过渡区域上，分类很明确(这种易分类的negative称为easy  negative)，训练时对应的背景类score会很大，换句话说就是单个example的loss很小，反向计算时梯度小。梯度小造成easy  negative example对参数的收敛作用很有限，我们更需要loss大的对参数收敛影响也更大的example，即hard  positive/negative example。</li>
+</ul>
+<p>因此如果One-Stage算法如果无脑的将所有bbox拿去做分类损失，因为bbox中属于background的bbox太多了，所以如果分类器无脑地把所有bbox统一归类为background，accuracy也可以刷得很高。这就导致分类器训练失败了，自然检测精度就偏低了。对于YOLO和SSD来讲，他们也确实没有无脑将所有的bbox拿去做分类损失，如在SSD中利用Hard-Negtive-Mining的方式将正负样本的比例控制在1:3，YOLO通过损失函数中权重惩罚的方式增大正样本对损失函数的影响等。但它们虽然可以处理第1个问题，但对于第2个问题就无能为了，这也是Focal Loss出现的原因。</p>
+<h3 id="Faster-RCNN为什么精度更高"><a href="#Faster-RCNN为什么精度更高" class="headerlink" title="Faster-RCNN为什么精度更高"></a>Faster-RCNN为什么精度更高</h3><p>Faster-RCNN在FPN阶段会根据前景分数提出最可能是前景的example，这就会滤除大量背景概率高的easy  negtive样本，这便解决了上面提出的第2个问题。同时，在生成样本给ROIPooling层的时候，会据IOU的大小来调整positive和negative example的比例，比如设置成1：3，这样防止了negative过多的情况(同时防止了easy negative和hard  negative)，就解决了前面的第1个问题。因此，相对于One-Stage检测器，Faster-RCNN的精度更高。</p>
+<h2 id="Focal-Loss"><a href="#Focal-Loss" class="headerlink" title="Focal Loss"></a>Focal Loss</h2><p>论文引入了Focal Loss来解决<strong>难易样本数量不平衡</strong>。One-Stage的模板检测器通常会产生10k数量级的框，但只有极少数是正样本，正负样本数量非常不平衡。我们在计算分类的时候常用的损失——交叉熵的公式如下：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RetinaNet/651.JPG" alt></p>
+<p>为了解决<strong>正负样本数量不平衡</strong>的问题，我们经常在交叉熵损失前面加一个参数$\alpha$，即：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RetinaNet/643.png" alt></p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RetinaNet/652.JPG" alt></p>
+<p>虽然$\alpha$平衡了正负样本的数量，但实际上，目标检测中大量的候选目标都是易分样本。这些样本的损失很低，但是由于数量极不平衡，易分样本的数量相对来讲太多，最终主导了总的损失。</p>
+<p>因此，这篇论文认为<strong>易分样本（即，置信度高的样本）对模型的提升效果非常小，模型应该主要关注与那些难分样本</strong> 。所以Focal Loss横空出世了。一个简单的想法就是只要我们将高置信度(p)样本的损失降低一些就好了吧？也即是下面的公式：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RetinaNet/644.png" alt></p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RetinaNet/653.JPG" alt></p>
+<p>我们取$\gamma$等于2来只管感受一下，如果$p=0.9$，那么，$(1-0.9)^{2}=0.001$，损失降低了1000倍。从中，我们易看出focal loss所加的指数式系数可对正负样本对loss的贡献自动调节。当某样本类别比较明确些，它对整体loss的贡献就比较少；而若某样本类别不易区分，则对整体loss的贡献就相对偏大。这样得到的loss最终将集中精力去诱导模型去努力分辨那些难分的目标类别，于是就有效提升了整体的目标检测准度。</p>
+<p>最终Focal Loss还结合了公式(2)，这很好理解，公式(3)解决了难易样本的不平衡，公式(2)解决了正负样本的不平衡，将公式(2)与(3)结合使用，同时解决正负难易2个问题！所以最终Focal Loss的形式如下：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RetinaNet/645.png" alt></p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RetinaNet/654.png" alt></p>
+<p>下面这张图展示了Focal Loss取不同的$\gamma$时的损失函数下降。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RetinaNet/646.jpg" alt></p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RetinaNet/655.png" alt></p>
+<p>实验结果展示，当$\gamma=2$，$\alpha=0.25$时，效果最好，这样损失函数训练的过程中关注的样本优先级就是正难&gt;负难&gt;正易&gt;负易了。</p>
+<h2 id="RetinaNet"><a href="#RetinaNet" class="headerlink" title="RetinaNet"></a>RetinaNet</h2><p>说完了Focal Loss就回到文章RetinaNet，Focal Loss与ResNet-101-FPN  backbone结合就构成了RetinaNet（one-stage检测器），RetinaNet在COCO  test-dev上达到39.1mAP，速度为5FPS。下图展示了RetinaNet的网络结构：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RetinaNet/647.jpg" alt></p>
+<p>训练RetinaNet时有几个值得注意的关键点：</p>
+<ul>
+<li>训练时FPN每一级的所有example都被用于计算Focal Loss，loss值加到一起用来训练。</li>
+<li>测试时FPN每一级只选取score最大的1000个example来做nms。</li>
+<li>整个结构不同层的head部分(上图中的c和d部分)共享参数，但分类和回归分支间的参数不共享。</li>
+<li>分类分支的最后一级卷积的bias初始化成-log((1-π)/π)。这里π被指定在训练开始时，所有的anchor都需要被标注为带有π置信率的前景。这里取π=0.01，是为了防止在训练的第一个周期大量的背景anchors生成一个巨大的不稳定的loss值。</li>
+</ul>
+<p>RetinaNet和当时流行的检测算法速度和精度对比如下，可以看到从速度和精度都完成了对其他算法的压制：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RetinaNet/648.webp" alt></p>
+<h2 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h2><p>Table1是关于RetinaNet和Focal Loss的一些实验结果。其中(a)是在交叉熵的基础上加上参数$\alpha$，$\alpha=0.5$就表示传统的交叉熵，可以看出当$\alpha=0.75$的时候效果最好，AP值提升了0.9。(b)是对比不同的参数$\gamma$和$\alpha$的实验结果，可以看出随着$\gamma$的增加，AP提升比较明显。(c)是anchor对AP值的影响。(d)是通过和OHEM的对比可以看出最好的Focal  Loss比最好的OHEM提高了3.2AP。这里OHEM1:3表示在通过OHEM得到的minibatch上强制positive和negative样本的比例为1:3，通过对比可以看出这种强制的操作并没有提升AP。(e)加入了运算时间的对比，可以和前面的Figure2结合起来看，速度方面也有优势。Table2表示RetinaNet和One-Stage检测器的比较，可以看到RetinaNet也是毫不顺色的。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RetinaNet/649.jpg" alt></p>
+<h2 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h2><p>keras版本：<a href="https://github.com/fizyr/keras-retinanet" target="_blank" rel="noopener">https://github.com/fizyr/keras-retinanet</a><br>pytorch版本: <a href="https://github.com/yhenon/pytorch-retinanet" target="_blank" rel="noopener">https://github.com/yhenon/pytorch-retinanet</a><br>caffe-focal loss: <a href="https://github.com/chuanqi305/FocalLoss" target="_blank" rel="noopener">https://github.com/chuanqi305/FocalLoss</a></p>
+]]></content>
+      <categories>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>目标检测</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Ubuntu下screen的使用</title>
     <url>/2020/03/05/Ubuntu%E4%B8%8Bscreen%E7%9A%84%E4%BD%BF%E7%94%A8/</url>
     <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title=" 背景"></a><a id="more"></a> 背景</h2><p>系统管理员经常需要SSH或者telent远程登录到linux服务器，经常运行一些需要很长时间才能完成的任务，比如系统备份、ftp 传输等等。通常情况下我们都是为每一个这样的任务开一个远程终端窗口，因为它们执行的时间太长了。必须等待它们执行完毕，在此期间不能关掉窗口或者断开连接，否则这个任务就会被杀掉，一切半途而废了。</p>
