@@ -1,6 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>ECCV 2018 RFBNet，在检测中调感受野</title>
+    <url>/2020/03/07/ECCV-2018-RFBNet%EF%BC%8C%E5%9C%A8%E6%A3%80%E6%B5%8B%E4%B8%AD%E8%B0%83%E6%84%9F%E5%8F%97%E9%87%8E/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title=" 前言"></a><a id="more"></a> 前言</h2><p>看了不少的目标检测论文了，个人认为多数论文的出发点就两个，一是感受野，二是特征融合。此外，解决数据不平衡和轻量化也是另外两个重要的方向。今天为大家科普一篇ECCV 2018的一篇目标检测网络RFBNet就是从感受野角度来改善了SSD检测器，论文全名为：<strong>Receptive Field Block Net for Accurate and Fast Object Detection</strong>  。这篇论文主要的贡献点主要是在SSD网络中提出了一个<strong>Receptive Field Block (RFB)</strong> 模块，RFB模块主要是在Inception的基础上加入了空洞卷积层从而有效的增大了感受野。另外，RFB模块是嵌在SSD上的，所以检测的速度比较快，精度比SSD更高。</p>
+<h2 id="RFB模块"><a href="#RFB模块" class="headerlink" title="RFB模块"></a>RFB模块</h2><p>RFB模块的效果示意图如图所示，其中虚线部分就是指RFB模块。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RFBNet/640.jpg" alt></p>
+<p>RFB模块主要有两个特点：</p>
+<ul>
+<li><p>RFB模块有多个分支，每个分支的第一层都由特定大小卷积核的卷积核构成，例如图上的1 x 1， 3 x 3，5 x 5。</p>
+</li>
+<li><p>RFB模块引入了空洞卷积，主要作用是为了增加感受野，空洞卷积之前是应用在分割网络DeepLab中，这里将其应用在检测任务中，以获得更大的感受野，可以更好的编码空间长距离语义。</p>
+</li>
+</ul>
+<p>在RFB模块中，最后将不同尺寸和感受野的输出特征图进行Concat操作，以达到融合不同特征的目的。在图中，RFB模块中使用三种不同大小和颜色的输出叠加来展示。在图的最后一列中将融合后的特征与人类视觉感受野做对比，从图中看出是非常接近的，这也是这篇论文的出发点。</p>
+<h2 id="两种RFB结构示意图"><a href="#两种RFB结构示意图" class="headerlink" title="两种RFB结构示意图"></a>两种RFB结构示意图</h2><p>下面的Figure4展示了RFBNet的两种结构。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RFBNet/641.jpg" alt></p>
+<ul>
+<li><p>Figure4(a)表示RFB结构，整体上借鉴了Inception的思想。主要不同点在于引入3个空洞卷积层。</p>
+</li>
+<li><p>Figure4(b)表示RFB-s结构。RFB-s和RFB相比主要有两个改进，一方面用3 x 3卷积层代替5 x 5卷积层，另一方面用1 x 3和3 x 1卷积层代替3 x 3卷积层，主要目的应该是为了减少计算量，类似Inception后面的版本对Inception结构的改进。</p>
+</li>
+</ul>
+<h2 id="RFBNet-300的结构"><a href="#RFBNet-300的结构" class="headerlink" title="RFBNet-300的结构"></a>RFBNet-300的结构</h2><p>下面的Figure5代表RFBNet-300的整体结构图，基本是照搬了SSD，主要有2点不同：</p>
+<ul>
+<li>BackBone部分用两个RFB结构替换原来新增的两层。</li>
+<li><code>conv4_3</code>和<code>conv7_fc</code>在接预测层之前分别接RFB-s和RFB结构。</li>
+</ul>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RFBNet/642.jpg" alt></p>
+<h2 id="实验结果"><a href="#实验结果" class="headerlink" title="实验结果"></a>实验结果</h2><p>下面的Table1展示了RFBNet-300在PASCAL VOC2007 test dev上的测试结果，训练集基于2007和2012的trainval。RFBNet-300在mAP和FPS两方面效果都不错。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RFBNet/643.jpg" alt></p>
+<p>而下面的Table4是在COCO test dev 2015数据集上的测试结果。最后的RFBNet-512E做了两个改变：</p>
+<ul>
+<li>对<code>conv7_fc</code>的输出特征做了<code>up-sample</code>，然后和<code>conv4_3</code>的输出特征做融合，基于融合后的特征做预测。这种做法实际上是借鉴了FPN算法的思想。</li>
+<li>RFB结构中增加了<code>7x7</code>大小的卷积分支。这两点改进对效果的提升有一定帮助，而且带来的计算量也少。</li>
+</ul>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RFBNet/644.jpg" alt></p>
+<p>下面的Figure6展示了和RFBNet同时期的一些目标检测算法在COCO test-dev数据集上关于效果和速度的直观对比，可以看到RFBNet的速度和精度平衡还是不错的。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RFBNet/645.jpg" alt></p>
+<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>RFBNet说白了就是空洞卷积的应用，虽然看起来论文比较水，但至少给我们提供了一个重要信息，在检测中调感受野是行之有效的。</p>
+<h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><ul>
+<li>论文原文：<a href="https://arxiv.org/pdf/1711.07767.pdf" target="_blank" rel="noopener">https://arxiv.org/pdf/1711.07767.pdf</a></li>
+<li>代码实现：<a href="https://github.com/ruinmessi/RFBNet" target="_blank" rel="noopener">https://github.com/ruinmessi/RFBNet</a></li>
+<li>参考：<a href="https://blog.csdn.net/u014380165/article/details/81556769" target="_blank" rel="noopener">https://blog.csdn.net/u014380165/article/details/81556769</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>目标检测</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>RetinaNet（引入Focal Loss）</title>
     <url>/2020/03/06/RetinaNet%EF%BC%88%E5%BC%95%E5%85%A5Focal-Loss%EF%BC%89/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title=" 前言"></a><a id="more"></a> 前言</h2><p>今天来介绍一下目标检测算法中RetinaNet，这篇论文是CVPR2018的作品，Kaiming He大神也是作者之一，同时这篇论文提出的Focal  Loss也对工程上训练更好的目标检测模型做出了很大贡献，论文地址为：<a href="https://arxiv.org/pdf/1708.02002.pdf" target="_blank" rel="noopener">https://arxiv.org/pdf/1708.02002.pdf</a></p>
