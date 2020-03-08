@@ -1,6 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>windows和ubuntu双系统修改默认启动项</title>
+    <url>/2020/03/08/windows%E5%92%8Cubuntu%E5%8F%8C%E7%B3%BB%E7%BB%9F%E4%BF%AE%E6%94%B9%E9%BB%98%E8%AE%A4%E5%90%AF%E5%8A%A8%E9%A1%B9/</url>
+    <content><![CDATA[<h2 id="问题描述"><a href="#问题描述" class="headerlink" title=" 问题描述"></a><a id="more"></a> 问题描述</h2><p>安装完ubuntu系统后，打开电脑到选择系统的界面我们发现默认的是ubuntu系统，如果你是经常要进入windows系统的，你手动选择第三个windows启动项就行，但是，假设你按了电源键之后就去搞其他事情了，那默认就进入ubuntu系统了，这个时候你还要再关机重开或者重启，非常麻烦；或者你跟我一样是个强迫症，不管怎么样都要让它默认windows系统，下面就教你怎么做。</p>
+<h2 id="更改-etc-default-grub文件："><a href="#更改-etc-default-grub文件：" class="headerlink" title="更改/etc/default/grub文件："></a>更改/etc/default/grub文件：</h2><p>打开终端，输入：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo gedit &#x2F;etc&#x2F;default&#x2F;grub</span><br></pre></td></tr></table></figure><br>回车，即可打开文件，如图，鼠标所示位置即为默认优先启动项的序号，ubuntu为0，windows为2，默认是0，改为2即可设置优先启动项为windows（如果在修改文件内容的时候因为是只读文件需要权限才能修改，终端输入：<code>sudo chmod +x /etc/default/grub</code>回车即可）</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ubuntu%26win%20boot/1628751-20190421140348008-170002217.png" alt></p>
+<p>以上，更改默认启动项的目标完成，下面再<strong>拓展一点东西</strong>：</p>
+<p>如图光标处为启动界面等待选择的时间，默认为10,可改小一点，比如8，单位是秒</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ubuntu%26win%20boot/1628751-20190421140829066-310267031.png" alt></p>
+<p>修改好之后点保存，命令行输入：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo update-grub</span><br></pre></td></tr></table></figure><br>回车，完成。</p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>ECCV 2018 RFBNet，在检测中调感受野</title>
     <url>/2020/03/07/ECCV-2018-RFBNet%EF%BC%8C%E5%9C%A8%E6%A3%80%E6%B5%8B%E4%B8%AD%E8%B0%83%E6%84%9F%E5%8F%97%E9%87%8E/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title=" 前言"></a><a id="more"></a> 前言</h2><p>看了不少的目标检测论文了，个人认为多数论文的出发点就两个，一是感受野，二是特征融合。此外，解决数据不平衡和轻量化也是另外两个重要的方向。今天为大家科普一篇ECCV 2018的一篇目标检测网络RFBNet就是从感受野角度来改善了SSD检测器，论文全名为：<strong>Receptive Field Block Net for Accurate and Fast Object Detection</strong>  。这篇论文主要的贡献点主要是在SSD网络中提出了一个<strong>Receptive Field Block (RFB)</strong> 模块，RFB模块主要是在Inception的基础上加入了空洞卷积层从而有效的增大了感受野。另外，RFB模块是嵌在SSD上的，所以检测的速度比较快，精度比SSD更高。</p>
