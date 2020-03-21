@@ -2797,6 +2797,10 @@ A U C=\frac{\sum p r e d_{p o s}>p r e d_{n e g}}{p o s i t i v e N u m * n e g 
 <h2 id="4-Pandownload"><a href="#4-Pandownload" class="headerlink" title="4. Pandownload"></a>4. Pandownload</h2><p>Pandownload可以说是大名鼎鼎的百度云下载器了，但前段时间百度网盘的整改，一度被封，最近官网又发布了新的版本，恢复了下载，但我体验起来仍不稳定，且有限速的风险，我不推荐用这个，不知道后续更新如何，这里贴出它的<a href="http://pandownload.com/" target="_blank" rel="noopener">官方网站</a>。</p>
 <h2 id="5-爱奇艺万能联播"><a href="#5-爱奇艺万能联播" class="headerlink" title="5. 爱奇艺万能联播"></a>5. 爱奇艺万能联播</h2><p>爱奇艺作为百度系下的产品，其应用商店提供的万能联播下载器，可以访问百度网盘下载，且不仅针对视频，对其他文件也有加速效果，但并不都是全部，且限速3M，但比起百度自身限速100k要好得多，也不用担心用第三方封号的危险。<br><a href="http://store.iqiyi.com/" target="_blank" rel="noopener">官网地址</a></p>
 <p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/baiduwp/Snipaste_2020-02-09_19-30-07.jpg" alt></p>
+<h2 id="6-Motrix"><a href="#6-Motrix" class="headerlink" title="6. Motrix"></a>6. Motrix</h2><p>Motrix 是一款开源免费且界面非常清爽简约的全能型下载软件，它跨平台支持 Windows、Mac、Linux 三大系统，可以支持下载 HTTP、FTP、BT、磁力链接以及下载百度网盘等资源。如果你用腻了其他工具，不妨试试 Motrix 吧……</p>
+<p>下载百度网盘时采用的是aria内核，用法一致，火狐用户参考aria2下载助手那部分，端口号默认为16800，暂不支持修改</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/baiduwp/baidu_exporter_2x.png%210x0.webp" alt></p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/baiduwp/Snipaste_2020-03-21_11-32-09.png" alt></p>
 ]]></content>
       <categories>
         <category>教程</category>
