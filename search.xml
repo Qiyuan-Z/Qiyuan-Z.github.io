@@ -1,6 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>CVPR 2017 ResNeXt（ResNet进化版）</title>
+    <url>/2020/04/10/CVPR-2017-ResNeXt%EF%BC%88ResNet%E8%BF%9B%E5%8C%96%E7%89%88%EF%BC%89/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a><a id="more"></a>前言</h2><p>传统的卷积神经网络在提高性能时都是加深和加宽网络，但随着超参数数量的增加(如通道数，卷积核大小等)网络变得非常难调，且网络的计算开销和网络结构设计也变得越来越难。此外这些大模型针对性比较强，即在特定数据集上表现好的网络放到新数据集上就需要修改很多的参数才能工作良好，因此可扩展性比较一般。针对上述问题，Saining Xie, Ross Girshick, Kaiming He在CVPR2017上提出了ResNeXt。</p>
+<h2 id="贡献"><a href="#贡献" class="headerlink" title="贡献"></a>贡献</h2><ul>
+<li>网络结构更加简单和模块化。</li>
+<li>大量减少了需要手动调节的超参数，扩展性更强。</li>
+<li>和ResNet相比，相同的参数个数，结果更好。具体来说，一个101层的ResNeXt网络和200层的ResNet准确度差不多，但是计算量只有后者的一半。</li>
+</ul>
+<h2 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h2><h3 id="网络结构"><a href="#网络结构" class="headerlink" title="网络结构"></a>网络结构</h3><p>ResNeXt的网络结构如Table1所示：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ResNeXt/640.webp" alt></p>
+<p>Table 1的左边网络为ResNet-50，Table 1的右边网络为ResNeXt-50，括号代表残差块，括号外面的数字代表残差块的堆叠次数，而C代表的ResNeXt引入的卷积分组数，同时可以看到这两个网络的FLOPs基本一致，也即是说模型复杂度一致。那ResNeXt有什么优点呢？这要先从分组来说起。</p>
+<h3 id="ResNeXt残差模块"><a href="#ResNeXt残差模块" class="headerlink" title="ResNeXt残差模块"></a>ResNeXt残差模块</h3><p>分组数在论文中又被称为基数(cardinality)，是对GoogleNet中分立合并思想和VGG/ResNet中堆叠思想的一种结合，ResNet的残差模块和ResNeXt的残差模块如Figure1所示。可以看到ResNeXt残差模块有32个基数(分组数)，并且每个被聚合的拓扑结构就完全一样，这里是1 x 1 + 3 x 3 + 1 x 1的组件，这也是和Inception结构的最大区别。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ResNeXt/641.webp" alt></p>
+<p>然后论文从理论角度来分析了一下这个ResNeXt残差模块，用全连接层举例来讲，全连接层的公式可以表示为：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ResNeXt/642.webp" alt></p>
+<p>然后Figure2就清晰的展示了全连接层分离变化合并(<code>split-transform-merge</code>)的处理过程：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ResNeXt/643.webp" alt></p>
+<p>而ResNeXt残差模块实际上就是将其中的$w_{i} x_{i}$替换成了更一般的函数，用公式表示如下：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ResNeXt/644.png" alt></p>
+<p>其中$C$就是上一节提到的分组数/基数，而$T_{i}(x)$代表的是相同的拓扑结构，在Figure1中就是<code>1x1+3x3+1x1</code>卷积堆叠。</p>
+<h3 id="等价模式"><a href="#等价模式" class="headerlink" title="等价模式"></a>等价模式</h3><p>而Figure1中的ResNeXt残差模块有两种等价的模型，如Figure3所示。其中Figure3（a）前面已经讲过了。而Figure3（b）表示的是使用了两层卷积后concat，然后再卷积，比较类似于Inception-ResNet。Figure3（c）使用的是原始的组卷积。论文指出这三种结构是完全等价的，并且最后做出来的实验结果完全一样，而在实验部分展示的是Figure3（c）的结果，因为Figure3（c）的结构比较简洁并且速度更快。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ResNeXt/645.webp" alt></p>
+<h3 id="模型容量"><a href="#模型容量" class="headerlink" title="模型容量"></a>模型容量</h3><p>下面的Table2说明了Figure1左右两个结构即ResNet结构和ResNeXt结构的参数量差不多，其中第二行的$d$表示每个路径的中间channel数量，而第三行代表整个模块的宽度，是第一行$C$和第二行$d$的乘积。关于这两个模型容量也就是FLOPs的计算如公式(4)。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ResNeXt/646.png" alt></p>
+<p>FLOPs计算公式如下，可以看到FLOPs基本相等。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ResNeXt/647.webp" alt></p>
+<h2 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h2><p>在实验中ResNeXt相比于ResNet区别仅仅是其中的block，其他都不变，作者的实验结果如Figure5所示。可以看到相同层数的ResNet和ResNeXt的对比：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ResNeXt/648.webp" alt></p>
+<p>其中，32 x 4d表示的是有32个相同的路径，然后每个路径的宽度都为4，即如Figure3展示的那样。可以看到ResNeXt和ResNet的参数复杂度差不多，但是其训练误差和测试误差都降低了。</p>
+<p>ResNet和ResNeXt在ImageNet上的对比结果如Table3所示：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ResNeXt/649.jpg" alt></p>
+<p>另外一个重要的实验结果如Table4所示，主要说明了增加基数/分组数和增加宽度和深度的区别。第一个是基准模型，增加深度和宽度分别是第三，第四个，可以看到Top1误差分别降低了0.3%和0.7%。同时第五个加倍了分组数Top1误差降低了1.3%，第六个则把分组数加到了64，Top1误差降低了1.6。由此可以看出，增加分组数比增加深度或宽度会更加有效。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ResNeXt/650.webp" alt></p>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>ResNeXt这篇论文提出了使用一种平行堆叠相同拓扑结构的残差模块来代替原始的残差模块，在不明显增加参数量的同时提升了模型的准确率，同时由于拓扑结构相同，需要自己调的超参数也减少因此更便于模型的扩展和移值。</p>
+]]></content>
+      <categories>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>目标检测</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>不需要预训练模型的目标检测算法DSOD</title>
+    <url>/2020/04/10/%E4%B8%8D%E9%9C%80%E8%A6%81%E9%A2%84%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B%E7%9A%84%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E7%AE%97%E6%B3%95DSOD/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title=" 前言"></a><a id="more"></a> 前言</h2><p>DSOD(Deeply Supervised Object Detectors)是ICCV  2017的一篇文章，它表达了一个非常有意思的东西。这篇论文不是从目标检测的高mAP值或者速度更快出发，而是从另外一个角度切入来说明fine-tune后的检测模型和直接训练的检测模型的差距其实是可以减少的，也即是说一些检测模型可以摆脱fine-tune这一过程，并且相比于fine-tune训练出来的模型效果并不会变差。</p>
+<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>DSOD这一算法是在SSD的基础上进行的改进，可以简单的看成：</p>
+<p><strong>DSOD=SSD+DenseNet</strong></p>
+<p>作者在论文中提到他也实验了从0开始训练<strong>Region Proposal Based</strong>的检测算法比如Faster RCNN，R-FCN等，但这些模型很难收敛。而One-Stage的目标检测算法比如SSD却可以收敛，虽然效果很一般，因此最后作者使用SSD作为了这篇论文接下来讨论的BaseLine。</p>
+<p>然后本文基于SSD改进的DSOD在VOC2007 trainval和2012 trainval数据集上训练模型，然后在VOC2007  testset上测试的表现(77.7%mAP)超过了使用fine-tune策略的SSD300S（69.6%mAP）和SSD300（75.8mAP），原文是这样描述的。</p>
+<blockquote>
+<p>Our DSOD300 achieves 77.7% mAP, which is much better than the SSD300S  that is trained from scratch using VGG16 (69.6%) without deep  supervision. It is also much better than the fine-tuned results by  SSD300 (75.8%)</p>
+</blockquote>
+<h2 id="出发点"><a href="#出发点" class="headerlink" title="出发点"></a>出发点</h2><p>这篇文章的出发点是什么呢？作者认为几乎的所有检测网络都在使用fine-tune这一技巧，那么一定要用fine-tune吗？作者列出来了3个原因来尝试说明fine-tune不是必须的。原因如下：</p>
+<ul>
+<li>预训练的模型一般是在分类图像数据集比如Imagenet上训练的，不一定可以迁移到检测模型的数据上（比如医学图像）。</li>
+<li>预训练的模型，其结构都是固定的，因此如果想要再修改的话比较麻烦。</li>
+<li>预训练的分类网络的训练目标一般和检测目标不一致，因此预训练的模型对于检测算法而言不一定是最优的选择。</li>
+</ul>
+<p>基于上面这几点原因，论文提出了一个从0开始的检测模型DSOD，接下来看看是怎么设计的吧。</p>
+<h2 id="DSOD网络结构"><a href="#DSOD网络结构" class="headerlink" title="DSOD网络结构"></a>DSOD网络结构</h2><p>下面的Figure1分别展示了SSD的整体结构和DSOD的整体结构。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/DSOD/640.webp" alt></p>
+<p>Figure1左图的<code>plain connection</code>表示SSD网络中的特征融合操作，这里对于的输入300 x 300图像来说，一共融合了6种不同scale的特征。在每个虚线矩形框内都有一个1 x 1的卷积和一个3 x 3的卷积操作，这也可以被叫作BottleNeck，也就是1 x 1卷积主要起到降维从而降低3 x 3卷积计算量的作用。</p>
+<p>Figure1右图的<code>dense connection</code>表示本文的DSOD引入了DenseNet的思想。<code>dense connection</code>左边的虚线框部分和<code>plain connection</code>右边的虚线框部分结构一致，区别在于里面的<code>channel</code>个数，<code>dense connection</code>中3 x 3卷积的<code>channel</code>个数是<code>plain connection</code>中3 x 3卷积的一半。主要是因为在<code>plain connection</code>中每个BottleNeck的输入是前面一个BottleNeck的输出，而在<code>dense connection</code>中，<strong>每个bottleneck的输入是前面所有bottleneck的输出的concate</strong>，所以为了降低计算量减少了通道数。</p>
+<p>同时，<code>dense connection</code>部分右边的矩形框是下采样模块，包含一个2 x 2的最大池化层（降采样作用）和一个的1 x 1卷积层（降低<code>channel</code>个数的作用），作者也提到先进行降采样再进行1 x 1卷积可以进一步减少计算量。</p>
+<p>因此可以看出DSOD即是<strong>SSD+DenseNet</strong>的结果。</p>
+<p>DSOD是在SSD的基础上发展而来的，DSOD的不同在于，不管是在backbong还是head部分，DSOD都借鉴了DenseNet的设计思想。</p>
+<p>DSOD 网络分两个部分：用于特征提取的backbone，用于目标预测的front-end。backbone子网络类似于DenseNets，包含Stem block，4个dense block，2个过渡层，2个无池化层的过渡层。front-end子网络使用致密的结构融合多尺度预测响应。其中Dense Block就是DenseNet网络的子模块，然后<code>stem block</code>由3 x 3卷积和2 x 2池化组成，后面实验证明了这个<code>stem block</code>可以提高mAP值。下面的Table1详细展示了DSOS网络的结构。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/DSOD/641.jpg" alt></p>
+<h2 id="实验结果"><a href="#实验结果" class="headerlink" title="实验结果"></a>实验结果</h2><p>下面的Table3展示了在VOC2007 testset上不同参数的实验结果。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/DSOD/642.webp" alt></p>
+<p>第3，4行的对比可以看出BottleNeck的channel个数越多，mAP相对越高。第5、6行的对比可以看出growth rate从16变成48，可以提高4.8%的mAP。第6，9行的对比可以看出stem block的存在可以提高2.8%的mAP。</p>
+<p>下面的Table4则展示了更丰富的结果。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/DSOD/643.webp" alt></p>
+<p>可以看出SSD在没有预训练模型的情况下也是可以收敛的，不过效果一般。但如果使用本文的DSOD则可以达到使用预训练模型效果，并且结果还偏好一点。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>DSOD是在SSD的基础上结合了DenseNet的思想，使得网络可以在不使用预训练模型的条件下收敛得和使用预训练模型的BaseLine模型一样好，另外DenseNet的引入也使得相比SSD来说DSOD的参数数量大大减少，注意参数量不等于推理速度会变快。如果专注于特殊图像检测或者难以搞定预训练模型的场景这篇文章的思想是值得借鉴的。</p>
+]]></content>
+      <categories>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>目标检测</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>图像分类算法优化技巧</title>
     <url>/2020/04/08/%E5%9B%BE%E5%83%8F%E5%88%86%E7%B1%BB%E7%AE%97%E6%B3%95%E4%BC%98%E5%8C%96%E6%8A%80%E5%B7%A7/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title=" 前言"></a><a id="more"></a> 前言</h2><p>这篇论文的全名是：<strong>Bag of Tricks for Image Classification with Convolutional Neural Networks</strong>。这篇论文是亚马逊团队对CNN网络调优的经验总结，实验基本是在分类网络实验上做的。目前，论文的复现结果都可以在GluonCV找到，地址为：<a href="https://github.com/dmlc/gluon-cv。" target="_blank" rel="noopener">https://github.com/dmlc/gluon-cv。</a></p>
