@@ -48,24 +48,24 @@
 </script>
 
   <meta property="og:type" content="article">
-<meta property="og:title" content="ECCV 2018 RFBNet，在检测中调感受野">
-<meta property="og:url" content="https://qiyuan-z.github.io/2020/03/07/ECCV-2018-RFBNet%EF%BC%8C%E5%9C%A8%E6%A3%80%E6%B5%8B%E4%B8%AD%E8%B0%83%E6%84%9F%E5%8F%97%E9%87%8E/index.html">
+<meta property="og:title" content="CNN结构无痛涨点技巧：ACNet">
+<meta property="og:url" content="https://qiyuan-z.github.io/2020/04/17/CNN%E7%BB%93%E6%9E%84%E6%97%A0%E7%97%9B%E6%B6%A8%E7%82%B9%E6%8A%80%E5%B7%A7%EF%BC%9AACNet/index.html">
 <meta property="og:site_name" content="Yuan">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RFBNet/640.jpg">
-<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RFBNet/641.jpg">
-<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RFBNet/642.jpg">
-<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RFBNet/643.jpg">
-<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RFBNet/644.jpg">
-<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RFBNet/645.jpg">
-<meta property="article:published_time" content="2020-03-07T03:13:19.856Z">
-<meta property="article:modified_time" content="2020-03-07T03:29:48.303Z">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ACNet/640.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ACNet/641.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ACNet/642.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ACNet/643.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ACNet/644.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ACNet/645.png">
+<meta property="article:published_time" content="2020-04-17T02:54:37.109Z">
+<meta property="article:modified_time" content="2020-04-17T04:59:45.610Z">
 <meta property="article:author" content="Qiyuan-Z">
 <meta property="article:tag" content="目标检测">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RFBNet/640.jpg">
+<meta name="twitter:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ACNet/640.png">
 
-<link rel="canonical" href="https://qiyuan-z.github.io/2020/03/07/ECCV-2018-RFBNet%EF%BC%8C%E5%9C%A8%E6%A3%80%E6%B5%8B%E4%B8%AD%E8%B0%83%E6%84%9F%E5%8F%97%E9%87%8E/">
+<link rel="canonical" href="https://qiyuan-z.github.io/2020/04/17/CNN%E7%BB%93%E6%9E%84%E6%97%A0%E7%97%9B%E6%B6%A8%E7%82%B9%E6%8A%80%E5%B7%A7%EF%BC%9AACNet/">
 
 
 <script id="page-configurations">
@@ -90,7 +90,7 @@
   padding: 1px 4px;
 }
 </style>
-  <title>ECCV 2018 RFBNet，在检测中调感受野 | Yuan</title>
+  <title>CNN结构无痛涨点技巧：ACNet | Yuan</title>
   
 
 
@@ -226,7 +226,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://qiyuan-z.github.io/2020/03/07/ECCV-2018-RFBNet%EF%BC%8C%E5%9C%A8%E6%A3%80%E6%B5%8B%E4%B8%AD%E8%B0%83%E6%84%9F%E5%8F%97%E9%87%8E/">
+    <link itemprop="mainEntityOfPage" href="https://qiyuan-z.github.io/2020/04/17/CNN%E7%BB%93%E6%9E%84%E6%97%A0%E7%97%9B%E6%B6%A8%E7%82%B9%E6%8A%80%E5%B7%A7%EF%BC%9AACNet/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/wallhaven-915.png">
@@ -239,7 +239,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          ECCV 2018 RFBNet，在检测中调感受野
+          CNN结构无痛涨点技巧：ACNet
         </h1>
 
         <div class="post-meta">
@@ -250,7 +250,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2020-03-07 11:13:19 / 修改时间：11:29:48" itemprop="dateCreated datePublished" datetime="2020-03-07T11:13:19+08:00">2020-03-07</time>
+              <time title="创建时间：2020-04-17 10:54:37 / 修改时间：12:59:45" itemprop="dateCreated datePublished" datetime="2020-04-17T10:54:37+08:00">2020-04-17</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -277,14 +277,14 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1.6k</span>
+              <span>5.6k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="fa fa-clock-o"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>5 分钟</span>
             </span>
 
         </div>
@@ -296,47 +296,42 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="前言"><a href="#前言" class="headerlink" title=" 前言"></a><a id="more"></a> 前言</h2><p>看了不少的目标检测论文了，个人认为多数论文的出发点就两个，一是感受野，二是特征融合。此外，解决数据不平衡和轻量化也是另外两个重要的方向。今天为大家科普一篇ECCV 2018的一篇目标检测网络RFBNet就是从感受野角度来改善了SSD检测器，论文全名为：<strong>Receptive Field Block Net for Accurate and Fast Object Detection</strong>  。这篇论文主要的贡献点主要是在SSD网络中提出了一个<strong>Receptive Field Block (RFB)</strong> 模块，RFB模块主要是在Inception的基础上加入了空洞卷积层从而有效的增大了感受野。另外，RFB模块是嵌在SSD上的，所以检测的速度比较快，精度比SSD更高。</p>
-<h2 id="RFB模块"><a href="#RFB模块" class="headerlink" title="RFB模块"></a>RFB模块</h2><p>RFB模块的效果示意图如图所示，其中虚线部分就是指RFB模块。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RFBNet/640.jpg" alt></p>
-<p>RFB模块主要有两个特点：</p>
+        <h2 id="前言"><a href="#前言" class="headerlink" title=" 前言"></a><a id="more"></a> 前言</h2><p>CNN的结构创新在这两年已经变得相对很少了，同时要做出有影响力并且Solid的工作也变得越来越难，最近CNN结构方面的创新主要包含两个方面：</p>
 <ul>
-<li><p>RFB模块有多个分支，每个分支的第一层都由特定大小卷积核的卷积核构成，例如图上的1 x 1， 3 x 3，5 x 5。</p>
-</li>
-<li><p>RFB模块引入了空洞卷积，主要作用是为了增加感受野，空洞卷积之前是应用在分割网络DeepLab中，这里将其应用在检测任务中，以获得更大的感受野，可以更好的编码空间长距离语义。</p>
-</li>
+<li>网络结构搜索，以Google Brain的EfficientNet为代表作。</li>
+<li>获取更好的特征表达，主要是将特征复用，特征细化做得更加极致，以HRNet，Res2Net等为代表作。</li>
 </ul>
-<p>在RFB模块中，最后将不同尺寸和感受野的输出特征图进行Concat操作，以达到融合不同特征的目的。在图中，RFB模块中使用三种不同大小和颜色的输出叠加来展示。在图的最后一列中将融合后的特征与人类视觉感受野做对比，从图中看出是非常接近的，这也是这篇论文的出发点。</p>
-<h2 id="两种RFB结构示意图"><a href="#两种RFB结构示意图" class="headerlink" title="两种RFB结构示意图"></a>两种RFB结构示意图</h2><p>下面的Figure4展示了RFBNet的两种结构。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RFBNet/641.jpg" alt></p>
+<p>本文要介绍的是ICCV 2019的一个新CNN架构ACNet（全称为Asymmetric Convolution  Net），因此这篇文章的目的是讲清楚ACNet的原理并总结它的核心思想，另外借助作者开源的Pytorch代码端来加深理解。</p>
+<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>ACNet的切入点为获取更好的特征表达，但和其它方法最大的区别在于它没有带来额外的超参数，而且在推理阶段没有增加计算量，这是十分具有吸引力的。</p>
+<p>在正式介绍ACNet之前，首先来明确一下关于卷积计算的一个等式，这个等式表达的意思就是<strong>「对于输入特征图</strong>$I$</p>
+<p><strong>，先进行$K^{(1)}$和$I$卷积，$K^{(2)}$和$I$卷积后再对结果进行相加，与先进行$K^{(1)}$和$K^{(2)}$的逐点相加后再和$I$进行卷积得到的结果是一致的」</strong>。这也是ACNet在推理阶段不增加任何计算量的理论基础。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ACNet/640.png" alt></p>
+<h2 id="ACNet原理"><a href="#ACNet原理" class="headerlink" title="ACNet原理"></a>ACNet原理</h2><p>下面的Figure1展示了ACNet的思想：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ACNet/641.png" alt></p>
+<p>宏观上来看<strong>「ACNet分为训练和推理阶段，训练阶段重点在于强化特征提取，实现效果提升。而测试阶段重点在于卷积核融合，不增加任何计算量」</strong>。</p>
 <ul>
-<li><p>Figure4(a)表示RFB结构，整体上借鉴了Inception的思想。主要不同点在于引入3个空洞卷积层。</p>
+<li><p><strong>「训练阶段」</strong>：因为3 x 3卷积是大多数网络的基础组件，因此ACNet的实验都是针对3 x 3卷积进行的。训练阶段就是将现有网络中的每一个3 x 3卷积换成3 x 1卷积+1 x 3卷积+3 x 3卷积共三个卷积层，最终将这三个卷积层的计算结果进行融合获得卷积层的输出。因为这个过程中引入的1 x 3卷积和3 x 1卷积是非对称的，所以将其命名为Asymmetric Convolution。</p>
 </li>
-<li><p>Figure4(b)表示RFB-s结构。RFB-s和RFB相比主要有两个改进，一方面用3 x 3卷积层代替5 x 5卷积层，另一方面用1 x 3和3 x 1卷积层代替3 x 3卷积层，主要目的应该是为了减少计算量，类似Inception后面的版本对Inception结构的改进。</p>
+<li><p><strong>「推理阶段」</strong>：如上图右半部分所示，这部分主要是对三个卷积核进行融合。这部分在实现过程中就是使用融合后的卷积核参数来初始化现有的网络，因此在推理阶段，网络结构和原始网络是完全一样的了，只不过网络参数采用了特征提取能力更强的参数即融合后的卷积核参数，因此在推理阶段不会增加计算量。</p>
 </li>
 </ul>
-<h2 id="RFBNet-300的结构"><a href="#RFBNet-300的结构" class="headerlink" title="RFBNet-300的结构"></a>RFBNet-300的结构</h2><p>下面的Figure5代表RFBNet-300的整体结构图，基本是照搬了SSD，主要有2点不同：</p>
-<ul>
-<li>BackBone部分用两个RFB结构替换原来新增的两层。</li>
-<li><code>conv4_3</code>和<code>conv7_fc</code>在接预测层之前分别接RFB-s和RFB结构。</li>
-</ul>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RFBNet/642.jpg" alt></p>
-<h2 id="实验结果"><a href="#实验结果" class="headerlink" title="实验结果"></a>实验结果</h2><p>下面的Table1展示了RFBNet-300在PASCAL VOC2007 test dev上的测试结果，训练集基于2007和2012的trainval。RFBNet-300在mAP和FPS两方面效果都不错。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RFBNet/643.jpg" alt></p>
-<p>而下面的Table4是在COCO test dev 2015数据集上的测试结果。最后的RFBNet-512E做了两个改变：</p>
-<ul>
-<li>对<code>conv7_fc</code>的输出特征做了<code>up-sample</code>，然后和<code>conv4_3</code>的输出特征做融合，基于融合后的特征做预测。这种做法实际上是借鉴了FPN算法的思想。</li>
-<li>RFB结构中增加了<code>7x7</code>大小的卷积分支。这两点改进对效果的提升有一定帮助，而且带来的计算量也少。</li>
-</ul>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RFBNet/644.jpg" alt></p>
-<p>下面的Figure6展示了和RFBNet同时期的一些目标检测算法在COCO test-dev数据集上关于效果和速度的直观对比，可以看到RFBNet的速度和精度平衡还是不错的。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RFBNet/645.jpg" alt></p>
-<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>RFBNet说白了就是空洞卷积的应用，虽然看起来论文比较水，但至少给我们提供了一个重要信息，在检测中调感受野是行之有效的。</p>
-<h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><ul>
-<li>论文原文：<a href="https://arxiv.org/pdf/1711.07767.pdf" target="_blank" rel="noopener">https://arxiv.org/pdf/1711.07767.pdf</a></li>
-<li>代码实现：<a href="https://github.com/ruinmessi/RFBNet" target="_blank" rel="noopener">https://github.com/ruinmessi/RFBNet</a></li>
-<li>参考：<a href="https://blog.csdn.net/u014380165/article/details/81556769" target="_blank" rel="noopener">https://blog.csdn.net/u014380165/article/details/81556769</a></li>
-</ul>
+<p>总结一下就是ACNet在训练阶段强化了原始网络的特征提取能力，在推理阶段融合卷积核达到不增加计算量的目的。虽然训练时间增加了一些时间，但却换来了在推理阶段速度无痛的精度提升，怎么看都是一笔非常划算的交易。下面的Table3展示了在一些经典网络上应用ACNet的结果，对于AlexNet精度提升了比较多，而对ResNet和DenseNet精度则提升不到一个百分点，不过考虑到这个提升是白赚的也还是非常值得肯定的。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ACNet/642.png" alt></p>
+<h2 id="为什么ACNet能涨点？"><a href="#为什么ACNet能涨点？" class="headerlink" title="为什么ACNet能涨点？"></a>为什么ACNet能涨点？</h2><p>为什么ACNet这个看起来十分简单的操作能为各种网络带来涨点？论文中提到，ACNet有一个特点是<strong>「它提升了模型对图像翻转和旋转的鲁棒性」</strong>，例如训练好后的1 x 3卷积和在图像翻转后仍然能提取正确的特征（如Figure4左图所示，2个红色矩形框就是图像翻转前后的特征提取操作，在输入图像的相同位置处提取出来的特征还是一样的）。那么假设训练阶段只用3 x 3卷积核，当图像上下翻转之后，如Figure4右图所示，提取出来的特征显然是不一样的。</p>
+<p>因此，引入1 x 3这样的水平卷积核可以提升模型对图像上下翻转的鲁棒性，竖直方向的卷积核同理。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ACNet/643.png" alt></p>
+<p>下面的Table4则继续从实验角度解释了这种鲁棒性：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ACNet/644.png" alt></p>
+<h2 id="推理阶段的卷积核融合"><a href="#推理阶段的卷积核融合" class="headerlink" title="推理阶段的卷积核融合"></a>推理阶段的卷积核融合</h2><p>推理阶段的融合操作如Figure3所示，在论文中提到具体的融合操作是和BN层一起的，然后融合操作时发生在BN之后的。但是其实也可以把融合操作放在BN层之前，也就是三个卷积层计算完之后就开始融合。论文对这两种融合方式进行了实验，在上面的Table4中BN in branch这一列有√的话表示融合是在BN之后，可以看到这种方式使得效果确实会更好一些。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ACNet/645.png" alt></p>
+<h2 id="Pytorch代码实现"><a href="#Pytorch代码实现" class="headerlink" title="Pytorch代码实现"></a>Pytorch代码实现</h2><p>我们来看一下作者的ACNet基础结构Pytorch实现，即将原始的3 x 3卷积变成：3 x 3 + 3 x 1 + 1 x 3：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line"># 去掉因为3x3卷积的padding多出来的行或者列</span><br><span class="line">class CropLayer(nn.Module):</span><br><span class="line"></span><br><span class="line">    #   E.g., (-1, 0) means this layer should crop the first and last rows of the feature map. And (0, -1) crops the first and last columns</span><br><span class="line">    def __init__(self, crop_set):</span><br><span class="line">        super(CropLayer, self).__init__()</span><br><span class="line">        self.rows_to_crop &#x3D; - crop_set[0]</span><br><span class="line">        self.cols_to_crop &#x3D; - crop_set[1]</span><br><span class="line">        assert self.rows_to_crop &gt;&#x3D; 0</span><br><span class="line">        assert self.cols_to_crop &gt;&#x3D; 0</span><br><span class="line"></span><br><span class="line">    def forward(self, input):</span><br><span class="line">        return input[:, :, self.rows_to_crop:-self.rows_to_crop, self.cols_to_crop:-self.cols_to_crop]</span><br><span class="line"></span><br><span class="line"># 论文提出的3x3+1x3+3x1</span><br><span class="line">class ACBlock(nn.Module):</span><br><span class="line"></span><br><span class="line">    def __init__(self, in_channels, out_channels, kernel_size, stride&#x3D;1, padding&#x3D;0, dilation&#x3D;1, groups&#x3D;1, padding_mode&#x3D;&#39;zeros&#39;, deploy&#x3D;False):</span><br><span class="line">        super(ACBlock, self).__init__()</span><br><span class="line">        self.deploy &#x3D; deploy</span><br><span class="line">        if deploy:</span><br><span class="line">            self.fused_conv &#x3D; nn.Conv2d(in_channels&#x3D;in_channels, out_channels&#x3D;out_channels, kernel_size&#x3D;(kernel_size,kernel_size), stride&#x3D;stride,</span><br><span class="line">                                      padding&#x3D;padding, dilation&#x3D;dilation, groups&#x3D;groups, bias&#x3D;True, padding_mode&#x3D;padding_mode)</span><br><span class="line">        else:</span><br><span class="line">            self.square_conv &#x3D; nn.Conv2d(in_channels&#x3D;in_channels, out_channels&#x3D;out_channels,</span><br><span class="line">                                         kernel_size&#x3D;(kernel_size, kernel_size), stride&#x3D;stride,</span><br><span class="line">                                         padding&#x3D;padding, dilation&#x3D;dilation, groups&#x3D;groups, bias&#x3D;False,</span><br><span class="line">                                         padding_mode&#x3D;padding_mode)</span><br><span class="line">            self.square_bn &#x3D; nn.BatchNorm2d(num_features&#x3D;out_channels)</span><br><span class="line"></span><br><span class="line">            center_offset_from_origin_border &#x3D; padding - kernel_size &#x2F;&#x2F; 2</span><br><span class="line">            ver_pad_or_crop &#x3D; (center_offset_from_origin_border + 1, center_offset_from_origin_border)</span><br><span class="line">            hor_pad_or_crop &#x3D; (center_offset_from_origin_border, center_offset_from_origin_border + 1)</span><br><span class="line">            if center_offset_from_origin_border &gt;&#x3D; 0:</span><br><span class="line">                self.ver_conv_crop_layer &#x3D; nn.Identity()</span><br><span class="line">                ver_conv_padding &#x3D; ver_pad_or_crop</span><br><span class="line">                self.hor_conv_crop_layer &#x3D; nn.Identity()</span><br><span class="line">                hor_conv_padding &#x3D; hor_pad_or_crop</span><br><span class="line">            else:</span><br><span class="line">                self.ver_conv_crop_layer &#x3D; CropLayer(crop_set&#x3D;ver_pad_or_crop)</span><br><span class="line">                ver_conv_padding &#x3D; (0, 0)</span><br><span class="line">                self.hor_conv_crop_layer &#x3D; CropLayer(crop_set&#x3D;hor_pad_or_crop)</span><br><span class="line">                hor_conv_padding &#x3D; (0, 0)</span><br><span class="line">            self.ver_conv &#x3D; nn.Conv2d(in_channels&#x3D;in_channels, out_channels&#x3D;out_channels, kernel_size&#x3D;(3, 1),</span><br><span class="line">                                      stride&#x3D;stride,</span><br><span class="line">                                      padding&#x3D;ver_conv_padding, dilation&#x3D;dilation, groups&#x3D;groups, bias&#x3D;False,</span><br><span class="line">                                      padding_mode&#x3D;padding_mode)</span><br><span class="line"></span><br><span class="line">            self.hor_conv &#x3D; nn.Conv2d(in_channels&#x3D;in_channels, out_channels&#x3D;out_channels, kernel_size&#x3D;(1, 3),</span><br><span class="line">                                      stride&#x3D;stride,</span><br><span class="line">                                      padding&#x3D;hor_conv_padding, dilation&#x3D;dilation, groups&#x3D;groups, bias&#x3D;False,</span><br><span class="line">                                      padding_mode&#x3D;padding_mode)</span><br><span class="line">            self.ver_bn &#x3D; nn.BatchNorm2d(num_features&#x3D;out_channels)</span><br><span class="line">            self.hor_bn &#x3D; nn.BatchNorm2d(num_features&#x3D;out_channels)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    # forward函数</span><br><span class="line">    def forward(self, input):</span><br><span class="line">        if self.deploy:</span><br><span class="line">            return self.fused_conv(input)</span><br><span class="line">        else:</span><br><span class="line">            square_outputs &#x3D; self.square_conv(input)</span><br><span class="line">            square_outputs &#x3D; self.square_bn(square_outputs)</span><br><span class="line">            # print(square_outputs.size())</span><br><span class="line">            # return square_outputs</span><br><span class="line">            vertical_outputs &#x3D; self.ver_conv_crop_layer(input)</span><br><span class="line">            vertical_outputs &#x3D; self.ver_conv(vertical_outputs)</span><br><span class="line">            vertical_outputs &#x3D; self.ver_bn(vertical_outputs)</span><br><span class="line">            # print(vertical_outputs.size())</span><br><span class="line">            horizontal_outputs &#x3D; self.hor_conv_crop_layer(input)</span><br><span class="line">            horizontal_outputs &#x3D; self.hor_conv(horizontal_outputs)</span><br><span class="line">            horizontal_outputs &#x3D; self.hor_bn(horizontal_outputs)</span><br><span class="line">            # print(horizontal_outputs.size())</span><br><span class="line">            return square_outputs + vertical_outputs + horizontal_outputs</span><br></pre></td></tr></table></figure>
+<p>然后在推理阶段进行卷积核融合的代码实现地址为：<code>https://github.com/DingXiaoH/ACNet/blob/master/acnet/acnet_fusion.py</code>，对照Figure3就比较好理解了，介于篇幅这里就不贴这段代码了。</p>
+<h2 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h2><p>从实验结果中可以看到，在推理阶段即使融合操作放在BN层之前，相比原始网络仍有一定提升（AlexNet的56.18% vs 55.92%，ResNet-18的70.82% vs 70.36%），作者没有讲解这部分的原理，某位大佬提出的观点，如下：</p>
+<blockquote>
+<p>这部分的原因个人理解是来自梯度差异化，原来只有一个3 x 3卷积层，梯度可以看出一份，而添加了1 x 3和3 x 1卷积层后，部分位置的梯度变为2份和3份，也是更加细化了。而且理论上可以融合无数个卷积层不断逼近现有网络的效果极限，融合方式不限于相加（训练和推理阶段一致即可），融合的卷积层也不限于1 x 3或3 x 1尺寸。</p>
+</blockquote>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文简要讲述了ACNet这个无痛的调参方法，这种方法创新点是非常棒的，我们不一定需要重型BackBone去提取特征，也不一定需要复杂的结构复用特征，像ACNet这样的优雅并且有效的作品确实让人眼前一亮。</p>
 
     </div>
 
@@ -377,13 +372,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/03/06/RetinaNet%EF%BC%88%E5%BC%95%E5%85%A5Focal-Loss%EF%BC%89/" rel="prev" title="RetinaNet（引入Focal Loss）">
-      <i class="fa fa-chevron-left"></i> RetinaNet（引入Focal Loss）
+    <a href="/2020/04/17/AlexeyAB-DarkNet-Dropout%E5%B1%82%E4%BB%A3%E7%A0%81%E8%AF%A6%E8%A7%A3/" rel="prev" title="AlexeyAB DarkNet Dropout层代码详解">
+      <i class="fa fa-chevron-left"></i> AlexeyAB DarkNet Dropout层代码详解
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2020/03/08/windows%E5%92%8Cubuntu%E5%8F%8C%E7%B3%BB%E7%BB%9F%E4%BF%AE%E6%94%B9%E9%BB%98%E8%AE%A4%E5%90%AF%E5%8A%A8%E9%A1%B9/" rel="next" title="windows和ubuntu双系统修改默认启动项">
-      windows和ubuntu双系统修改默认启动项 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -446,7 +438,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RFB模块"><span class="nav-text">RFB模块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#两种RFB结构示意图"><span class="nav-text">两种RFB结构示意图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RFBNet-300的结构"><span class="nav-text">RFBNet-300的结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实验结果"><span class="nav-text">实验结果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#后记"><span class="nav-text">后记</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#附录"><span class="nav-text">附录</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#介绍"><span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ACNet原理"><span class="nav-text">ACNet原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么ACNet能涨点？"><span class="nav-text">为什么ACNet能涨点？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#推理阶段的卷积核融合"><span class="nav-text">推理阶段的卷积核融合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pytorch代码实现"><span class="nav-text">Pytorch代码实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#思考"><span class="nav-text">思考</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-text">总结</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 	  
