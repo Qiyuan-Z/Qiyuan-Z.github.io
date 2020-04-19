@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://Qiyuan-Z.github.io').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.6.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":true,"style":"mac"},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta property="og:type" content="article">
+<meta property="og:title" content="SSD的改进版之DSSD">
+<meta property="og:url" content="https://qiyuan-z.github.io/2020/04/19/SSD%E7%9A%84%E6%94%B9%E8%BF%9B%E7%89%88%E4%B9%8BDSSD/index.html">
+<meta property="og:site_name" content="Yuan">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/Snipaste_2020-01-08_16-00-32.jpg">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/DSSD/640.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/DSSD/641.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/Snipaste_2020-01-08_16-11-49.jpg">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/DSSD/642.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/DSSD/645.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/Snipaste_2020-01-08_16-17-17.jpg">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/DSSD/643.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/DSSD/644.png">
+<meta property="article:published_time" content="2020-04-19T02:32:00.741Z">
+<meta property="article:modified_time" content="2020-04-19T02:32:00.897Z">
+<meta property="article:author" content="Qiyuan-Z">
+<meta property="article:tag" content="目标检测">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/Snipaste_2020-01-08_16-00-32.jpg">
+
+<link rel="canonical" href="https://qiyuan-z.github.io/2020/04/19/SSD%E7%9A%84%E6%94%B9%E8%BF%9B%E7%89%88%E4%B9%8BDSSD/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.css"><style>
+#needsharebutton-postbottom {
+  cursor: pointer;
+  height: 26px;
+  margin-top: 10px;
+  position: relative;
+}
+#needsharebutton-postbottom .btn {
+  border: 1px solid $btn-default-border-color;
+  border-radius: 3px;
+  display: initial;
+  padding: 1px 4px;
+}
+</style>
+  <title>SSD的改进版之DSSD | Yuan</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Yuan</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">记录学习中的点点滴滴</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://qiyuan-z.github.io/2020/04/19/SSD%E7%9A%84%E6%94%B9%E8%BF%9B%E7%89%88%E4%B9%8BDSSD/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/wallhaven-915.png">
+      <meta itemprop="name" content="Qiyuan-Z">
+      <meta itemprop="description" content="偉大な魂は目的を持ち、そうでないものは願望を持つ">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Yuan">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          SSD的改进版之DSSD
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-19 10:32:00" itemprop="dateCreated datePublished" datetime="2020-04-19T10:32:00+08:00">2020-04-19</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index">
+                    <span itemprop="name">学习</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title=" 前言"></a><a id="more"></a> 前言</h2><p>DSSD全称为<strong>Deconvolutional Single Shot Detector</strong>，即在SSD算法的前面加了一个反卷积单词，这是CVPR 2017的一篇文章，主要是对SSD进行了一个改进。</p>
+<h2 id="DSSD算法的贡献"><a href="#DSSD算法的贡献" class="headerlink" title="DSSD算法的贡献"></a>DSSD算法的贡献</h2><p>这篇论文的主要贡献是在常用的目标检测算法中加入了上下文信息。换句话说，常规的目标检测算法一般都是在一个(YOLO，Faster-RCNN)或者多个特征图上进行检测（SSD），但是各个特征层之间的信息并没有有效的结合以及利用，DSSD的贡献正是解决了这一点。</p>
+<h2 id="出发点"><a href="#出发点" class="headerlink" title="出发点"></a>出发点</h2><p>我们知道SSD最明显的缺点就是对小目标不够鲁棒，原因是什么呢？我们知道SSD为了解决小目标检测的思路是在尽量多的特征层上进行检测，来更好的匹配小目标，因为分辨率越大的特征图小目标的空间信息就保留得越多。但是，这样做有个问题，那<strong>就是浅层提取的特征图表达能力不够强，也即是说浅层特征图中每个格子也可以判断这个格子中包含的是哪一个类，但是不够那么确定</strong>。具体来说有可能出现 框对了，但是分类出错或者置信度不够好或者将背景误认为目标等等，也就是说SSD同样还是存在误检和漏检的情况。这种情况对于小目标场景出现的概率更大，因此SSD对于小目标的检测仍然不够鲁棒。</p>
+<h2 id="DSSD的网络结构"><a href="#DSSD的网络结构" class="headerlink" title="DSSD的网络结构"></a>DSSD的网络结构</h2><p>SSD和DSSD的网络结构如Figure1所示：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/Snipaste_2020-01-08_16-00-32.jpg" alt></p>
+<p>经过上一节的分析我们知道SSD对小目标不够鲁棒的主要原因就是特征图的表征能力不够强。为了解决这一点，DSSD就使用了更好的BackBone网络（ResNet）和反卷积层，跳跃链接来给浅层特征图更好的表征能力。那么具体是怎么做的呢？</p>
+<p>既然DSSD算法的核心就是提高浅层特征图的表征能力，首先想到的肯定是将基础网络由VGG换成ResNet，下面的Table2说明了在VGG和ResNet上哪些层作为最后的预测特征图。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/DSSD/640.png" alt></p>
+<p>另外需要注意的是这些层可不是随便选择的，大致要和VGG相互对应感受野也要对应，这样才能保证效果会变好，不然也有可能会变差。下面Table3中的实验结果也展示出了浅层的特征更具有表示能力时，在小目标上的效果就会更好。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/DSSD/641.png" alt></p>
+<p>图片大小不够的时候，ResNet的SSD和VGG的SSD效果其实相当，整体甚至还会稍微差一些，到了512*512的尺度上时，ResNet的下过就明显要好了。尤其是标粗的小目标（bird）。</p>
+<h2 id="预测模块"><a href="#预测模块" class="headerlink" title="预测模块"></a>预测模块</h2><p>基于ResNet的实验还有一点就是修改网络的预测模块，作者使用了4种不同的预测模块，如Figure2所示。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/Snipaste_2020-01-08_16-11-49.jpg" alt></p>
+<p>从下面的Table4可以看到这确实提升了效果，并且c这种结构比d这种结构更好一些，<strong>这个设计的灵感据说来自于MS-CNN，它指出改善每个任务的分支网络同样可以提高准确率</strong>。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/DSSD/642.png" alt></p>
+<p>注意最后一行是使用了<strong>approximate bilinear pooling</strong>(CVPR 2016)的结果。</p>
+<h2 id="反卷积模块"><a href="#反卷积模块" class="headerlink" title="反卷积模块"></a>反卷积模块</h2><p>在SSD的网络结构图中的：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/DSSD/645.png" alt></p>
+<p>就代表了本文的主要创新点，即反卷积模块，它的具体结构如Figure3所示：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/Snipaste_2020-01-08_16-17-17.jpg" alt></p>
+<p>这个模块里面被红色框部分圈住的可以有两种连接方式，Eltw Product其实就是矩阵的点积，还有sum的形式就是求和。上一节的Table4展示了这两种操作的精度差距，相关部分截图如下：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/DSSD/643.png" alt></p>
+<p>将ResNet，反卷积模块和预测模块结合在一起就构成了最终的DSSD算法。</p>
+<h2 id="模型训练"><a href="#模型训练" class="headerlink" title="模型训练"></a>模型训练</h2><p>在实验时，使用SSD模型初始化DSSD网络，但是对于default box选取的长宽比例，作者在论文中做了详细的分析和改进。为了得到PASCAL VOC 2007和2012  trainval图片里各个物体对应的真实位置框的长宽比例，作者用K-means以这些真实框内区域面积的平方根作为特征做了一个聚类分析，做聚类的时候增加聚类的个数来提升聚类的准确度，最后确定七类的时候收敛的错误率最低如Table1所示：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/DSSD/644.png" alt></p>
+<p>因为SSD训练时使用的训练图片会重新调整比例变成方形的尺寸，但是在大多数的训练图片都是比较宽的图片，所以相应的真实框的宽度会变小一点。通过这种聚类实验最后确定了预测使用的default box的长宽比例为1、1.6、2和3，作为每一个特征图的default box所使用的长宽比例。</p>
+<p>DSSD的作者WeiLiu大神在Caffe框架中将SSD的基础网络改成ResNet101然后重新训练了一个新的SSD模型，以VOC的数据集为例，训练集使用的数据是VOC2007和VOC2012的trainval数据集，测试用的是07的测试集，训练时一共迭代了70k次，使用学习率为1e-3在前40k次iterations，然后调整学习率为1e-4、1e-5再分别训练20k次、10k次iterations。然后用用训练好的SSD模型来初始化DSSD网络。训练DSSD的过程分为两个阶段，第一个阶段，加载SSD模型初始化DSSD网络，并冻结SSD网络的参数，然后只增加反卷积模型(不添加预测模型)，在这样的条件下只训练反卷积模型，设置学习率为1e-3、1e-4分别迭代20k次和10k次；第二个阶段，fine-tune第一阶段的模型，解冻第一阶段训练时候冻结的所有参数，并添加预测模型，设置学习率为1e-3、1e-4再分别训练20k次、20k次iterations。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>这篇论文表达出，提升浅层特征图的表达能力是可以提高类似的目标检测器对小目标的检测能力的，可以作为我们思考的一个方向。</p>
+
+    </div>
+
+    
+    
+    <div class="post-widgets">
+      <div id="needsharebutton-postbottom">
+        <span class="btn">
+          <i class="fa fa-share-alt" aria-hidden="true"></i>
+        </span>
+      </div>
+    </div>
+	<div>
+
+	  
+
+		<div>
+
+    
+
+        <div >-------------本文结束感谢您的阅读-------------</div>
+
+    
+
+</div>
+
+	  
+
+	</div>
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/" rel="tag"><i class="fa fa-tag"></i> 目标检测</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/04/18/ICCV-2019-TridentNet%EF%BC%88%E4%B8%89%E5%8F%89%E6%88%9F%E7%BD%91%E7%BB%9C%EF%BC%8C%E5%88%B7%E6%96%B0COCO%E7%BA%AA%E5%BD%95%EF%BC%8C%E5%B7%B2%E5%BC%80%E6%BA%90%EF%BC%89/" rel="prev" title="ICCV 2019 TridentNet（三叉戟网络，刷新COCO纪录，已开源）">
+      <i class="fa fa-chevron-left"></i> ICCV 2019 TridentNet（三叉戟网络，刷新COCO纪录，已开源）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/04/19/SSD%E7%AE%97%E6%B3%95%E7%9A%84%E6%94%B9%E8%BF%9B%E7%89%88Rainbow-SSD/" rel="next" title="SSD算法的改进版Rainbow SSD">
+      SSD算法的改进版Rainbow SSD <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DSSD算法的贡献"><span class="nav-text">DSSD算法的贡献</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#出发点"><span class="nav-text">出发点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DSSD的网络结构"><span class="nav-text">DSSD的网络结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#预测模块"><span class="nav-text">预测模块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#反卷积模块"><span class="nav-text">反卷积模块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#模型训练"><span class="nav-text">模型训练</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+	  
+     
+	  
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Qiyuan-Z"
+      src="/images/wallhaven-915.png">
+  <p class="site-author-name" itemprop="name">Qiyuan-Z</p>
+  <div class="site-description" itemprop="description">偉大な魂は目的を持ち、そうでないものは願望を持つ</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">93</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Qiyuan-Z" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Qiyuan-Z" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:601872068@qq.com" title="E-Mail → mailto:601872068@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://project-inkstone.github.io/project-inkstone/?tdsourcetag=s_pctim_aiomsg" title="https:&#x2F;&#x2F;project-inkstone.github.io&#x2F;project-inkstone&#x2F;?tdsourcetag&#x3D;s_pctim_aiomsg" rel="noopener" target="_blank">project-inkstone</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+	  
+      <div id="music163player">
+		   <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=29784463&auto=1&height=66"></iframe>
+		   </iframe>
+	  </div>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qiyuan-Z</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="站点总字数">518k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">7:51</span>
+</div>
+
+<!-- 网站运行时间的设置 -->
+<span id="timeDate">载入天数...</span>
+<span id="times">载入时分秒...</span> 
+<script>
+    var now = new Date();
+    function createtime() {
+        var grt= new Date("12/01/2019 13:14:21");//此处修改你的建站时间或者网站上线时间
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;}
+        document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 ";
+        document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
+    }
+setInterval("createtime()",250);
+</script>
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+	<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"></script>
+	<script type="text/javascript">
+    		var gitalk = new Gitalk({
+		        clientID: '2d10cfb27783db577e70',
+		        clientSecret: '154292876bb14966f6ae57304b67859617b08c94',
+		        id: md5(location.pathname),
+		        repo: 'gitalk',
+		        owner: 'Qiyuan-Z',
+		        admin: 'Qiyuan-Z',
+			distractionFreeMode: '',
+
+		    });
+	    gitalk.render('gitalk-container');
+	</script>
+
+
+
+  
+
+  
+      
+<script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', () => {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
+
+  
+
+  <script src="//cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.js"></script>
+  <script>
+      pbOptions = {};
+        pbOptions.iconStyle = "box";
+        pbOptions.boxForm = "horizontal";
+        pbOptions.position = "bottomCenter";
+        pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+  </script>
+	<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+	<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"></script>
+	<script type="text/javascript">
+    		var gitalk = new Gitalk({
+		        clientID: '2d10cfb27783db577e70',
+		        clientSecret: '154292876bb14966f6ae57304b67859617b08c94',
+		        id: md5(location.pathname),
+		        repo: 'gitalk',
+		        owner: 'Qiyuan-Z',
+		        admin: 'Qiyuan-Z',
+			distractionFreeMode: '',
+
+		    });
+	    gitalk.render('gitalk-container');
+	</script>
+
+
+  <script type="text/javascript" src="/js/src/clicklove.js"></script>
+</body>
+</html>
+
