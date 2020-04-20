@@ -1,6 +1,121 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Feature Pyramid Network</title>
+    <url>/2020/04/20/Feature-Pyramid-Network/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a><a id="more"></a>前言</h2><p>FPN全称是Feature Pyramid Network,  也就是特征金字塔网络，主要是针对图像中目标的多尺度的这个特点提出的，多尺度在目标检测中非常常见，而且对应不同的问题应该设计不同的FPN。FPN是Facebook于2017年提出的用于目标检测的模块化结构，但FPN在很多计算机视觉任务中都有使用，比如姿态估计、语义分割等领域。</p>
+<h2 id="FPN"><a href="#FPN" class="headerlink" title="FPN"></a>FPN</h2><p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/Feature%20Pyramid%20Network/640.webp" alt></p>
+<p>在深度学习兴起以前，很多传统方法都会使用到<strong>图像金字塔</strong>。图像金字塔如上图所示，就是将图片resize到不同的大小，然后分别得到对应大小的特征，然后进行预测。这种方法虽然可以一定程度上解决多尺度的问题，但是很明显，带来的计算量也非常大。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/Feature%20Pyramid%20Network/641.webp" alt></p>
+<p>上图是使用单个feature map进行检测，这种结构在17年的时候是很多人在使用的结构，比如YOLOv1、YOLOv2、Faster  R-CNN中使用的就是这种架构。直接使用这种架构导致预测层的特征尺度比较单一，对小目标检测效果比较差。ps:  YOLOv2中使用了multi-scale training的方式一定程度上缓解了尺度单一的问题，能够让模型适应更多输入尺度。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/Feature%20Pyramid%20Network/642.webp" alt></p>
+<p>上图进行了在不同大小的feature map上分别进行预测，具有了多尺度预测的能力，但是特征与特征之间没有融合，遵从这种架构的经典的目标检测架构就是SSD, SSD用了非常多的尺度来进行检测。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/Feature%20Pyramid%20Network/643.webp" alt></p>
+<p>然后就是非常经典的FPN架构，FPN可以非常方便地应用到两阶段网络如Faster  R-CNN等或者一阶段网络YOLO、SSD等。FPN通过构造一种独特的特征金字塔来避免图像金字塔中计算量过高的问题，同时能够较好地处理目标检测中的多尺度变化问题，效果能够达到当时的STOA。SSD的一个改进版DSSD就是使用了FPN，取得了比SSD更好的效果。</p>
+<p>这里展开描述一下FPN的细节：</p>
+<p>为了方便说明，做出以下规定：</p>
+<ul>
+<li><p>图像backbone部分每个层feature map用$C_{i}$来标记，比如说$C_{3}$代表对应stride$=2^{3}=8$的feature map，通常用$C_{1}, \ldots C_{6}$代表每个feature map。</p>
+</li>
+<li><p>图像右侧的top-down结构每个feature map用$P_{i}$来标记，比如说$P_{3}$代表对应$C_{3}$大小的feature map。</p>
+</li>
+</ul>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/Feature%20Pyramid%20Network/644.webp" alt></p>
+<p>假设当前层为第三层stride=8, 要与stride=16的特征进行融合，那么$C_{3}$先通过1 x 1卷积约束通道数和$P_{4}$层达到一致；来自$P_{4}$通过2倍上采样得到的feature map大小和$C_{3}$一致，最终$P_{3}$是通过$P_{4}$上采样结果和$C_{3}$进行element wise add得到结果。</p>
+<p>那么<strong>为什么FPN采用融合以后效果要比使用pyramidal feature hierarchy这种方式要好</strong>呢？有以下几个原因：</p>
+<ul>
+<li>卷积虽然能够高效地向上提取语义，但是也存在<strong>像素错位问题</strong>，通过上采样还原特征图的方式很好地缓解了像素不准的问题。</li>
+<li>backbone可以分为浅层网络和深层网络，浅层网络负责提取目标边缘等底层特征，而深层网络可以构建高级的语义信息，通过使用FPN这种方式，让深层网络更<strong>高级语义的部分的信息能够融合到稍浅层的网络</strong>，指导浅层网络进行识别。</li>
+<li>从感受野的角度思考，浅层特征的感受野比较小，深层网络的感受野比较大，浅层网络主要负责小目标的检测，深层的网络负责大目标的检测（比如人脸检测中的SSH就使用到了这个特点）。如下图所示：</li>
+</ul>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/Feature%20Pyramid%20Network/645.webp" alt></p>
+<p>黑色的框是理论感受野，中心呈高斯分布的亮点是实际感受野，FPN中的top-down之路通过融合不同感受野，<strong>两个高斯分布的实际感受野进行融合，能够让高层加强低层所对应的感受野</strong>。</p>
+<p>关于感受野这个观点，FPN论文有一张图，如下图所示：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/Feature%20Pyramid%20Network/646.webp" alt></p>
+<p>这张图讲的是FPN应用在DeepMask中做实例分割，其中使用了一个5×5的多层感知机来生成一个14×14的分割结果。对应的浅橙色的区域代表的是对应到原图的区域（与理论感受野相似），深橙色区域对应的是典型的目标区域（与实际感受野类似），观察这个图我们可以得到几个结论：</p>
+<ul>
+<li><p>网络越深、特征图越小对应到原图的范围也就越大。这也就可以解释为什么加上FPN以后，小目标的效果提升了，比如在上图的$P_{3}$到$P_{5}$中，$P_{3}$对应的目标区域要小一些，更符合小目标的大小。</p>
+</li>
+<li><p>在同一层中，理论感受野的范围要大于实际感受野。</p>
+</li>
+</ul>
+<h2 id="消融实验"><a href="#消融实验" class="headerlink" title="消融实验"></a>消融实验</h2><p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/Feature%20Pyramid%20Network/647.webp" alt></p>
+<p>以上是FPN各部分的专有名称，作者详细对比了top-down pathway带来的增益，lateral connection带来的增益，</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/Feature%20Pyramid%20Network/648.webp" alt></p>
+<p>上表中的实验中能得到几个结论：</p>
+<ul>
+<li>通过(a)和(b)比较，说明随着网络深入，小目标检测效果会变差，大目标检测效果会变好。</li>
+<li>通过(d)和(e)比较，说明lateral connections是非常有必要的</li>
+<li><p>通过(f)和(c)比较，说明只用最浅层$P_{2}$效果不如使用$P_{2}, P_{3}, P_{4}$</p>
+</li>
+<li><p>通过(f)和(c)比较，还可以发现由于$P_{2}$的空间分辨率比较高，anchor非常多，可以得到一个结论就是：仅仅是使用非常多的anchor这一点本身是不足以提升准确率的。</p>
+</li>
+</ul>
+<p>文章中还有几个实验将FPN添加到RPN网络、DeepMask结构中，都带来不错的效果，FPN确实是一个比较好的feature fusion方法，在此之后，有很多架构的网络也不断地被提出来，都带来了一定的提升。</p>
+<h2 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h2><ul>
+<li>浅层网络负责小目标检测，深层网络负责大目标检测，这两部分融合的时候一般是通过简单的add或者concate进行融合的，为什么一定要这样融合？</li>
+<li>浅层小目标信息比较丰富，深层网络具有高级语义，能够一定程度上指导小目标的检测，这里的浅层和深层能够添加一个权重来具体决定哪个部分占比比较大吗？</li>
+<li>具体怎么决定浅层网络和深层网络的占比？通过先验来固定取值，还是自适应通过网络学习得到相应阈值？</li>
+</ul>
+<p>其实看论文比较多的读者可能已经想到了，ASFF, BiFPN，BiSeNet，ThunderNet等，这都是比较好解决这个问题的方法。</p>
+<p><strong>特征融合方式总结</strong></p>
+<ul>
+<li>两层特征add，eg:FPN</li>
+<li>两层特征concate，eg:YOLOv3</li>
+<li>使用注意力机制, eg: BiSeNet, ThunderNet</li>
+<li>weighted add, eg: BiFPN</li>
+</ul>
+]]></content>
+      <categories>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>目标检测</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>自适应空间特征融合 (ASFF)</title>
+    <url>/2020/04/20/%E8%87%AA%E9%80%82%E5%BA%94%E7%A9%BA%E9%97%B4%E7%89%B9%E5%BE%81%E8%9E%8D%E5%90%88-(ASFF)/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a><a id="more"></a>前言</h2><p>这是2019年的一篇论文 <strong>《Learning Spatial Fusion for Single-Shot Object Detection》</strong>，这篇论文主要是因为其提出的 <strong>自适应空间特征融合</strong>  (ASFF)被大家所熟知。金字塔特征表示法(FPN)是解决目标检测尺度变化挑战的常用方法。但是，对于基于FPN的单级检测器来说，不同特征尺度之间的不一致是其主要限制。因此这篇论文提出了一种新的数据驱动的金字塔特征融合方式，称之为自适应空间特征融合（ASFF）。它学习了在空间上过滤冲突信息以抑制梯度反传的时候不一致的方法，从而改善了特征的比例不变性，并且推理开销降低。借助ASFF策略和可靠的YOLOV3 BaseLine，在COCO数据集上实现了45FPS/42.4%AP以及29FPS/43.9%AP。下面先放一张论文的结果图。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ASFF/640.png" alt></p>
+<h2 id="一个更强的YOLOV3基准"><a href="#一个更强的YOLOV3基准" class="headerlink" title="一个更强的YOLOV3基准"></a>一个更强的YOLOV3基准</h2><p>这篇文章之所以取得这么好的效果不仅仅是因为它提出的ASFF这种特征自适应融合方式，论文在YOLOV3的基础上集百家之长，构建了一个非常强的YOLOV3  BaseLine，这个BaseLine在MSCOCO上的mAP就达到了38.8%。相比于原始的YOLOV3的33%，提升了接近6个点。。论文使用的技巧包括：</p>
+<ul>
+<li>Guided Anchoring</li>
+<li>Bag of Tricks</li>
+<li>Additional IoU Loss</li>
+</ul>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ASFF/641.png" alt></p>
+<h2 id="自适应特征融合-ASFF"><a href="#自适应特征融合-ASFF" class="headerlink" title="自适应特征融合(ASFF)"></a>自适应特征融合(ASFF)</h2><p>为了更加充分的利用高层特征的语义信息和底层特征的细粒度特征，很多网络都会采用FPN的方式输出多层特征，但是无论是类似于YOLOv3还是RetinaNet，它们都多用concatenation或者element-wise这种直接衔接或者相加的方式，论文认为这样并不能充分的利用不同尺度的特征，所以提出了<strong>Adaptively Spatial Feature Fusion</strong>（自适应特征融合方式）。以ASFF-3为例，其结构可以表示为Figure2。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ASFF/642.jpg" alt></p>
+<p>在Figure2中，绿色框描述了如何将特征进行融合，其中$X^{1}$，$X^{2}$，$X^{3}$分别为来自level1，level2，level3这三个层的特征。然后level1，level2，level3这三个层的特征分别乘上权重参数并求和，就可以得到新的融合后的特征ASFF-3。这个过程可以用公式(1)来表示：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ASFF/643.png" alt></p>
+<p>因此这里是相加的操作，所以需要加的时候必须保证leve1，level2，level3输出的特征相同，且通道数也要相同，所以需要对不同的特征层做上采样或者下采样并调整通道数来满足条件。对于需要上采样的层，如想得到ASFF3，需要将level1的特征图调整到和level3的特征图尺寸一致，采用的方式是先通过1 x 1卷积调整到和level3通道数一致，再用插值的方式将尺寸调整到一致。而对于需要下采样的层，比如想得到ASFF1，对于level2的特征图到level1的特征图只需要用一个3 x 3并且stride=2的卷积就OK了，如果是level3的特征图到level1的特征图则需要在3 x 3卷积的基础上再加上一个stride=2的最大池化层。</p>
+<p>对于权重参数$\alpha$，$\beta$，$\gamma$，则是通过resize后的level1~level3特征图经过1 x 1卷积获得的。并且参数$\alpha$，$\beta$，$\gamma$经过concat之后通过<code>softmax</code>使得它们的范围都在<code>[0,1]</code>并且和为<code>1</code>。</p>
+<h2 id="ASFF的可解释性"><a href="#ASFF的可解释性" class="headerlink" title="ASFF的可解释性"></a>ASFF的可解释性</h2><p>论文通过梯度和反向传播来解释为什么ASFF会有效。论文以YOLOv3为例，加入FPN后通过链式法则我们可以知道在反向传播的时候梯度计算如公式(3)所示：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ASFF/644.png" alt></p>
+<p>稍微解释一下，左边的第一项$\frac{\partial L}{\partial x_{i j}^{1}}$代表的是损失函数对level1的特征图的某个像素求导，在YOLOV3中不同尺度的层之间的尺度变化一般就是下采样和上采样，因此这一项$\frac{\partial x_{i j}^{1-&gt;l}}{\partial x_{i j}^{1}}$通常为固定值，为了简化表示我们可以设置为1，即：$\frac{\partial x_{i j}^{1-&gt;l}}{\partial x_{i j}^{1}} \approx 1$，那么公式(3)可以简化为公式(4)：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ASFF/645.png" alt></p>
+<p>进一步，这一项$\frac{\partial y_{i j}^{1}}{\partial x_{i j}^{1}}$相当于对输出特征的activation操作，导数也将为固定值，$\frac{\partial y_{i j}^{l}}{\partial x_{i j}^{1-&gt;l}}$，所以我们可以将它的值同样简化为1，则表达式进一步简化成了公式(5)：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ASFF/646.png" alt></p>
+<p>假设$\operatorname{level} 1(i, j)$对应特征图位置刚好有物体并且为正样本，那其他上对应的位置上就可能刚好为负样本，这样反向传播的梯度中既包含了正样本又包含了负样本，这种不连续性会对梯度结果造成干扰，并且降低训练的效率。而通过ASFF的方式，反向传播的梯度表达式就变成了(6)：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ASFF/647.png" alt></p>
+<p>因此，如果出现刚才的情况我们可以通过将$\alpha^{2}$和$\alpha^{3}$设置为0来解决，因为这样负样本的梯度不会结果造成干扰。</p>
+<p><strong>同时这也解释了为什么特征融合的权重参数来源于输出特征+卷积，因为融合的权重参数和特征是息息相关的。</strong></p>
+<h2 id="实验结果"><a href="#实验结果" class="headerlink" title="实验结果"></a>实验结果</h2><p>下面的Table3展示了ASFF相比于concat和sum的方式的结果，可以看到加入了ASFF在BaseLine的基础上提升了2个多个mAP。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ASFF/648.png" alt></p>
+<p>接着作者又对ASFF做了可视化分析，如Figure3所示。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ASFF/649.jpg" alt></p>
+<p>可视化的结果进一步解释了ASFF的有效性。比如对于斑马的检测，可以看到斑马实际上是在level1这个特征图上被检测到的（响应越大，heatmap越红），并且观察level1这一层的$\alpha$，$\beta$，$\gamma$的权重可以发现，对于图中斑马这种大目标更容易被高层的特征捕捉到，因为对于大物体我们需要更大的感受野和高级语义特征。而对于下面的羊群的检测来讲，可以看到羊更多的是被level2和level3检测到，这也说明了对于小物体，我们更需要底层特征中的细粒度特征来辨别。</p>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>这篇论文将YOLOv3的结果做得非常好，不仅仅是因为它的精度非常强，而且从数学角度来简洁的说明这个方法的有效性也是棒的。是具有很大的工程实践意义的，论文具体是如何做出的Stronger YOLOv3  BaseLine，这个可以去源码一探究竟了。</p>
+]]></content>
+      <categories>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>目标检测</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>SSD算法的改进版Rainbow SSD</title>
     <url>/2020/04/19/SSD%E7%AE%97%E6%B3%95%E7%9A%84%E6%94%B9%E8%BF%9B%E7%89%88Rainbow-SSD/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title=" 前言"></a><a id="more"></a> 前言</h2><p>这是BMVC 2017的一个SSD的改进算法R-SSD。这里先看一下SSD的网络结构图吧。</p>
