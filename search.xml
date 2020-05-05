@@ -1,6 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>解决Pycharm大量占用C盘问题</title>
+    <url>/2020/05/05/%E8%A7%A3%E5%86%B3Pycharm%E5%A4%A7%E9%87%8F%E5%8D%A0%E7%94%A8C%E7%9B%98%E9%97%AE%E9%A2%98/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title=" 前言"></a><a id="more"></a> 前言</h2><p>在使用 PyCharm 时会在 C:\Users\<username>.PyCharm&lt;版本号&gt; 下创建一大堆文件，里边包括了配置信息，项目缓存信息等。随着pycharm的使用，这个文件夹越来越大，占用着系统内存，好不霸道！要为了解决Pycharm大量占用C盘问题，需要把一些配置信息搬迁到指定位置。</username></p>
+<h2 id="通过-PyCharm-修改"><a href="#通过-PyCharm-修改" class="headerlink" title="通过 PyCharm 修改"></a>通过 PyCharm 修改</h2><p>在启动 PyCharm 后选择 Help -&gt; Edit Custom Properties 的选项，弹出：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm%E5%8D%A0%E7%94%A8/1.png" alt></p>
+<p>选择 Create ，之后在文件中添加以下内容，即你需要迁移到的路径：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">idea.config.path&#x3D;D:&#x2F;Program Files&#x2F;.PyCharm&lt;版本号&gt;&#x2F;config</span><br><span class="line">idea.system.path&#x3D;D:&#x2F;Program Files&#x2F;.PyCharm&lt;版本号&gt;&#x2F;system</span><br><span class="line">idea.plugins.path&#x3D;D:&#x2F;Program Files&#x2F;.PyCharm&lt;版本号&gt;&#x2F;config&#x2F;plugins</span><br></pre></td></tr></table></figure>
+<p>保存并关闭 PyCharm 之后，将原文件夹下的 C:\Users\<username>.PyCharm&lt;版本号&gt; 复制到目标搬迁文件夹下，然后将原文件夹下的 C:\Users\<username>.PyCharm&lt;版本号&gt;只保留 config 目录下的一个 idea.properties 文件，其余文件删除即可。</username></username></p>
+<h2 id="修改程序配置"><a href="#修改程序配置" class="headerlink" title="修改程序配置"></a>修改程序配置</h2><p>打开 Pycharm 安装目录（bin），找到 idea.properties 文件：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm%E5%8D%A0%E7%94%A8/2.png" alt></p>
+<p>然后，打开使用txt文本打开这个文件，并相应的写出红线标出的部分</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm%E5%8D%A0%E7%94%A8/3.png" alt></p>
+<p>最后，打开pycharm就可以了。这时不会再在C盘创建.pycharm2019.3目录了。问题解决</p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>解决远程screen后，虚拟环境中的包丢了（如torch,tensorflow）</title>
     <url>/2020/05/04/%E8%A7%A3%E5%86%B3%E8%BF%9C%E7%A8%8Bscreen%E5%90%8E%EF%BC%8C%E8%99%9A%E6%8B%9F%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%9A%84%E5%8C%85%E4%B8%A2%E4%BA%86%EF%BC%88%E5%A6%82torch,tensorflow%EF%BC%89/</url>
     <content><![CDATA[<h2 id="解决方法"><a href="#解决方法" class="headerlink" title=" 解决方法"></a><a id="more"></a> 解决方法</h2><p>1、在进入screen之前不要激活虚拟环境，待进入screen后再激活所需的虚拟环境。</p>
