@@ -55,7 +55,7 @@
 <meta property="og:description" content="当你新创一个Python环境时，若还用pip一个个装你所需要的库，明显效率十分低下。这里有个小技巧，你可以从已配置好的旧环境中，导出一个requirements.txt 文件，用于记录所有依赖包及其精确的版本号。以便新环境部署。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2019-03-19T08:23:00.000Z">
-<meta property="article:modified_time" content="2019-12-14T12:55:08.767Z">
+<meta property="article:modified_time" content="2020-05-05T05:31:46.847Z">
 <meta property="article:author" content="Qiyuan-Z">
 <meta property="article:tag" content="Python">
 <meta name="twitter:card" content="summary">
@@ -251,7 +251,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-14 20:55:08" itemprop="dateModified" datetime="2019-12-14T20:55:08+08:00">2019-12-14</time>
+                <time title="修改时间：2020-05-05 13:31:46" itemprop="dateModified" datetime="2020-05-05T13:31:46+08:00">2020-05-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -300,10 +300,10 @@
         <p>当你新创一个Python环境时，若还用pip一个个装你所需要的库，明显效率十分低下。这里有个小技巧，你可以从已配置好的旧环境中，导出一个requirements.txt 文件，用于记录所有依赖包及其精确的版本号。以便新环境部署。<br><a id="more"></a><br>在旧环境中执行以下命令，生成requirements.txt文件：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip freeze &gt; requirements.txt</span><br></pre></td></tr></table></figure><br>requirements.txt中的内容类似如下，记录了你旧有环境的依赖包及其精确的版本号：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">appdirs&#x3D;&#x3D;1.4.3</span><br><span class="line">backports.functools-lru-cache&#x3D;&#x3D;1.5</span><br><span class="line">beautifulsoup4&#x3D;&#x3D;4.5.3</span><br><span class="line">bs4&#x3D;&#x3D;0.0.1</span><br><span class="line">cycler&#x3D;&#x3D;0.10.0</span><br><span class="line">kiwisolver&#x3D;&#x3D;1.0.1</span><br><span class="line">lxml&#x3D;&#x3D;3.7.3</span><br><span class="line">matplotlib&#x3D;&#x3D;2.2.0</span><br><span class="line">numpy&#x3D;&#x3D;1.14.1</span><br><span class="line">pandas&#x3D;&#x3D;0.22.0</span><br><span class="line">pyparsing&#x3D;&#x3D;2.2.0</span><br><span class="line">python-dateutil&#x3D;&#x3D;2.6.1</span><br><span class="line">pytz&#x3D;&#x3D;2018.3</span><br><span class="line">six&#x3D;&#x3D;1.11.0</span><br><span class="line">virtualenv&#x3D;&#x3D;15.1.0</span><br></pre></td></tr></table></figure><br>这时你可以把requirements.txt拷入新配置的Python目录下，执行以下命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install -r requirements.txt</span><br></pre></td></tr></table></figure><br>则会按照requirements.txt中所写的依赖包和版本依序进行安装。<br>注意：<br>若迁入的系统不同或Python版本不同，在安装过程中可能会因为找不到相应的依赖包版本而报错<br>这时你可以进入requirements.txt把报错的依赖包后的版本信息去掉，保存，重新执行命令即可，它会自动下载匹配的最新版本。<br>也可以把==改成&lt;=，代表它会搜索不大于此版本的最高版本进行安装。<br>由于pip下载源在国外，若无合适的VPN，此期间下载过程会十分漫长，这里提供几个常用的国内镜像源：</p>
 <ul>
 <li>清华大学 <a href="https://pypi.tuna.tsinghua.edu.cn/simple/" target="_blank" rel="noopener">https://pypi.tuna.tsinghua.edu.cn/simple/</a></li>
-<li>中国科学技术大学 <a href="http://pypi.mirrors.ustc.edu.cn/simple/" target="_blank" rel="noopener">http://pypi.mirrors.ustc.edu.cn/simple/</a></li>
-<li>阿里云 <a href="http://mirrors.aliyun.com/pypi/simple/" target="_blank" rel="noopener">http://mirrors.aliyun.com/pypi/simple/</a></li>
-<li>豆瓣 <a href="http://pypi.douban.com/simple/" target="_blank" rel="noopener">http://pypi.douban.com/simple/</a></li>
-<li>华中科技大学 <a href="http://pypi.hustunique.com/" target="_blank" rel="noopener">http://pypi.hustunique.com/</a></li>
+<li>中国科学技术大学 <a href="https://pypi.mirrors.ustc.edu.cn/simple/" target="_blank" rel="noopener">https://pypi.mirrors.ustc.edu.cn/simple/</a></li>
+<li>阿里云 <a href="https://mirrors.aliyun.com/pypi/simple/" target="_blank" rel="noopener">https://mirrors.aliyun.com/pypi/simple/</a></li>
+<li>豆瓣 <a href="https://pypi.douban.com/simple/" target="_blank" rel="noopener">https://pypi.douban.com/simple/</a></li>
+<li>华中科技大学 <a href="https://pypi.hustunique.com/" target="_blank" rel="noopener">https://pypi.hustunique.com/</a></li>
 </ul>
 <p>可以在使用pip的时候，加上参数-i和镜像地址，指定下载源，加速下载过程，如：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install -r requirements.txt -i https:&#x2F;&#x2F;pypi.tuna.tsinghua.edu.cn&#x2F;simple</span><br></pre></td></tr></table></figure>
