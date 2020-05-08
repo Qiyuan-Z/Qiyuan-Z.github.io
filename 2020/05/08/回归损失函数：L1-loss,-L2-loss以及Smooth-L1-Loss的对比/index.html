@@ -48,21 +48,23 @@
 </script>
 
   <meta property="og:type" content="article">
-<meta property="og:title" content="Pytorch快速安装教程">
-<meta property="og:url" content="https://qiyuan-z.github.io/2020/01/26/Pytorch%E5%BF%AB%E9%80%9F%E5%AE%89%E8%A3%85%E6%95%99%E7%A8%8B/index.html">
+<meta property="og:title" content="回归损失函数：L1 loss, L2 loss以及Smooth L1 Loss的对比">
+<meta property="og:url" content="https://qiyuan-z.github.io/2020/05/08/%E5%9B%9E%E5%BD%92%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%EF%BC%9AL1-loss,-L2-loss%E4%BB%A5%E5%8F%8ASmooth-L1-Loss%E7%9A%84%E5%AF%B9%E6%AF%94/index.html">
 <meta property="og:site_name" content="Yuan">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pytorch%20install/Snipaste_2020-01-26_14-06-32.jpg">
-<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pytorch%20install/Snipaste_2020-01-26_14-06-05.jpg">
-<meta property="article:published_time" content="2020-01-26T06:26:14.568Z">
-<meta property="article:modified_time" content="2020-02-11T13:56:52.824Z">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/loss/1.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/loss/2.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/loss/3.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/loss/4.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/loss/5.png">
+<meta property="article:published_time" content="2020-05-08T03:58:11.819Z">
+<meta property="article:modified_time" content="2020-05-08T04:00:31.119Z">
 <meta property="article:author" content="Qiyuan-Z">
-<meta property="article:tag" content="Python">
-<meta property="article:tag" content="Pytorch">
+<meta property="article:tag" content="目标检测">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pytorch%20install/Snipaste_2020-01-26_14-06-32.jpg">
+<meta name="twitter:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/loss/1.png">
 
-<link rel="canonical" href="https://qiyuan-z.github.io/2020/01/26/Pytorch%E5%BF%AB%E9%80%9F%E5%AE%89%E8%A3%85%E6%95%99%E7%A8%8B/">
+<link rel="canonical" href="https://qiyuan-z.github.io/2020/05/08/%E5%9B%9E%E5%BD%92%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%EF%BC%9AL1-loss,-L2-loss%E4%BB%A5%E5%8F%8ASmooth-L1-Loss%E7%9A%84%E5%AF%B9%E6%AF%94/">
 
 
 <script id="page-configurations">
@@ -87,7 +89,7 @@
   padding: 1px 4px;
 }
 </style>
-  <title>Pytorch快速安装教程 | Yuan</title>
+  <title>回归损失函数：L1 loss, L2 loss以及Smooth L1 Loss的对比 | Yuan</title>
   
 
 
@@ -223,7 +225,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://qiyuan-z.github.io/2020/01/26/Pytorch%E5%BF%AB%E9%80%9F%E5%AE%89%E8%A3%85%E6%95%99%E7%A8%8B/">
+    <link itemprop="mainEntityOfPage" href="https://qiyuan-z.github.io/2020/05/08/%E5%9B%9E%E5%BD%92%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%EF%BC%9AL1-loss,-L2-loss%E4%BB%A5%E5%8F%8ASmooth-L1-Loss%E7%9A%84%E5%AF%B9%E6%AF%94/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/wallhaven-915.png">
@@ -236,7 +238,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Pytorch快速安装教程
+          回归损失函数：L1 loss, L2 loss以及Smooth L1 Loss的对比
         </h1>
 
         <div class="post-meta">
@@ -245,24 +247,18 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2020-01-26 14:26:14" itemprop="dateCreated datePublished" datetime="2020-01-26T14:26:14+08:00">2020-01-26</time>
+              <time title="创建时间：2020-05-08 11:58:11 / 修改时间：12:00:31" itemprop="dateCreated datePublished" datetime="2020-05-08T11:58:11+08:00">2020-05-08</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-02-11 21:56:52" itemprop="dateModified" datetime="2020-02-11T21:56:52+08:00">2020-02-11</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%99%E7%A8%8B/" itemprop="url" rel="index">
-                    <span itemprop="name">教程</span>
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index">
+                    <span itemprop="name">学习</span>
                   </a>
                 </span>
             </span>
@@ -280,14 +276,14 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>368</span>
+              <span>1.8k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="fa fa-clock-o"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>2 分钟</span>
             </span>
 
         </div>
@@ -299,9 +295,69 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id><a href="#" class="headerlink" title></a><a id="more"></a></h2><p>进入<a href="https://pytorch.org/" target="_blank" rel="noopener">官网</a>，按照你的环境选择，得到下载命令，这里以windows为例，Ubuntu同理</p>
-<h2 id="conda安装"><a href="#conda安装" class="headerlink" title="conda安装"></a>conda安装</h2><p>官网得到命令如图：<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pytorch%20install/Snipaste_2020-01-26_14-06-32.jpg" alt><br>但由于墙的原因直接使用此命令下载很慢，因此请更换conda源为国内镜像<br>并将命令中 -c pytorch去掉<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">conda install pytorch torchvision cudatoolkit&#x3D;10.1</span><br></pre></td></tr></table></figure><br>即可调用国内镜像下载。</p>
-<h2 id="pip安装"><a href="#pip安装" class="headerlink" title="pip安装"></a>pip安装</h2><p>官网得到命令如图：<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pytorch%20install/Snipaste_2020-01-26_14-06-05.jpg" alt><br>红色框出部分为官网建议版本，但由于墙的原因直接使用此命令下载很慢，因此将pip下载地址改成国内镜像即可<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip3 install torch&#x3D;&#x3D;&#x3D;1.4.0 torchvision&#x3D;&#x3D;&#x3D;0.5.0 -i https:&#x2F;&#x2F;pypi.tuna.tsinghua.edu.cn&#x2F;simple</span><br></pre></td></tr></table></figure></p>
+        <h2 id="前言"><a href="#前言" class="headerlink" title=" 前言"></a><a id="more"></a> 前言</h2><p>总结对比下$L_{1}$损失函数，$L_{2}$损失函数以及损$SmoothL_{1}$失函数的优缺点。</p>
+<h2 id="均方误差MSE-L-2-Loss"><a href="#均方误差MSE-L-2-Loss" class="headerlink" title="均方误差MSE ($L_{2}$ Loss)"></a>均方误差MSE ($L_{2}$ Loss)</h2><p>均方误差（Mean Square Error,MSE）是模型预测值$f(x)$与真实样本值$y$之间差值平方的平均值，其公式如下</p>
+<script type="math/tex; mode=display">
+M S E=\frac{\sum_{i=1}^{n}\left(f_{x_{i}}-y_{i}\right)^{2}}{n}</script><p>其中，$\boldsymbol{y}_{i}$和$f\left(x_{i}\right)$分别表示第$i$个样本的真实值及其对应的预测值，$n$为样本的个数。</p>
+<p>忽略下标$i$ ，设$n=1$，以$f(x)−y$为横轴，MSE的值为纵轴，得到函数的图形如下：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/loss/1.png" alt></p>
+<p>MSE的函数曲线光滑、连续，处处可导，便于使用梯度下降算法，是一种常用的损失函数。 而且，随着误差的减小，梯度也在减小，这有利于收敛，即使使用固定的学习速率，也能较快的收敛到最小值。</p>
+<p>当$y$和$f(x)$也就是真实值和预测值的差值大于1时，会放大误差；而当差值小于1时，则会缩小误差，这是平方运算决定的。MSE对于较大的误差（&gt;1）给予较大的惩罚，较小的误差（&lt;1）给予较小的惩罚。也就是说，对离群点比较敏感，受其影响较大。</p>
+<p>如果样本中存在离群点，MSE会给离群点更高的权重，这就会牺牲其他正常点数据的预测效果，最终降低整体的模型性能。 如下图：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/loss/2.png" alt></p>
+<p>可见，使用 MSE 损失函数，受离群点的影响较大，虽然样本中只有 5 个离群点，但是拟合的直线还是比较偏向于离群点。</p>
+<h2 id="平均绝对误差-L-1-Loss"><a href="#平均绝对误差-L-1-Loss" class="headerlink" title="平均绝对误差($L_{1}$ Loss)"></a>平均绝对误差($L_{1}$ Loss)</h2><p>平均绝对误差（Mean Absolute Error,MAE) 是指模型预测值$f(x)$和真实值$y$之间距离绝对值的平均值，其公式如下：</p>
+<script type="math/tex; mode=display">
+M A E=\frac{\sum_{n=1}^{n}\left|f\left(x_{i}\right)-y_{i}\right|}{n}</script><p>忽略下标$i$ ，设$n=1$，以$f(x)−y$为横轴，MAE的值为纵轴，得到函数的图形如下：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/loss/3.png" alt></p>
+<p>MAE曲线连续，但是在$y−f(x)=0$处不可导。而且 MAE 大部分情况下梯度都是相等的，这意味着即使对于小的损失值，其梯度也是大的。这不利于函数的收敛和模型的学习。但是，无论对于什么样的输入值，都有着稳定的梯度，不会导致梯度爆炸问题，具有较为稳健性的解。</p>
+<p>相比于MSE，MAE有个优点就是，对于离群点不那么敏感。因为MAE计算的是误差$y−f(x)$的绝对值，对于任意大小的差值，其惩罚都是固定的。</p>
+<p>针对上面带有离群点的数据，MAE的效果要好于MSE。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/loss/4.png" alt></p>
+<p>显然，使用 MAE 损失函数，受离群点的影响较小，拟合直线能够较好地表征正常数据的分布情况。</p>
+<h2 id="MSE和MAE的选择"><a href="#MSE和MAE的选择" class="headerlink" title="MSE和MAE的选择"></a>MSE和MAE的选择</h2><ul>
+<li>从梯度的求解以及收敛上，MSE是优于MAE的。MSE处处可导，而且梯度值也是动态变化的，能够快速的收敛；而MAE在0点处不可导，且其梯度保持不变。对于很小的损失值其梯度也很大，在深度学习中，就需要使用变化的学习率，在损失值很小时降低学习率。</li>
+<li>对离群（异常）值的处理上，MAE要明显好于MSE。</li>
+</ul>
+<p>如果离群点（异常值）需要被检测出来，则可以选择MSE作为损失函数；如果离群点只是当做受损的数据处理，则可以选择MAE作为损失函数。</p>
+<p>总之，MAE作为损失函数更稳定，并且对离群值不敏感，但是其导数不连续，求解效率低。另外，在深度学习中，收敛较慢。MSE导数求解速度高，但是其对离群值敏感，不过可以将离群值的导数设为0（导数值大于某个阈值）来避免这种情况。</p>
+<p>在某些情况下，上述两种损失函数都不能满足需求。例如，若数据中90%的样本对应的目标值为150，剩下10%在0到30之间。那么使用MAE作为损失函数的模型可能会忽视10%的异常点，而对所有样本的预测值都为150。这是因为模型会按中位数来预测。而使用MSE的模型则会给出很多介于0到30的预测值，因为模型会向异常点偏移。</p>
+<p>这种情况下，MSE和MAE都是不可取的，简单的办法是对目标变量进行变换，或者使用别的损失函数，例如：Huber,Log-Cosh以及分位数损失等。</p>
+<h2 id="Smooth-L-1-Loss"><a href="#Smooth-L-1-Loss" class="headerlink" title="Smooth $L_{1}$ Loss"></a>Smooth $L_{1}$ Loss</h2><p>在Faster R-CNN以及SSD中对边框的回归使用的损失函数都是Smooth $L_{1}$作为损失函数，</p>
+<script type="math/tex; mode=display">
+\operatorname{Smooth} L_{1}(x)=\left\{\begin{array}{cc}0.5 x^{2} & \text { if }|x|<1 \\ |x|-0.5 & \text { otherwise }\end{array}\right.</script><p>其中，$x=f(x_{i})−y_{i}$为真实值和预测值的差值。</p>
+<p>Smooth $L_{1}$能从两个方面限制梯度：</p>
+<ol>
+<li>当预测框与 ground truth 差别过大时，梯度值不至于过大；</li>
+<li>当预测框与 ground truth 差别很小时，梯度值足够小。</li>
+</ol>
+<h2 id="对比-L-1-Loss和-L-2-Loss"><a href="#对比-L-1-Loss和-L-2-Loss" class="headerlink" title="对比$L_{1}$ Loss和 $L_{2}$ Loss"></a>对比$L_{1}$ Loss和 $L_{2}$ Loss</h2><p>其中$x$为预测框与groud truth之间的差异：</p>
+<script type="math/tex; mode=display">
+\begin{aligned} L_{2}(x) &=x^{2}\\ L_{1}(x) &=x\\ \operatorname{smooth}_{L_{1}}(x) &=\left\{\begin{array}{cc}0.5 x^{2} & \text { if }|x|<1 \\ |x|-0.5 & \text { otherwise }\end{array}\right.\end{aligned}</script><p>上面损失函数对$x$的导数为：</p>
+<script type="math/tex; mode=display">
+\begin{aligned} \frac{\partial L_{2}(x)}{\partial x} &=2 x \\ \frac{\partial L_{1}(x)}{\partial x} &=\left\{\begin{array}{cc}1 & \text { if } x \geq 0 \\ -1 & \text { otherwise }\end{array}\right.\\ \frac{\partial s m o o t h_{L_{1}}(x)}{\partial x} &=\left\{\begin{array}{cc}x & \text { if }|x|<1 \\ \pm 1 & \text { otherwise }\end{array}\right.\end{aligned}</script><p>上面导数可以看出：</p>
+<ul>
+<li><p>根据公式-4，当$x$增大时，$L_{2}$的损失也增大。 这就导致在训练初期，预测值与groud truth差异过于大时，损失函数对预测值的梯度十分大，训练不稳定。</p>
+</li>
+<li><p>根据公式-5，$L_{1}$对$x$的导数为常数，在训练的后期，预测值与ground truth差异很小时，$L_{1}$的导数的绝对值仍然为1，而learning rate如果不变，损失函数将在稳定值附近波动，难以继续收敛以达到更高精度。</p>
+</li>
+<li><p>根据公式-6，Smotth $L_{1}$在$x$较小时，对$x$的梯度也会变小。 而当$x$较大时，对$x$的梯度的上限为1，也不会太大以至于破坏网络参数。Smotth $L_{1}$完美的避开了$L_{1}$和$L_{2}$作为损失函数的缺陷。</p>
+</li>
+</ul>
+<p>$L_{1}$ Loss，$L_{2}$ Loss以及Smotth $L_{1}$放在一起的函数曲线对比</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/loss/5.png" alt></p>
+<p>从上面可以看出，该函数实际上就是一个分段函数，在[-1,1]之间实际上就是L2损失，这样解决了L1的不光滑问题，在[-1,1]区间外，实际上就是L1损失，这样就解决了离群点梯度爆炸的问题</p>
+<h2 id="实现-PyTorch"><a href="#实现-PyTorch" class="headerlink" title="实现 (PyTorch)"></a>实现 (PyTorch)</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_smooth_l1_loss</span><span class="params">(input, target, reduction=<span class="string">'none'</span>)</span>:</span></span><br><span class="line">    <span class="comment"># type: (Tensor, Tensor) -&gt; Tensor</span></span><br><span class="line">    t = torch.abs(input - target)</span><br><span class="line">    ret = torch.where(t &lt; <span class="number">1</span>, <span class="number">0.5</span> * t ** <span class="number">2</span>, t - <span class="number">0.5</span>)</span><br><span class="line">    <span class="keyword">if</span> reduction != <span class="string">'none'</span>:</span><br><span class="line">        ret = torch.mean(ret) <span class="keyword">if</span> reduction == <span class="string">'mean'</span> <span class="keyword">else</span> torch.sum(ret)</span><br><span class="line">    <span class="keyword">return</span> ret</span><br></pre></td></tr></table></figure>
+<p>也可以添加个参数<code>beta</code> 这样就可以控制，什么范围的误差使用MSE，什么范围内的误差使用MAE了。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">smooth_l1_loss</span><span class="params">(input, target, beta=<span class="number">1.</span> / <span class="number">9</span>, reduction = <span class="string">'none'</span>)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    very similar to the smooth_l1_loss from pytorch, but with</span></span><br><span class="line"><span class="string">    the extra beta parameter</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    n = torch.abs(input - target)</span><br><span class="line">    cond = n &lt; beta</span><br><span class="line">    ret = torch.where(cond, <span class="number">0.5</span> * n ** <span class="number">2</span> / beta, n - <span class="number">0.5</span> * beta)</span><br><span class="line">    <span class="keyword">if</span> reduction != <span class="string">'none'</span>:</span><br><span class="line">        ret = torch.mean(ret) <span class="keyword">if</span> reduction == <span class="string">'mean'</span> <span class="keyword">else</span> torch.sum(ret)</span><br><span class="line">    <span class="keyword">return</span> ret</span><br></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>对于大多数CNN网络，我们一般是使用L2-loss而不是L1-loss，因为L2-loss的收敛速度要比L1-loss要快得多。</p>
+<p>对于边框预测回归问题，通常也可以选择平方损失函数（L2损失），但L2范数的缺点是当存在离群点（outliers)的时候，这些点会占loss的主要组成部分。比如说真实值为1，预测10次，有一次预测值为1000，其余次的预测值为1左右，显然loss值主要由1000决定。所以FastRCNN采用稍微缓和一点绝对损失函数（smooth L1损失），它是随着误差线性增长，而不是平方增长。</p>
+<p>Smooth L1 和 L1 Loss 函数的区别在于，L1 Loss 在0点处导数不唯一，可能影响收敛。Smooth L1的解决办法是在 0 点附近使用平方函数使得它更加平滑。</p>
+<p>Smooth L1的优点</p>
+<ul>
+<li>相比于L1损失函数，可以收敛得更快。</li>
+<li>相比于L2损失函数，对离群点、异常值不敏感，梯度变化相对更小，训练时不容易跑飞。</li>
+</ul>
 
     </div>
 
@@ -333,8 +389,7 @@
 	</div>
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/Python/" rel="tag"><i class="fa fa-tag"></i> Python</a>
-              <a href="/tags/Pytorch/" rel="tag"><i class="fa fa-tag"></i> Pytorch</a>
+              <a href="/tags/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/" rel="tag"><i class="fa fa-tag"></i> 目标检测</a>
           </div>
 
         
@@ -343,13 +398,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/01/26/%E8%AE%BE%E7%BD%AEPycharm-plots%E4%B8%8D%E5%9C%A8tool-window%E6%98%BE%E7%A4%BA/" rel="prev" title="设置Pycharm plots不在tool window显示">
-      <i class="fa fa-chevron-left"></i> 设置Pycharm plots不在tool window显示
+    <a href="/2020/05/05/%E8%A7%A3%E5%86%B3Pycharm%E5%A4%A7%E9%87%8F%E5%8D%A0%E7%94%A8C%E7%9B%98%E9%97%AE%E9%A2%98/" rel="prev" title="解决Pycharm大量占用C盘问题">
+      <i class="fa fa-chevron-left"></i> 解决Pycharm大量占用C盘问题
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2020/02/02/%E4%B8%80%E4%BA%9B%E7%99%BE%E5%BA%A6%E7%BD%91%E7%9B%98%E7%9A%84%E7%A0%B4%E8%A7%A3%E6%96%B9%E6%B3%95/" rel="next" title="一些百度网盘的破解方法">
-      一些百度网盘的破解方法 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -412,7 +464,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#null"><span class="nav-text"></span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#conda安装"><span class="nav-text">conda安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pip安装"><span class="nav-text">pip安装</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#均方误差MSE-L-2-Loss"><span class="nav-text">均方误差MSE ($L_{2}$ Loss)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#平均绝对误差-L-1-Loss"><span class="nav-text">平均绝对误差($L_{1}$ Loss)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MSE和MAE的选择"><span class="nav-text">MSE和MAE的选择</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Smooth-L-1-Loss"><span class="nav-text">Smooth $L_{1}$ Loss</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对比-L-1-Loss和-L-2-Loss"><span class="nav-text">对比$L_{1}$ Loss和 $L_{2}$ Loss</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现-PyTorch"><span class="nav-text">实现 (PyTorch)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-text">总结</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 	  
