@@ -48,23 +48,28 @@
 </script>
 
   <meta property="og:type" content="article">
-<meta property="og:title" content="回归损失函数：L1 loss, L2 loss以及Smooth L1 Loss的对比">
-<meta property="og:url" content="https://qiyuan-z.github.io/2020/05/08/%E5%9B%9E%E5%BD%92%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%EF%BC%9AL1-loss,-L2-loss%E4%BB%A5%E5%8F%8ASmooth-L1-Loss%E7%9A%84%E5%AF%B9%E6%AF%94/index.html">
+<meta property="og:title" content="An Analysis of Scale Invariance in Object Detection – SNIP">
+<meta property="og:url" content="https://qiyuan-z.github.io/2020/05/08/An-Analysis-of-Scale-Invariance-in-Object-Detection-%E2%80%93-SNIP/index.html">
 <meta property="og:site_name" content="Yuan">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/loss/1.png">
-<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/loss/2.png">
-<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/loss/3.png">
-<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/loss/4.png">
-<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/loss/5.png">
-<meta property="article:published_time" content="2020-05-08T03:58:11.819Z">
-<meta property="article:modified_time" content="2020-05-08T04:15:10.910Z">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SNIP/v2-61cd98f989aba662764ae4930f6a3c82_hd.jpg">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SNIP/v2-62f2ddd1572194258dfb44896f96a61e_hd.jpg">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SNIP/v2-2ee48ab51574f5b084232195fcf2220d_hd.jpg">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SNIP/v2-342b6b8c14dd6086af6864f7609ee0a6_hd.jpg">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SNIP/v2-342b6b8c14dd6086af6864f7609ee0a6_hd.jpg">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SNIP/18194124-b67e299cac5ef81d.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SNIP/18194124-d9b20915b3d90d57.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SNIP/18194124-c5b361a53d0a4132.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SNIP/18194124-9c7a6d9280067a8a.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SNIP/18194124-466c29b67f2c10d5.png">
+<meta property="article:published_time" content="2020-05-08T05:50:38.647Z">
+<meta property="article:modified_time" content="2020-05-08T05:50:38.848Z">
 <meta property="article:author" content="Qiyuan-Z">
 <meta property="article:tag" content="目标检测">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/loss/1.png">
+<meta name="twitter:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SNIP/v2-61cd98f989aba662764ae4930f6a3c82_hd.jpg">
 
-<link rel="canonical" href="https://qiyuan-z.github.io/2020/05/08/%E5%9B%9E%E5%BD%92%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%EF%BC%9AL1-loss,-L2-loss%E4%BB%A5%E5%8F%8ASmooth-L1-Loss%E7%9A%84%E5%AF%B9%E6%AF%94/">
+<link rel="canonical" href="https://qiyuan-z.github.io/2020/05/08/An-Analysis-of-Scale-Invariance-in-Object-Detection-%E2%80%93-SNIP/">
 
 
 <script id="page-configurations">
@@ -89,7 +94,7 @@
   padding: 1px 4px;
 }
 </style>
-  <title>回归损失函数：L1 loss, L2 loss以及Smooth L1 Loss的对比 | Yuan</title>
+  <title>An Analysis of Scale Invariance in Object Detection – SNIP | Yuan</title>
   
 
 
@@ -225,7 +230,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://qiyuan-z.github.io/2020/05/08/%E5%9B%9E%E5%BD%92%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%EF%BC%9AL1-loss,-L2-loss%E4%BB%A5%E5%8F%8ASmooth-L1-Loss%E7%9A%84%E5%AF%B9%E6%AF%94/">
+    <link itemprop="mainEntityOfPage" href="https://qiyuan-z.github.io/2020/05/08/An-Analysis-of-Scale-Invariance-in-Object-Detection-%E2%80%93-SNIP/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/wallhaven-915.png">
@@ -238,7 +243,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          回归损失函数：L1 loss, L2 loss以及Smooth L1 Loss的对比
+          An Analysis of Scale Invariance in Object Detection – SNIP
         </h1>
 
         <div class="post-meta">
@@ -247,9 +252,8 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2020-05-08 11:58:11 / 修改时间：12:15:10" itemprop="dateCreated datePublished" datetime="2020-05-08T11:58:11+08:00">2020-05-08</time>
+              <time title="创建时间：2020-05-08 13:50:38" itemprop="dateCreated datePublished" datetime="2020-05-08T13:50:38+08:00">2020-05-08</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -276,14 +280,14 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1.8k</span>
+              <span>5.3k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="fa fa-clock-o"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
+              <span>5 分钟</span>
             </span>
 
         </div>
@@ -295,69 +299,36 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="前言"><a href="#前言" class="headerlink" title=" 前言"></a><a id="more"></a> 前言</h2><p>总结对比下$L_{1}$损失函数，$L_{2}$损失函数以及损$SmoothL_{1}$失函数的优缺点。</p>
-<h2 id="均方误差MSE-L-2-Loss"><a href="#均方误差MSE-L-2-Loss" class="headerlink" title="均方误差MSE ($L_{2}$ Loss)"></a>均方误差MSE ($L_{2}$ Loss)</h2><p>均方误差（Mean Square Error,MSE）是模型预测值$f(x)$与真实样本值$y$之间差值平方的平均值，其公式如下</p>
-<script type="math/tex; mode=display">
-M S E=\frac{\sum_{i=1}^{n}\left(f_{x_{i}}-y_{i}\right)^{2}}{n}</script><p>其中，$\boldsymbol{y}_{i}$和$f\left(x_{i}\right)$分别表示第$i$个样本的真实值及其对应的预测值，$n$为样本的个数。</p>
-<p>忽略下标$i$ ，设$n=1$，以$f(x)−y$为横轴，MSE的值为纵轴，得到函数的图形如下：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/loss/1.png" alt></p>
-<p>MSE的函数曲线光滑、连续，处处可导，便于使用梯度下降算法，是一种常用的损失函数。 而且，随着误差的减小，梯度也在减小，这有利于收敛，即使使用固定的学习速率，也能较快的收敛到最小值。</p>
-<p>当$y$和$f(x)$也就是真实值和预测值的差值大于1时，会放大误差；而当差值小于1时，则会缩小误差，这是平方运算决定的。MSE对于较大的误差（&gt;1）给予较大的惩罚，较小的误差（&lt;1）给予较小的惩罚。也就是说，对离群点比较敏感，受其影响较大。</p>
-<p>如果样本中存在离群点，MSE会给离群点更高的权重，这就会牺牲其他正常点数据的预测效果，最终降低整体的模型性能。 如下图：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/loss/2.png" alt></p>
-<p>可见，使用 MSE 损失函数，受离群点的影响较大，虽然样本中只有 5 个离群点，但是拟合的直线还是比较偏向于离群点。</p>
-<h2 id="平均绝对误差-L-1-Loss"><a href="#平均绝对误差-L-1-Loss" class="headerlink" title="平均绝对误差($L_{1}$ Loss)"></a>平均绝对误差($L_{1}$ Loss)</h2><p>平均绝对误差（Mean Absolute Error,MAE) 是指模型预测值$f(x)$和真实值$y$之间距离绝对值的平均值，其公式如下：</p>
-<script type="math/tex; mode=display">
-M A E=\frac{\sum_{n=1}^{n}\left|f\left(x_{i}\right)-y_{i}\right|}{n}</script><p>忽略下标$i$ ，设$n=1$，以$f(x)−y$为横轴，MAE的值为纵轴，得到函数的图形如下：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/loss/3.png" alt></p>
-<p>MAE曲线连续，但是在$y−f(x)=0$处不可导。而且 MAE 大部分情况下梯度都是相等的，这意味着即使对于小的损失值，其梯度也是大的。这不利于函数的收敛和模型的学习。但是，无论对于什么样的输入值，都有着稳定的梯度，不会导致梯度爆炸问题，具有较为稳健性的解。</p>
-<p>相比于MSE，MAE有个优点就是，对于离群点不那么敏感。因为MAE计算的是误差$y−f(x)$的绝对值，对于任意大小的差值，其惩罚都是固定的。</p>
-<p>针对上面带有离群点的数据，MAE的效果要好于MSE。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/loss/4.png" alt></p>
-<p>显然，使用 MAE 损失函数，受离群点的影响较小，拟合直线能够较好地表征正常数据的分布情况。</p>
-<h2 id="MSE和MAE的选择"><a href="#MSE和MAE的选择" class="headerlink" title="MSE和MAE的选择"></a>MSE和MAE的选择</h2><ul>
-<li>从梯度的求解以及收敛上，MSE是优于MAE的。MSE处处可导，而且梯度值也是动态变化的，能够快速的收敛；而MAE在0点处不可导，且其梯度保持不变。对于很小的损失值其梯度也很大，在深度学习中，就需要使用变化的学习率，在损失值很小时降低学习率。</li>
-<li>对离群（异常）值的处理上，MAE要明显好于MSE。</li>
-</ul>
-<p>如果离群点（异常值）需要被检测出来，则可以选择MSE作为损失函数；如果离群点只是当做受损的数据处理，则可以选择MAE作为损失函数。</p>
-<p>总之，MAE作为损失函数更稳定，并且对离群值不敏感，但是其导数不连续，求解效率低。另外，在深度学习中，收敛较慢。MSE导数求解速度高，但是其对离群值敏感，不过可以将离群值的导数设为0（导数值大于某个阈值）来避免这种情况。</p>
-<p>在某些情况下，上述两种损失函数都不能满足需求。例如，若数据中90%的样本对应的目标值为150，剩下10%在0到30之间。那么使用MAE作为损失函数的模型可能会忽视10%的异常点，而对所有样本的预测值都为150。这是因为模型会按中位数来预测。而使用MSE的模型则会给出很多介于0到30的预测值，因为模型会向异常点偏移。</p>
-<p>这种情况下，MSE和MAE都是不可取的，简单的办法是对目标变量进行变换，或者使用别的损失函数，例如：Huber,Log-Cosh以及分位数损失等。</p>
-<h2 id="Smooth-L-1-Loss"><a href="#Smooth-L-1-Loss" class="headerlink" title="Smooth $L_{1}$ Loss"></a>Smooth $L_{1}$ Loss</h2><p>在Faster R-CNN以及SSD中对边框的回归使用的损失函数都是Smooth $L_{1}$作为损失函数，</p>
-<script type="math/tex; mode=display">
-\operatorname{Smooth} L_{1}(x)=\left\{\begin{array}{cc}0.5 x^{2} & \text { if }|x|<1 \\ |x|-0.5 & \text { otherwise }\end{array}\right.</script><p>其中，$x=f(x_{i})−y_{i}$为真实值和预测值的差值。</p>
-<p>Smooth $L_{1}$能从两个方面限制梯度：</p>
-<ol>
-<li>当预测框与 ground truth 差别过大时，梯度值不至于过大；</li>
-<li>当预测框与 ground truth 差别很小时，梯度值足够小。</li>
-</ol>
-<h2 id="对比-L-1-Loss和-L-2-Loss"><a href="#对比-L-1-Loss和-L-2-Loss" class="headerlink" title="对比$L_{1}$ Loss和 $L_{2}$ Loss"></a>对比$L_{1}$ Loss和 $L_{2}$ Loss</h2><p>其中$x$为预测框与groud truth之间的差异：</p>
-<script type="math/tex; mode=display">
-\begin{aligned} L_{2}(x) &=x^{2}\\ L_{1}(x) &=x\\ \operatorname{smooth}_{L_{1}}(x) &=\left\{\begin{array}{cc}0.5 x^{2} & \text { if }|x|<1 \\ |x|-0.5 & \text { otherwise }\end{array}\right.\end{aligned}</script><p>上面损失函数对$x$的导数为：</p>
-<script type="math/tex; mode=display">
-\begin{aligned} \frac{\partial L_{2}(x)}{\partial x} &=2 x \\ \frac{\partial L_{1}(x)}{\partial x} &=\left\{\begin{array}{cc}1 & \text { if } x \geq 0 \\ -1 & \text { otherwise }\end{array}\right.\\ \frac{\partial s m o o t h_{L_{1}}(x)}{\partial x} &=\left\{\begin{array}{cc}x & \text { if }|x|<1 \\ \pm 1 & \text { otherwise }\end{array}\right.\end{aligned}</script><p>上面导数可以看出：</p>
+        <h2 id="动机"><a href="#动机" class="headerlink" title="  动机"></a><a id="more"></a>  动机</h2><p>概括而言，这篇文章从COCO数据集开始分析，认为目前目标检测算法的难点在于数据集中object的尺寸分布较大，尤其对于小目标的检测效果也有待提高，因此提出Scale Normalization for Image Pyramids (SNIP)算法来解决这个问题。</p>
+<p>作者将数据集按照图像中目标的尺寸/图像尺寸进行排序，在ImageNet数据集中，这个倍数的中位数差不多0.554，而在COCO数据集中，这个数是0.106。如Figure1中两条线标出的Median点所示。Figure1是关于ImageNet和COCO数据集中object尺寸和图像尺寸的倍数关系曲线，横坐标表示object的尺寸/图像尺寸的值，纵坐标表示占比。<strong>也就是说在COCO数据集中，大部分的object面积只有图像面积的1%以下，这说明在COCO数据集中小目标占比要比ImageNet数据集大</strong>。。另外，从Figure1中的COCO曲线可以看出，第90%的倍数（0.472）差不多是第10%的倍数（0.106）的20倍！<strong>这说明在COCO数据集中的object尺寸变化范围非常大</strong>。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SNIP/v2-61cd98f989aba662764ae4930f6a3c82_hd.jpg" alt></p>
+<p><strong>那么这种差异会带来什么影响呢？</strong>因为在目标检测算法中常用基于ImageNet数据集预训练的模型来提取特征，也就是常说的迁移学习，但是<strong>从Figure1的两条曲线可以看出ImageNet和COCO数据集在object的尺寸分布上差异比较大</strong>，这样在做迁移学习时可能会存在一些问题，文章中将这个问题概括为<strong>domain-shift</strong>，可以简单理解为训练集和测试集分布存在较大差异，后面会有实验来证明这种差异对效果的影响。其实去年的YOLO v2也研究了类似的问题，YOLO v2考虑到在ImageNet数据集上预训练模型时输入图像大小是224x224，和检测网络用的尺寸差别较大（YOLO v2中常用416x416），所以就将预训练模型在416x416的ImageNet数据集上继续预训练，然后再用到检测模型提特征，这样就实现了预训练模型和检测模型的良好过渡。（<strong>所以，我们在Imagnet上做预训练，然后进行迁移学习时可能会存在一些问题，简单理解为训练集和测试集分布存在较大差异。</strong>）</p>
+<p>其实之前就有不少算法针对数据集中不同尺寸的object检测进行改进，比如以Feature Pyramid Network(FPN)为例的通过融合高低层特征并基于多层融合特征单独预测的算法；以Dilated/Deformable Convolution为例的通过改变卷积核的感受野来提升检测效果；以multi-scale training/inference为例的通过引入图像金字塔来训练或验证图像。<strong>这篇文章基于对数据集的分析，提出一种新的训练模型的方式：Scale Normalization for Image Pyramids (SNIP)，该算法主要包含两个改进点：1、为了减少前面所提到的domain-shift，在梯度回传时只将和预训练模型所基于的训练数据尺寸相对应的ROI的梯度进行回传。2、借鉴了multi-scale training的思想，引入图像金字塔来处理数据集中不同尺寸的数据。</strong></p>
+<h2 id="几组实验"><a href="#几组实验" class="headerlink" title="几组实验"></a>几组实验</h2><p><strong>①ImageNet数据集实验验证尺寸变化对网络产生的影响</strong><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SNIP/v2-62f2ddd1572194258dfb44896f96a61e_hd.jpg" alt><br><strong>CNN-B：</strong>预训练：ImageNet数据集常规的224x224大小来训练<br>                验证集：首先将ImageNet的验证数据缩小到48x48、64x64、80x80、96x96和128x128，然后再将这些尺寸放大到224x224作为模型的输入，可以看出放大后的图像分辨率较低。<strong>因此这个实验模拟的就是你训练数据的分辨率（resolution）和验证数据的分辨率不一致（甚至是差别很大）的时候对效果的影响，该实验的结果可以看Figure4(a)。</strong><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SNIP/v2-2ee48ab51574f5b084232195fcf2220d_hd.jpg" alt><br><strong>CNN-S：</strong>训练数据的分辨率和验证数据的分辨率保持一致，这里主要针对48x48和96x96分辨率，同时对网络结构的第一层做了修改。比如基于48x48的数据进行训练，将卷积核大小为7x7的卷积层换成卷积核为3x3，stride为1的卷积层（因为如果不修改stride的话很容易就卷没了）。基于96x96的数据进行训练时，将卷积核大小为7x7的卷积层换成卷积核尺寸为5x5，stride为2的卷积层。<strong>显然，该实验模拟的是训练数据分辨率和验证数据分辨率一致时的效果，实验结果可以看Figure4(b)(c)。</strong><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SNIP/v2-342b6b8c14dd6086af6864f7609ee0a6_hd.jpg" alt><br><strong>CNN-B-FT：</strong>是CNN-B在放大的低分辨率图像上微调后的模型，同时输入图像也采用放大的低分辨率图像。<strong>可以看出该实验主要验证基于高分辨率图像训练的模型是否能有效提取低分辨率图像的特征，实验结果可以看Figure4(b)(c)。</strong><br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SNIP/v2-342b6b8c14dd6086af6864f7609ee0a6_hd.jpg" alt></p>
+<p><strong>从（a）可以看出如果验证数据的分辨率和训练数据的分辨率差别越大，则实验结果越差。这说明其实CNN网络对尺寸变化的输入图像的鲁棒性（robust）还不够好。</strong>从（b）和（c）中CNN-B和CNN-S的对比可以看出当训练数据的分辨率和验证数据的分辨率相同时，效果要好很多。从（b）和（c）中CNN-B和CNN-B-FT的对比可以看出后者的效果要更好，二者的差别仅仅在于模型是否在放大的低分辨率图像上做fine tune，因此可以得出结论：<strong>基于高分辨率图像训练的模型同样能有效提取放大的低分辨率图像的特征。</strong></p>
+<p><strong>②COCO数据集上关于多尺度和不同尺寸的训练对于实验结果的影响</strong></p>
+<p><strong>Table1是关于在小目标验证集上的检测效果对比，所用的验证图像尺寸都是1400x2000。</strong></p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SNIP/18194124-b67e299cac5ef81d.png" alt></p>
+<p><strong>800all和1400all：</strong>分别表示检测网络基于800x1400和1400x2000大小的图像进行训练，从二者的mAP结果对比可以看出1400all的效果要更好一些，主要原因就在于训练图像的分辨率和验证图像的分辨率一致，这和前面基于ImageNet数据集的实验结果也吻合，但这个提升非常小，<strong>猜测原因在于虽然基于放大图像（原始图像大概640x480，放大成1400x2000）训练的模型在训练过程中可以提高对小目标物体的检测</strong>，但是由于训练数据中尺寸中等或较大的目标的尺寸太大所以难以训练，这就影响了模型最终的效果。检测结果可以参考Figure5(1)。 </p>
+<p><strong>1400&lt;80px：</strong>表示训练数据尺寸是1400x2000，但是训练过程中忽略中等尺寸和大尺寸的目标（中等和大尺寸目标的标准是在原始图像中目标宽高的像素点大于80），也就是基于单一尺寸范围(<strong>scale-specific detector</strong>)的输入进行训练，目的是减少迁移误差。<strong>因此做这个实验的目的是基于前面那个实验中的猜想：基于1400x2000大小的图像训练时由于训练数据中尺寸中等及较大的目标对模型训练有负作用，因此这里直接在训练过程中忽略这样的数据。但是从Table1可以看出这个模型的效果非常差，猜想原因是忽略这些训练数据（占比大约30%）所带来的数据损失对模型效果的影响更大。</strong>具体的检测结果可以参考Figure5(2)。 </p>
+<p><strong>Multi-Scale Training(MST)：</strong>表示训练一个检测器时采用不同尺度的图像进行训练（包括480x800），也就是前面所说的<strong>scale invariant detector</strong>。照理来说这个实验的效果应该会比较好的，因为每个object都会有多种尺寸来训检测模型，但是从Table1可以看出该模型的效果和800all差不多，这是为什么呢？<strong>主要原因在于训练数据中那些尺寸非常大或非常小的object会影响训练效果。</strong></p>
+<p>Scale Normalization for Image Pyramids(SNIP)是这篇文章提出的算法，在引入MST思想的同时限定了不同尺寸的object在训练过程中的梯度回传，这就是SNIP。 从Table1可以看出效果提升非常明显。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SNIP/18194124-d9b20915b3d90d57.png" alt></p>
+<p>​                                                    Figure5是关于Table1中不同实验的训练数据展示。</p>
+<h2 id="SNIP"><a href="#SNIP" class="headerlink" title="SNIP"></a>SNIP</h2><p>这篇文章基于对数据集的分析，提出一种新的训练模型的方式：Scale Normalization for Image Pyramids (SNIP)，该算法主要包含两个改进点：<strong>1、为了减少前面所提到的domain-shift，在梯度回传时只将和预训练模型所基于的训练数据尺寸相对应的ROI的梯度进行回传。2、借鉴了multi-scale training的思想，引入图像金字塔来处理数据集中不同尺寸的数据。</strong></p>
+<p><strong>从前面的分析可以看出，我们希望有一个算法能够既get到多尺度的目标信息，又能减少迁移误差带来的影响，因此就诞生了SNIP。SNIP借鉴了Multi-Scale Training(MST)的思想，在MST方法中，由于训练数据中尺寸极大或极小的目标会影响实验结果，因此SNIP的做法就是只对尺寸在指定范围内的目标回传损失（该范围需接近预训练模型的训练数据尺寸），也就是说训练过程实际上只是针对这些目标进行的，这样就能减少迁移误差带来的影响。又因为训练过程采用了类似MST的做法，所以每个目标在训练时都会有几个不同的尺寸，那么总有一个尺寸在指定的尺寸范围内。</strong>需要注意的是对目标的尺寸做限制是在训练过程，而不是预先对训练数据做过滤，训练数据还是基于所有数据进行</p>
+<p><strong>Figure6是SNIP算法的示意图。</strong>不管是训练检测器还是RPN网络，都是基于所有ground truth来定义proposal和anchor的标签。正如前面所述，某个ROI在某次训练中是否回传梯度是和预训练模型的数据尺寸相关的，也就是说当某个ROI的面积在指定范围内时，该ROI就是valid，也就是会在此次训练中回传梯度，否则就是无效的（如Figure6中右边的紫色框所示）。其实就是先选择几个尺寸下相似的目标尺寸——&gt;然后选定这些目标去回传梯度——&gt;这些无效的ROI所对应的invalid ground truth会用来决定RPN网络中先验框——&gt;无效先验框的定义是和invalid ground truth的IOU大于0.3的anchor。所以如图所示三个不同尺度下检测的目标大小近似，有效防止了过大或者过小目标对训练的影响。<br>即：</p>
 <ul>
-<li><p>根据公式-4，当$x$增大时，$L_{2}$的损失也增大。 这就导致在训练初期，预测值与groud truth差异过于大时，损失函数对预测值的梯度十分大，训练不稳定。</p>
-</li>
-<li><p>根据公式-5，$L_{1}$对$x$的导数为常数，在训练的后期，预测值与ground truth差异很小时，$L_{1}$的导数的绝对值仍然为1，而learning rate如果不变，损失函数将在稳定值附近波动，难以继续收敛以达到更高精度。</p>
-</li>
-<li><p>根据公式-6，$Smooth L_{1}$在$x$较小时，对$x$的梯度也会变小。 而当$x$较大时，对$x$的梯度的上限为1，也不会太大以至于破坏网络参数。$Smooth L_{1}$完美的避开了$L_{1}$和$L_{2}$作为损失函数的缺陷。</p>
-</li>
+<li>每个pipe-line的RPN只负责一个scale range的proposal生成。</li>
+<li>对于大size的feature map，对应的RPN只负责预测被放大的小物体；对于小size的feature map，对应的RPN只负责预测被缩小的大物体；这样的设计保证了每个CNN分支在判别proposal是否为前景时，只需针对最易分类的中等range的proposal进行训练。</li>
+<li>在Image Pyramid的基础上加入了 每层scale 的 proposal有效生成范围，发扬本scale的优势，回避其他scale的劣势，大大降低了前景分类任务的难度，从而“作弊式”地实现了Scale Invariance。</li>
 </ul>
-<p>$L_{1}$ Loss，$L_{2}$ Loss以及$Smooth L_{1}$放在一起的函数曲线对比</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/loss/5.png" alt></p>
-<p>从上面可以看出，该函数实际上就是一个分段函数，在[-1,1]之间实际上就是L2损失，这样解决了L1的不光滑问题，在[-1,1]区间外，实际上就是L1损失，这样就解决了离群点梯度爆炸的问题</p>
-<h2 id="实现-PyTorch"><a href="#实现-PyTorch" class="headerlink" title="实现 (PyTorch)"></a>实现 (PyTorch)</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_smooth_l1_loss</span><span class="params">(input, target, reduction=<span class="string">'none'</span>)</span>:</span></span><br><span class="line">    <span class="comment"># type: (Tensor, Tensor) -&gt; Tensor</span></span><br><span class="line">    t = torch.abs(input - target)</span><br><span class="line">    ret = torch.where(t &lt; <span class="number">1</span>, <span class="number">0.5</span> * t ** <span class="number">2</span>, t - <span class="number">0.5</span>)</span><br><span class="line">    <span class="keyword">if</span> reduction != <span class="string">'none'</span>:</span><br><span class="line">        ret = torch.mean(ret) <span class="keyword">if</span> reduction == <span class="string">'mean'</span> <span class="keyword">else</span> torch.sum(ret)</span><br><span class="line">    <span class="keyword">return</span> ret</span><br></pre></td></tr></table></figure>
-<p>也可以添加个参数<code>beta</code> 这样就可以控制，什么范围的误差使用MSE，什么范围内的误差使用MAE了。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">smooth_l1_loss</span><span class="params">(input, target, beta=<span class="number">1.</span> / <span class="number">9</span>, reduction = <span class="string">'none'</span>)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    very similar to the smooth_l1_loss from pytorch, but with</span></span><br><span class="line"><span class="string">    the extra beta parameter</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    n = torch.abs(input - target)</span><br><span class="line">    cond = n &lt; beta</span><br><span class="line">    ret = torch.where(cond, <span class="number">0.5</span> * n ** <span class="number">2</span> / beta, n - <span class="number">0.5</span> * beta)</span><br><span class="line">    <span class="keyword">if</span> reduction != <span class="string">'none'</span>:</span><br><span class="line">        ret = torch.mean(ret) <span class="keyword">if</span> reduction == <span class="string">'mean'</span> <span class="keyword">else</span> torch.sum(ret)</span><br><span class="line">    <span class="keyword">return</span> ret</span><br></pre></td></tr></table></figure>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>对于大多数CNN网络，我们一般是使用L2-loss而不是L1-loss，因为L2-loss的收敛速度要比L1-loss要快得多。</p>
-<p>对于边框预测回归问题，通常也可以选择平方损失函数（L2损失），但L2范数的缺点是当存在离群点（outliers)的时候，这些点会占loss的主要组成部分。比如说真实值为1，预测10次，有一次预测值为1000，其余次的预测值为1左右，显然loss值主要由1000决定。所以FastRCNN采用稍微缓和一点绝对损失函数（smooth L1损失），它是随着误差线性增长，而不是平方增长。</p>
-<p>Smooth L1 和 L1 Loss 函数的区别在于，L1 Loss 在0点处导数不唯一，可能影响收敛。Smooth L1的解决办法是在 0 点附近使用平方函数使得它更加平滑。</p>
-<p>Smooth L1的优点</p>
-<ul>
-<li>相比于L1损失函数，可以收敛得更快。</li>
-<li>相比于L2损失函数，对离群点、异常值不敏感，梯度变化相对更小，训练时不容易跑飞。</li>
-</ul>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SNIP/18194124-c5b361a53d0a4132.png" alt></p>
+<p><strong>关于RPN网络中不同标签的anchor比例作者也做了分析</strong>，我们知道在RPN网络中，一个anchor的标签是根据该anchor和ground truth的IOU来决定的，<strong>只有两种情况下才会认为某个anchor的标签是正样本（标签为1）：1、假如该anchor和某个ground truth的IOU超过某个阈值（阈值默认采用是0.7），那么该ancho就是正样本。2、假如一个ground truth和所有anchor的IOU都没超过该阈值，那么和该ground truth的IOU最大的那个anchor就是正样本。</strong>同样，作者将conv4的输出作为RPN网络的输入，然后设置了15种anchor（5 scales，3 aspect ratios），接下来就有意思了，作者发现在COCO数据集上（图像大小为800<em>1200），只有30%的ground truth满足前面第一种情况！即便将阈值调整为0.5，也只有58%的ground truth满足第一种情况！这说明什么？<em>*说明即便阈值等于0.5，仍有40%的正样本anchor和ground truth的IOU小于0.5</em></em>（这些anchor是因为满足前面的情况2才被定义为正样本）！显然，这样的正样本质量不算很高。而这篇文章因为引入多种分辨率的图像作为输入，所以在一定程度上缓解了这种现象。另外，作者也尝试将conv4和conv5的特征做融合并预测，不过这部分文章只是一笔带过，还需要看源码才能知道具体是怎么做的。</p>
+<h2 id="实验结论"><a href="#实验结论" class="headerlink" title="实验结论"></a>实验结论</h2><p>Table2是SNIP算法和其他算法的对比。第二行的multi-scale test显然比第一行的single scale效果要好。第三行，在multi-scale test的基础上加入multi-scale train的时候，会发现在大尺寸目标（APL）的检测效果上要比只有multi-scale test的时候差。这个原因我们在前面也介绍过了，主要是因为训练数据中那些尺寸极大和极小的object对训练产生了负作用。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SNIP/18194124-9c7a6d9280067a8a.png" alt></p>
+<p>Table4是几个目标检测算法结果的对比。D-RFCN表示Deformable RFCN。D-RFCN+SNIP(RCN+RPN)表示在Deformable RFCN算法的检测模块和RPN网络中同时加入SNIP。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SNIP/18194124-466c29b67f2c10d5.png" alt></p>
 
     </div>
 
@@ -398,13 +369,10 @@ M A E=\frac{\sum_{n=1}^{n}\left|f\left(x_{i}\right)-y_{i}\right|}{n}</script><p>
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/05/05/%E8%A7%A3%E5%86%B3Pycharm%E5%A4%A7%E9%87%8F%E5%8D%A0%E7%94%A8C%E7%9B%98%E9%97%AE%E9%A2%98/" rel="prev" title="解决Pycharm大量占用C盘问题">
-      <i class="fa fa-chevron-left"></i> 解决Pycharm大量占用C盘问题
+    <a href="/2020/05/08/%E5%9B%9E%E5%BD%92%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%EF%BC%9AL1-loss,-L2-loss%E4%BB%A5%E5%8F%8ASmooth-L1-Loss%E7%9A%84%E5%AF%B9%E6%AF%94/" rel="prev" title="回归损失函数：L1 loss, L2 loss以及Smooth L1 Loss的对比">
+      <i class="fa fa-chevron-left"></i> 回归损失函数：L1 loss, L2 loss以及Smooth L1 Loss的对比
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2020/05/08/An-Analysis-of-Scale-Invariance-in-Object-Detection-%E2%80%93-SNIP/" rel="next" title="An Analysis of Scale Invariance in Object Detection – SNIP">
-      An Analysis of Scale Invariance in Object Detection – SNIP <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -467,7 +435,7 @@ M A E=\frac{\sum_{n=1}^{n}\left|f\left(x_{i}\right)-y_{i}\right|}{n}</script><p>
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#均方误差MSE-L-2-Loss"><span class="nav-text">均方误差MSE ($L_{2}$ Loss)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#平均绝对误差-L-1-Loss"><span class="nav-text">平均绝对误差($L_{1}$ Loss)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MSE和MAE的选择"><span class="nav-text">MSE和MAE的选择</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Smooth-L-1-Loss"><span class="nav-text">Smooth $L_{1}$ Loss</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对比-L-1-Loss和-L-2-Loss"><span class="nav-text">对比$L_{1}$ Loss和 $L_{2}$ Loss</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现-PyTorch"><span class="nav-text">实现 (PyTorch)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-text">总结</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#动机"><span class="nav-text">  动机</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#几组实验"><span class="nav-text">几组实验</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SNIP"><span class="nav-text">SNIP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实验结论"><span class="nav-text">实验结论</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 	  
