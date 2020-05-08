@@ -58,7 +58,7 @@
 <meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/loss/4.png">
 <meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/loss/5.png">
 <meta property="article:published_time" content="2020-05-08T03:58:11.819Z">
-<meta property="article:modified_time" content="2020-05-08T04:00:31.119Z">
+<meta property="article:modified_time" content="2020-05-08T04:15:10.910Z">
 <meta property="article:author" content="Qiyuan-Z">
 <meta property="article:tag" content="目标检测">
 <meta name="twitter:card" content="summary">
@@ -249,7 +249,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2020-05-08 11:58:11 / 修改时间：12:00:31" itemprop="dateCreated datePublished" datetime="2020-05-08T11:58:11+08:00">2020-05-08</time>
+              <time title="创建时间：2020-05-08 11:58:11 / 修改时间：12:15:10" itemprop="dateCreated datePublished" datetime="2020-05-08T11:58:11+08:00">2020-05-08</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -341,10 +341,10 @@ M A E=\frac{\sum_{n=1}^{n}\left|f\left(x_{i}\right)-y_{i}\right|}{n}</script><p>
 </li>
 <li><p>根据公式-5，$L_{1}$对$x$的导数为常数，在训练的后期，预测值与ground truth差异很小时，$L_{1}$的导数的绝对值仍然为1，而learning rate如果不变，损失函数将在稳定值附近波动，难以继续收敛以达到更高精度。</p>
 </li>
-<li><p>根据公式-6，Smotth $L_{1}$在$x$较小时，对$x$的梯度也会变小。 而当$x$较大时，对$x$的梯度的上限为1，也不会太大以至于破坏网络参数。Smotth $L_{1}$完美的避开了$L_{1}$和$L_{2}$作为损失函数的缺陷。</p>
+<li><p>根据公式-6，$Smooth L_{1}$在$x$较小时，对$x$的梯度也会变小。 而当$x$较大时，对$x$的梯度的上限为1，也不会太大以至于破坏网络参数。$Smooth L_{1}$完美的避开了$L_{1}$和$L_{2}$作为损失函数的缺陷。</p>
 </li>
 </ul>
-<p>$L_{1}$ Loss，$L_{2}$ Loss以及Smotth $L_{1}$放在一起的函数曲线对比</p>
+<p>$L_{1}$ Loss，$L_{2}$ Loss以及$Smooth L_{1}$放在一起的函数曲线对比</p>
 <p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/loss/5.png" alt></p>
 <p>从上面可以看出，该函数实际上就是一个分段函数，在[-1,1]之间实际上就是L2损失，这样解决了L1的不光滑问题，在[-1,1]区间外，实际上就是L1损失，这样就解决了离群点梯度爆炸的问题</p>
 <h2 id="实现-PyTorch"><a href="#实现-PyTorch" class="headerlink" title="实现 (PyTorch)"></a>实现 (PyTorch)</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_smooth_l1_loss</span><span class="params">(input, target, reduction=<span class="string">'none'</span>)</span>:</span></span><br><span class="line">    <span class="comment"># type: (Tensor, Tensor) -&gt; Tensor</span></span><br><span class="line">    t = torch.abs(input - target)</span><br><span class="line">    ret = torch.where(t &lt; <span class="number">1</span>, <span class="number">0.5</span> * t ** <span class="number">2</span>, t - <span class="number">0.5</span>)</span><br><span class="line">    <span class="keyword">if</span> reduction != <span class="string">'none'</span>:</span><br><span class="line">        ret = torch.mean(ret) <span class="keyword">if</span> reduction == <span class="string">'mean'</span> <span class="keyword">else</span> torch.sum(ret)</span><br><span class="line">    <span class="keyword">return</span> ret</span><br></pre></td></tr></table></figure>
