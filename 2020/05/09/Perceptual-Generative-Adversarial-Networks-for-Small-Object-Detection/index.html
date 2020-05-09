@@ -48,24 +48,21 @@
 </script>
 
   <meta property="og:type" content="article">
-<meta property="og:title" content="ECCV 2018 RFBNet，在检测中调感受野">
-<meta property="og:url" content="https://qiyuan-z.github.io/2020/03/07/ECCV-2018-RFBNet%EF%BC%8C%E5%9C%A8%E6%A3%80%E6%B5%8B%E4%B8%AD%E8%B0%83%E6%84%9F%E5%8F%97%E9%87%8E/index.html">
+<meta property="og:title" content="Perceptual Generative Adversarial Networks for Small Object Detection">
+<meta property="og:url" content="https://qiyuan-z.github.io/2020/05/09/Perceptual-Generative-Adversarial-Networks-for-Small-Object-Detection/index.html">
 <meta property="og:site_name" content="Yuan">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RFBNet/640.jpg">
-<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RFBNet/641.jpg">
-<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RFBNet/642.jpg">
-<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RFBNet/643.jpg">
-<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RFBNet/644.jpg">
-<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RFBNet/645.jpg">
-<meta property="article:published_time" content="2020-03-07T03:13:19.856Z">
-<meta property="article:modified_time" content="2020-03-07T03:29:48.303Z">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/PGAN/11659928-8837870deae1ed8d.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/PGAN/11659928-0359caab80a4ee3a.png">
+<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/PGAN/1.png">
+<meta property="article:published_time" content="2020-05-09T06:25:22.859Z">
+<meta property="article:modified_time" content="2020-05-09T06:25:23.084Z">
 <meta property="article:author" content="Qiyuan-Z">
 <meta property="article:tag" content="目标检测">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RFBNet/640.jpg">
+<meta name="twitter:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/PGAN/11659928-8837870deae1ed8d.png">
 
-<link rel="canonical" href="https://qiyuan-z.github.io/2020/03/07/ECCV-2018-RFBNet%EF%BC%8C%E5%9C%A8%E6%A3%80%E6%B5%8B%E4%B8%AD%E8%B0%83%E6%84%9F%E5%8F%97%E9%87%8E/">
+<link rel="canonical" href="https://qiyuan-z.github.io/2020/05/09/Perceptual-Generative-Adversarial-Networks-for-Small-Object-Detection/">
 
 
 <script id="page-configurations">
@@ -90,7 +87,7 @@
   padding: 1px 4px;
 }
 </style>
-  <title>ECCV 2018 RFBNet，在检测中调感受野 | Yuan</title>
+  <title>Perceptual Generative Adversarial Networks for Small Object Detection | Yuan</title>
   
 
 
@@ -226,7 +223,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://qiyuan-z.github.io/2020/03/07/ECCV-2018-RFBNet%EF%BC%8C%E5%9C%A8%E6%A3%80%E6%B5%8B%E4%B8%AD%E8%B0%83%E6%84%9F%E5%8F%97%E9%87%8E/">
+    <link itemprop="mainEntityOfPage" href="https://qiyuan-z.github.io/2020/05/09/Perceptual-Generative-Adversarial-Networks-for-Small-Object-Detection/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/wallhaven-915.png">
@@ -239,7 +236,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          ECCV 2018 RFBNet，在检测中调感受野
+          Perceptual Generative Adversarial Networks for Small Object Detection
         </h1>
 
         <div class="post-meta">
@@ -250,7 +247,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2020-03-07 11:13:19 / 修改时间：11:29:48" itemprop="dateCreated datePublished" datetime="2020-03-07T11:13:19+08:00">2020-03-07</time>
+              <time title="创建时间：2020-05-09 14:25:22 / 修改时间：14:25:23" itemprop="dateCreated datePublished" datetime="2020-05-09T14:25:22+08:00">2020-05-09</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -277,14 +274,14 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1.6k</span>
+              <span>2.2k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="fa fa-clock-o"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>2 分钟</span>
             </span>
 
         </div>
@@ -296,47 +293,37 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="前言"><a href="#前言" class="headerlink" title=" 前言"></a><a id="more"></a> 前言</h2><p>看了不少的目标检测论文了，个人认为多数论文的出发点就两个，一是感受野，二是特征融合。此外，解决数据不平衡和轻量化也是另外两个重要的方向。今天为大家科普一篇ECCV 2018的一篇目标检测网络RFBNet就是从感受野角度来改善了SSD检测器，论文全名为：<strong>Receptive Field Block Net for Accurate and Fast Object Detection</strong>  。这篇论文主要的贡献点主要是在SSD网络中提出了一个<strong>Receptive Field Block (RFB)</strong> 模块，RFB模块主要是在Inception的基础上加入了空洞卷积层从而有效的增大了感受野。另外，RFB模块是嵌在SSD上的，所以检测的速度比较快，精度比SSD更高。</p>
-<h2 id="RFB模块"><a href="#RFB模块" class="headerlink" title="RFB模块"></a>RFB模块</h2><p>RFB模块的效果示意图如图所示，其中虚线部分就是指RFB模块。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RFBNet/640.jpg" alt></p>
-<p>RFB模块主要有两个特点：</p>
+        <h2 id="Perceptual-Generative-Adversarial-Networks-for-Small-Object-Detection"><a href="#Perceptual-Generative-Adversarial-Networks-for-Small-Object-Detection" class="headerlink" title=" Perceptual Generative Adversarial Networks for Small Object Detection"></a><a id="more"></a> Perceptual Generative Adversarial Networks for Small Object Detection</h2><ul>
+<li>小目标检测的一个常用思路是提升图片输入分辨率，来增强小目标的分辨率和生成高分辨率的特征图，但这会导致训练和验证极度费时。</li>
+<li>本文提出的PGAN方法对小目标生成高分辨率特征表示，使小目标的特征表示与大目标特征表示类似。</li>
+<li>生成器网络通过较前层提取细粒度特征将小目标分辨率较低的特征转换为分辨率较高的特征。</li>
+<li>判别器网络不仅用于生成小目标高分辨表示，同时证明带感知损失的生成高分辨率特征对检测准确率是有帮助的。</li>
+<li>生成器网络被训练欺骗辨别器通过产生最像大目标表征的小目标，同时提升检测准确率。</li>
+<li>辨别器被训练用于提升正确从实际大目标中分辨出生成的高分辨率表征，同时将定位准确率反馈给生成器。</li>
+<li>小目标检测典型应用领域：交通标志检测、行人检测</li>
+</ul>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/PGAN/11659928-8837870deae1ed8d.png" alt></p>
+<p>perception branch（感知分支）首先利用仅包含大目标的图片进行训练，然后利用仅包含小目标的图片进行训练，generator network 被训练用于对小目标生成高分辨率的类似大目标的表征。adversarial branch被训练用于区分生成的小目标高分辨率表征与实际大目标的原始表征。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/PGAN/11659928-0359caab80a4ee3a.png" alt></p>
+<p>generator 从底层提取细粒度特征，放入深度残差网络，通过element-wise加和操作，将深度残差网络学习到的残差特征与conv5学习到的特征结合，得到高分辨率特征图；discriminator将大目标和小目标的高分辨特征作为输入，adversarial分支用于判断输入相片属于真的大目标的概率值，perception分支用于分类和边界框回归，验证从生成高分辨率特征获得的检测准确率提升。</p>
+<p><strong>损失函数</strong></p>
+<p>$F_{l}$和 $F_{s}$代表大目标和小目标特征，$G$和$D$代表生成器和判别器，$\Theta_{g}$和$\Theta_{a}$代表生成器和判别器的网络参数</p>
 <ul>
-<li><p>RFB模块有多个分支，每个分支的第一层都由特定大小卷积核的卷积核构成，例如图上的1 x 1， 3 x 3，5 x 5。</p>
-</li>
-<li><p>RFB模块引入了空洞卷积，主要作用是为了增加感受野，空洞卷积之前是应用在分割网络DeepLab中，这里将其应用在检测任务中，以获得更大的感受野，可以更好的编码空间长距离语义。</p>
-</li>
-</ul>
-<p>在RFB模块中，最后将不同尺寸和感受野的输出特征图进行Concat操作，以达到融合不同特征的目的。在图中，RFB模块中使用三种不同大小和颜色的输出叠加来展示。在图的最后一列中将融合后的特征与人类视觉感受野做对比，从图中看出是非常接近的，这也是这篇论文的出发点。</p>
-<h2 id="两种RFB结构示意图"><a href="#两种RFB结构示意图" class="headerlink" title="两种RFB结构示意图"></a>两种RFB结构示意图</h2><p>下面的Figure4展示了RFBNet的两种结构。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RFBNet/641.jpg" alt></p>
+<li><p>生成器<br>$\Theta_{g}=\arg \min _{\Theta_{g}} L_{d i s}\left(G_{\Theta_{g}}\left(F_{s}\right)\right)$<br>$L_{d i s}$是判别器网络产生的对抗性损失$L_{d i s_{-} a}$和感知损失$L_{d i s_ p}$的加权组合<br>$L_{d i s}=w_{1} \times L_{d i s_{-} a}+w_{2} \times L_{d i s_{p}}$（作者设w1和w2为1）</p>
 <ul>
-<li><p>Figure4(a)表示RFB结构，整体上借鉴了Inception的思想。主要不同点在于引入3个空洞卷积层。</p>
+<li><p>对抗性损失<br>$L_{d i s_{-}a}=-\log D_{\Theta_{a}}\left(G_{\Theta_{g}}\left(F_{s}\right)\right)$（使$D_{\Theta_{a}}\left(G_{ \Theta_{g}}\left(F_{s}\right)\right)$尽可能大）</p>
 </li>
-<li><p>Figure4(b)表示RFB-s结构。RFB-s和RFB相比主要有两个改进，一方面用3 x 3卷积层代替5 x 5卷积层，另一方面用1 x 3和3 x 1卷积层代替3 x 3卷积层，主要目的应该是为了减少计算量，类似Inception后面的版本对Inception结构的改进。</p>
+<li><p>感知损失<br>$L_{d i s_{-p}}=L_{c l s}(p, g)+1[g \geq 1] L_{l o c}\left(r_{g}, r^{<em>}\right)$<br>$L_{c l s}$和$L_{l o c}$是分类和边界框回归的损失<br>感知分支输出K + 1个类别的类别级别置信度$p=\left(p_{0}, \dots, p_{k}\right)$，对于每个K对象类，边界框回归偏移$r_{k} = \left(r_{x}^{k}, r_{y}^{k}, r_{w}^{k}, r_{h}^{k}\right)$，真实类别为$g$，真实边界框回归目标$r^{</em>}$</p>
 </li>
 </ul>
-<h2 id="RFBNet-300的结构"><a href="#RFBNet-300的结构" class="headerlink" title="RFBNet-300的结构"></a>RFBNet-300的结构</h2><p>下面的Figure5代表RFBNet-300的整体结构图，基本是照搬了SSD，主要有2点不同：</p>
-<ul>
-<li>BackBone部分用两个RFB结构替换原来新增的两层。</li>
-<li><code>conv4_3</code>和<code>conv7_fc</code>在接预测层之前分别接RFB-s和RFB结构。</li>
+</li>
+<li><p>判别器网络的对抗分支：<br>$\Theta_{a}=\arg \min _{\Theta_{a}} L_{a}\left(G_{\Theta_{g}}\left(F_{s}\right), F_{l}\right)$<br>$L_{a}=-\log D_{\Theta_{a}}\left(F_{l}\right)-\log \left(1-D_{\Theta_{a}}\left(G_{\Theta_{g}}\left(F_{s}\right)\right)\right)$<br>区分当前生成的小对象超分辨表示和原始对象与真实大对象之间的差异。 即使$D_{\Theta_{a}}$尽可能大，$D _{\Theta_{a}}\left(G _{Theta_{g}}\left(F_{s}\right)\right)$尽可能小。</p>
+</li>
 </ul>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RFBNet/642.jpg" alt></p>
-<h2 id="实验结果"><a href="#实验结果" class="headerlink" title="实验结果"></a>实验结果</h2><p>下面的Table1展示了RFBNet-300在PASCAL VOC2007 test dev上的测试结果，训练集基于2007和2012的trainval。RFBNet-300在mAP和FPS两方面效果都不错。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RFBNet/643.jpg" alt></p>
-<p>而下面的Table4是在COCO test dev 2015数据集上的测试结果。最后的RFBNet-512E做了两个改变：</p>
-<ul>
-<li>对<code>conv7_fc</code>的输出特征做了<code>up-sample</code>，然后和<code>conv4_3</code>的输出特征做融合，基于融合后的特征做预测。这种做法实际上是借鉴了FPN算法的思想。</li>
-<li>RFB结构中增加了<code>7x7</code>大小的卷积分支。这两点改进对效果的提升有一定帮助，而且带来的计算量也少。</li>
-</ul>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RFBNet/644.jpg" alt></p>
-<p>下面的Figure6展示了和RFBNet同时期的一些目标检测算法在COCO test-dev数据集上关于效果和速度的直观对比，可以看到RFBNet的速度和精度平衡还是不错的。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RFBNet/645.jpg" alt></p>
-<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>RFBNet说白了就是空洞卷积的应用，虽然看起来论文比较水，但至少给我们提供了一个重要信息，在检测中调感受野是行之有效的。</p>
-<h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><ul>
-<li>论文原文：<a href="https://arxiv.org/pdf/1711.07767.pdf" target="_blank" rel="noopener">https://arxiv.org/pdf/1711.07767.pdf</a></li>
-<li>代码实现：<a href="https://github.com/ruinmessi/RFBNet" target="_blank" rel="noopener">https://github.com/ruinmessi/RFBNet</a></li>
-<li>参考：<a href="https://blog.csdn.net/u014380165/article/details/81556769" target="_blank" rel="noopener">https://blog.csdn.net/u014380165/article/details/81556769</a></li>
-</ul>
+<p><strong>联合对抗损失 </strong><br>$\begin{array}{rl}{\min _{G} \max _{D}} &amp; {L(D, G) \triangleq \mathbb{E}_{F_{l} \sim p_{ \text {data(F }\left._{l}\right)}} \log D\left(F_{l}\right)} \\ {} &amp; {+\mathbb{E}_{F_{s} \sim p_{F_{s}}}\left(F_{s} | f\right)[\log (1-D(\underbrace{F_{s}+G\left(F_{s} | f\right)}_{\text {residual learning }}))]}\end{array}$</p>
+<p>即G的目标是使它最小，D的目标使它最大，由于$F_{s}$中包含的信息有限。因此，引入了一个新的条件生成器模型，该模型以额外的辅助信息为条件，即小对象$f$的低级特征，生成器从中通过残差学习在大对象和小对象表示之间生成残差表示。</p>
+<p>个人理解：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/PGAN/1.png" alt></p>
 
     </div>
 
@@ -377,13 +364,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/03/06/RetinaNet%EF%BC%88%E5%BC%95%E5%85%A5Focal-Loss%EF%BC%89/" rel="prev" title="RetinaNet（引入Focal Loss）">
-      <i class="fa fa-chevron-left"></i> RetinaNet（引入Focal Loss）
+    <a href="/2020/05/08/An-Analysis-of-Scale-Invariance-in-Object-Detection-%E2%80%93-SNIP/" rel="prev" title="An Analysis of Scale Invariance in Object Detection – SNIP">
+      <i class="fa fa-chevron-left"></i> An Analysis of Scale Invariance in Object Detection – SNIP
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2020/03/08/windows%E5%92%8Cubuntu%E5%8F%8C%E7%B3%BB%E7%BB%9F%E4%BF%AE%E6%94%B9%E9%BB%98%E8%AE%A4%E5%90%AF%E5%8A%A8%E9%A1%B9/" rel="next" title="windows和ubuntu双系统修改默认启动项">
-      windows和ubuntu双系统修改默认启动项 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -446,7 +430,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RFB模块"><span class="nav-text">RFB模块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#两种RFB结构示意图"><span class="nav-text">两种RFB结构示意图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RFBNet-300的结构"><span class="nav-text">RFBNet-300的结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实验结果"><span class="nav-text">实验结果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#后记"><span class="nav-text">后记</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#附录"><span class="nav-text">附录</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Perceptual-Generative-Adversarial-Networks-for-Small-Object-Detection"><span class="nav-text"> Perceptual Generative Adversarial Networks for Small Object Detection</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 	  
