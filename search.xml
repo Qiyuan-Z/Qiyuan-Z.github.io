@@ -3,7 +3,7 @@
   <entry>
     <title>Perceptual Generative Adversarial Networks for Small Object Detection</title>
     <url>/2020/05/09/Perceptual-Generative-Adversarial-Networks-for-Small-Object-Detection/</url>
-    <content><![CDATA[<h2 id="Perceptual-Generative-Adversarial-Networks-for-Small-Object-Detection"><a href="#Perceptual-Generative-Adversarial-Networks-for-Small-Object-Detection" class="headerlink" title=" Perceptual Generative Adversarial Networks for Small Object Detection"></a><a id="more"></a> Perceptual Generative Adversarial Networks for Small Object Detection</h2><ul>
+    <content><![CDATA[<h2 id="详解"><a href="#详解" class="headerlink" title=" 详解"></a><a id="more"></a> 详解</h2><ul>
 <li>小目标检测的一个常用思路是提升图片输入分辨率，来增强小目标的分辨率和生成高分辨率的特征图，但这会导致训练和验证极度费时。</li>
 <li>本文提出的PGAN方法对小目标生成高分辨率特征表示，使小目标的特征表示与大目标特征表示类似。</li>
 <li>生成器网络通过较前层提取细粒度特征将小目标分辨率较低的特征转换为分辨率较高的特征。</li>
@@ -23,7 +23,10 @@
 <ul>
 <li><p>对抗性损失<br>$L_{d i s_{-}a}=-\log D_{\Theta_{a}}\left(G_{\Theta_{g}}\left(F_{s}\right)\right)$（使$D_{\Theta_{a}}\left(G_{ \Theta_{g}}\left(F_{s}\right)\right)$尽可能大）</p>
 </li>
-<li><p>感知损失<br>$L_{d i s_{-p}}=L_{c l s}(p, g)+1[g \geq 1] L_{l o c}\left(r_{g}, r^{<em>}\right)$<br>$L_{c l s}$和$L_{l o c}$是分类和边界框回归的损失<br>感知分支输出K + 1个类别的类别级别置信度$p=\left(p_{0}, \dots, p_{k}\right)$，对于每个K对象类，边界框回归偏移$r_{k} = \left(r_{x}^{k}, r_{y}^{k}, r_{w}^{k}, r_{h}^{k}\right)$，真实类别为$g$，真实边界框回归目标$r^{</em>}$</p>
+<li><p>感知损失</p>
+<p>$L_{d i s_{-p}}=L_{c l s}(p, g)+1[g \geq 1] L_{l o c}\left(r_{g}, r^{*}\right)$</p>
+<p>$L_{c l s}$和$L_{l o c}$是分类和边界框回归的损失</p>
+<p>感知分支输出K + 1个类别的类别级别置信度$p=\left(p_{0}, \dots, p_{k}\right)$，对于每个K对象类，边界框回归偏移$r_{k} = \left(r_{x}^{k}, r_{y}^{k}, r_{w}^{k}, r_{h}^{k}\right)$，真实类别为$g$，真实边界框回归目标$r^{*}$</p>
 </li>
 </ul>
 </li>
