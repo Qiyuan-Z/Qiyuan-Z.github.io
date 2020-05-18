@@ -1,6 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Ubuntu下pip安装numba</title>
+    <url>/2020/05/18/Ubuntu%E4%B8%8Bpip%E5%AE%89%E8%A3%85numba/</url>
+    <content><![CDATA[<h2 id="错误提醒"><a href="#错误提醒" class="headerlink" title=" 错误提醒"></a><a id="more"></a> 错误提醒</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ImportError: No module named numba</span><br></pre></td></tr></table></figure>
+<h2 id="解决方式"><a href="#解决方式" class="headerlink" title="解决方式"></a>解决方式</h2><p>注意：在安装numba之前必须安装llvm</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo apt-get install llvm-8*</span><br></pre></td></tr></table></figure>
+<p>导入环境变量</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">alias llvm-config&#x3D;&quot;llvm-config-8&quot;</span><br><span class="line">export LLVM_CONFIG&#x3D;&quot;&#x2F;usr&#x2F;bin&#x2F;llvm-config-8&quot;</span><br></pre></td></tr></table></figure>
+<p>然后安装llvm</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip install llvmlite</span><br></pre></td></tr></table></figure>
+<p>最后安装numba</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip install -i https:&#x2F;&#x2F;pypi.tuna.tsinghua.edu.cn&#x2F;simple numba</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Perceptual Generative Adversarial Networks for Small Object Detection</title>
     <url>/2020/05/09/Perceptual-Generative-Adversarial-Networks-for-Small-Object-Detection/</url>
     <content><![CDATA[<h2 id="详解"><a href="#详解" class="headerlink" title=" 详解"></a><a id="more"></a> 详解</h2><ul>
