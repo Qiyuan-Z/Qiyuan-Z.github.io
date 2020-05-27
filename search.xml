@@ -1,6 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>远程使用tensorboard等可视化工具</title>
+    <url>/2020/05/27/%E8%BF%9C%E7%A8%8B%E4%BD%BF%E7%94%A8tensorboard%E7%AD%89%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E5%85%B7/</url>
+    <content><![CDATA[<h2 id><a href="#" class="headerlink" title></a><a id="more"></a></h2><p>有两种设置方法，一种代码设置，一种xshell界面设置</p>
+<h2 id="连接SSH"><a href="#连接SSH" class="headerlink" title="连接SSH"></a>连接SSH</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ssh -L 16006:127.0.0.1:6006 -p 31017 username@remote_server_ip</span><br></pre></td></tr></table></figure>
+<p><strong>16006:127.0.0.1:6006</strong> 代表本机6006端口映射为16006号端口，这两个端口号可以自己设置，不要与其他端口号冲突即可</p>
+<p><strong>-p 31017</strong> 代表所连远程服务器的端口号，即SSH所用端口号</p>
+<p><strong>username@remote_server_ip</strong> 代表你的用户名和SSH所连ip地址</p>
+<p>在服务器上使用6006端口正常启动tensorboard：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">tensorboard --logdir&#x3D;xxx --port&#x3D;6006</span><br></pre></td></tr></table></figure>
+<p><strong>—port=6006</strong> 代表将端口号指定为6006</p>
+<p>由于上一步我们将端口号6006映射到16006，因此在本地浏览器输入地址：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">127.0.0.1:16006</span><br></pre></td></tr></table></figure>
+<p>即可远程访问tensorboard</p>
+<h2 id="使用Xshell"><a href="#使用Xshell" class="headerlink" title="使用Xshell"></a>使用Xshell</h2><p>在Windows系统装一个Xshell，在文件-&gt;属性-&gt;ssh-&gt;隧道-&gt;添加，类型local，源主机填127.0.0.1或者localhost（意思是本机），倾听端口为16006，表示把目标主机的目标端口转发到本地的侦听端口16006  （可自己设置），目标主机：服务器，填写服务器的ip，目标端口一般是6006（可自己设置）</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SSH/1.png" alt></p>
+<p>在服务器上运行 </p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">tensorboard --logdir&#x3D;xxx --port&#x3D;6006</span><br></pre></td></tr></table></figure>
+<p>在本机打开网页127.0.0.1:16006 ，即可查看远程的tensorboard</p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Ubuntu下pip安装numba</title>
     <url>/2020/05/18/Ubuntu%E4%B8%8Bpip%E5%AE%89%E8%A3%85numba/</url>
     <content><![CDATA[<h2 id="错误提醒"><a href="#错误提醒" class="headerlink" title=" 错误提醒"></a><a id="more"></a> 错误提醒</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ImportError: No module named numba</span><br></pre></td></tr></table></figure>
