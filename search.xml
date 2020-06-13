@@ -1,6 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Potplayer添加直播源</title>
+    <url>/2020/06/13/Potplayer%E6%B7%BB%E5%8A%A0%E7%9B%B4%E6%92%AD%E6%BA%90/</url>
+    <content><![CDATA[<h2 id><a href="#" class="headerlink" title></a><a id="more"></a></h2><p>具体操作先打开 PotPlayer，右键选择 <strong>打开</strong> -&gt; <strong>打开链接</strong></p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/%E7%9B%B4%E6%92%AD%E6%BA%90/640.webp" alt></p>
+<p>接下来复制<strong>直播源到 Potplayer 里</strong>，点击确定</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/%E7%9B%B4%E6%92%AD%E6%BA%90/641.webp" alt></p>
+<p><strong>这里成功添加了1015个中国区域的电视频道，而且清晰度都在1080P</strong>，不仅有央视，还有所有卫视和一些地方台</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/%E7%9B%B4%E6%92%AD%E6%BA%90/642.webp" alt></p>
+<p>直播源可以在Github上找到，这里放出链接 <a href="https://github.com/iptv-org/iptv/blob/master/README.md" target="_blank" rel="noopener">点此跳转</a></p>
+<p>里面名叫iptv的仓库收集了全世界将近100个国家的频道，总计达到8000多。并按类别，语言和国家进行了分类。这里图中只展示了一小部分。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/%E7%9B%B4%E6%92%AD%E6%BA%90/643.webp" alt></p>
+<p>比如中国对应的是：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/%E7%9B%B4%E6%92%AD%E6%BA%90/644.webp" alt></p>
+<p>除此以外，还有日本，美国，英国等，需要的可以自行寻找添加。</p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>potplayer</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>远程使用tensorboard等可视化工具</title>
     <url>/2020/05/27/%E8%BF%9C%E7%A8%8B%E4%BD%BF%E7%94%A8tensorboard%E7%AD%89%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E5%85%B7/</url>
     <content><![CDATA[<h2 id><a href="#" class="headerlink" title></a><a id="more"></a></h2><p>有两种设置方法，一种代码设置，一种xshell界面设置</p>
