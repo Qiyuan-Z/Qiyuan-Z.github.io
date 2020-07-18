@@ -1,6 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Latex控制图片位置</title>
+    <url>/2020/07/18/Latex%E6%8E%A7%E5%88%B6%E5%9B%BE%E7%89%87%E4%BD%8D%E7%BD%AE/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title=" 前言"></a><a id="more"></a> 前言</h2><p>在LaTex中，\begin{figure}[~]是图片环境，常用选择项[htbp]是浮动格式：</p>
+<ul>
+<li>[h] ~ here，当前位置。将图形放置在正文文本中给出该图形环境的地方。如果本页所剩页面不够，这一参数将不起作用。</li>
+<li>[t] ~ top，顶部。将图形放置在页面的顶部。</li>
+<li>[b] ~ bottom，底部。将图形放置在页面的底部。</li>
+<li>[p] ~ page of its own，浮动页。将图形放置在一个允许有浮动对象的页面上。</li>
+</ul>
+<p>一般使用[htb]这样的组合，只用[h]是没有用的。这样组合的意思就是LaTex会尽量满足排在前面的浮动格式，就是h-t-b这个顺序，让排版的效果尽量好。</p>
+<p>[!h]只是试图放在当前位置。如果页面剩下的部分放不下，还是会跑到下一页的。一般而言，用[!h]选项通常会出现不能正确放置的问题，所以常用[ht]、[htbp]等。这里加感叹号的意思是忽略“美学”标准。</p>
+<p>如果你确实需要把图片放在当前位置，不容改变，可以用 \usepackege{float} 宏包的[H]选项。不过如果这样做，出现放不下的问题时需要手工调整。使用格式如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">\usepackage&#123;float&#125; </span><br><span class="line">% ... </span><br><span class="line">\begin&#123;figure&#125;[H] </span><br><span class="line">foo </span><br><span class="line">\end&#123;figure&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>特别强调，当图片或者表格占据双栏模板的两栏时（即在\begin{figure*} 或 \begin{table*} 时），这些控制选项就失效了。</strong></p>
+<h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>论文大多都是以双栏排版，那么在双栏排版中，如何让图片和表格出现在页面底端？上述[!b]等等的一些命令都是针对单栏排版，在双栏中不起作用。</p>
+<p>这个问题是排版双栏图表过程中，较为常见的问题。通常，我们排版双栏文章的时候，有些图比较宽，需要让图或者表格跨栏排版，这时我们会用到如下两个环境：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">\begin&#123;table*&#125;[ht]</span><br><span class="line"> </span><br><span class="line">\end&#123;table*&#125;</span><br></pre></td></tr></table></figure>
+<p>和</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">\begin&#123;figure*&#125;[ht]</span><br><span class="line">…</span><br><span class="line">\end&#123;figure*&#125;</span><br></pre></td></tr></table></figure>
+<p>通常这样的跨栏图会放到页面的顶部。</p>
+<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>若是我们想让图表放置到页面底部的话，可以这样做，在导言区加入:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">\usepackage&#123;stfloats&#125;</span><br></pre></td></tr></table></figure>
+<p>插图的话使用如下环境：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">\begin&#123;figure*&#125;[bp]</span><br><span class="line">…</span><br><span class="line">\end&#123;figure*&#125;</span><br></pre></td></tr></table></figure>
+<p>表格类似使用：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">\begin&#123;table*&#125;[bp]</span><br><span class="line">…</span><br><span class="line">\end&#123;table*&#125;</span><br></pre></td></tr></table></figure>
+<p>【示例代码】：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">\documentclass[twocolumn]&#123;book&#125;</span><br><span class="line">\usepackage&#123;graphicx&#125;</span><br><span class="line">\usepackage&#123;xcolor,stfloats&#125;</span><br><span class="line">\usepackage&#123;lipsum&#125;%生成随机文本</span><br><span class="line">\begin&#123;document&#125;</span><br><span class="line">\lipsum</span><br><span class="line">\lipsum[2-5]</span><br><span class="line">\begin&#123;figure*&#125;[b]</span><br><span class="line">\centering</span><br><span class="line">\includegraphics[width&#x3D;12cm]&#123;image&#125;</span><br><span class="line">\end&#123;figure*&#125;</span><br><span class="line">\lipsum[2-5]</span><br><span class="line">\lipsum</span><br><span class="line">\end&#123;document&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Latex</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Potplayer添加直播源</title>
     <url>/2020/06/13/Potplayer%E6%B7%BB%E5%8A%A0%E7%9B%B4%E6%92%AD%E6%BA%90/</url>
     <content><![CDATA[<h2 id><a href="#" class="headerlink" title></a><a id="more"></a></h2><p>具体操作先打开 PotPlayer，右键选择 <strong>打开</strong> -&gt; <strong>打开链接</strong></p>
