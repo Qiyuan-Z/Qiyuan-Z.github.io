@@ -1,6 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Pytorch基于Apex的混合精度加速</title>
+    <url>/2020/08/20/Pytorch%E5%9F%BA%E4%BA%8EApex%E7%9A%84%E6%B7%B7%E5%90%88%E7%B2%BE%E5%BA%A6%E5%8A%A0%E9%80%9F/</url>
+    <content><![CDATA[<h2 id="Apex"><a href="#Apex" class="headerlink" title=" Apex"></a><a id="more"></a> Apex</h2><p><a href="https://github.com/NVIDIA/apex" target="_blank" rel="noopener">Apex</a>是由Nvidia维护的一个支持混合精度分布式训练的第三方Pytorch扩展。可以用短短三行代码就能实现不同程度的混合精度加速，使训练时间和显存占用直接缩小一半。</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>以下是安装 apex 的方法. apex克隆在哪里都无所谓</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git clone https:&#x2F;&#x2F;github.com&#x2F;NVIDIA&#x2F;apex</span><br><span class="line">cd apex</span><br><span class="line">pip install -v --no-cache-dir --global-option&#x3D;&quot;--pyprof&quot; --global-option&#x3D;&quot;--cpp_ext&quot; --global-option&#x3D;&quot;--cuda_ext&quot; .&#x2F;</span><br></pre></td></tr></table></figure>
+<p>以下代码用于验证是否安装成功：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">try:</span><br><span class="line">    from apex.parallel import DistributedDataParallel as DDP</span><br><span class="line">    from apex.fp16_utils import *</span><br><span class="line">    from apex import amp, optimizers</span><br><span class="line">    from apex.multi_tensor_apply import multi_tensor_applier</span><br><span class="line">except ImportError:</span><br><span class="line">    raise ImportError(&quot;Please install apex from https:&#x2F;&#x2F;www.github.com&#x2F;nvidia&#x2F;apex to run this example.&quot;)</span><br></pre></td></tr></table></figure>
+<p>卸载命令为：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">pip uninstall apex</span><br></pre></td></tr></table></figure>
+<h2 id="支持列表"><a href="#支持列表" class="headerlink" title="支持列表"></a>支持列表</h2><p>判断你的GPU是否支持FP16：支持的有拥有Tensor Core的GPU(2080Ti、Titan、Tesla等)，不支持的(Pascal系列)就不建议折腾了。</p>
+<p>如果你的GPU是以下GPU的其中一种: 请调整nvcc与pytorch.cuda至10.0</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">GeForce GTX 1650</span><br><span class="line">GeForce GTX 1660</span><br><span class="line">GeForce GTX 1660 Ti</span><br><span class="line">GeForce RTX 2060</span><br><span class="line">GeForce RTX 2060 Super</span><br><span class="line">GeForce RTX 2070</span><br><span class="line">GeForce RTX 2070 Super</span><br><span class="line">GeForce RTX 2080</span><br><span class="line">GeForce RTX 2080 Super</span><br><span class="line">GeForce RTX 2080 Ti</span><br><span class="line">Titan RTX</span><br><span class="line">Quadro RTX 4000</span><br><span class="line">Quadro RTX 5000</span><br><span class="line">Quadro RTX 6000</span><br><span class="line">Quadro RTX 8000</span><br><span class="line">Tesla T4</span><br></pre></td></tr></table></figure>
+<p>如果你打算调整Pytorch Version来适应APEX(推荐)</p>
+<p>首先用 <code>nvcc --version</code> 命令调查你的nvcc版本</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">nvcc: NVIDIA (R) Cuda compiler driver</span><br><span class="line">Copyright (c) 2005-2018 NVIDIA Corporation</span><br><span class="line">Built on Tue_Jun_12_23:07:04_CDT_2018</span><br><span class="line">Cuda compilation tools, release 9.2, V9.2.148</span><br></pre></td></tr></table></figure>
+<p>再进入python看看pytorch cuda版本</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; torch.version.cuda</span><br><span class="line">&#39;9.0.176&#39;</span><br></pre></td></tr></table></figure>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>导入包：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> apex <span class="keyword">import</span> amp</span><br></pre></td></tr></table></figure>
+<p>在你创建后net(model)和optimizer后添加代码(注意顺序)：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">net &#x3D; net.cuda()</span><br><span class="line">net, optimizer &#x3D; amp.initialize(net, optimizer, opt_level&#x3D;&quot;O1&quot;) # 这里是“欧一”，不是“零一”</span><br><span class="line"></span><br><span class="line"># if you need to use multiple GPU, uncomment this line</span><br><span class="line"># net &#x3D; torch.nn.DataParallel(net, device_ids&#x3D;[i for i in range(torch.cuda.device_count())])</span><br></pre></td></tr></table></figure>
+<p>然后把你的loss.backward()换成 ：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">with amp.scale_loss(loss, optimizer) as scaled_loss:</span><br><span class="line">    scaled_loss.backward()</span><br></pre></td></tr></table></figure>
+<p>如果你有用Pytorch自带的BCELoss或F.binary_cross_entropy, 请把他们替换成BCEWithLogitsLoss或F.binary_cross_entropy_with_logists并用logists 作为输入.</p>
+<h2 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h2><h3 id="opt-level"><a href="#opt-level" class="headerlink" title="opt level"></a>opt level</h3><p>其中只有一个opt_level需要用户自行配置：</p>
+<ul>
+<li><p>oe：纯FP32训练，可以作为accuracy的baseline；</p>
+</li>
+<li><p>o1：混合精度训练(推荐使用)，根据黑白名单自动决定使用FP16(GEMM，卷积)还是FP32(Softmax)进行计算。</p>
+</li>
+<li><p>02：“几乎FP16”混合精度训练，不存在黑白名单，除了Batch norm，几乎都是用FP16计算。</p>
+</li>
+<li><p>o3：纯FP16训练，很不稳定，但是可以作为speed的baseline；</p>
+</li>
+</ul>
+<h3 id="动态损失放大（Dynamic-Loss-Scaling）"><a href="#动态损失放大（Dynamic-Loss-Scaling）" class="headerlink" title="动态损失放大（Dynamic Loss Scaling）"></a>动态损失放大（Dynamic Loss Scaling）</h3><p>AMP默认使用动态损失放大，为了充分利用FP16的范围，缓解舍入误差，尽量使用最高的放大倍($2^{24}$)，如果产生了上溢出(Overflow)，则跳过参数更新，缩小放大倍数使其不溢出，在一定步数后(比如2000步)会再尝试使用大的scale来充分利用FP16的范围：</p>
+<h2 id="优势"><a href="#优势" class="headerlink" title="优势"></a>优势</h2><ol>
+<li><strong>减少显存占用</strong>    现在模型越来越大，当你使用Bert这一类的预训练模型时，往往显存就被模型及模型计算占去大半，当想要使用更大的Batch Size的时候会显得捉襟见肘。由于FP16的内存占用只有FP32的一半，自然地就可以帮助训练过程节省一半的显存空间。</li>
+<li><strong>加快训练和推断的计算</strong>    与普通的空间时间Trade-off的加速方法不同，FP16除了能节约内存，还能同时节省模型的训练时间。在大部分的测试中，基于FP16的加速方法能够给模型训练带来多一倍的加速体验（爽感类似于两倍速看肥皂剧）。</li>
+<li><strong>张量核心的普及</strong>    硬件的发展同样也推动着模型计算的加速，随着Nvidia张量核心(Tensor Core)的普及，16bit计算也一步步走向成熟，低精度计算也是未来深度学习的一个重要趋势，再不学习就out啦。</li>
+</ol>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Pytorch</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Latex中公式过长问题</title>
     <url>/2020/07/18/Latex%E4%B8%AD%E5%85%AC%E5%BC%8F%E8%BF%87%E9%95%BF%E9%97%AE%E9%A2%98/</url>
     <content><![CDATA[<h2 id><a href="#" class="headerlink" title></a><a id="more"></a></h2><p>latex中公式过长通常有以下几个解决方案：</p>
