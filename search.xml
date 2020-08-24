@@ -1,6 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Ubuntu增加swap交换空间</title>
+    <url>/2020/08/24/Ubuntu%E5%A2%9E%E5%8A%A0swap%E4%BA%A4%E6%8D%A2%E7%A9%BA%E9%97%B4/</url>
+    <content><![CDATA[<h2 id="问题描述"><a href="#问题描述" class="headerlink" title=" 问题描述"></a><a id="more"></a> 问题描述</h2><p>我在训练模型的过程中，经常跑着中途发生了<code>can not allocate memory</code>的异常，从而使程序中断，其中发现是由于swap空间设置太小，导致交换内存溢出。因此本文介绍增加swap空间的方法。</p>
+<h2 id="查看当前系统的swap大小"><a href="#查看当前系统的swap大小" class="headerlink" title="查看当前系统的swap大小"></a>查看当前系统的swap大小</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">free -m</span><br></pre></td></tr></table></figure>
+<p>m 是以兆为单位， g是以GB为单位， 默认是kb</p>
+<p>如下图，当前系统只有1G的交换空间：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/swap/1.png" alt></p>
+<h2 id="创建一个swap文件"><a href="#创建一个swap文件" class="headerlink" title="创建一个swap文件"></a>创建一个swap文件</h2><p>swap交换空间其实就是硬盘上一个特定的文件，只不过这个文件只有内存在读写，比较大些。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">mkdir /home/roo/swapfile</span><br><span class="line"></span><br><span class="line">cd /home/roo/swapfile</span><br><span class="line"></span><br><span class="line">sudo dd if=/dev/zero of=swap bs=1G count=61</span><br></pre></td></tr></table></figure>
+<p><code>mkdir /home/roo/swapfile</code> 是先在/home/roo目录下创建了一个名为swapfile的文件夹<br>cd 进入swapfile文件夹， 然后创建一个大小为61G的，名为swap的空文件。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/swap/2.png" alt></p>
+<p>命令解释：</p>
+<ul>
+<li><code>/home/roo/</code> 可以更换为自己的路径</li>
+<li><code>bs</code>为单位，默认为kb， 如设置为1024，则代表1M</li>
+<li><code>count</code>为数量，扩增大小为$count \times bs$</li>
+</ul>
+<h2 id="转换swap文件"><a href="#转换swap文件" class="headerlink" title="转换swap文件"></a>转换swap文件</h2><p>将生成的文件转换成swap类型的文件</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo mkswap -f swap</span><br></pre></td></tr></table></figure>
+<p>如下图：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/swap/3.png" alt></p>
+<h2 id="激活swap文件"><a href="#激活swap文件" class="headerlink" title="激活swap文件"></a>激活swap文件</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo swapon swap</span><br></pre></td></tr></table></figure>
+<p>卸载的话使用 swapoff</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo swapoff swap</span><br></pre></td></tr></table></figure>
+<p>最后再次使用free查看，如下图：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/swap/4.png" alt></p>
+<h2 id="永久生效"><a href="#永久生效" class="headerlink" title="永久生效"></a>永久生效</h2><p>虽然交换空间到此已经扩展成功了，但是电脑重启的话，还是会恢复默认的swap大小。如果要一直使用这个swap，要把它写入/etc/fstab文件中。</p>
+<p>编辑文件</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo nano &#x2F;etc&#x2F;fstab</span><br></pre></td></tr></table></figure>
+<p>加入以下内容(路径根据自己设置的修改)</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;home&#x2F;roo&#x2F;swapfile&#x2F;swap none swap defaults 0 0</span><br></pre></td></tr></table></figure>
+<p>如下图：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/swap/5.png" alt></p>
+<h2 id="推荐swap大小"><a href="#推荐swap大小" class="headerlink" title="推荐swap大小"></a>推荐swap大小</h2><p>以下列出Ubuntu系统根据RAM大小推荐设置的swap大小：</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/swap/6.png" alt></p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Pytorch基于Apex的混合精度加速</title>
     <url>/2020/08/20/Pytorch%E5%9F%BA%E4%BA%8EApex%E7%9A%84%E6%B7%B7%E5%90%88%E7%B2%BE%E5%BA%A6%E5%8A%A0%E9%80%9F/</url>
     <content><![CDATA[<h2 id="Apex"><a href="#Apex" class="headerlink" title=" Apex"></a><a id="more"></a> Apex</h2><p><a href="https://github.com/NVIDIA/apex" target="_blank" rel="noopener">Apex</a>是由Nvidia维护的一个支持混合精度分布式训练的第三方Pytorch扩展。可以用短短三行代码就能实现不同程度的混合精度加速，使训练时间和显存占用直接缩小一半。</p>
