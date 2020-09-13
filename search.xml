@@ -1,6 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>加速pytorch数据读取</title>
+    <url>/2020/09/13/%E5%8A%A0%E9%80%9Fpytorch%E6%95%B0%E6%8D%AE%E8%AF%BB%E5%8F%96/</url>
+    <content><![CDATA[<h2 id="介绍"><a href="#介绍" class="headerlink" title=" 介绍"></a><a id="more"></a> 介绍</h2><p>prefetch_generator是第三方对原本的DataLoader进行重写的函数包，它将任意生成器转换为后台thead生成器，在并行后台thead中预取多批数据。</p>
+<p>如果有一个计算量很大的进程（CPU或GPU），在生成器消耗其他资源（磁盘IO/从数据库加载/如果有未使用的内核，则有更多CPU）的同时迭代处理生成器中的小批量，则这非常有用。</p>
+<p>默认情况下，这两个进程将不断等待对方完成。如果让生成器在预取模式下工作，它们将并行工作，可能会节省GPU时间。</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip install prefetch_generator</span><br></pre></td></tr></table></figure>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>之前加载数据集的正确方式是使用<code>torch.utils.data.DataLoader</code>，现在我们只要利用这个库，新建个<code>DataLoaderX</code>类继承<code>DataLoader</code>并重写<code>__iter__</code>方法即可</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 新建DataLoaderX类</span><br><span class="line">from torch.utils.data import DataLoader</span><br><span class="line">from prefetch_generator import BackgroundGenerator</span><br><span class="line"></span><br><span class="line">class DataLoaderX(DataLoader):</span><br><span class="line"></span><br><span class="line">    def __iter__(self):</span><br><span class="line">        return BackgroundGenerator(super().__iter__())</span><br></pre></td></tr></table></figure>
+<p>然后用 <code>DataLoaderX</code> 替换原本的 <code>DataLoader</code>。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">train_dataset = MyDataset(<span class="string">"........."</span>)</span><br><span class="line">train_loader = DataLoaderX(dataset=train_dataset, </span><br><span class="line">                           batch_size=batch_size, num_workers=<span class="number">4</span>, shuffle=shuffle)</span><br></pre></td></tr></table></figure>
+<h2 id="提速原因"><a href="#提速原因" class="headerlink" title="提速原因"></a>提速原因</h2><p>原本Pytorch默认的DataLoader会创建一些worker线程来预读取新的数据，但是除非这些线程的数据全部都被清空，这些线程才会读下一批数据。使用prefetch_generator在后台加载下一batch的数据，我们可以保证线程不会等待，每个线程都总有至少一个数据在加载。</p>
+<h2 id="效果"><a href="#效果" class="headerlink" title="效果"></a>效果</h2><p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/prefetch_generator/1.png" alt></p>
+<p>在 hdd 硬盘上，用同样的参数、同样的数据，分别用不同的优化方法，训练两个epoch，记录训练的时间。</p>
+<p>优化方法分别是：</p>
+<ul>
+<li><code>original</code>：默认 dataloader，不优化</li>
+<li><code>(1)prefetcher_generator</code>：只用 prefetcher_generator 库优化</li>
+<li><code>(2)data_prefetcher</code>：只用 data_prefetcher 优化</li>
+<li><code>(1)+(2)</code>：同时用 <code>prefetcher_generator</code> 和 <code>data_prefetcher</code> 优化</li>
+</ul>
+<p>最后将得到的时间，除以不优化时的训练时间。</p>
+<p>从图中可以观察到：</p>
+<ol>
+<li>(1) 和 (2) 两种优化方法都差不多有 10% 左右的训练时间的缩短；</li>
+<li>(1) (2) 同时使用，并没有进一步缩短训练时间，反而不如只使用一种优化方法。</li>
+</ol>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Pytorch</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Ubuntu增加swap交换空间</title>
     <url>/2020/08/24/Ubuntu%E5%A2%9E%E5%8A%A0swap%E4%BA%A4%E6%8D%A2%E7%A9%BA%E9%97%B4/</url>
     <content><![CDATA[<h2 id="问题描述"><a href="#问题描述" class="headerlink" title=" 问题描述"></a><a id="more"></a> 问题描述</h2><p>我在训练模型的过程中，经常跑着中途发生了<code>can not allocate memory</code>的异常，从而使程序中断，其中发现是由于swap空间设置太小，导致交换内存溢出。因此本文介绍增加swap空间的方法。</p>
