@@ -1,6 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>百度网盘下载工具推荐</title>
+    <url>/2020/09/15/%E7%99%BE%E5%BA%A6%E7%BD%91%E7%9B%98%E4%B8%8B%E8%BD%BD%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/</url>
+    <content><![CDATA[<h2 id="PanDownload卢本伟修改版"><a href="#PanDownload卢本伟修改版" class="headerlink" title=" PanDownload卢本伟修改版"></a><a id="more"></a> PanDownload卢本伟修改版</h2><p>自从这款软件被关闭之后很长一段时间没有了消息，但是最近有有人接盘，将这款软件重新制作，推出了更加强劲的复活版 <a href="https://kurukurumi.tk/" target="_blank" rel="noopener">跳转链接</a></p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/%E7%99%BE%E5%BA%A6%E7%BD%91%E7%9B%98%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/1.jpg" alt></p>
+<h2 id="KinhDown"><a href="#KinhDown" class="headerlink" title="KinhDown"></a>KinhDown</h2><p>KinhDown(度盘PC下载器)是一款百度网盘下载器，无需登录即可下载，支持调用IDM、XDM等下载 <a href="https://kinhdown.kinh.cc/" target="_blank" rel="noopener">跳转链接</a></p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/%E7%99%BE%E5%BA%A6%E7%BD%91%E7%9B%98%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/2.jpg" alt></p>
+<h2 id="6盘小白羊"><a href="#6盘小白羊" class="headerlink" title="6盘小白羊"></a>6盘小白羊</h2><p>支持磁力、电驴、度盘下载，免登录，支持批量下载，还能离线度盘资源，不过因为度盘离线是人工代下，所以只对订阅用户开放。而且免费用户每天只有三个离线额度。注册需翻墙。 <a href="https://github.com/liupan1890/xiaobaiyang" target="_blank" rel="noopener">跳转链接</a></p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/%E7%99%BE%E5%BA%A6%E7%BD%91%E7%9B%98%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/3.png" alt></p>
+<h2 id="雷鸟下载"><a href="#雷鸟下载" class="headerlink" title="雷鸟下载"></a>雷鸟下载</h2><p>雷鸟下载是一款基于多资源超线程技术的下载软件，雷鸟下载针对各类网盘做了下载优化（当前阶段支持百度网盘，未来计划包括：微云、115云盘、天翼云盘等主流云盘服务）。雷鸟下载利用多资源超线程技术，基于网格原理，将网络上存在的服务器和计算机资源进行整合，构成一体化的下载网络，并通过HTTPS实现传输加密，确保数据安全。但每日下载流量有一定限额，目前，每日可下载流量为6G，未来还会更强大！免费，一样可以很专业！<a href="https://www.kancloud.cn/myzfb/thunderbird/1684667" target="_blank" rel="noopener">跳转链接</a></p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/%E7%99%BE%E5%BA%A6%E7%BD%91%E7%9B%98%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/4.jpeg" alt></p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>百度网盘</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>加速pytorch数据读取</title>
     <url>/2020/09/13/%E5%8A%A0%E9%80%9Fpytorch%E6%95%B0%E6%8D%AE%E8%AF%BB%E5%8F%96/</url>
     <content><![CDATA[<h2 id="介绍"><a href="#介绍" class="headerlink" title=" 介绍"></a><a id="more"></a> 介绍</h2><p>prefetch_generator是第三方对原本的DataLoader进行重写的函数包，它将任意生成器转换为后台thead生成器，在并行后台thead中预取多批数据。</p>
