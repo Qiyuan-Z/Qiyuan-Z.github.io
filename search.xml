@@ -1,6 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>EndNote样式使用教程</title>
+    <url>/2020/12/11/EndNote%E6%A0%B7%E5%BC%8F%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a><a id="more"></a>前言</h2><p>EndNote主要针对英文文献，所以并没提供符合中华标准的文献样式，而网上找的样式又不太对。因此这里本人根据中华人民共和国国家标准GB/T7714-2005和江南大学论文要求，制作了可供导入使用的样式。下载地址如下：<a href="https://590m.com/file/17985533-475283286" target="_blank" rel="noopener">中文样式 by Qiyuan-Z</a></p>
+<h2 id="使用教程"><a href="#使用教程" class="headerlink" title="使用教程"></a>使用教程</h2><p><strong>① 将.ens样式文件放入EndNote安装目录下的Styles文件夹。</strong></p>
+<p><strong>② 使用时切换样式即可：</strong></p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/wenxian/4.jpg" alt></p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/wenxian/5.jpg" alt></p>
+<p><strong>③ 插入文献效果如下：</strong></p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/wenxian/6.jpg" alt></p>
+<p><strong>④ 若参考文献序号后面空格过长可设置悬挂缩进距离：</strong></p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/wenxian/7.jpg" alt></p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/wenxian/8.jpg" alt></p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/wenxian/9.jpg" alt></p>
+<p><strong>⑤ arxiv等未出版期刊，请设置参考类型为Manuscript，以方便样式识别文献类型。</strong></p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/wenxian/10.jpg" alt></p>
+<p><strong>⑥ 由于EndNote并没提供中文文献的识别设置，为了解决问题，我们可以自定义中文文献类型：</strong></p>
+<p>点击「编辑」→「首选项」→「参考文献类型」→「修改参考文献类型」（「Edit」→「Preference」→「Reference Types」→「Modify Reference Types 」）</p>
+<p>EndNote未使用的文献类型 (Reference Type) 默认为3个 , 它们被命名为 Unused 1，Unused 2和Unused 3 。我们可以利用这几个未作用的文献类型来修改。</p>
+<p>如选择Unused 1，在 Generic 项中输入新文献类型名「中文文献」，然后依次修改各项，修改完毕后「OK」关闭保存。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/wenxian/11.jpg" alt></p>
+<p><strong>⑦ 若为中文文献，请设置参考类型为中文文献，并填写Secondary Author（与Author一样），以方便样式识别文献类型。</strong></p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/wenxian/12.jpg" alt></p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+  </entry>
+  <entry>
     <title>历届CCF顶会地点查询</title>
     <url>/2020/12/11/%E5%8E%86%E5%B1%8ACCF%E9%A1%B6%E4%BC%9A%E5%9C%B0%E7%82%B9%E6%9F%A5%E8%AF%A2/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title=" 前言"></a><a id="more"></a> 前言</h2><p>鉴于某些参考文献，在引用会议时需要注明开会地点，然而谷歌学术中并不能提供会议地点，这里提供一些常用会议地点的检索网址。</p>
