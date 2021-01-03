@@ -157,6 +157,12 @@
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">nvcc: NVIDIA (R) Cuda compiler driver</span><br><span class="line">Copyright (c) 2005-2018 NVIDIA Corporation</span><br><span class="line">Built on Tue_Jun_12_23:07:04_CDT_2018</span><br><span class="line">Cuda compilation tools, release 9.2, V9.2.148</span><br></pre></td></tr></table></figure>
 <p>再进入python看看pytorch cuda版本</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; torch.version.cuda</span><br><span class="line">&#39;9.0.176&#39;</span><br></pre></td></tr></table></figure>
+<h2 id="问题解决"><a href="#问题解决" class="headerlink" title="问题解决"></a>问题解决</h2><p>3090ti自带cuda为11.1，但是并没有匹配的torch版本，这里为了安上apex，可以通过修改<code>setup.py</code>尝试禁用次要版本检查。</p>
+<p>找到如下函数，注释掉原语句，返回空值：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"> def check_cuda_torch_binary_vs_bare_metal(cuda_dir):</span><br><span class="line">+    return</span><br></pre></td></tr></table></figure>
+<p>修改后，重新安装apex即可：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip install -v --no-cache-dir --global-option&#x3D;&quot;--cpp_ext&quot; --global-option&#x3D;&quot;--cuda_ext&quot; .&#x2F;</span><br></pre></td></tr></table></figure>
+<p>我在安装了带有cuda-11.0的pytorch的同时，针对整个系统的cuda-11.1成功构建了apex！</p>
 <h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>导入包：</p>
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> apex <span class="keyword">import</span> amp</span><br></pre></td></tr></table></figure>
 <p>在你创建后net(model)和optimizer后添加代码(注意顺序)：</p>
