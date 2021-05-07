@@ -1,321 +1,163 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-  <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
-<meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 4.2.0">
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
-  <link rel="mask-icon" href="/images/logo.svg" color="#222">
-
-<link rel="stylesheet" href="/css/main.css">
-
-
-<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
-
-
-<script id="hexo-configurations">
-  var NexT = window.NexT || {};
-  var CONFIG = {
-    hostname: new URL('https://Qiyuan-Z.github.io').hostname,
-    root: '/',
-    scheme: 'Gemini',
-    version: '7.6.0',
-    exturl: false,
-    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
-    copycode: {"enable":true,"show_result":true,"style":"mac"},
-    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
-    bookmark: {"enable":false,"color":"#222","save":"auto"},
-    fancybox: true,
-    mediumzoom: false,
-    lazyload: false,
-    pangu: false,
-    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
-    algolia: {
-      appID: '',
-      apiKey: '',
-      indexName: '',
-      hits: {"per_page":10},
-      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
-    },
-    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
-    path: 'search.xml',
-    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
-  };
-</script>
-
-  <meta property="og:type" content="article">
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>YOLOv3的数据加载机制和增强方法 | Yuan</title><meta name="keywords" content="目标检测,YOLOv3"><meta name="author" content="Qiyuan-Z"><meta name="copyright" content="Qiyuan-Z"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta property="og:type" content="article">
 <meta property="og:title" content="YOLOv3的数据加载机制和增强方法">
 <meta property="og:url" content="https://qiyuan-z.github.io/2020/02/15/YOLOv3%E7%9A%84%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6%E5%92%8C%E5%A2%9E%E5%BC%BA%E6%96%B9%E6%B3%95/index.html">
 <meta property="og:site_name" content="Yuan">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pyyolov3/643.webp">
-<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pyyolov3/644.webp">
-<meta property="og:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pyyolov3/645.webp">
+<meta property="og:image" content="https://qiyuan-z.github.io/img/1097380.jpg">
 <meta property="article:published_time" content="2020-02-15T04:34:41.575Z">
 <meta property="article:modified_time" content="2020-02-15T04:55:51.050Z">
 <meta property="article:author" content="Qiyuan-Z">
 <meta property="article:tag" content="目标检测">
 <meta property="article:tag" content="YOLOv3">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pyyolov3/643.webp">
-
-<link rel="canonical" href="https://qiyuan-z.github.io/2020/02/15/YOLOv3%E7%9A%84%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6%E5%92%8C%E5%A2%9E%E5%BC%BA%E6%96%B9%E6%B3%95/">
-
-
-<script id="page-configurations">
-  // https://hexo.io/docs/variables.html
-  CONFIG.page = {
-    sidebar: "",
-    isHome: false,
-    isPost: true
-  };
-</script>
-<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.css"><style>
-#needsharebutton-postbottom {
-  cursor: pointer;
-  height: 26px;
-  margin-top: 10px;
-  position: relative;
-}
-#needsharebutton-postbottom .btn {
-  border: 1px solid $btn-default-border-color;
-  border-radius: 3px;
-  display: initial;
-  padding: 1px 4px;
-}
-</style>
-  <title>YOLOv3的数据加载机制和增强方法 | Yuan</title>
-  
-
-
-
-
-
-
-  <noscript>
-  <style>
-  .use-motion .brand,
-  .use-motion .menu-item,
-  .sidebar-inner,
-  .use-motion .post-block,
-  .use-motion .pagination,
-  .use-motion .comments,
-  .use-motion .post-header,
-  .use-motion .post-body,
-  .use-motion .collection-header { opacity: initial; }
-
-  .use-motion .site-title,
-  .use-motion .site-subtitle {
-    opacity: initial;
-    top: initial;
+<meta name="twitter:image" content="https://qiyuan-z.github.io/img/1097380.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://qiyuan-z.github.io/2020/02/15/YOLOv3%E7%9A%84%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6%E5%92%8C%E5%A2%9E%E5%BC%BA%E6%96%B9%E6%B3%95/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.js@2.10.5/dist/instantsearch.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/instantsearch.js@2.10.5/dist/instantsearch.min.js" defer></script><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: {"appId":"ZQZI62NB22","apiKey":"f208969d7174c4878fcfe069d1a5a6dd","indexName":"blog","hits":{"per_page":6},"languages":{"input_placeholder":"搜索文章","hits_empty":"找不到您查询的内容：${query}","hits_stats":"找到 ${hits} 条结果，用时 ${time} 毫秒"}},
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":200,"languages":{"author":"作者: Qiyuan-Z","link":"链接: ","source":"来源: Yuan","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#121212","position":"bottom-right"},
+  source: {
+    jQuery: 'https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js',
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+    },
+    fancybox: {
+      js: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2020-02-15 12:55:51'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
   }
 
-  .use-motion .logo-line-before i { left: initial; }
-  .use-motion .logo-line-after i { right: initial; }
-  </style>
-</noscript>
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
 
-  <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome/css/font-awesome.min.css">
-</head>
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
 
-<body itemscope itemtype="http://schema.org/WebPage">
-  <div class="container use-motion">
-    <div class="headband"></div>
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
 
-    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-container">
-  <div class="site-meta">
-
-    <div>
-      <a href="/" class="brand" rel="start">
-        <span class="logo-line-before"><i></i></span>
-        <span class="site-title">Yuan</span>
-        <span class="logo-line-after"><i></i></span>
-      </a>
-    </div>
-        <p class="site-subtitle">记录学习中的点点滴滴</p>
-  </div>
-
-  <div class="site-nav-toggle">
-    <div class="toggle" aria-label="切换导航栏">
-      <span class="toggle-line toggle-line-first"></span>
-      <span class="toggle-line toggle-line-middle"></span>
-      <span class="toggle-line toggle-line-last"></span>
-    </div>
-  </div>
-</div>
-
-
-<nav class="site-nav">
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
   
-  <ul id="menu" class="menu">
-        <li class="menu-item menu-item-home">
-
-    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
-
-  </li>
-        <li class="menu-item menu-item-tags">
-
-    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
-
-  </li>
-        <li class="menu-item menu-item-categories">
-
-    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
-
-  </li>
-        <li class="menu-item menu-item-archives">
-
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
-
-  </li>
-      <li class="menu-item menu-item-search">
-        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
-        </a>
-      </li>
-  </ul>
-
-</nav>
-  <div class="site-search">
-    <div class="popup search-popup">
-    <div class="search-header">
-  <span class="search-icon">
-    <i class="fa fa-search"></i>
-  </span>
-  <div class="search-input-container">
-    <input autocomplete="off" autocorrect="off" autocapitalize="none"
-           placeholder="搜索..." spellcheck="false"
-           type="text" id="search-input">
-  </div>
-  <span class="popup-btn-close">
-    <i class="fa fa-times-circle"></i>
-  </span>
-</div>
-<div id="search-result"></div>
-
-</div>
-<div class="search-pop-overlay"></div>
-
-  </div>
-</div>
-    </header>
-
-    
-  <div class="back-to-top">
-    <i class="fa fa-arrow-up"></i>
-    <span>0%</span>
-  </div>
-  <div class="reading-progress-bar"></div>
-
-
-    <main class="main">
-      <div class="main-inner">
-        <div class="content-wrap">
-          
-
-          <div class="content">
-            
-
-  <div class="posts-expand">
-      
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
   
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://qiyuan-z.github.io/2020/02/15/YOLOv3%E7%9A%84%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6%E5%92%8C%E5%A2%9E%E5%BC%BA%E6%96%B9%E6%B3%95/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Qiyuan-Z">
-      <meta itemprop="description" content="偉大な魂は目的を持ち、そうでないものは願望を持つ">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Yuan">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          YOLOv3的数据加载机制和增强方法
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2020-02-15 12:34:41 / 修改时间：12:55:51" itemprop="dateCreated datePublished" datetime="2020-02-15T12:34:41+08:00">2020-02-15</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index">
-                    <span itemprop="name">学习</span>
-                  </a>
-                </span>
-            </span>
-
-          
-            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">阅读次数：</span>
-              <span id="busuanzi_value_page_pv"></span>
-            </span><br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>14k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>13 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
     
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-        <h2 id="1-标注格式"><a href="#1-标注格式" class="headerlink" title=" 1. 标注格式"></a><a id="more"></a> 1. 标注格式</h2><p><code>voc_label.py</code>，其作用是将xml文件转成txt文件格式，具体文件如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># class id, x, y, w, h</span><br><span class="line">0 0.8604166666666666 0.5403899721448469 0.058333333333333334 0.055710306406685235</span><br></pre></td></tr></table></figure>
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    })(window)</script><meta name="generator" content="Hexo 5.4.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="author-avatar"><img class="avatar-img" src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">文章</div><div class="length-num">114</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">标签</div><div class="length-num">32</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img" id="page-header"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">Yuan</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">YOLOv3的数据加载机制和增强方法</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2020-02-15T04:34:41.575Z" title="发表于 2020-02-15 12:34:41">2020-02-15</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2020-02-15T04:55:51.050Z" title="更新于 2020-02-15 12:55:51">2020-02-15</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%AD%A6%E4%B9%A0/">学习</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">3.4k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>16分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div><article class="post-content" id="article-container"><h2 id="1-标注格式"><a href="#1-标注格式" class="headerlink" title=" 1. 标注格式"></a><span id="more"></span> 1. 标注格式</h2><p><code>voc_label.py</code>，其作用是将xml文件转成txt文件格式，具体文件如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># class id, x, y, w, h</span><br><span class="line">0 0.8604166666666666 0.5403899721448469 0.058333333333333334 0.055710306406685235</span><br></pre></td></tr></table></figure>
 <p>其中的x,y 的意义是归一化以后的框的中心坐标，w,h是归一化后的框的宽和高。</p>
 <p>具体的归一化方式为：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">def convert(size, box):</span><br><span class="line">    &#39;&#39;&#39;</span><br><span class="line">    size是图片的长和宽</span><br><span class="line">    box是xmin,xmax,ymin,ymax坐标值</span><br><span class="line">    &#39;&#39;&#39;</span><br><span class="line">    dw &#x3D; 1. &#x2F; (size[0])</span><br><span class="line">    dh &#x3D; 1. &#x2F; (size[1])</span><br><span class="line">    # 得到长和宽的缩放比</span><br><span class="line">    x &#x3D; (box[0] + box[1])&#x2F;2.0  </span><br><span class="line">    y &#x3D; (box[2] + box[3])&#x2F;2.0  </span><br><span class="line">    w &#x3D; box[1] - box[0]</span><br><span class="line">    h &#x3D; box[3] - box[2]</span><br><span class="line">    # 分别计算中心点坐标，框的宽和高</span><br><span class="line">    x &#x3D; x * dw</span><br><span class="line">    w &#x3D; w * dw</span><br><span class="line">    y &#x3D; y * dh</span><br><span class="line">    h &#x3D; h * dh</span><br><span class="line">    # 按照图片长和宽进行归一化</span><br><span class="line">    return (x,y,w,h)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">def convert(size, box):</span><br><span class="line">    &#x27;&#x27;&#x27;</span><br><span class="line">    size是图片的长和宽</span><br><span class="line">    box是xmin,xmax,ymin,ymax坐标值</span><br><span class="line">    &#x27;&#x27;&#x27;</span><br><span class="line">    dw = 1. / (size[0])</span><br><span class="line">    dh = 1. / (size[1])</span><br><span class="line">    # 得到长和宽的缩放比</span><br><span class="line">    x = (box[0] + box[1])/2.0  </span><br><span class="line">    y = (box[2] + box[3])/2.0  </span><br><span class="line">    w = box[1] - box[0]</span><br><span class="line">    h = box[3] - box[2]</span><br><span class="line">    # 分别计算中心点坐标，框的宽和高</span><br><span class="line">    x = x * dw</span><br><span class="line">    w = w * dw</span><br><span class="line">    y = y * dh</span><br><span class="line">    h = h * dh</span><br><span class="line">    # 按照图片长和宽进行归一化</span><br><span class="line">    return (x,y,w,h)</span><br></pre></td></tr></table></figure>
 <p>可以看出，归一化都是相对于图片的宽和高进行归一化的。</p>
 <h2 id="2-调用"><a href="#2-调用" class="headerlink" title="2. 调用"></a>2. 调用</h2><p>下边是train.py文件中的有关数据的调用：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"># Dataset</span><br><span class="line">dataset &#x3D; LoadImagesAndLabels(train_path, img_size, batch_size,</span><br><span class="line">                              augment&#x3D;True,</span><br><span class="line">                              hyp&#x3D;hyp,  # augmentation hyperparameters</span><br><span class="line">                              rect&#x3D;opt.rect,  # rectangular training</span><br><span class="line">                              cache_labels&#x3D;True,</span><br><span class="line">                              cache_images&#x3D;opt.cache_images)</span><br><span class="line"></span><br><span class="line">batch_size &#x3D; min(batch_size, len(dataset))</span><br><span class="line"></span><br><span class="line"># 使用多少个线程加载数据集</span><br><span class="line">nw &#x3D; min([os.cpu_count(), batch_size if batch_size &gt; 1 else 0, 1])</span><br><span class="line"></span><br><span class="line">dataloader &#x3D; DataLoader(dataset,</span><br><span class="line">                        batch_size&#x3D;batch_size,</span><br><span class="line">                        num_workers&#x3D;nw,</span><br><span class="line">                        shuffle&#x3D;not opt.rect,</span><br><span class="line">                        # Shuffle&#x3D;True</span><br><span class="line">                        # unless rectangular training is used</span><br><span class="line">                        pin_memory&#x3D;True,</span><br><span class="line">                        collate_fn&#x3D;dataset.collate_fn)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"># Dataset</span><br><span class="line">dataset = LoadImagesAndLabels(train_path, img_size, batch_size,</span><br><span class="line">                              augment=True,</span><br><span class="line">                              hyp=hyp,  # augmentation hyperparameters</span><br><span class="line">                              rect=opt.rect,  # rectangular training</span><br><span class="line">                              cache_labels=True,</span><br><span class="line">                              cache_images=opt.cache_images)</span><br><span class="line"></span><br><span class="line">batch_size = min(batch_size, len(dataset))</span><br><span class="line"></span><br><span class="line"># 使用多少个线程加载数据集</span><br><span class="line">nw = min([os.cpu_count(), batch_size if batch_size &gt; 1 else 0, 1])</span><br><span class="line"></span><br><span class="line">dataloader = DataLoader(dataset,</span><br><span class="line">                        batch_size=batch_size,</span><br><span class="line">                        num_workers=nw,</span><br><span class="line">                        shuffle=not opt.rect,</span><br><span class="line">                        # Shuffle=True</span><br><span class="line">                        # unless rectangular training is used</span><br><span class="line">                        pin_memory=True,</span><br><span class="line">                        collate_fn=dataset.collate_fn)</span><br></pre></td></tr></table></figure>
 <p>在pytorch中，数据集加载主要是重构datasets类，然后再使用dataloader中加载dataset，就构建好了数据部分。</p>
 <p>下面是一个简单的使用模板：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">import os</span><br><span class="line">from torch.utils.data import Dataset</span><br><span class="line">from torch.utils.data import DataLoader</span><br><span class="line"></span><br><span class="line"># 根据自己的数据集格式进行重构</span><br><span class="line">class MyDataset(Dataset):</span><br><span class="line">    def __init__(self):</span><br><span class="line">        #下载数据、初始化数据，都可以在这里完成</span><br><span class="line">        xy &#x3D; np.loadtxt(&#39;label.txt&#39;, delimiter&#x3D;&#39;,&#39;, dtype&#x3D;np.float32)</span><br><span class="line">        # 使用numpy读取数据</span><br><span class="line">        self.x_data &#x3D; torch.from_numpy(xy[:, 0:-1])</span><br><span class="line">        self.y_data &#x3D; torch.from_numpy(xy[:, [-1]])</span><br><span class="line">        self.len &#x3D; xy.shape[0]</span><br><span class="line">    </span><br><span class="line">    def __getitem__(self, index):</span><br><span class="line">        # dataloader中使用该方法，通过index进行访问</span><br><span class="line">        return self.x_data[index], self.y_data[index]</span><br><span class="line"></span><br><span class="line">    def __len__(self):</span><br><span class="line">        # 查询数据集中数量，可以通过len(mydataset)得到</span><br><span class="line">        return self.len</span><br><span class="line"></span><br><span class="line"># 实例化这个类，然后我们就得到了Dataset类型的数据，记下来就将这个类传给DataLoader，就可以了。</span><br><span class="line">myDataset &#x3D; MyDataset()</span><br><span class="line"></span><br><span class="line"># 构建dataloader</span><br><span class="line">train_loader &#x3D; DataLoader(dataset&#x3D;myDataset,</span><br><span class="line">                          batch_size&#x3D;32,</span><br><span class="line">                          shuffle&#x3D;True)</span><br><span class="line"></span><br><span class="line">for epoch in range(2):</span><br><span class="line">    for i, data in enumerate(train_loader):</span><br><span class="line">        # 将数据从 train_loader 中读出来,一次读取的样本数是32个</span><br><span class="line">        inputs, labels &#x3D; data</span><br><span class="line">        # 将这些数据转换成Variable类型</span><br><span class="line">        inputs, labels &#x3D; Variable(inputs), Variable(labels)</span><br><span class="line">		# 模型训练...</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">import os</span><br><span class="line">from torch.utils.data import Dataset</span><br><span class="line">from torch.utils.data import DataLoader</span><br><span class="line"></span><br><span class="line"># 根据自己的数据集格式进行重构</span><br><span class="line">class MyDataset(Dataset):</span><br><span class="line">    def __init__(self):</span><br><span class="line">        #下载数据、初始化数据，都可以在这里完成</span><br><span class="line">        xy = np.loadtxt(&#x27;label.txt&#x27;, delimiter=&#x27;,&#x27;, dtype=np.float32)</span><br><span class="line">        # 使用numpy读取数据</span><br><span class="line">        self.x_data = torch.from_numpy(xy[:, 0:-1])</span><br><span class="line">        self.y_data = torch.from_numpy(xy[:, [-1]])</span><br><span class="line">        self.len = xy.shape[0]</span><br><span class="line">    </span><br><span class="line">    def __getitem__(self, index):</span><br><span class="line">        # dataloader中使用该方法，通过index进行访问</span><br><span class="line">        return self.x_data[index], self.y_data[index]</span><br><span class="line"></span><br><span class="line">    def __len__(self):</span><br><span class="line">        # 查询数据集中数量，可以通过len(mydataset)得到</span><br><span class="line">        return self.len</span><br><span class="line"></span><br><span class="line"># 实例化这个类，然后我们就得到了Dataset类型的数据，记下来就将这个类传给DataLoader，就可以了。</span><br><span class="line">myDataset = MyDataset()</span><br><span class="line"></span><br><span class="line"># 构建dataloader</span><br><span class="line">train_loader = DataLoader(dataset=myDataset,</span><br><span class="line">                          batch_size=32,</span><br><span class="line">                          shuffle=True)</span><br><span class="line"></span><br><span class="line">for epoch in range(2):</span><br><span class="line">    for i, data in enumerate(train_loader):</span><br><span class="line">        # 将数据从 train_loader 中读出来,一次读取的样本数是32个</span><br><span class="line">        inputs, labels = data</span><br><span class="line">        # 将这些数据转换成Variable类型</span><br><span class="line">        inputs, labels = Variable(inputs), Variable(labels)</span><br><span class="line">		# 模型训练...</span><br></pre></td></tr></table></figure>
 <p>通过以上模板就能大致了解pytorch中的数据加载机制，下面开始介绍YOLOv3中的数据加载。</p>
 <h2 id="3-YOLOv3中的数据加载"><a href="#3-YOLOv3中的数据加载" class="headerlink" title="3. YOLOv3中的数据加载"></a>3. YOLOv3中的数据加载</h2><p>下面解析的是LoadImagesAndLabels类中的几个主要的函数：</p>
 <h3 id="3-1-init函数"><a href="#3-1-init函数" class="headerlink" title="3.1 init函数"></a>3.1 init函数</h3><p>init函数中包含了大部分需要处理的数据</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br></pre></td><td class="code"><pre><span class="line">class LoadImagesAndLabels(Dataset):  # for training&#x2F;testing</span><br><span class="line">    def __init__(self,</span><br><span class="line">                 path,</span><br><span class="line">                 img_size&#x3D;416,</span><br><span class="line">                 batch_size&#x3D;16,</span><br><span class="line">                 augment&#x3D;False,</span><br><span class="line">                 hyp&#x3D;None,</span><br><span class="line">                 rect&#x3D;False,</span><br><span class="line">                 image_weights&#x3D;False,</span><br><span class="line">                 cache_labels&#x3D;False,</span><br><span class="line">                 cache_images&#x3D;False):</span><br><span class="line">        path &#x3D; str(Path(path))  # os-agnostic</span><br><span class="line">        assert os.path.isfile(path), &#39;File not found %s. See %s&#39; % (path,</span><br><span class="line">                                                                    help_url)</span><br><span class="line">        with open(path, &#39;r&#39;) as f:</span><br><span class="line">            self.img_files &#x3D; [</span><br><span class="line">                x.replace(&#39;&#x2F;&#39;, os.sep)</span><br><span class="line">                for x in f.read().splitlines()  # os-agnostic</span><br><span class="line">                if os.path.splitext(x)[-1].lower() in img_formats</span><br><span class="line">            ]</span><br><span class="line">        # img_files是一个list，保存的是图片的路径</span><br><span class="line"></span><br><span class="line">        n &#x3D; len(self.img_files)</span><br><span class="line">        assert n &gt; 0, &#39;No images found in %s. See %s&#39; % (path, help_url)</span><br><span class="line">        bi &#x3D; np.floor(np.arange(n) &#x2F; batch_size).astype(np.int)  # batch index</span><br><span class="line">        # 如果n&#x3D;10, batch&#x3D;2, bi&#x3D;[0,0,1,1,2,2,3,3,4,4]</span><br><span class="line">        nb &#x3D; bi[-1] + 1  # 最多有多少个batch</span><br><span class="line"></span><br><span class="line">        self.n &#x3D; n</span><br><span class="line">        self.batch &#x3D; bi  # 图片的batch索引，代表第几个batch的图片</span><br><span class="line">        self.img_size &#x3D; img_size</span><br><span class="line">        self.augment &#x3D; augment</span><br><span class="line">        self.hyp &#x3D; hyp</span><br><span class="line">        self.image_weights &#x3D; image_weights # 是否选择根据权重进行采样</span><br><span class="line">        self.rect &#x3D; False if image_weights else rect</span><br><span class="line">        # 如果选择根据权重进行采样，将无法使用矩形训练：</span><br><span class="line">        # 具体内容见下文</span><br><span class="line"></span><br><span class="line">        # 标签文件是通过images替换为labels, .jpg替换为.txt得到的。</span><br><span class="line">        self.label_files &#x3D; [</span><br><span class="line">            x.replace(&#39;images&#39;,</span><br><span class="line">                      &#39;labels&#39;).replace(os.path.splitext(x)[-1], &#39;.txt&#39;)</span><br><span class="line">            for x in self.img_files</span><br><span class="line">        ]</span><br><span class="line"></span><br><span class="line">        # 矩形训练具体内容见下文解析</span><br><span class="line">        if self.rect:</span><br><span class="line">            # 获取图片的长和宽 (wh)</span><br><span class="line">            sp &#x3D; path.replace(&#39;.txt&#39;, &#39;.shapes&#39;)</span><br><span class="line">            # 字符串替换</span><br><span class="line">            # shapefile path</span><br><span class="line">            try:</span><br><span class="line">                with open(sp, &#39;r&#39;) as f:  # 读取shape文件</span><br><span class="line">                    s &#x3D; [x.split() for x in f.read().splitlines()]</span><br><span class="line">                    assert len(s) &#x3D;&#x3D; n, &#39;Shapefile out of sync&#39;</span><br><span class="line">            except:</span><br><span class="line">                s &#x3D; [</span><br><span class="line">                    exif_size(Image.open(f))</span><br><span class="line">                    for f in tqdm(self.img_files, desc&#x3D;&#39;Reading image shapes&#39;)</span><br><span class="line">                ]</span><br><span class="line">                np.savetxt(sp, s, fmt&#x3D;&#39;%g&#39;)  # overwrites existing (if any)</span><br><span class="line"></span><br><span class="line">            # 根据长宽比进行排序</span><br><span class="line">            s &#x3D; np.array(s, dtype&#x3D;np.float64)</span><br><span class="line">            ar &#x3D; s[:, 1] &#x2F; s[:, 0]  # aspect ratio</span><br><span class="line">            i &#x3D; ar.argsort()</span><br><span class="line"></span><br><span class="line">            # 根据顺序重排顺序</span><br><span class="line">            self.img_files &#x3D; [self.img_files[i] for i in i]</span><br><span class="line">            self.label_files &#x3D; [self.label_files[i] for i in i]</span><br><span class="line">            self.shapes &#x3D; s[i]  # wh</span><br><span class="line">            ar &#x3D; ar[i]</span><br><span class="line"></span><br><span class="line">            # 设置训练的图片形状</span><br><span class="line">            shapes &#x3D; [[1, 1]] * nb</span><br><span class="line">            for i in range(nb):</span><br><span class="line">                ari &#x3D; ar[bi &#x3D;&#x3D; i]</span><br><span class="line">                mini, maxi &#x3D; ari.min(), ari.max()</span><br><span class="line">                if maxi &lt; 1:</span><br><span class="line">                    shapes[i] &#x3D; [maxi, 1]</span><br><span class="line">                elif mini &gt; 1:</span><br><span class="line">                    shapes[i] &#x3D; [1, 1 &#x2F; mini]</span><br><span class="line"></span><br><span class="line">            self.batch_shapes &#x3D; np.ceil(</span><br><span class="line">                np.array(shapes) * img_size &#x2F; 32.).astype(np.int) * 32</span><br><span class="line"></span><br><span class="line">        # 预载标签</span><br><span class="line">        # weighted CE 训练时需要这个步骤</span><br><span class="line">        # 否则无法按照权重进行采样</span><br><span class="line">        self.imgs &#x3D; [None] * n</span><br><span class="line">        self.labels &#x3D; [None] * n</span><br><span class="line">        if cache_labels or image_weights:  # cache labels for faster training</span><br><span class="line">            self.labels &#x3D; [np.zeros((0, 5))] * n</span><br><span class="line">            extract_bounding_boxes &#x3D; False</span><br><span class="line">            create_datasubset &#x3D; False</span><br><span class="line">            pbar &#x3D; tqdm(self.label_files, desc&#x3D;&#39;Caching labels&#39;)</span><br><span class="line">            nm, nf, ne, ns, nd &#x3D; 0, 0, 0, 0, 0  # number missing, found, empty, datasubset, duplicate</span><br><span class="line">            for i, file in enumerate(pbar):</span><br><span class="line">                try:</span><br><span class="line">                    # 读取每个文件内容</span><br><span class="line">                    with open(file, &#39;r&#39;) as f:</span><br><span class="line">                        l &#x3D; np.array(</span><br><span class="line">                            [x.split() for x in f.read().splitlines()],</span><br><span class="line">                            dtype&#x3D;np.float32)</span><br><span class="line">                except:</span><br><span class="line">                    nm +&#x3D; 1  # print(&#39;missing labels for image %s&#39; % self.img_files[i])  # file missing</span><br><span class="line">                    continue</span><br><span class="line"></span><br><span class="line">                if l.shape[0]:</span><br><span class="line">                    # 判断文件内容是否符合要求</span><br><span class="line">                    # 所有的值需要&gt;0, &lt;1, 一共5列</span><br><span class="line">                    assert l.shape[1] &#x3D;&#x3D; 5, &#39;&gt; 5 label columns: %s&#39; % file</span><br><span class="line">                    assert (l &gt;&#x3D; 0).all(), &#39;negative labels: %s&#39; % file</span><br><span class="line">                    assert (l[:, 1:] &lt;&#x3D; 1).all(</span><br><span class="line">                    ), &#39;non-normalized or out of bounds coordinate labels: %s&#39; % file</span><br><span class="line">                    if np.unique(</span><br><span class="line">                            l, axis&#x3D;0).shape[0] &lt; l.shape[0]:  # duplicate rows</span><br><span class="line">                        nd +&#x3D; 1  # print(&#39;WARNING: duplicate rows in %s&#39; % self.label_files[i])  # duplicate rows</span><br><span class="line"></span><br><span class="line">                    self.labels[i] &#x3D; l</span><br><span class="line">                    nf +&#x3D; 1  # file found</span><br><span class="line"></span><br><span class="line">                    # 创建一个小型的数据集进行试验</span><br><span class="line">                    if create_datasubset and ns &lt; 1E4:</span><br><span class="line">                        if ns &#x3D;&#x3D; 0:</span><br><span class="line">                            create_folder(path&#x3D;&#39;.&#x2F;datasubset&#39;)</span><br><span class="line">                            os.makedirs(&#39;.&#x2F;datasubset&#x2F;images&#39;)</span><br><span class="line">                        exclude_classes &#x3D; 43</span><br><span class="line">                        if exclude_classes not in l[:, 0]:</span><br><span class="line">                            ns +&#x3D; 1</span><br><span class="line">                            # shutil.copy(src&#x3D;self.img_files[i], dst&#x3D;&#39;.&#x2F;datasubset&#x2F;images&#x2F;&#39;)  # copy image</span><br><span class="line">                            with open(&#39;.&#x2F;datasubset&#x2F;images.txt&#39;, &#39;a&#39;) as f:</span><br><span class="line">                                f.write(self.img_files[i] + &#39;\n&#39;)</span><br><span class="line"></span><br><span class="line">                    # 为两阶段分类器提取目标检测的检测框</span><br><span class="line">                    # 默认开关是关掉的，不是很理解</span><br><span class="line">                    if extract_bounding_boxes:</span><br><span class="line">                        p &#x3D; Path(self.img_files[i])</span><br><span class="line">                        img &#x3D; cv2.imread(str(p))</span><br><span class="line">                        h, w &#x3D; img.shape[:2]</span><br><span class="line">                        for j, x in enumerate(l):</span><br><span class="line">                            f &#x3D; &#39;%s%sclassifier%s%g_%g_%s&#39; % (p.parent.parent,</span><br><span class="line">                                                              os.sep, os.sep,</span><br><span class="line">                                                              x[0], j, p.name)</span><br><span class="line">                            if not os.path.exists(Path(f).parent):</span><br><span class="line">                                os.makedirs(Path(f).parent)</span><br><span class="line">                                # make new output folder</span><br><span class="line"></span><br><span class="line">                            b &#x3D; x[1:] * np.array([w, h, w, h])  # box</span><br><span class="line">                            b[2:] &#x3D; b[2:].max()  # rectangle to square</span><br><span class="line">                            b[2:] &#x3D; b[2:] * 1.3 + 30  # pad</span><br><span class="line"></span><br><span class="line">                            b &#x3D; xywh2xyxy(b.reshape(-1,4)).ravel().astype(np.int)</span><br><span class="line"></span><br><span class="line">                            b[[0,2]] &#x3D; np.clip(b[[0, 2]], 0,w)  # clip boxes outside of image</span><br><span class="line">                            b[[1, 3]] &#x3D; np.clip(b[[1, 3]], 0, h)</span><br><span class="line">                            assert cv2.imwrite(f, img[b[1]:b[3], b[0]:b[2]]), &#39;Failure extracting classifier boxes&#39;</span><br><span class="line">                else:</span><br><span class="line">                    ne +&#x3D; 1</span><br><span class="line"></span><br><span class="line">                pbar.desc &#x3D; &#39;Caching labels (%g found, %g missing, %g empty, %g duplicate, for %g images)&#39; </span><br><span class="line">                % (nf, nm, ne, nd, n) # 统计发现，丢失，空，重复标签的数量。</span><br><span class="line">            assert nf &gt; 0, &#39;No labels found. See %s&#39; % help_url</span><br><span class="line"></span><br><span class="line">        # 将图片加载到内存中，可以加速训练</span><br><span class="line">        # 警告：如果在数据比较多的情况下可能会超出RAM</span><br><span class="line">        if cache_images:  # if training</span><br><span class="line">            gb &#x3D; 0  # 计算缓存到内存中的图片占用的空间GB为单位</span><br><span class="line">            pbar &#x3D; tqdm(range(len(self.img_files)), desc&#x3D;&#39;Caching images&#39;)</span><br><span class="line">            self.img_hw0, self.img_hw &#x3D; [None] * n, [None] * n</span><br><span class="line">            for i in pbar:  # max 10k images</span><br><span class="line">                self.imgs[i], self.img_hw0[i], self.img_hw[i] &#x3D; load_image(</span><br><span class="line">                    self, i)  # img, hw_original, hw_resized</span><br><span class="line">                gb +&#x3D; self.imgs[i].nbytes</span><br><span class="line">                pbar.desc &#x3D; &#39;Caching images (%.1fGB)&#39; % (gb &#x2F; 1E9)</span><br><span class="line"></span><br><span class="line">        # 删除损坏的文件</span><br><span class="line">        # 根据需要进行手动开关</span><br><span class="line">        detect_corrupted_images &#x3D; False</span><br><span class="line">        if detect_corrupted_images:</span><br><span class="line">            from skimage import io  # conda install -c conda-forge scikit-image</span><br><span class="line">            for file in tqdm(self.img_files,</span><br><span class="line">                             desc&#x3D;&#39;Detecting corrupted images&#39;):</span><br><span class="line">                try:</span><br><span class="line">                    _ &#x3D; io.imread(file)</span><br><span class="line">                except:</span><br><span class="line">                    print(&#39;Corrupted image detected: %s&#39; % file)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br></pre></td><td class="code"><pre><span class="line">class LoadImagesAndLabels(Dataset):  # for training/testing</span><br><span class="line">    def __init__(self,</span><br><span class="line">                 path,</span><br><span class="line">                 img_size=416,</span><br><span class="line">                 batch_size=16,</span><br><span class="line">                 augment=False,</span><br><span class="line">                 hyp=None,</span><br><span class="line">                 rect=False,</span><br><span class="line">                 image_weights=False,</span><br><span class="line">                 cache_labels=False,</span><br><span class="line">                 cache_images=False):</span><br><span class="line">        path = str(Path(path))  # os-agnostic</span><br><span class="line">        assert os.path.isfile(path), &#x27;File not found %s. See %s&#x27; % (path,</span><br><span class="line">                                                                    help_url)</span><br><span class="line">        with open(path, &#x27;r&#x27;) as f:</span><br><span class="line">            self.img_files = [</span><br><span class="line">                x.replace(&#x27;/&#x27;, os.sep)</span><br><span class="line">                for x in f.read().splitlines()  # os-agnostic</span><br><span class="line">                if os.path.splitext(x)[-1].lower() in img_formats</span><br><span class="line">            ]</span><br><span class="line">        # img_files是一个list，保存的是图片的路径</span><br><span class="line"></span><br><span class="line">        n = len(self.img_files)</span><br><span class="line">        assert n &gt; 0, &#x27;No images found in %s. See %s&#x27; % (path, help_url)</span><br><span class="line">        bi = np.floor(np.arange(n) / batch_size).astype(np.int)  # batch index</span><br><span class="line">        # 如果n=10, batch=2, bi=[0,0,1,1,2,2,3,3,4,4]</span><br><span class="line">        nb = bi[-1] + 1  # 最多有多少个batch</span><br><span class="line"></span><br><span class="line">        self.n = n</span><br><span class="line">        self.batch = bi  # 图片的batch索引，代表第几个batch的图片</span><br><span class="line">        self.img_size = img_size</span><br><span class="line">        self.augment = augment</span><br><span class="line">        self.hyp = hyp</span><br><span class="line">        self.image_weights = image_weights # 是否选择根据权重进行采样</span><br><span class="line">        self.rect = False if image_weights else rect</span><br><span class="line">        # 如果选择根据权重进行采样，将无法使用矩形训练：</span><br><span class="line">        # 具体内容见下文</span><br><span class="line"></span><br><span class="line">        # 标签文件是通过images替换为labels, .jpg替换为.txt得到的。</span><br><span class="line">        self.label_files = [</span><br><span class="line">            x.replace(&#x27;images&#x27;,</span><br><span class="line">                      &#x27;labels&#x27;).replace(os.path.splitext(x)[-1], &#x27;.txt&#x27;)</span><br><span class="line">            for x in self.img_files</span><br><span class="line">        ]</span><br><span class="line"></span><br><span class="line">        # 矩形训练具体内容见下文解析</span><br><span class="line">        if self.rect:</span><br><span class="line">            # 获取图片的长和宽 (wh)</span><br><span class="line">            sp = path.replace(&#x27;.txt&#x27;, &#x27;.shapes&#x27;)</span><br><span class="line">            # 字符串替换</span><br><span class="line">            # shapefile path</span><br><span class="line">            try:</span><br><span class="line">                with open(sp, &#x27;r&#x27;) as f:  # 读取shape文件</span><br><span class="line">                    s = [x.split() for x in f.read().splitlines()]</span><br><span class="line">                    assert len(s) == n, &#x27;Shapefile out of sync&#x27;</span><br><span class="line">            except:</span><br><span class="line">                s = [</span><br><span class="line">                    exif_size(Image.open(f))</span><br><span class="line">                    for f in tqdm(self.img_files, desc=&#x27;Reading image shapes&#x27;)</span><br><span class="line">                ]</span><br><span class="line">                np.savetxt(sp, s, fmt=&#x27;%g&#x27;)  # overwrites existing (if any)</span><br><span class="line"></span><br><span class="line">            # 根据长宽比进行排序</span><br><span class="line">            s = np.array(s, dtype=np.float64)</span><br><span class="line">            ar = s[:, 1] / s[:, 0]  # aspect ratio</span><br><span class="line">            i = ar.argsort()</span><br><span class="line"></span><br><span class="line">            # 根据顺序重排顺序</span><br><span class="line">            self.img_files = [self.img_files[i] for i in i]</span><br><span class="line">            self.label_files = [self.label_files[i] for i in i]</span><br><span class="line">            self.shapes = s[i]  # wh</span><br><span class="line">            ar = ar[i]</span><br><span class="line"></span><br><span class="line">            # 设置训练的图片形状</span><br><span class="line">            shapes = [[1, 1]] * nb</span><br><span class="line">            for i in range(nb):</span><br><span class="line">                ari = ar[bi == i]</span><br><span class="line">                mini, maxi = ari.min(), ari.max()</span><br><span class="line">                if maxi &lt; 1:</span><br><span class="line">                    shapes[i] = [maxi, 1]</span><br><span class="line">                elif mini &gt; 1:</span><br><span class="line">                    shapes[i] = [1, 1 / mini]</span><br><span class="line"></span><br><span class="line">            self.batch_shapes = np.ceil(</span><br><span class="line">                np.array(shapes) * img_size / 32.).astype(np.int) * 32</span><br><span class="line"></span><br><span class="line">        # 预载标签</span><br><span class="line">        # weighted CE 训练时需要这个步骤</span><br><span class="line">        # 否则无法按照权重进行采样</span><br><span class="line">        self.imgs = [None] * n</span><br><span class="line">        self.labels = [None] * n</span><br><span class="line">        if cache_labels or image_weights:  # cache labels for faster training</span><br><span class="line">            self.labels = [np.zeros((0, 5))] * n</span><br><span class="line">            extract_bounding_boxes = False</span><br><span class="line">            create_datasubset = False</span><br><span class="line">            pbar = tqdm(self.label_files, desc=&#x27;Caching labels&#x27;)</span><br><span class="line">            nm, nf, ne, ns, nd = 0, 0, 0, 0, 0  # number missing, found, empty, datasubset, duplicate</span><br><span class="line">            for i, file in enumerate(pbar):</span><br><span class="line">                try:</span><br><span class="line">                    # 读取每个文件内容</span><br><span class="line">                    with open(file, &#x27;r&#x27;) as f:</span><br><span class="line">                        l = np.array(</span><br><span class="line">                            [x.split() for x in f.read().splitlines()],</span><br><span class="line">                            dtype=np.float32)</span><br><span class="line">                except:</span><br><span class="line">                    nm += 1  # print(&#x27;missing labels for image %s&#x27; % self.img_files[i])  # file missing</span><br><span class="line">                    continue</span><br><span class="line"></span><br><span class="line">                if l.shape[0]:</span><br><span class="line">                    # 判断文件内容是否符合要求</span><br><span class="line">                    # 所有的值需要&gt;0, &lt;1, 一共5列</span><br><span class="line">                    assert l.shape[1] == 5, &#x27;&gt; 5 label columns: %s&#x27; % file</span><br><span class="line">                    assert (l &gt;= 0).all(), &#x27;negative labels: %s&#x27; % file</span><br><span class="line">                    assert (l[:, 1:] &lt;= 1).all(</span><br><span class="line">                    ), &#x27;non-normalized or out of bounds coordinate labels: %s&#x27; % file</span><br><span class="line">                    if np.unique(</span><br><span class="line">                            l, axis=0).shape[0] &lt; l.shape[0]:  # duplicate rows</span><br><span class="line">                        nd += 1  # print(&#x27;WARNING: duplicate rows in %s&#x27; % self.label_files[i])  # duplicate rows</span><br><span class="line"></span><br><span class="line">                    self.labels[i] = l</span><br><span class="line">                    nf += 1  # file found</span><br><span class="line"></span><br><span class="line">                    # 创建一个小型的数据集进行试验</span><br><span class="line">                    if create_datasubset and ns &lt; 1E4:</span><br><span class="line">                        if ns == 0:</span><br><span class="line">                            create_folder(path=&#x27;./datasubset&#x27;)</span><br><span class="line">                            os.makedirs(&#x27;./datasubset/images&#x27;)</span><br><span class="line">                        exclude_classes = 43</span><br><span class="line">                        if exclude_classes not in l[:, 0]:</span><br><span class="line">                            ns += 1</span><br><span class="line">                            # shutil.copy(src=self.img_files[i], dst=&#x27;./datasubset/images/&#x27;)  # copy image</span><br><span class="line">                            with open(&#x27;./datasubset/images.txt&#x27;, &#x27;a&#x27;) as f:</span><br><span class="line">                                f.write(self.img_files[i] + &#x27;\n&#x27;)</span><br><span class="line"></span><br><span class="line">                    # 为两阶段分类器提取目标检测的检测框</span><br><span class="line">                    # 默认开关是关掉的，不是很理解</span><br><span class="line">                    if extract_bounding_boxes:</span><br><span class="line">                        p = Path(self.img_files[i])</span><br><span class="line">                        img = cv2.imread(str(p))</span><br><span class="line">                        h, w = img.shape[:2]</span><br><span class="line">                        for j, x in enumerate(l):</span><br><span class="line">                            f = &#x27;%s%sclassifier%s%g_%g_%s&#x27; % (p.parent.parent,</span><br><span class="line">                                                              os.sep, os.sep,</span><br><span class="line">                                                              x[0], j, p.name)</span><br><span class="line">                            if not os.path.exists(Path(f).parent):</span><br><span class="line">                                os.makedirs(Path(f).parent)</span><br><span class="line">                                # make new output folder</span><br><span class="line"></span><br><span class="line">                            b = x[1:] * np.array([w, h, w, h])  # box</span><br><span class="line">                            b[2:] = b[2:].max()  # rectangle to square</span><br><span class="line">                            b[2:] = b[2:] * 1.3 + 30  # pad</span><br><span class="line"></span><br><span class="line">                            b = xywh2xyxy(b.reshape(-1,4)).ravel().astype(np.int)</span><br><span class="line"></span><br><span class="line">                            b[[0,2]] = np.clip(b[[0, 2]], 0,w)  # clip boxes outside of image</span><br><span class="line">                            b[[1, 3]] = np.clip(b[[1, 3]], 0, h)</span><br><span class="line">                            assert cv2.imwrite(f, img[b[1]:b[3], b[0]:b[2]]), &#x27;Failure extracting classifier boxes&#x27;</span><br><span class="line">                else:</span><br><span class="line">                    ne += 1</span><br><span class="line"></span><br><span class="line">                pbar.desc = &#x27;Caching labels (%g found, %g missing, %g empty, %g duplicate, for %g images)&#x27; </span><br><span class="line">                % (nf, nm, ne, nd, n) # 统计发现，丢失，空，重复标签的数量。</span><br><span class="line">            assert nf &gt; 0, &#x27;No labels found. See %s&#x27; % help_url</span><br><span class="line"></span><br><span class="line">        # 将图片加载到内存中，可以加速训练</span><br><span class="line">        # 警告：如果在数据比较多的情况下可能会超出RAM</span><br><span class="line">        if cache_images:  # if training</span><br><span class="line">            gb = 0  # 计算缓存到内存中的图片占用的空间GB为单位</span><br><span class="line">            pbar = tqdm(range(len(self.img_files)), desc=&#x27;Caching images&#x27;)</span><br><span class="line">            self.img_hw0, self.img_hw = [None] * n, [None] * n</span><br><span class="line">            for i in pbar:  # max 10k images</span><br><span class="line">                self.imgs[i], self.img_hw0[i], self.img_hw[i] = load_image(</span><br><span class="line">                    self, i)  # img, hw_original, hw_resized</span><br><span class="line">                gb += self.imgs[i].nbytes</span><br><span class="line">                pbar.desc = &#x27;Caching images (%.1fGB)&#x27; % (gb / 1E9)</span><br><span class="line"></span><br><span class="line">        # 删除损坏的文件</span><br><span class="line">        # 根据需要进行手动开关</span><br><span class="line">        detect_corrupted_images = False</span><br><span class="line">        if detect_corrupted_images:</span><br><span class="line">            from skimage import io  # conda install -c conda-forge scikit-image</span><br><span class="line">            for file in tqdm(self.img_files,</span><br><span class="line">                             desc=&#x27;Detecting corrupted images&#x27;):</span><br><span class="line">                try:</span><br><span class="line">                    _ = io.imread(file)</span><br><span class="line">                except:</span><br><span class="line">                    print(&#x27;Corrupted image detected: %s&#x27; % file)</span><br></pre></td></tr></table></figure>
 <p><strong>Rectangular inference（矩形推理）</strong></p>
 <ol>
 <li>矩形推理是在detect.py，也就是测试过程中的实现，可以减少推理时间。YOLOv3中是下采样32倍，长宽也必须是32的倍数，所以在进入模型前，数据需要处理到416×416大小，这个过程称为仿射变换，如果用opencv实现可以用以下代码：</li>
 </ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"># 来自 https:&#x2F;&#x2F;zhuanlan.zhihu.com&#x2F;p&#x2F;93822508</span><br><span class="line">def cv2_letterbox_image(image, expected_size):</span><br><span class="line">    ih, iw &#x3D; image.shape[0:2]</span><br><span class="line">    ew, eh &#x3D; expected_size</span><br><span class="line">    scale &#x3D; min(eh &#x2F; ih, ew &#x2F; iw)</span><br><span class="line">    nh &#x3D; int(ih * scale)</span><br><span class="line">    nw &#x3D; int(iw * scale)</span><br><span class="line">    image &#x3D; cv2.resize(image, (nw, nh), interpolation&#x3D;cv2.INTER_CUBIC)</span><br><span class="line">    top &#x3D; (eh - nh) &#x2F;&#x2F; 2</span><br><span class="line">    bottom &#x3D; eh - nh - top</span><br><span class="line">    left &#x3D; (ew - nw) &#x2F;&#x2F; 2</span><br><span class="line">    right &#x3D; ew - nw - left</span><br><span class="line">    new_img &#x3D; cv2.copyMakeBorder(image, top, bottom, left, right, cv2.BORDER_CONSTANT)</span><br><span class="line">    return new_img</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"># 来自 https://zhuanlan.zhihu.com/p/93822508</span><br><span class="line">def cv2_letterbox_image(image, expected_size):</span><br><span class="line">    ih, iw = image.shape[0:2]</span><br><span class="line">    ew, eh = expected_size</span><br><span class="line">    scale = min(eh / ih, ew / iw)</span><br><span class="line">    nh = int(ih * scale)</span><br><span class="line">    nw = int(iw * scale)</span><br><span class="line">    image = cv2.resize(image, (nw, nh), interpolation=cv2.INTER_CUBIC)</span><br><span class="line">    top = (eh - nh) // 2</span><br><span class="line">    bottom = eh - nh - top</span><br><span class="line">    left = (ew - nw) // 2</span><br><span class="line">    right = ew - nw - left</span><br><span class="line">    new_img = cv2.copyMakeBorder(image, top, bottom, left, right, cv2.BORDER_CONSTANT)</span><br><span class="line">    return new_img</span><br></pre></td></tr></table></figure>
 <p>比如下图是一个h&gt;w，一个是w&gt;h的图片经过仿射变换后resize到416×416的示例：</p>
 <p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pyyolov3/643.webp" alt></p>
 <p>以上就是正方形推理，但是可以看出以上通过补充得到的结果会存在很多冗余信息，而Rectangular Training思路就是想要去掉这些冗余的部分。</p>
@@ -325,417 +167,74 @@
 <p><strong>Rectangular Training（矩形训练）</strong></p>
 <p>很自然的，训练的过程也可以用到这个想法，减少冗余。不过训练的时候情况比较复杂，由于在训练过程中是一个batch的图片，而每个batch图片是有可能长宽比不同的，这就是与测试最大的区别。具体是实现是取这个batch中最大的场合宽，然后将整个batch中填充到max width和max  height,这样操作对小一些的图片来说也是比较浪费。这里的yolov3的实现主要就是优化了一下如何将比例相近的图片放在一个batch，这样显然填充的就更少一些了。作者在issue中提到，在coco数据集中使用这个策略进行训练，能够快1/3。</p>
 <p>而如果选择开启矩形训练，必须要关闭dataloader中的shuffle参数，防止对数据的顺序进行调整。同时如果选择image_weights, 根据图片进行采样，也无法与矩阵训练同时使用。</p>
-<h3 id="3-2-getitem函数"><a href="#3-2-getitem函数" class="headerlink" title="3.2 getitem函数"></a>3.2 getitem函数</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br></pre></td><td class="code"><pre><span class="line">def __getitem__(self, index):</span><br><span class="line">    # 新的下角标</span><br><span class="line">    if self.image_weights:</span><br><span class="line">        index &#x3D; self.indices[index]</span><br><span class="line"></span><br><span class="line">    img_path &#x3D; self.img_files[index]</span><br><span class="line">    label_path &#x3D; self.label_files[index]</span><br><span class="line"></span><br><span class="line">    hyp &#x3D; self.hyp</span><br><span class="line">    mosaic &#x3D; True and self.augment</span><br><span class="line">    # 如果开启组合变化、数据增强</span><br><span class="line">    # 加载四张图片，作为一个拼图，具体看下文解析。</span><br><span class="line">    if mosaic:</span><br><span class="line">        # 加载拼图内容</span><br><span class="line">        img, labels &#x3D; load_mosaic(self, index)</span><br><span class="line">        shapes &#x3D; None</span><br><span class="line"></span><br><span class="line">    else:</span><br><span class="line">        # 加载图片</span><br><span class="line">        img, (h0, w0), (h, w) &#x3D; load_image(self, index)</span><br><span class="line"></span><br><span class="line">        # 仿射变换</span><br><span class="line">        shape &#x3D; self.batch_shapes[self.batch[</span><br><span class="line">            index]] if self.rect else self.img_size</span><br><span class="line">        img, ratio, pad &#x3D; letterbox(img,</span><br><span class="line">                                    shape,</span><br><span class="line">                                    auto&#x3D;False,</span><br><span class="line">                                    scaleup&#x3D;self.augment)</span><br><span class="line">        shapes &#x3D; (h0, w0), (</span><br><span class="line">            (h &#x2F; h0, w &#x2F; w0), pad)</span><br><span class="line"></span><br><span class="line">        # 加载标注文件</span><br><span class="line">        labels &#x3D; []</span><br><span class="line">        if os.path.isfile(label_path):</span><br><span class="line">            x &#x3D; self.labels[index]</span><br><span class="line">            if x is None:  # 如果标签没有加载，读取label_path内容</span><br><span class="line">                with open(label_path, &#39;r&#39;) as f:</span><br><span class="line">                    x &#x3D; np.array(</span><br><span class="line">                        [x.split() for x in f.read().splitlines()],</span><br><span class="line">                        dtype&#x3D;np.float32)</span><br><span class="line"></span><br><span class="line">            if x.size &gt; 0:</span><br><span class="line">                # 将归一化后的xywh转化为左上角、右下角的表达形式</span><br><span class="line">                labels &#x3D; x.copy()</span><br><span class="line">                labels[:, 1] &#x3D; ratio[0] * w * (</span><br><span class="line">                    x[:, 1] - x[:, 3] &#x2F; 2) + pad[0]  # pad width</span><br><span class="line">                labels[:, 2] &#x3D; ratio[1] * h * (</span><br><span class="line">                    x[:, 2] - x[:, 4] &#x2F; 2) + pad[1]  # pad height</span><br><span class="line">                labels[:, 3] &#x3D; ratio[0] * w * (x[:, 1] +</span><br><span class="line">                                               x[:, 3] &#x2F; 2) + pad[0]</span><br><span class="line">                labels[:, 4] &#x3D; ratio[1] * h * (x[:, 2] +</span><br><span class="line">                                               x[:, 4] &#x2F; 2) + pad[1]</span><br><span class="line"></span><br><span class="line">    if self.augment:</span><br><span class="line">        # 图片空间的数据增强</span><br><span class="line">        if not mosaic:</span><br><span class="line">            # 如果没有使用组合的方法，那么对图片进行随机放射</span><br><span class="line">            img, labels &#x3D; random_affine(img,</span><br><span class="line">                                        labels,</span><br><span class="line">                                        degrees&#x3D;hyp[&#39;degrees&#39;],</span><br><span class="line">                                        translate&#x3D;hyp[&#39;translate&#39;],</span><br><span class="line">                                        scale&#x3D;hyp[&#39;scale&#39;],</span><br><span class="line">                                        shear&#x3D;hyp[&#39;shear&#39;])</span><br><span class="line"></span><br><span class="line">        # 增强hsv空间</span><br><span class="line">        augment_hsv(img,</span><br><span class="line">                    hgain&#x3D;hyp[&#39;hsv_h&#39;],</span><br><span class="line">                    sgain&#x3D;hyp[&#39;hsv_s&#39;],</span><br><span class="line">                    vgain&#x3D;hyp[&#39;hsv_v&#39;])</span><br><span class="line"></span><br><span class="line">    nL &#x3D; len(labels)  # 标注文件个数</span><br><span class="line"></span><br><span class="line">    if nL:</span><br><span class="line">        # 将 xyxy 格式转化为 xywh 格式</span><br><span class="line">        labels[:, 1:5] &#x3D; xyxy2xywh(labels[:, 1:5])</span><br><span class="line"></span><br><span class="line">        # 归一化到0-1之间</span><br><span class="line">        labels[:, [2, 4]] &#x2F;&#x3D; img.shape[0]  # height</span><br><span class="line">        labels[:, [1, 3]] &#x2F;&#x3D; img.shape[1]  # width</span><br><span class="line"></span><br><span class="line">    if self.augment:</span><br><span class="line">        # 随机左右翻转</span><br><span class="line">        lr_flip &#x3D; True</span><br><span class="line">        if lr_flip and random.random() &lt; 0.5:</span><br><span class="line">            img &#x3D; np.fliplr(img)</span><br><span class="line">            if nL:</span><br><span class="line">                labels[:, 1] &#x3D; 1 - labels[:, 1]</span><br><span class="line"></span><br><span class="line">        # 随机上下翻转</span><br><span class="line">        ud_flip &#x3D; False</span><br><span class="line">        if ud_flip and random.random() &lt; 0.5:</span><br><span class="line">            img &#x3D; np.flipud(img)</span><br><span class="line">            if nL:</span><br><span class="line">                labels[:, 2] &#x3D; 1 - labels[:, 2]</span><br><span class="line"></span><br><span class="line">    labels_out &#x3D; torch.zeros((nL, 6))</span><br><span class="line">    if nL:</span><br><span class="line">        labels_out[:, 1:] &#x3D; torch.from_numpy(labels)</span><br><span class="line"></span><br><span class="line">    # 图像维度转换</span><br><span class="line">    img &#x3D; img[:, :, ::-1].transpose(2, 0, 1)  # BGR to RGB, to 3x416x416</span><br><span class="line">    img &#x3D; np.ascontiguousarray(img)</span><br><span class="line"></span><br><span class="line">    return torch.from_numpy(img), labels_out, img_path, shapes</span><br></pre></td></tr></table></figure>
+<h3 id="3-2-getitem函数"><a href="#3-2-getitem函数" class="headerlink" title="3.2 getitem函数"></a>3.2 getitem函数</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br></pre></td><td class="code"><pre><span class="line">def __getitem__(self, index):</span><br><span class="line">    # 新的下角标</span><br><span class="line">    if self.image_weights:</span><br><span class="line">        index = self.indices[index]</span><br><span class="line"></span><br><span class="line">    img_path = self.img_files[index]</span><br><span class="line">    label_path = self.label_files[index]</span><br><span class="line"></span><br><span class="line">    hyp = self.hyp</span><br><span class="line">    mosaic = True and self.augment</span><br><span class="line">    # 如果开启组合变化、数据增强</span><br><span class="line">    # 加载四张图片，作为一个拼图，具体看下文解析。</span><br><span class="line">    if mosaic:</span><br><span class="line">        # 加载拼图内容</span><br><span class="line">        img, labels = load_mosaic(self, index)</span><br><span class="line">        shapes = None</span><br><span class="line"></span><br><span class="line">    else:</span><br><span class="line">        # 加载图片</span><br><span class="line">        img, (h0, w0), (h, w) = load_image(self, index)</span><br><span class="line"></span><br><span class="line">        # 仿射变换</span><br><span class="line">        shape = self.batch_shapes[self.batch[</span><br><span class="line">            index]] if self.rect else self.img_size</span><br><span class="line">        img, ratio, pad = letterbox(img,</span><br><span class="line">                                    shape,</span><br><span class="line">                                    auto=False,</span><br><span class="line">                                    scaleup=self.augment)</span><br><span class="line">        shapes = (h0, w0), (</span><br><span class="line">            (h / h0, w / w0), pad)</span><br><span class="line"></span><br><span class="line">        # 加载标注文件</span><br><span class="line">        labels = []</span><br><span class="line">        if os.path.isfile(label_path):</span><br><span class="line">            x = self.labels[index]</span><br><span class="line">            if x is None:  # 如果标签没有加载，读取label_path内容</span><br><span class="line">                with open(label_path, &#x27;r&#x27;) as f:</span><br><span class="line">                    x = np.array(</span><br><span class="line">                        [x.split() for x in f.read().splitlines()],</span><br><span class="line">                        dtype=np.float32)</span><br><span class="line"></span><br><span class="line">            if x.size &gt; 0:</span><br><span class="line">                # 将归一化后的xywh转化为左上角、右下角的表达形式</span><br><span class="line">                labels = x.copy()</span><br><span class="line">                labels[:, 1] = ratio[0] * w * (</span><br><span class="line">                    x[:, 1] - x[:, 3] / 2) + pad[0]  # pad width</span><br><span class="line">                labels[:, 2] = ratio[1] * h * (</span><br><span class="line">                    x[:, 2] - x[:, 4] / 2) + pad[1]  # pad height</span><br><span class="line">                labels[:, 3] = ratio[0] * w * (x[:, 1] +</span><br><span class="line">                                               x[:, 3] / 2) + pad[0]</span><br><span class="line">                labels[:, 4] = ratio[1] * h * (x[:, 2] +</span><br><span class="line">                                               x[:, 4] / 2) + pad[1]</span><br><span class="line"></span><br><span class="line">    if self.augment:</span><br><span class="line">        # 图片空间的数据增强</span><br><span class="line">        if not mosaic:</span><br><span class="line">            # 如果没有使用组合的方法，那么对图片进行随机放射</span><br><span class="line">            img, labels = random_affine(img,</span><br><span class="line">                                        labels,</span><br><span class="line">                                        degrees=hyp[&#x27;degrees&#x27;],</span><br><span class="line">                                        translate=hyp[&#x27;translate&#x27;],</span><br><span class="line">                                        scale=hyp[&#x27;scale&#x27;],</span><br><span class="line">                                        shear=hyp[&#x27;shear&#x27;])</span><br><span class="line"></span><br><span class="line">        # 增强hsv空间</span><br><span class="line">        augment_hsv(img,</span><br><span class="line">                    hgain=hyp[&#x27;hsv_h&#x27;],</span><br><span class="line">                    sgain=hyp[&#x27;hsv_s&#x27;],</span><br><span class="line">                    vgain=hyp[&#x27;hsv_v&#x27;])</span><br><span class="line"></span><br><span class="line">    nL = len(labels)  # 标注文件个数</span><br><span class="line"></span><br><span class="line">    if nL:</span><br><span class="line">        # 将 xyxy 格式转化为 xywh 格式</span><br><span class="line">        labels[:, 1:5] = xyxy2xywh(labels[:, 1:5])</span><br><span class="line"></span><br><span class="line">        # 归一化到0-1之间</span><br><span class="line">        labels[:, [2, 4]] /= img.shape[0]  # height</span><br><span class="line">        labels[:, [1, 3]] /= img.shape[1]  # width</span><br><span class="line"></span><br><span class="line">    if self.augment:</span><br><span class="line">        # 随机左右翻转</span><br><span class="line">        lr_flip = True</span><br><span class="line">        if lr_flip and random.random() &lt; 0.5:</span><br><span class="line">            img = np.fliplr(img)</span><br><span class="line">            if nL:</span><br><span class="line">                labels[:, 1] = 1 - labels[:, 1]</span><br><span class="line"></span><br><span class="line">        # 随机上下翻转</span><br><span class="line">        ud_flip = False</span><br><span class="line">        if ud_flip and random.random() &lt; 0.5:</span><br><span class="line">            img = np.flipud(img)</span><br><span class="line">            if nL:</span><br><span class="line">                labels[:, 2] = 1 - labels[:, 2]</span><br><span class="line"></span><br><span class="line">    labels_out = torch.zeros((nL, 6))</span><br><span class="line">    if nL:</span><br><span class="line">        labels_out[:, 1:] = torch.from_numpy(labels)</span><br><span class="line"></span><br><span class="line">    # 图像维度转换</span><br><span class="line">    img = img[:, :, ::-1].transpose(2, 0, 1)  # BGR to RGB, to 3x416x416</span><br><span class="line">    img = np.ascontiguousarray(img)</span><br><span class="line"></span><br><span class="line">    return torch.from_numpy(img), labels_out, img_path, shapes</span><br></pre></td></tr></table></figure>
 <p>下图是开启了组合和旋转以后的增强效果</p>
 <p>这里理解组合就是将四张图片，以不同的比例，合成为一张图片。</p>
 <p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pyyolov3/645.webp" alt></p>
-<h3 id="3-3-collate-fn函数"><a href="#3-3-collate-fn函数" class="headerlink" title="3.3 collate_fn函数"></a>3.3 collate_fn函数</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">@staticmethod</span><br><span class="line">def collate_fn(batch):</span><br><span class="line">    img, label, path, shapes &#x3D; zip(*batch)  # transposed</span><br><span class="line">    for i, l in enumerate(label):</span><br><span class="line">        l[:, 0] &#x3D; i  # add target image index for build_targets()</span><br><span class="line">    return torch.stack(img, 0), torch.cat(label, 0), path, shapes</span><br></pre></td></tr></table></figure>
+<h3 id="3-3-collate-fn函数"><a href="#3-3-collate-fn函数" class="headerlink" title="3.3 collate_fn函数"></a>3.3 collate_fn函数</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">@staticmethod</span><br><span class="line">def collate_fn(batch):</span><br><span class="line">    img, label, path, shapes = zip(*batch)  # transposed</span><br><span class="line">    for i, l in enumerate(label):</span><br><span class="line">        l[:, 0] = i  # add target image index for build_targets()</span><br><span class="line">    return torch.stack(img, 0), torch.cat(label, 0), path, shapes</span><br></pre></td></tr></table></figure>
 <p>还有最后一点内容，是关于pytorch的数据读取机制，在pytorch的dataloader中是会对通过getitem方法得到的结果（batch）进行包装，而这个包装可能与我们想要的有所不同。默认的方法可以看以下代码：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">def default_collate(batch):</span><br><span class="line">    r&quot;&quot;&quot;Puts each data field into a tensor with outer dimension batch size&quot;&quot;&quot;</span><br><span class="line"></span><br><span class="line">    elem_type &#x3D; type(batch[0])</span><br><span class="line">    if isinstance(batch[0], torch.Tensor):</span><br><span class="line">        out &#x3D; None</span><br><span class="line">        if _use_shared_memory:</span><br><span class="line">            # If we&#39;re in a background process, concatenate directly into a</span><br><span class="line">            # shared memory tensor to avoid an extra copy</span><br><span class="line">            numel &#x3D; sum([x.numel() for x in batch])</span><br><span class="line">            storage &#x3D; batch[0].storage()._new_shared(numel)</span><br><span class="line">            out &#x3D; batch[0].new(storage)</span><br><span class="line">        return torch.stack(batch, 0, out&#x3D;out)</span><br><span class="line">    elif elem_type.__module__ &#x3D;&#x3D; &#39;numpy&#39; and elem_type.__name__ !&#x3D; &#39;str_&#39; \</span><br><span class="line">            and elem_type.__name__ !&#x3D; &#39;string_&#39;:</span><br><span class="line">        elem &#x3D; batch[0]</span><br><span class="line">        if elem_type.__name__ &#x3D;&#x3D; &#39;ndarray&#39;:</span><br><span class="line">            # array of string classes and object</span><br><span class="line">            if np_str_obj_array_pattern.search(elem.dtype.str) is not None:</span><br><span class="line">                raise TypeError(error_msg_fmt.format(elem.dtype))</span><br><span class="line"></span><br><span class="line">            return default_collate([torch.from_numpy(b) for b in batch])</span><br><span class="line">        if elem.shape &#x3D;&#x3D; ():  # scalars</span><br><span class="line">            py_type &#x3D; float if elem.dtype.name.startswith(&#39;float&#39;) else int</span><br><span class="line">            return numpy_type_map[elem.dtype.name](list(map(py_type, batch)))</span><br><span class="line">    elif isinstance(batch[0], float):</span><br><span class="line">        return torch.tensor(batch, dtype&#x3D;torch.float64)</span><br><span class="line">    elif isinstance(batch[0], int_classes):</span><br><span class="line">        return torch.tensor(batch)</span><br><span class="line">    elif isinstance(batch[0], string_classes):</span><br><span class="line">        return batch</span><br><span class="line">    elif isinstance(batch[0], container_abcs.Mapping):</span><br><span class="line">        return &#123;key: default_collate([d[key] for d in batch]) for key in batch[0]&#125;</span><br><span class="line">    elif isinstance(batch[0], tuple) and hasattr(batch[0], &#39;_fields&#39;):  # namedtuple</span><br><span class="line">        return type(batch[0])(*(default_collate(samples) for samples in zip(*batch)))</span><br><span class="line">    elif isinstance(batch[0], container_abcs.Sequence):</span><br><span class="line">        transposed &#x3D; zip(*batch)</span><br><span class="line">        return [default_collate(samples) for samples in transposed]</span><br><span class="line"></span><br><span class="line">    raise TypeError((error_msg_fmt.format(type(batch[0]))))</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">def default_collate(batch):</span><br><span class="line">    r&quot;&quot;&quot;Puts each data field into a tensor with outer dimension batch size&quot;&quot;&quot;</span><br><span class="line"></span><br><span class="line">    elem_type = type(batch[0])</span><br><span class="line">    if isinstance(batch[0], torch.Tensor):</span><br><span class="line">        out = None</span><br><span class="line">        if _use_shared_memory:</span><br><span class="line">            # If we&#x27;re in a background process, concatenate directly into a</span><br><span class="line">            # shared memory tensor to avoid an extra copy</span><br><span class="line">            numel = sum([x.numel() for x in batch])</span><br><span class="line">            storage = batch[0].storage()._new_shared(numel)</span><br><span class="line">            out = batch[0].new(storage)</span><br><span class="line">        return torch.stack(batch, 0, out=out)</span><br><span class="line">    elif elem_type.__module__ == &#x27;numpy&#x27; and elem_type.__name__ != &#x27;str_&#x27; \</span><br><span class="line">            and elem_type.__name__ != &#x27;string_&#x27;:</span><br><span class="line">        elem = batch[0]</span><br><span class="line">        if elem_type.__name__ == &#x27;ndarray&#x27;:</span><br><span class="line">            # array of string classes and object</span><br><span class="line">            if np_str_obj_array_pattern.search(elem.dtype.str) is not None:</span><br><span class="line">                raise TypeError(error_msg_fmt.format(elem.dtype))</span><br><span class="line"></span><br><span class="line">            return default_collate([torch.from_numpy(b) for b in batch])</span><br><span class="line">        if elem.shape == ():  # scalars</span><br><span class="line">            py_type = float if elem.dtype.name.startswith(&#x27;float&#x27;) else int</span><br><span class="line">            return numpy_type_map[elem.dtype.name](list(map(py_type, batch)))</span><br><span class="line">    elif isinstance(batch[0], float):</span><br><span class="line">        return torch.tensor(batch, dtype=torch.float64)</span><br><span class="line">    elif isinstance(batch[0], int_classes):</span><br><span class="line">        return torch.tensor(batch)</span><br><span class="line">    elif isinstance(batch[0], string_classes):</span><br><span class="line">        return batch</span><br><span class="line">    elif isinstance(batch[0], container_abcs.Mapping):</span><br><span class="line">        return &#123;key: default_collate([d[key] for d in batch]) for key in batch[0]&#125;</span><br><span class="line">    elif isinstance(batch[0], tuple) and hasattr(batch[0], &#x27;_fields&#x27;):  # namedtuple</span><br><span class="line">        return type(batch[0])(*(default_collate(samples) for samples in zip(*batch)))</span><br><span class="line">    elif isinstance(batch[0], container_abcs.Sequence):</span><br><span class="line">        transposed = zip(*batch)</span><br><span class="line">        return [default_collate(samples) for samples in transposed]</span><br><span class="line"></span><br><span class="line">    raise TypeError((error_msg_fmt.format(type(batch[0]))))</span><br></pre></td></tr></table></figure>
 <p>会根据你的数据类型进行相应的处理，但是这往往不是我们需要的，所以需要修改<code>collate_fn</code>,具体内容请看代码，比较简单，就不多赘述。</p>
+</article><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/">目标检测</a><a class="post-meta__tags" href="/tags/YOLOv3/">YOLOv3</a></div><div class="post_share"><div class="social-share" data-image="/img/1097380.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2020/02/15/YOLOv3%E4%B8%AD%E7%9A%84%E5%8F%82%E6%95%B0%E8%BF%9B%E5%8C%96/"><img class="prev-cover" src="/img/34125236_p0.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">YOLOv3中的参数进化</div></div></a></div><div class="next-post pull-right"><a href="/2020/02/15/Pytorch%E7%89%88YOLOv3%E4%B8%AD%E7%9A%84%E4%BB%A3%E7%A0%81%E9%85%8D%E7%BD%AE%E5%92%8C%E6%95%B0%E6%8D%AE%E9%9B%86%E6%9E%84%E5%BB%BA/"><img class="next-cover" src="/img/40356157_p0.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Pytorch版YOLOv3中的代码配置和数据集构建</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span> 相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2020/04/17/AlexeyAB-DarkNet-Dropout层代码详解/" title="AlexeyAB DarkNet Dropout层代码详解"><img class="cover" src="/img/1097380.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-04-17</div><div class="title">AlexeyAB DarkNet Dropout层代码详解</div></div></a></div><div><a href="/2020/03/01/AlexeyAB-DarkNet-BN层代码详解(batchnorm_layer.c)/" title="AlexeyAB DarkNet BN层代码详解(batchnorm_layer.c)"><img class="cover" src="/img/34125236_p0.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-03-01</div><div class="title">AlexeyAB DarkNet BN层代码详解(batchnorm_layer.c)</div></div></a></div><div><a href="/2020/02/29/AlexeyAB-DarkNet池化层代码详解(maxpool_layer.c)/" title="AlexeyAB DarkNet池化层代码详解(maxpool_layer.c)"><img class="cover" src="/img/1097380.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-02-29</div><div class="title">AlexeyAB DarkNet池化层代码详解(maxpool_layer.c)</div></div></a></div><div><a href="/2020/02/28/YOLOV3损失函数代码详解(yolo_layer.c)/" title="YOLOV3损失函数代码详解(yolo_layer.c)"><img class="cover" src="/img/40356157_p0.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-02-28</div><div class="title">YOLOV3损失函数代码详解(yolo_layer.c)</div></div></a></div><div><a href="/2020/02/27/YOLOV2损失函数代码详解(region_layer.c)/" title="YOLOV2损失函数代码详解(region_layer.c)"><img class="cover" src="/img/1097380.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-02-27</div><div class="title">YOLOV2损失函数代码详解(region_layer.c)</div></div></a></div><div><a href="/2020/02/26/YOLOV1损失函数代码详解(detection_layer.c)/" title="YOLOV1损失函数代码详解(detection_layer.c)"><img class="cover" src="/img/40356157_p0.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-02-26</div><div class="title">YOLOV1损失函数代码详解(detection_layer.c)</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E6%A0%87%E6%B3%A8%E6%A0%BC%E5%BC%8F"><span class="toc-number">1.</span> <span class="toc-text"> 1. 标注格式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E8%B0%83%E7%94%A8"><span class="toc-number">2.</span> <span class="toc-text">2. 调用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-YOLOv3%E4%B8%AD%E7%9A%84%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD"><span class="toc-number">3.</span> <span class="toc-text">3. YOLOv3中的数据加载</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-init%E5%87%BD%E6%95%B0"><span class="toc-number">3.1.</span> <span class="toc-text">3.1 init函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-getitem%E5%87%BD%E6%95%B0"><span class="toc-number">3.2.</span> <span class="toc-text">3.2 getitem函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-collate-fn%E5%87%BD%E6%95%B0"><span class="toc-number">3.3.</span> <span class="toc-text">3.3 collate_fn函数</span></a></li></ol></li></ol></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2021 By Qiyuan-Z</div><div class="footer_custom_text">昨日までの私は、もうどこにもいない</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="algolia-search"><div class="search-dialog"><div class="search-dialog__title" id="algolia-search-title">Algolia</div><div id="algolia-input-panel"><div id="algolia-search-input"></div></div><hr/><div id="algolia-search-results"><div id="algolia-hits"></div><div id="algolia-pagination"></div><div id="algolia-stats"></div></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script src="/js/search/algolia.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
 
-    </div>
-
-    
-    
-    <div class="post-widgets">
-      <div id="needsharebutton-postbottom">
-        <span class="btn">
-          <i class="fa fa-share-alt" aria-hidden="true"></i>
-        </span>
-      </div>
-    </div>
-	<div>
-
-	  
-
-		<div>
-
-    
-
-        <div >-------------本文结束感谢您的阅读-------------</div>
-
-    
-
-</div>
-
-	  
-
-	</div>
-      <footer class="post-footer">
-          <div class="post-tags">
-              <a href="/tags/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/" rel="tag"><i class="fa fa-tag"></i> 目标检测</a>
-              <a href="/tags/YOLOv3/" rel="tag"><i class="fa fa-tag"></i> YOLOv3</a>
-          </div>
-
-        
-
-
-        
-    <div class="post-nav">
-      <div class="post-nav-item">
-    <a href="/2020/02/15/Pytorch%E7%89%88YOLOv3%E4%B8%AD%E7%9A%84%E4%BB%A3%E7%A0%81%E9%85%8D%E7%BD%AE%E5%92%8C%E6%95%B0%E6%8D%AE%E9%9B%86%E6%9E%84%E5%BB%BA/" rel="prev" title="Pytorch版YOLOv3中的代码配置和数据集构建">
-      <i class="fa fa-chevron-left"></i> Pytorch版YOLOv3中的代码配置和数据集构建
-    </a></div>
-      <div class="post-nav-item">
-    <a href="/2020/02/15/YOLOv3%E4%B8%AD%E7%9A%84%E5%8F%82%E6%95%B0%E8%BF%9B%E5%8C%96/" rel="next" title="YOLOv3中的参数进化">
-      YOLOv3中的参数进化 <i class="fa fa-chevron-right"></i>
-    </a></div>
-    </div>
-      </footer>
-    
-  </article>
-  
-  
-  
-
-  </div>
-
-
-          </div>
-          
-    <div class="comments" id="gitalk-container"></div>
-
-
-
-<script>
-  window.addEventListener('tabs:register', () => {
-    let activeClass = CONFIG.comments.activeClass;
-    if (CONFIG.comments.storage) {
-      activeClass = localStorage.getItem('comments_active') || activeClass;
-    }
-    if (activeClass) {
-      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
-      if (activeTab) {
-        activeTab.click();
-      }
-    }
-  });
-  if (CONFIG.comments.storage) {
-    window.addEventListener('tabs:click', event => {
-      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
-      let commentClass = event.target.classList[1];
-      localStorage.setItem('comments_active', commentClass);
-    });
   }
-</script>
+}
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"><script>function addGitalkSource () {
+  const ele = document.createElement('link')
+  ele.rel = 'stylesheet'
+  ele.href= 'https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css'
+  document.getElementsByTagName('head')[0].appendChild(ele)
+}
 
-        </div>
-          
-  
-  <div class="toggle sidebar-toggle">
-    <span class="toggle-line toggle-line-first"></span>
-    <span class="toggle-line toggle-line-middle"></span>
-    <span class="toggle-line toggle-line-last"></span>
-  </div>
+function loadGitalk () {
+  function initGitalk () {
+    var gitalk = new Gitalk({
+      clientID: '2d10cfb27783db577e70',
+      clientSecret: '154292876bb14966f6ae57304b67859617b08c94',
+      repo: 'gitalk',
+      owner: 'Qiyuan-Z',
+      admin: ['Qiyuan-Z'],
+      id: '0108ec8c9d1671136988422ddd0d5f69',
+      language: 'zh-CN',
+      perPage: 10,
+      distractionFreeMode: false,
+      pagerDirection: 'last',
+      createIssueManually: false,
+      updateCountCallback: commentCount
+    })
+    gitalk.render('gitalk-container')
+  }
 
-  <aside class="sidebar">
-    <div class="sidebar-inner">
+  if (typeof Gitalk === 'function') initGitalk()
+  else {
+    addGitalkSource()
+    getScript('https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js').then(initGitalk)
+  }
+}
 
-      <ul class="sidebar-nav motion-element">
-        <li class="sidebar-nav-toc">
-          文章目录
-        </li>
-        <li class="sidebar-nav-overview">
-          站点概览
-        </li>
-      </ul>
+function commentCount(n){
+  let isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+  if (isCommentCount) {
+    isCommentCount.innerHTML= n
+  }
+}
 
-      <!--noindex-->
-      <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-标注格式"><span class="nav-text"> 1. 标注格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-调用"><span class="nav-text">2. 调用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-YOLOv3中的数据加载"><span class="nav-text">3. YOLOv3中的数据加载</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-init函数"><span class="nav-text">3.1 init函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-getitem函数"><span class="nav-text">3.2 getitem函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-collate-fn函数"><span class="nav-text">3.3 collate_fn函数</span></a></li></ol></li></ol></div>
-      </div>
-      <!--/noindex-->
-	  
-     
-	  
-      <div class="site-overview-wrap sidebar-panel">
-        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <img class="site-author-image" itemprop="image" alt="Qiyuan-Z"
-      src="/images/avatar.jpg">
-  <p class="site-author-name" itemprop="name">Qiyuan-Z</p>
-  <div class="site-description" itemprop="description">偉大な魂は目的を持ち、そうでないものは願望を持つ</div>
-</div>
-<div class="site-state-wrap motion-element">
-  <nav class="site-state">
-      <div class="site-state-item site-state-posts">
-          <a href="/archives/">
-        
-          <span class="site-state-item-count">114</span>
-          <span class="site-state-item-name">日志</span>
-        </a>
-      </div>
-      <div class="site-state-item site-state-categories">
-            <a href="/categories/">
-          
-        <span class="site-state-item-count">3</span>
-        <span class="site-state-item-name">分类</span></a>
-      </div>
-      <div class="site-state-item site-state-tags">
-            <a href="/tags/">
-          
-        <span class="site-state-item-count">32</span>
-        <span class="site-state-item-name">标签</span></a>
-      </div>
-  </nav>
-</div>
-  <div class="links-of-author motion-element">
-      <span class="links-of-author-item">
-        <a href="https://github.com/Qiyuan-Z" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Qiyuan-Z" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
-      </span>
-      <span class="links-of-author-item">
-        <a href="mailto:zhengqiyuan@stu.jiangnan.edu.cn" title="E-Mail → mailto:zhengqiyuan@stu.jiangnan.edu.cn" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
-      </span>
-  </div>
-
-
-  <div class="links-of-blogroll motion-element">
-    <div class="links-of-blogroll-title">
-      <i class="fa fa-fw fa-link"></i>
-      Links
-    </div>
-    <ul class="links-of-blogroll-list">
-        <li class="links-of-blogroll-item">
-          <a href="https://project-inkstone.github.io/project-inkstone/?tdsourcetag=s_pctim_aiomsg" title="https:&#x2F;&#x2F;project-inkstone.github.io&#x2F;project-inkstone&#x2F;?tdsourcetag&#x3D;s_pctim_aiomsg" rel="noopener" target="_blank">project-inkstone</a>
-        </li>
-        <li class="links-of-blogroll-item">
-          <a href="https://www.jngwl.top/" title="https:&#x2F;&#x2F;www.jngwl.top" rel="noopener" target="_blank">清风与归</a>
-        </li>
-    </ul>
-  </div>
-
-      </div>
-	  
-      <div id="music163player">
-		   <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=29784463&auto=1&height=66"></iframe>
-		   </iframe>
-	  </div>
-    </div>
-  </aside>
-  <div id="sidebar-dimmer"></div>
-
-
-      </div>
-    </main>
-
-    <footer class="footer">
-      <div class="footer-inner">
-        
-
-<div class="copyright">
-  
-  &copy; 2019 – 
-  <span itemprop="copyrightYear">2021</span>
-  <span class="with-love">
-    <i class="fa fa-heart"></i>
-  </span>
-  <span class="author" itemprop="copyrightHolder">Qiyuan-Z</span>
-    <span class="post-meta-divider">|</span>
-    <span class="post-meta-item-icon">
-      <i class="fa fa-area-chart"></i>
-    </span>
-    <span title="站点总字数">734k</span>
-    <span class="post-meta-divider">|</span>
-    <span class="post-meta-item-icon">
-      <i class="fa fa-coffee"></i>
-    </span>
-    <span title="站点阅读时长">11:07</span>
-</div>
-
-<!-- 网站运行时间的设置 -->
-<span id="timeDate">载入天数...</span>
-<span id="times">载入时分秒...</span> 
-<script>
-    var now = new Date();
-    function createtime() {
-        var grt= new Date("12/01/2019 13:14:21");//此处修改你的建站时间或者网站上线时间
-        now.setTime(now.getTime()+250);
-        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
-        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
-        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
-        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
-        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
-        snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;}
-        document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 ";
-        document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
-    }
-setInterval("createtime()",250);
-</script>
-        
-<div class="busuanzi-count">
-  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
-      <span class="post-meta-item-icon">
-        <i class="fa fa-user"></i>
-      </span>
-      <span class="site-uv" title="总访客量">
-        <span id="busuanzi_value_site_uv"></span>
-      </span>
-    </span>
-    <span class="post-meta-divider">|</span>
-    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
-      <span class="post-meta-item-icon">
-        <i class="fa fa-eye"></i>
-      </span>
-      <span class="site-pv" title="总访问量">
-        <span id="busuanzi_value_site_pv"></span>
-      </span>
-    </span>
-</div>
-
-
-
-
-
-
-
-
-      </div>
-    </footer>
-  </div>
-
-  
-  <script src="/lib/anime.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
-  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
-  <script src="/lib/velocity/velocity.min.js"></script>
-  <script src="/lib/velocity/velocity.ui.min.js"></script>
-
-<script src="/js/utils.js"></script>
-
-<script src="/js/motion.js"></script>
-
-
-<script src="/js/schemes/pisces.js"></script>
-
-
-<script src="/js/next-boot.js"></script>
-
-
-
-
-  
-
-
-
-
-  
-<script src="/js/local-search.js"></script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-	<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
-	<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"></script>
-	<script type="text/javascript">
-    		var gitalk = new Gitalk({
-		        clientID: '2d10cfb27783db577e70',
-		        clientSecret: '154292876bb14966f6ae57304b67859617b08c94',
-		        id: md5(location.pathname),
-		        repo: 'gitalk',
-		        owner: 'Qiyuan-Z',
-		        admin: 'Qiyuan-Z',
-			distractionFreeMode: '',
-
-		    });
-	    gitalk.render('gitalk-container');
-	</script>
-
-
-
-  
-
-  
-      
-<script type="text/x-mathjax-config">
-
-  MathJax.Hub.Config({
-    tex2jax: {
-      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
-      processEscapes: true,
-      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-    },
-    TeX: {
-      equationNumbers: {
-        autoNumber: 'AMS'
-      }
-    }
-  });
-
-  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
-    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
-      if (data.display) {
-        var next = data.script.nextSibling;
-        while (next && next.nodeName.toLowerCase() === '#text') {
-          next = next.nextSibling;
-        }
-        if (next && next.nodeName.toLowerCase() === 'br') {
-          next.parentNode.removeChild(next);
-        }
-      }
-    });
-  });
-
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for (i = 0; i < all.length; i += 1) {
-      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
-      if (element.nodeName.toLowerCase() == 'li') {
-        element = element.parentNode;
-      }
-      element.classList.add('has-jax');
-    }
-  });
-</script>
-<script>
-  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', () => {
-    MathJax.Hub.Typeset();
-  }, window.MathJax);
-</script>
-
-    
-
-  
-
-  <script src="//cdn.jsdelivr.net/gh/theme-next/theme-next-needmoreshare2@1/needsharebutton.min.js"></script>
-  <script>
-      pbOptions = {};
-        pbOptions.iconStyle = "box";
-        pbOptions.boxForm = "horizontal";
-        pbOptions.position = "bottomCenter";
-        pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
-      new needShareButton('#needsharebutton-postbottom', pbOptions);
-  </script>
-	<link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
-	<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"></script>
-	<script type="text/javascript">
-    		var gitalk = new Gitalk({
-		        clientID: '2d10cfb27783db577e70',
-		        clientSecret: '154292876bb14966f6ae57304b67859617b08c94',
-		        id: md5(location.pathname),
-		        repo: 'gitalk',
-		        owner: 'Qiyuan-Z',
-		        admin: 'Qiyuan-Z',
-			distractionFreeMode: '',
-
-		    });
-	    gitalk.render('gitalk-container');
-	</script>
-
-
-  <script type="text/javascript" src="/js/src/clicklove.js"></script>
-  <script src="/live2d-widget/autoload.js"></script>
-</body>
-</html>
-
+if ('Gitalk' === 'Gitalk' || !false) {
+  if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+  else loadGitalk()
+} else {
+  function loadOtherComment () {
+    loadGitalk()
+  }
+}</script></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/fireworks.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
