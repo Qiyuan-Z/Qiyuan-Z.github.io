@@ -1,6 +1,161 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>矩阵分析（刘丁酉）课后答案及历年试卷</title>
+    <url>/2019/12/20/%E7%9F%A9%E9%98%B5%E5%88%86%E6%9E%90%EF%BC%88%E5%88%98%E4%B8%81%E9%85%89%EF%BC%89%E8%AF%BE%E5%90%8E%E7%AD%94%E6%A1%88%E5%8F%8A%E5%8E%86%E5%B9%B4%E8%AF%95%E5%8D%B7/</url>
+    <content><![CDATA[<p>考虑到刘丁酉版本只有部分习题的解答，还不够详细，于是我在学习过程中，将每道习题做了一遍，并记录了下来，希望能对学习矩阵分析的同学给予一定的参考。由于本人仍在学习阶段，难免答案会有做错的地方，希望大家不要尽信答案，只当作一个思路上的参考来看。顺便附赠历年的卷子与答案（看了一遍历年的卷子，答案有错!@-@）<br><span id="more"></span><br>下载地址：<a href="https://www.jianguoyun.com/p/DQe8_9kQlZ_3Bhid4LYC">点击下载</a></p>
+]]></content>
+      <categories>
+        <category>资源分享</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>江南大学学位论文LaTeX模板</title>
+    <url>/2021/12/06/%E6%B1%9F%E5%8D%97%E5%A4%A7%E5%AD%A6%E6%AF%95%E4%B8%9A%E8%AE%BA%E6%96%87Latex%E6%A8%A1%E6%9D%BF/</url>
+    <content><![CDATA[<blockquote>
+<p>本文由🐧从<a href="https://gitee.com/zhuangbo/jnthesis">zhuangbo</a>转载</p>
+</blockquote>
+<h2 id="使用教程"><a href="#使用教程" class="headerlink" title="使用教程"></a>使用教程</h2><p>江南大学博士、硕士学位（毕业）论文 LaTeX 模板。<a href="https://pan.baidu.com/s/1Ps7f2OFsJX80w1wuZ57PnQ">点此下载</a>(提取码: 8ub7)</p>
+<p>文档类 <code>jnthesis.cls</code> 基于 <code>ctex</code> 宏包定义了论文格式，包括字体，字号，行距，标题，页眉，页脚，目录，摘要，正文等各种格式。</p>
+<p>文件 <code>jn.bst</code> 定义了参考文献格式。</p>
+<p>推荐使用 TeXlive 发行版，不推荐使用 CTEX 发行版。</p>
+<p>为便于编辑，通常将长文档分成若干文件。本论文模板还提供了以下文件：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>root.tex</code></td>
+<td>主文档，整个文档结构，用 XeLaTeX 编译此文档</td>
+</tr>
+<tr>
+<td><code>main.tex</code></td>
+<td>主要内容，包含主要章节内容</td>
+</tr>
+<tr>
+<td><code>cover.doc</code></td>
+<td>封面，DOC 文件，修改编辑后另存为 PDF</td>
+</tr>
+<tr>
+<td><code>cover.pdf</code></td>
+<td>封面，PDF 文件，插入文档</td>
+</tr>
+<tr>
+<td><code>statement.doc</code></td>
+<td>声明和授权，DOC 文件，修改编辑后另存为 PDF</td>
+</tr>
+<tr>
+<td><code>statement.pdf</code></td>
+<td>声明和授权，PDF 文件，插入文档</td>
+</tr>
+<tr>
+<td><code>setup/settings.tex</code></td>
+<td>用户设置，如：标题，作者，其他宏包和样式等</td>
+</tr>
+<tr>
+<td><code>setup/userdefs.tex</code></td>
+<td>用户自定义符号</td>
+</tr>
+<tr>
+<td><code>preface/e_abstract.tex</code></td>
+<td>英文摘要和英文关键词</td>
+</tr>
+<tr>
+<td><code>preface/c_abstract.tex</code></td>
+<td>中文摘要和中文关键词</td>
+</tr>
+<tr>
+<td><code>body/*.tex</code></td>
+<td>各章节内容，不需要时在 main.tex 中删除</td>
+</tr>
+<tr>
+<td><code>appendix/acknowledgements.tex</code></td>
+<td>致谢</td>
+</tr>
+<tr>
+<td><code>appendix/publications.tex</code></td>
+<td>发表论文</td>
+</tr>
+<tr>
+<td><code>references.bib</code></td>
+<td>参考文献数据库</td>
+</tr>
+<tr>
+<td><code>figures/...</code></td>
+<td>插图</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>具体用法如下：</p>
+<ol>
+<li><p>打开 <code>root.tex</code> 文件，设置文档参数以指定博士 (<code>doctor</code>)，硕士 (<code>master</code>) 或毕业(<code>nodegree</code>) 论文。</p>
+</li>
+<li><p>打开 <code>main.tex</code> 文件，规划论文主要章节。不需要的章节可以删除或注释掉。</p>
+</li>
+<li><p>修改 <code>cover.doc</code> 文件生成封面 <code>cover.pdf</code>。</p>
+</li>
+<li><p>修改 (如有必要) statement.doc<code>生成</code>statement.pdf`。</p>
+</li>
+<li><p>修改 <code>setup/settings.tex</code> 设置标题，作者，包含其他宏包等其他设置。</p>
+</li>
+<li><p>修改 (如有必要) <code>setup/userdefs.tex</code> 添加用户自定义符号或命令。</p>
+</li>
+<li><p>修改 <code>preface/e_abstract.tex</code> 添加英文摘要和英文关键词。</p>
+</li>
+<li><p>修改 <code>preface/c_abstract.tex</code> 添加中文摘要和中文关键词。</p>
+</li>
+<li><p>修改 <code>body/ch01.tex</code> 等，撰写各章内容。</p>
+</li>
+<li><p>修改 <code>appendix/acknowledgements.tex</code> 添加致谢内容。</p>
+</li>
+<li><p>修改 <code>appendix/publications.tex</code> 添加发表论文。</p>
+</li>
+<li><p>修改任何内容后，用 XeLaTeX 编译 <code>root.tex</code> 文件得到最终论文 <code>root.pdf</code>。若参考文献不正确，首先执行 BibTeX，再多次 (三次以上) 执行 XeLaTeX，直到得到正确的参考文献.</p>
+</li>
+</ol>
+<p>一次完整的编译过程为 XeLaTeX &gt; BibTeX &gt; XeLaTeX &gt; XeLaTeX &gt; XeLaTeX。 通常在引用参考文献没有发生变化时，仅需要执行一次 XeLaTeX。 由于已经把整个文档划分成多个文件，加快了编译速度。 当 bib 文献数据库或文献引用发生变化时，为确保最终内容正确，可以执行一遍完整的编译过程。</p>
+<p>本模板采用 MIT 协议授权，如有不完善之处请自行修改代码。</p>
+]]></content>
+      <categories>
+        <category>资源分享</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>EndNote样式使用教程</title>
+    <url>/2020/12/11/EndNote%E6%A0%B7%E5%BC%8F%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a><span id="more"></span>前言</h2><p>EndNote主要针对英文文献，所以并没提供符合中华标准的文献样式，而网上找的样式又不太对。因此这里本人根据中华人民共和国国家标准GB/T7714-2005和江南大学论文要求，制作了可供导入使用的样式。下载地址如下：<a href="https://590m.com/file/17985533-475283286">中文样式 by Qiyuan-Z</a></p>
+<h2 id="使用教程"><a href="#使用教程" class="headerlink" title="使用教程"></a>使用教程</h2><p><strong>① 将.ens样式文件放入EndNote安装目录下的Styles文件夹。</strong></p>
+<p><strong>② 使用时切换样式即可：</strong></p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/wenxian/4.jpg" alt></p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/wenxian/5.jpg" alt></p>
+<p><strong>③ 插入文献效果如下：</strong></p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/wenxian/6.jpg" alt></p>
+<p><strong>④ 若参考文献序号后面空格过长可设置悬挂缩进距离：</strong></p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/wenxian/7.jpg" alt></p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/wenxian/8.jpg" alt></p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/wenxian/9.jpg" alt></p>
+<p><strong>⑤ arxiv等未出版期刊，请设置参考类型为Manuscript，以方便样式识别文献类型。</strong></p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/wenxian/10.jpg" alt></p>
+<p><strong>⑥ 由于EndNote并没提供中文文献的识别设置，为了解决问题，我们可以自定义中文文献类型：</strong></p>
+<p>点击「编辑」→「首选项」→「参考文献类型」→「修改参考文献类型」（「Edit」→「Preference」→「Reference Types」→「Modify Reference Types 」）</p>
+<p>EndNote未使用的文献类型 (Reference Type) 默认为3个 , 它们被命名为 Unused 1，Unused 2和Unused 3 。我们可以利用这几个未作用的文献类型来修改。</p>
+<p>如选择Unused 1，在 Generic 项中输入新文献类型名「中文文献」，然后依次修改各项，修改完毕后「OK」关闭保存。</p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/wenxian/11.jpg" alt></p>
+<p><strong>⑦ 若为中文文献，请设置参考类型为中文文献，并填写Secondary Author（与Author一样），以方便样式识别文献类型。</strong></p>
+<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/wenxian/12.jpg" alt></p>
+]]></content>
+      <categories>
+        <category>教程</category>
+        <category>资源分享</category>
+      </categories>
+  </entry>
+  <entry>
     <title>keras/tensorflow转onnx</title>
     <url>/2021/09/25/keras%E8%BD%AConnx/</url>
     <content><![CDATA[<p>项目中遇到需要将训练好的keras模型转换成onnx以便部署到嵌入式设备进行RT加速，最开始使用的<a href="[GitHub - onnx/keras-onnx: Convert tf.keras/Keras models to ONNX](https://github.com/onnx/keras-onnx">keras2onnx</a>工具，然而此工具支持性并不好，在转化过程中遇到许多问题。因此决定将keras转成tensorflow格式，再使用支持性较好的<a href="[GitHub - onnx/tensorflow-onnx: Convert TensorFlow, Keras, Tensorflow.js and Tflite models to ONNX](https://github.com/onnx/tensorflow-onnx">tf2onnx</a>工具进行转化。</p>
@@ -3319,34 +3474,6 @@ Returns:
       <tags>
         <tag>frp</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>EndNote样式使用教程</title>
-    <url>/2020/12/11/EndNote%E6%A0%B7%E5%BC%8F%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a><span id="more"></span>前言</h2><p>EndNote主要针对英文文献，所以并没提供符合中华标准的文献样式，而网上找的样式又不太对。因此这里本人根据中华人民共和国国家标准GB/T7714-2005和江南大学论文要求，制作了可供导入使用的样式。下载地址如下：<a href="https://590m.com/file/17985533-475283286">中文样式 by Qiyuan-Z</a></p>
-<h2 id="使用教程"><a href="#使用教程" class="headerlink" title="使用教程"></a>使用教程</h2><p><strong>① 将.ens样式文件放入EndNote安装目录下的Styles文件夹。</strong></p>
-<p><strong>② 使用时切换样式即可：</strong></p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/wenxian/4.jpg" alt></p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/wenxian/5.jpg" alt></p>
-<p><strong>③ 插入文献效果如下：</strong></p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/wenxian/6.jpg" alt></p>
-<p><strong>④ 若参考文献序号后面空格过长可设置悬挂缩进距离：</strong></p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/wenxian/7.jpg" alt></p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/wenxian/8.jpg" alt></p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/wenxian/9.jpg" alt></p>
-<p><strong>⑤ arxiv等未出版期刊，请设置参考类型为Manuscript，以方便样式识别文献类型。</strong></p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/wenxian/10.jpg" alt></p>
-<p><strong>⑥ 由于EndNote并没提供中文文献的识别设置，为了解决问题，我们可以自定义中文文献类型：</strong></p>
-<p>点击「编辑」→「首选项」→「参考文献类型」→「修改参考文献类型」（「Edit」→「Preference」→「Reference Types」→「Modify Reference Types 」）</p>
-<p>EndNote未使用的文献类型 (Reference Type) 默认为3个 , 它们被命名为 Unused 1，Unused 2和Unused 3 。我们可以利用这几个未作用的文献类型来修改。</p>
-<p>如选择Unused 1，在 Generic 项中输入新文献类型名「中文文献」，然后依次修改各项，修改完毕后「OK」关闭保存。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/wenxian/11.jpg" alt></p>
-<p><strong>⑦ 若为中文文献，请设置参考类型为中文文献，并填写Secondary Author（与Author一样），以方便样式识别文献类型。</strong></p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/wenxian/12.jpg" alt></p>
-]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
   </entry>
   <entry>
     <title>历届CCF顶会地点查询</title>
@@ -8551,18 +8678,6 @@ A U C=\frac{\sum p r e d_{p o s}>p r e d_{n e g}}{p o s i t i v e N u m * n e g 
       <tags>
         <tag>Ubuntu</tag>
         <tag>Teamviewer</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>矩阵分析（刘丁酉）课后答案及历年试卷</title>
-    <url>/2019/03/19/%E7%9F%A9%E9%98%B5%E5%88%86%E6%9E%90%EF%BC%88%E5%88%98%E4%B8%81%E9%85%89%EF%BC%89%E8%AF%BE%E5%90%8E%E7%AD%94%E6%A1%88%E5%8F%8A%E5%8E%86%E5%B9%B4%E8%AF%95%E5%8D%B7/</url>
-    <content><![CDATA[<p>考虑到刘丁酉版本只有部分习题的解答，还不够详细，于是我在学习过程中，将每道习题做了一遍，并记录了下来，希望能对学习矩阵分析的同学给予一定的参考。由于本人仍在学习阶段，难免答案会有做错的地方，希望大家不要尽信答案，只当作一个思路上的参考来看。顺便附赠历年的卷子与答案（看了一遍历年的卷子，答案有错!@-@）<br><span id="more"></span><br>下载地址：<a href="https://www.jianguoyun.com/p/DQe8_9kQlZ_3Bhid4LYC">点击下载</a></p>
-]]></content>
-      <categories>
-        <category>资源分享</category>
-      </categories>
-      <tags>
-        <tag>矩阵分析</tag>
       </tags>
   </entry>
   <entry>
