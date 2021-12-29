@@ -1,6 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>远程使用tensorboard等可视化工具</title>
+    <url>/2020/05/27/%E8%BF%9C%E7%A8%8B%E4%BD%BF%E7%94%A8tensorboard%E7%AD%89%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E5%85%B7/</url>
+    <content><![CDATA[<p>有两种设置方法，一种代码设置，一种xshell界面设置</p>
+<h2 id="连接SSH"><a href="#连接SSH" class="headerlink" title="连接SSH"></a>连接SSH</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ssh -L 16006:127.0.0.1:6006 -p 31017 username@remote_server_ip</span><br></pre></td></tr></table></figure>
+<p><strong>16006:127.0.0.1:6006</strong> 代表本机6006端口映射为16006号端口，这两个端口号可以自己设置，不要与其他端口号冲突即可</p>
+<p><strong>-p 31017</strong> 代表所连远程服务器的端口号，即SSH所用端口号</p>
+<p><strong>username@remote_server_ip</strong> 代表你的用户名和SSH所连ip地址</p>
+<p>在服务器上使用6006端口正常启动tensorboard：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">tensorboard --logdir=xxx --port=6006</span><br></pre></td></tr></table></figure>
+<p><strong>—port=6006</strong> 代表将端口号指定为6006</p>
+<p>由于上一步我们将端口号6006映射到16006，因此在本地浏览器输入地址：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">127.0.0.1:16006</span><br></pre></td></tr></table></figure>
+<p>即可远程访问tensorboard</p>
+<h2 id="使用Xshell"><a href="#使用Xshell" class="headerlink" title="使用Xshell"></a>使用Xshell</h2><p>在Windows系统装一个Xshell，在文件-&gt;属性-&gt;ssh-&gt;隧道-&gt;添加，类型local，源主机填127.0.0.1或者localhost（意思是本机），倾听端口为16006，表示把目标主机的目标端口转发到本地的侦听端口16006  （可自己设置），目标主机：服务器，填写服务器的ip，目标端口一般是6006（可自己设置）</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/SSH/1.png" alt></p>
+<p>在服务器上运行 </p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">tensorboard --logdir=xxx --port=6006</span><br></pre></td></tr></table></figure>
+<p>在本机打开网页127.0.0.1:16006 ，即可查看远程的tensorboard</p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ubuntu增加swap交换空间</title>
+    <url>/2020/08/24/Ubuntu%E5%A2%9E%E5%8A%A0swap%E4%BA%A4%E6%8D%A2%E7%A9%BA%E9%97%B4/</url>
+    <content><![CDATA[<h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>我在训练模型的过程中，经常跑着中途发生了<code>can not allocate memory</code>的异常，从而使程序中断，其中发现是由于swap空间设置太小，导致交换内存溢出。因此本文介绍增加swap空间的方法。</p>
+<h2 id="查看当前系统的swap大小"><a href="#查看当前系统的swap大小" class="headerlink" title="查看当前系统的swap大小"></a>查看当前系统的swap大小</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">free -m</span><br></pre></td></tr></table></figure>
+<p>m 是以兆为单位， g是以GB为单位， 默认是kb</p>
+<p>如下图，当前系统只有1G的交换空间：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/swap/1.png" alt></p>
+<h2 id="创建一个swap文件"><a href="#创建一个swap文件" class="headerlink" title="创建一个swap文件"></a>创建一个swap文件</h2><p>swap交换空间其实就是硬盘上一个特定的文件，只不过这个文件只有内存在读写，比较大些。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">mkdir /home/roo/swapfile</span><br><span class="line"></span><br><span class="line">cd /home/roo/swapfile</span><br><span class="line"></span><br><span class="line">sudo dd if=/dev/zero of=swap bs=1G count=61</span><br></pre></td></tr></table></figure>
+<p><code>mkdir /home/roo/swapfile</code> 是先在/home/roo目录下创建了一个名为swapfile的文件夹<br>cd 进入swapfile文件夹， 然后创建一个大小为61G的，名为swap的空文件。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/swap/2.png" alt></p>
+<p>命令解释：</p>
+<ul>
+<li><code>/home/roo/</code> 可以更换为自己的路径</li>
+<li><code>bs</code>为单位，默认为kb， 如设置为1024，则代表1M</li>
+<li><code>count</code>为数量，扩增大小为$count \times bs$</li>
+</ul>
+<h2 id="转换swap文件"><a href="#转换swap文件" class="headerlink" title="转换swap文件"></a>转换swap文件</h2><p>将生成的文件转换成swap类型的文件</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo mkswap -f swap</span><br></pre></td></tr></table></figure>
+<p>如下图：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/swap/3.png" alt></p>
+<h2 id="激活swap文件"><a href="#激活swap文件" class="headerlink" title="激活swap文件"></a>激活swap文件</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo swapon swap</span><br></pre></td></tr></table></figure>
+<p>卸载的话使用 swapoff</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo swapoff swap</span><br></pre></td></tr></table></figure>
+<p>最后再次使用free查看，如下图：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/swap/4.png" alt></p>
+<h2 id="永久生效"><a href="#永久生效" class="headerlink" title="永久生效"></a>永久生效</h2><p>虽然交换空间到此已经扩展成功了，但是电脑重启的话，还是会恢复默认的swap大小。如果要一直使用这个swap，要把它写入/etc/fstab文件中。</p>
+<p>编辑文件</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo nano /etc/fstab</span><br></pre></td></tr></table></figure>
+<p>加入以下内容(路径根据自己设置的修改)</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">/home/roo/swapfile/swap none swap defaults 0 0</span><br></pre></td></tr></table></figure>
+<p>如下图：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/swap/5.png" alt></p>
+<h2 id="推荐swap大小"><a href="#推荐swap大小" class="headerlink" title="推荐swap大小"></a>推荐swap大小</h2><p>以下列出Ubuntu系统根据RAM大小推荐设置的swap大小：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/swap/6.png" alt></p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Potplayer添加直播源</title>
+    <url>/2020/06/13/Potplayer%E6%B7%BB%E5%8A%A0%E7%9B%B4%E6%92%AD%E6%BA%90/</url>
+    <content><![CDATA[<p>具体操作先打开 PotPlayer，右键选择 <strong>打开</strong> -&gt; <strong>打开链接</strong></p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/player/640.webp" alt></p>
+<p>接下来复制<strong>直播源到 Potplayer 里</strong>，点击确定</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/player/641.webp" alt></p>
+<p><strong>这里成功添加了1015个中国区域的电视频道，而且清晰度都在1080P</strong>，不仅有央视，还有所有卫视和一些地方台</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/player/642.webp" alt></p>
+<p>直播源可以在Github上找到，这里放出链接 <a href="https://github.com/iptv-org/iptv/blob/master/README.md">点此跳转</a></p>
+<p>里面名叫iptv的仓库收集了全世界将近100个国家的频道，总计达到8000多。并按类别，语言和国家进行了分类。这里图中只展示了一小部分。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/player/643.webp" alt></p>
+<p>比如中国对应的是：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/player/644.webp" alt></p>
+<p>除此以外，还有日本，美国，英国等，需要的可以自行寻找添加。</p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>potplayer</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Pytorch基于Apex的混合精度加速</title>
     <url>/2020/08/20/Pytorch%E5%9F%BA%E4%BA%8EApex%E7%9A%84%E6%B7%B7%E5%90%88%E7%B2%BE%E5%BA%A6%E5%8A%A0%E9%80%9F/</url>
     <content><![CDATA[<h2 id="Apex"><a href="#Apex" class="headerlink" title="Apex"></a>Apex</h2><p><a href="https://github.com/NVIDIA/apex">Apex</a>是由Nvidia维护的一个支持混合精度分布式训练的第三方Pytorch扩展。可以用短短三行代码就能实现不同程度的混合精度加速，使训练时间和显存占用直接缩小一半。</p>
@@ -3591,100 +3685,6 @@ Returns:
         <tag>keras</tag>
         <tag>onnx</tag>
         <tag>tensorflow</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Ubuntu增加swap交换空间</title>
-    <url>/2020/08/24/Ubuntu%E5%A2%9E%E5%8A%A0swap%E4%BA%A4%E6%8D%A2%E7%A9%BA%E9%97%B4/</url>
-    <content><![CDATA[<h2 id="问题描述"><a href="#问题描述" class="headerlink" title=" 问题描述"></a><span id="more"></span> 问题描述</h2><p>我在训练模型的过程中，经常跑着中途发生了<code>can not allocate memory</code>的异常，从而使程序中断，其中发现是由于swap空间设置太小，导致交换内存溢出。因此本文介绍增加swap空间的方法。</p>
-<h2 id="查看当前系统的swap大小"><a href="#查看当前系统的swap大小" class="headerlink" title="查看当前系统的swap大小"></a>查看当前系统的swap大小</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">free -m</span><br></pre></td></tr></table></figure>
-<p>m 是以兆为单位， g是以GB为单位， 默认是kb</p>
-<p>如下图，当前系统只有1G的交换空间：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/swap/1.png" alt></p>
-<h2 id="创建一个swap文件"><a href="#创建一个swap文件" class="headerlink" title="创建一个swap文件"></a>创建一个swap文件</h2><p>swap交换空间其实就是硬盘上一个特定的文件，只不过这个文件只有内存在读写，比较大些。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">mkdir /home/roo/swapfile</span><br><span class="line"></span><br><span class="line">cd /home/roo/swapfile</span><br><span class="line"></span><br><span class="line">sudo dd if=/dev/zero of=swap bs=1G count=61</span><br></pre></td></tr></table></figure>
-<p><code>mkdir /home/roo/swapfile</code> 是先在/home/roo目录下创建了一个名为swapfile的文件夹<br>cd 进入swapfile文件夹， 然后创建一个大小为61G的，名为swap的空文件。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/swap/2.png" alt></p>
-<p>命令解释：</p>
-<ul>
-<li><code>/home/roo/</code> 可以更换为自己的路径</li>
-<li><code>bs</code>为单位，默认为kb， 如设置为1024，则代表1M</li>
-<li><code>count</code>为数量，扩增大小为$count \times bs$</li>
-</ul>
-<h2 id="转换swap文件"><a href="#转换swap文件" class="headerlink" title="转换swap文件"></a>转换swap文件</h2><p>将生成的文件转换成swap类型的文件</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo mkswap -f swap</span><br></pre></td></tr></table></figure>
-<p>如下图：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/swap/3.png" alt></p>
-<h2 id="激活swap文件"><a href="#激活swap文件" class="headerlink" title="激活swap文件"></a>激活swap文件</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo swapon swap</span><br></pre></td></tr></table></figure>
-<p>卸载的话使用 swapoff</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo swapoff swap</span><br></pre></td></tr></table></figure>
-<p>最后再次使用free查看，如下图：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/swap/4.png" alt></p>
-<h2 id="永久生效"><a href="#永久生效" class="headerlink" title="永久生效"></a>永久生效</h2><p>虽然交换空间到此已经扩展成功了，但是电脑重启的话，还是会恢复默认的swap大小。如果要一直使用这个swap，要把它写入/etc/fstab文件中。</p>
-<p>编辑文件</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo nano /etc/fstab</span><br></pre></td></tr></table></figure>
-<p>加入以下内容(路径根据自己设置的修改)</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">/home/roo/swapfile/swap none swap defaults 0 0</span><br></pre></td></tr></table></figure>
-<p>如下图：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/swap/5.png" alt></p>
-<h2 id="推荐swap大小"><a href="#推荐swap大小" class="headerlink" title="推荐swap大小"></a>推荐swap大小</h2><p>以下列出Ubuntu系统根据RAM大小推荐设置的swap大小：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/swap/6.png" alt></p>
-]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
-        <tag>Ubuntu</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Potplayer添加直播源</title>
-    <url>/2020/06/13/Potplayer%E6%B7%BB%E5%8A%A0%E7%9B%B4%E6%92%AD%E6%BA%90/</url>
-    <content><![CDATA[<h2 id><a href="#" class="headerlink" title></a><span id="more"></span></h2><p>具体操作先打开 PotPlayer，右键选择 <strong>打开</strong> -&gt; <strong>打开链接</strong></p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/%E7%9B%B4%E6%92%AD%E6%BA%90/640.webp" alt></p>
-<p>接下来复制<strong>直播源到 Potplayer 里</strong>，点击确定</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/%E7%9B%B4%E6%92%AD%E6%BA%90/641.webp" alt></p>
-<p><strong>这里成功添加了1015个中国区域的电视频道，而且清晰度都在1080P</strong>，不仅有央视，还有所有卫视和一些地方台</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/%E7%9B%B4%E6%92%AD%E6%BA%90/642.webp" alt></p>
-<p>直播源可以在Github上找到，这里放出链接 <a href="https://github.com/iptv-org/iptv/blob/master/README.md">点此跳转</a></p>
-<p>里面名叫iptv的仓库收集了全世界将近100个国家的频道，总计达到8000多。并按类别，语言和国家进行了分类。这里图中只展示了一小部分。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/%E7%9B%B4%E6%92%AD%E6%BA%90/643.webp" alt></p>
-<p>比如中国对应的是：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/%E7%9B%B4%E6%92%AD%E6%BA%90/644.webp" alt></p>
-<p>除此以外，还有日本，美国，英国等，需要的可以自行寻找添加。</p>
-]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
-        <tag>potplayer</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>远程使用tensorboard等可视化工具</title>
-    <url>/2020/05/27/%E8%BF%9C%E7%A8%8B%E4%BD%BF%E7%94%A8tensorboard%E7%AD%89%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E5%85%B7/</url>
-    <content><![CDATA[<h2 id><a href="#" class="headerlink" title></a><span id="more"></span></h2><p>有两种设置方法，一种代码设置，一种xshell界面设置</p>
-<h2 id="连接SSH"><a href="#连接SSH" class="headerlink" title="连接SSH"></a>连接SSH</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ssh -L 16006:127.0.0.1:6006 -p 31017 username@remote_server_ip</span><br></pre></td></tr></table></figure>
-<p><strong>16006:127.0.0.1:6006</strong> 代表本机6006端口映射为16006号端口，这两个端口号可以自己设置，不要与其他端口号冲突即可</p>
-<p><strong>-p 31017</strong> 代表所连远程服务器的端口号，即SSH所用端口号</p>
-<p><strong>username@remote_server_ip</strong> 代表你的用户名和SSH所连ip地址</p>
-<p>在服务器上使用6006端口正常启动tensorboard：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">tensorboard --logdir=xxx --port=6006</span><br></pre></td></tr></table></figure>
-<p><strong>—port=6006</strong> 代表将端口号指定为6006</p>
-<p>由于上一步我们将端口号6006映射到16006，因此在本地浏览器输入地址：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">127.0.0.1:16006</span><br></pre></td></tr></table></figure>
-<p>即可远程访问tensorboard</p>
-<h2 id="使用Xshell"><a href="#使用Xshell" class="headerlink" title="使用Xshell"></a>使用Xshell</h2><p>在Windows系统装一个Xshell，在文件-&gt;属性-&gt;ssh-&gt;隧道-&gt;添加，类型local，源主机填127.0.0.1或者localhost（意思是本机），倾听端口为16006，表示把目标主机的目标端口转发到本地的侦听端口16006  （可自己设置），目标主机：服务器，填写服务器的ip，目标端口一般是6006（可自己设置）</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SSH/1.png" alt></p>
-<p>在服务器上运行 </p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">tensorboard --logdir=xxx --port=6006</span><br></pre></td></tr></table></figure>
-<p>在本机打开网页127.0.0.1:16006 ，即可查看远程的tensorboard</p>
-]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
-        <tag>Ubuntu</tag>
       </tags>
   </entry>
   <entry>
