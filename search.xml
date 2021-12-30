@@ -1,6 +1,124 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>keras/tensorflow转onnx</title>
+    <url>/2021/09/25/keras%E8%BD%AConnx/</url>
+    <content><![CDATA[<p>项目中遇到需要将训练好的keras模型转换成onnx以便部署到嵌入式设备进行RT加速，最开始使用的<a href="[GitHub - onnx/keras-onnx: Convert tf.keras/Keras models to ONNX](https://github.com/onnx/keras-onnx">keras2onnx</a>工具，然而此工具支持性并不好，在转化过程中遇到许多问题。因此决定将keras转成tensorflow格式，再使用支持性较好的<a href="[GitHub - onnx/tensorflow-onnx: Convert TensorFlow, Keras, Tensorflow.js and Tflite models to ONNX](https://github.com/onnx/tensorflow-onnx">tf2onnx</a>工具进行转化。</p>
+<h1 id="新版本"><a href="#新版本" class="headerlink" title="新版本"></a>新版本</h1><p>目前keras2onnx停止更新，功能已整合进<a href="https://github.com/onnx/tensorflow-onnx">tf2onnx</a>中，keras模型可直接使用 api <a href="https://github.com/onnx/tensorflow-onnx#from_keras-tf-20-and-newer">tf2onnx.convert.from_keras()</a>完成转换操作</p>
+<h2 id="转换步骤："><a href="#转换步骤：" class="headerlink" title="转换步骤："></a>转换步骤：</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> tf2onnx</span><br><span class="line"><span class="keyword">import</span> onnxruntime <span class="keyword">as</span> rt</span><br><span class="line"></span><br><span class="line"><span class="comment"># 加载模型</span></span><br><span class="line">model = ResNet50(weights=<span class="string">&#x27;imagenet&#x27;</span>)</span><br><span class="line"><span class="comment"># 设置输入大小</span></span><br><span class="line">spec = (tf.TensorSpec((<span class="literal">None</span>, <span class="number">224</span>, <span class="number">224</span>, <span class="number">3</span>), tf.float32, name=<span class="string">&quot;input&quot;</span>),)</span><br><span class="line"><span class="comment"># 保存onnx路径</span></span><br><span class="line">output_path = model.name + <span class="string">&quot;.onnx&quot;</span></span><br><span class="line"><span class="comment"># 转换</span></span><br><span class="line">tf2onnx.convert.from_keras(model, input_signature=spec, opset=<span class="number">13</span>, output_path=output_path)</span><br></pre></td></tr></table></figure>
+<h2 id="API说明："><a href="#API说明：" class="headerlink" title="API说明："></a>API说明：</h2><blockquote>
+<p>import tf2onnx</p>
+<p>model_proto, external_tensor_storage = tf2onnx.convert.from_keras(model,<br>                input_signature=None, opset=None, custom_ops=None,<br>                custom_op_handlers=None, custom_rewriter=None,<br>                inputs_as_nchw=None, extra_opset=None shape_override=None,<br>                target=None, large_model=False, output_path=None)</p>
+<pre><code>Args:
+    model: the tf.keras model we want to convert
+    input_signature: a tf.TensorSpec or a numpy array defining the shape/dtype of the input
+    opset: the opset to be used for the ONNX model, default is the latest
+    custom_ops: if a model contains ops not recognized by onnx runtime,
+        you can tag these ops with a custom op domain so that the
+        runtime can still open the model. Type is a dictionary `&#123;op name: domain&#125;`.
+    target: list of workarounds applied to help certain platforms
+    custom_op_handlers: dictionary of custom ops handlers
+    custom_rewriter: list of custom graph rewriters
+    extra_opset: list of extra opset&#39;s, for example the opset&#39;s used by custom ops
+    shape_override: dict with inputs that override the shapes given by tensorflow
+    inputs_as_nchw: transpose inputs in list from nchw to nhwc
+    large_model: use the ONNX external tensor storage format
+    output_path: save model to output_path
+
+Returns:
+    An ONNX model_proto and an external_tensor_storage dict.
+</code></pre></blockquote>
+<h1 id="旧版本"><a href="#旧版本" class="headerlink" title="旧版本"></a>旧版本</h1><h2 id="一-所需工具"><a href="#一-所需工具" class="headerlink" title="一.所需工具"></a>一.所需工具</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">pip install tf2onnx</span><br><span class="line">pip install onnx</span><br><span class="line">pip install onnxruntime</span><br></pre></td></tr></table></figure>
+<h2 id="二-转换流程"><a href="#二-转换流程" class="headerlink" title="二.转换流程"></a>二.转换流程</h2><p>① h5 to pb<br>② pb to onnx</p>
+<h2 id="三-转换过程"><a href="#三-转换过程" class="headerlink" title="三.转换过程"></a>三.转换过程</h2><p>首先准备自己的h5模型；这里要注意h5模型的保存方式，不同保存方式，对应不同加载方式，如下：<br><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">训练:  model.save()    </span><br><span class="line">加载:  model.load_model()</span><br></pre></td></tr></table></figure><br><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">训练:  model.save_weights()    </span><br><span class="line">加载:  model = LeNet()</span><br><span class="line">	  model.load_weights(weight_path) </span><br></pre></td></tr></table></figure></p>
+<p>① h5转pb</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> keras.models <span class="keyword">import</span> load_model</span><br><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> backend <span class="keyword">as</span> K</span><br><span class="line"><span class="keyword">from</span> tensorflow.python.framework <span class="keyword">import</span> graph_util, graph_io</span><br><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"><span class="keyword">from</span> tensorflow.python.platform <span class="keyword">import</span> gfile</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">h5_to_pb</span>(<span class="params">h5_weight_path, output_dir, out_prefix=<span class="string">&quot;output_&quot;</span>, log_tensorboard=<span class="literal">True</span></span>):</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> os.path.exists(output_dir):</span><br><span class="line">        os.mkdir(output_dir)</span><br><span class="line">    h5_model =  load_model(h5_weight_path) </span><br><span class="line">    out_nodes = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(h5_model.outputs)):</span><br><span class="line">        out_nodes.append(out_prefix + <span class="built_in">str</span>(i + <span class="number">1</span>))</span><br><span class="line">        tf.identity(h5_model.output[i], out_prefix + <span class="built_in">str</span>(i + <span class="number">1</span>))</span><br><span class="line"></span><br><span class="line">    model_name = os.path.splitext(os.path.split(h5_weight_path)[-<span class="number">1</span>])[<span class="number">0</span>] + <span class="string">&#x27;.pb&#x27;</span></span><br><span class="line"></span><br><span class="line">    sess = K.get_session()</span><br><span class="line">    init_graph = sess.graph.as_graph_def()</span><br><span class="line">    main_graph = graph_util.convert_variables_to_constants(sess, init_graph, out_nodes)</span><br><span class="line">    graph_io.write_graph(main_graph, output_dir, name=model_name, as_text=<span class="literal">False</span>)</span><br><span class="line"></span><br><span class="line">h5_to_pb(h5_weight_path=<span class="string">&#x27;model.h5&#x27;</span>, output_dir=<span class="string">&#x27;./&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<p>② pb to onnx</p>
+<p>这里需要使用<a href="https://netron.app/">netron</a>查看pb模型的输入(input_image)，输出层(identity)名称。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/20210925161631.png" alt></p>
+<p>转化：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">python -m tf2onnx.convert --<span class="built_in">input</span> ./model.pb  --inputs input_image:<span class="number">0</span> --outputs output_1:<span class="number">0</span> --output ./model.onnx --opset <span class="number">12</span></span><br></pre></td></tr></table></figure>
+<p>—input: 待转化的pb模型</p>
+<p>—inputs: 模型输入名称，有多个输入可用<code>,</code>分割</p>
+<p>—outputs: 模型输出名称，有多个输出可用<code>,</code>分割</p>
+<p>—opset: tf2onnx支持所有tf1.x的版本，默认情况下使用的是opset 8。当然在转换的过程中也可以指定固定的版本 —opset 12，即使用tf1.12以上的版本</p>
+<h2 id="四-推理测试"><a href="#四-推理测试" class="headerlink" title="四.推理测试"></a>四.推理测试</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"><span class="keyword">from</span> keras.models <span class="keyword">import</span> load_model</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> onnxruntime <span class="keyword">as</span> rt</span><br><span class="line"><span class="keyword">from</span> keras.preprocessing.image <span class="keyword">import</span> img_to_array</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line"><span class="comment">#keras推理</span></span><br><span class="line">img = cv2.imread(<span class="string">&#x27;1.jpg&#x27;</span>,<span class="number">0</span>)</span><br><span class="line">img = cv2.resize(img,(<span class="number">28</span>,<span class="number">28</span>))</span><br><span class="line">img = np.array([img_to_array(img)],dtype=<span class="string">&#x27;float&#x27;</span>)/<span class="number">255.0</span></span><br><span class="line">model = load_model(<span class="string">&#x27;model.h5&#x27;</span>)</span><br><span class="line">predict = model.predict(img)</span><br><span class="line">p = [<span class="built_in">round</span>(i,<span class="number">5</span>) <span class="keyword">for</span> i <span class="keyword">in</span> predict[<span class="number">0</span>]]</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;\n keras :&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(p)</span><br><span class="line"></span><br><span class="line"><span class="comment">#opencv dnn pb</span></span><br><span class="line">img = cv2.imread(<span class="string">&#x27;1.jpg&#x27;</span>,<span class="number">0</span>)</span><br><span class="line">img = cv2.resize(img,(<span class="number">28</span>,<span class="number">28</span>))</span><br><span class="line">img = np.array([img_to_array(img)],dtype=<span class="string">&#x27;float&#x27;</span>)/<span class="number">255.0</span></span><br><span class="line">img = img.transpose((<span class="number">0</span>,<span class="number">3</span>,<span class="number">1</span>,<span class="number">2</span>))</span><br><span class="line">net = cv2.dnn.readNetFromTensorflow(<span class="string">&quot;model.pb&quot;</span>)</span><br><span class="line">net.setInput(img)  </span><br><span class="line">out = net.forward()  </span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;\n opencv dnn pb:&#x27;</span>)</span><br><span class="line">p = [<span class="built_in">round</span>(i,<span class="number">5</span>) <span class="keyword">for</span> i <span class="keyword">in</span> out[<span class="number">0</span>]]</span><br><span class="line"><span class="built_in">print</span>(p)</span><br><span class="line"></span><br><span class="line"><span class="comment">#onnxruntime </span></span><br><span class="line"><span class="comment"># 准备输入</span></span><br><span class="line">img = cv2.imread(<span class="string">&#x27;1.jpg&#x27;</span>,<span class="number">0</span>)</span><br><span class="line">img = cv2.resize(img,(<span class="number">28</span>,<span class="number">28</span>))</span><br><span class="line">img = np.array([img_to_array(img)],dtype=<span class="string">&#x27;float&#x27;</span>)/<span class="number">255.0</span></span><br><span class="line"><span class="comment"># onnx要求输入格式为float32，需要将双精度进行转换</span></span><br><span class="line">img= img.astype(np.float32)</span><br><span class="line"><span class="comment"># 加载onnx</span></span><br><span class="line">sess=rt.InferenceSession(<span class="string">&#x27;model.onnx&#x27;</span>)</span><br><span class="line"><span class="comment"># 获取输入名称</span></span><br><span class="line">input_name=sess.get_inputs()[<span class="number">0</span>].name</span><br><span class="line"><span class="comment"># 以字典形式对输入传参</span></span><br><span class="line">res=sess.run(<span class="literal">None</span>,&#123;input_name:img&#125;)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;\n onnxruntime :&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>([<span class="built_in">round</span>(i,<span class="number">5</span>) <span class="keyword">for</span> i <span class="keyword">in</span> res[<span class="number">0</span>]])</span><br></pre></td></tr></table></figure>
+<p>如图推理结果一致即可:</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/20210925163653.png" alt></p>
+]]></content>
+      <categories>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>Tensorflow</tag>
+        <tag>Keras</tag>
+        <tag>onnx</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>如何给热点翻墙</title>
+    <url>/2020/02/16/%E5%A6%82%E4%BD%95%E7%BB%99%E7%83%AD%E7%82%B9%E7%BF%BB%E5%A2%99/</url>
+    <content><![CDATA[<h2 id="Netch简介"><a href="#Netch简介" class="headerlink" title="Netch简介"></a>Netch简介</h2><p>Netch是一款开源的网络游戏工具，支持Socks5、55R、V2等协议，UDP NAT  FullCone及指定进程加速（不需要麻烦的IP规则）。功能上和SSTAP差不多，不过听说加速效果比后者要更好，甚至堪比一些付费的加速器，当然前提需要你的线路给力，不然加速就没意义了。<br><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/netch/windows-netch-1.jpg" alt></p>
+<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><p>下载 Netch 客户端，解压后以管理员身份运行 Netch.exe。若系统提示需要安装 .NET Framework，请<a href="https://www.microsoft.com/net/download/dotnet-framework-runtime">点此</a>访问微软官网下载安装。</p>
+<p><strong>Github地址：</strong><a href="https://github.com/netchx/Netch">https://github.com/netchx/Netch</a></p>
+<p><strong>下载地址：</strong><a href="https://github.com/netchx/Netch/releases">https://github.com/netchx/Netch/releases</a></p>
+<p>打开程序后，选中 “订阅” &gt; “管理订阅链接”</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/netch/windows-netch-2.jpg" alt></p>
+<p>粘贴服务商提供的订阅链接到左下角的链接，备注随便填写，点击添加，然后点击保存</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/netch/windows-netch-3.jpg" alt></p>
+<p>也可以从剪切板添加节点</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/netch/Snipaste_2019-06-24_10-48-31.png" alt></p>
+<p>选择<code>Bypass LAN and China #绕过局域网和大陆</code>，点击启动，即可</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/netch/Snipaste_2020-02-16_12-45-58.jpg" alt></p>
+<p>模式中也可以选择相应的游戏进行加速，也支持给Xshell和Xftp连接国外服务器进行加速</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/netch/windows-netch-7.jpg" alt></p>
+<p>如果需要加速的游戏不在列表里面，那么就选中 “模式” &gt; “创建进程模式”</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/netch/windows-netch-4.jpg" alt></p>
+<p>点击 “扫描” 选取你游戏安装目录后选择确定即可添加，它将自动加载其中的exe文件，点击保存即可选择应用此模式</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/netch/windows-netch-6.jpg" alt>                            </p>
+<p>若需开启热点，给其他设备也翻墙，则需要Tap虚拟网卡的支持，自行查看自己电脑是否装有</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/netch/Snipaste_2020-02-16_12-58-05.jpg" alt></p>
+<p>若未安装则去<a href="https://build.openvpn.net/downloads/releases/tap-windows-9.21.2.exe">TAP-Windows</a>下载安装，Clash、OpenVPN等软件中也提供了安装</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/netch/Snipaste_2020-02-16_12-57-35.jpg" alt></p>
+<p>确认Tap网卡ip为自动获取</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/netch/Snipaste_2020-02-16_13-21-22.jpg" alt></p>
+<p>选择<code>Bypass LAN and China (TUN/TAP)</code>，点击启动</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/netch/Snipaste_2020-02-16_12-52-59.jpg" alt></p>
+<p>启动热点，会发现在网络适配器中多出一个本地连接</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/netch/Snipaste_2020-02-16_13-26-48.jpg" alt></p>
+<p>右键Tap网卡，属性—共享，选择Internet连接共享，添加热点所对应的本地连接</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/netch/Snipaste_2020-02-16_13-28-32.jpg" alt></p>
+<p>此时，热点即可成功翻墙</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/netch/TIM%E5%9B%BE%E7%89%8720200216133203.jpg" alt></p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Proxy</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ubuntu下pip安装numba</title>
+    <url>/2020/05/18/Ubuntu%E4%B8%8Bpip%E5%AE%89%E8%A3%85numba/</url>
+    <content><![CDATA[<h2 id="错误提醒"><a href="#错误提醒" class="headerlink" title="错误提醒"></a>错误提醒</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ImportError: No module named numba</span><br></pre></td></tr></table></figure>
+<h2 id="解决方式"><a href="#解决方式" class="headerlink" title="解决方式"></a>解决方式</h2><p>注意：在安装numba之前必须安装llvm</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo apt-get install llvm-8*</span><br></pre></td></tr></table></figure>
+<p>导入环境变量</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">alias llvm-config=&quot;llvm-config-8&quot;</span><br><span class="line">export LLVM_CONFIG=&quot;/usr/bin/llvm-config-8&quot;</span><br></pre></td></tr></table></figure>
+<p>然后安装llvm</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">pip install llvmlite</span><br></pre></td></tr></table></figure>
+<p>最后安装numba</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">pip install -i https://pypi.tuna.tsinghua.edu.cn/simple numba</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>远程使用tensorboard等可视化工具</title>
     <url>/2020/05/27/%E8%BF%9C%E7%A8%8B%E4%BD%BF%E7%94%A8tensorboard%E7%AD%89%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E5%85%B7/</url>
     <content><![CDATA[<p>有两种设置方法，一种代码设置，一种xshell界面设置</p>
@@ -3630,81 +3748,6 @@
       </categories>
       <tags>
         <tag>leetcode</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>keras/tensorflow转onnx</title>
-    <url>/2021/09/25/keras%E8%BD%AConnx/</url>
-    <content><![CDATA[<p>项目中遇到需要将训练好的keras模型转换成onnx以便部署到嵌入式设备进行RT加速，最开始使用的<a href="[GitHub - onnx/keras-onnx: Convert tf.keras/Keras models to ONNX](https://github.com/onnx/keras-onnx">keras2onnx</a>工具，然而此工具支持性并不好，在转化过程中遇到许多问题。因此决定将keras转成tensorflow格式，再使用支持性较好的<a href="[GitHub - onnx/tensorflow-onnx: Convert TensorFlow, Keras, Tensorflow.js and Tflite models to ONNX](https://github.com/onnx/tensorflow-onnx">tf2onnx</a>工具进行转化。</p>
-<h1 id="新版本"><a href="#新版本" class="headerlink" title="新版本"></a>新版本</h1><p>目前keras2onnx停止更新，功能已整合进<a href="https://github.com/onnx/tensorflow-onnx">tf2onnx</a>中，keras模型可直接使用 api <a href="https://github.com/onnx/tensorflow-onnx#from_keras-tf-20-and-newer">tf2onnx.convert.from_keras()</a>完成转换操作</p>
-<h2 id="转换步骤："><a href="#转换步骤：" class="headerlink" title="转换步骤："></a>转换步骤：</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> tf2onnx</span><br><span class="line"><span class="keyword">import</span> onnxruntime <span class="keyword">as</span> rt</span><br><span class="line"></span><br><span class="line"><span class="comment"># 加载模型</span></span><br><span class="line">model = ResNet50(weights=<span class="string">&#x27;imagenet&#x27;</span>)</span><br><span class="line"><span class="comment"># 设置输入大小</span></span><br><span class="line">spec = (tf.TensorSpec((<span class="literal">None</span>, <span class="number">224</span>, <span class="number">224</span>, <span class="number">3</span>), tf.float32, name=<span class="string">&quot;input&quot;</span>),)</span><br><span class="line"><span class="comment"># 保存onnx路径</span></span><br><span class="line">output_path = model.name + <span class="string">&quot;.onnx&quot;</span></span><br><span class="line"><span class="comment"># 转换</span></span><br><span class="line">tf2onnx.convert.from_keras(model, input_signature=spec, opset=<span class="number">13</span>, output_path=output_path)</span><br></pre></td></tr></table></figure>
-<h2 id="API说明："><a href="#API说明：" class="headerlink" title="API说明："></a>API说明：</h2><blockquote>
-<p>import tf2onnx</p>
-<p>model_proto, external_tensor_storage = tf2onnx.convert.from_keras(model,<br>                input_signature=None, opset=None, custom_ops=None,<br>                custom_op_handlers=None, custom_rewriter=None,<br>                inputs_as_nchw=None, extra_opset=None shape_override=None,<br>                target=None, large_model=False, output_path=None)</p>
-<pre><code>Args:
-    model: the tf.keras model we want to convert
-    input_signature: a tf.TensorSpec or a numpy array defining the shape/dtype of the input
-    opset: the opset to be used for the ONNX model, default is the latest
-    custom_ops: if a model contains ops not recognized by onnx runtime,
-        you can tag these ops with a custom op domain so that the
-        runtime can still open the model. Type is a dictionary `&#123;op name: domain&#125;`.
-    target: list of workarounds applied to help certain platforms
-    custom_op_handlers: dictionary of custom ops handlers
-    custom_rewriter: list of custom graph rewriters
-    extra_opset: list of extra opset&#39;s, for example the opset&#39;s used by custom ops
-    shape_override: dict with inputs that override the shapes given by tensorflow
-    inputs_as_nchw: transpose inputs in list from nchw to nhwc
-    large_model: use the ONNX external tensor storage format
-    output_path: save model to output_path
-
-Returns:
-    An ONNX model_proto and an external_tensor_storage dict.
-</code></pre></blockquote>
-<h1 id="旧版本"><a href="#旧版本" class="headerlink" title="旧版本"></a>旧版本</h1><h2 id="一-所需工具"><a href="#一-所需工具" class="headerlink" title="一.所需工具"></a>一.所需工具</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">pip install tf2onnx</span><br><span class="line">pip install onnx</span><br><span class="line">pip install onnxruntime</span><br></pre></td></tr></table></figure>
-<h2 id="二-转换流程"><a href="#二-转换流程" class="headerlink" title="二.转换流程"></a>二.转换流程</h2><p>① h5 to pb<br>② pb to onnx</p>
-<h2 id="三-转换过程"><a href="#三-转换过程" class="headerlink" title="三.转换过程"></a>三.转换过程</h2><p>首先准备自己的h5模型；这里要注意h5模型的保存方式，不同保存方式，对应不同加载方式，如下：<br><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">训练:  model.save()    </span><br><span class="line">加载:  model.load_model()</span><br></pre></td></tr></table></figure><br><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">训练:  model.save_weights()    </span><br><span class="line">加载:  model = LeNet()</span><br><span class="line">	  model.load_weights(weight_path) </span><br></pre></td></tr></table></figure></p>
-<p>① h5转pb</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> keras.models <span class="keyword">import</span> load_model</span><br><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> backend <span class="keyword">as</span> K</span><br><span class="line"><span class="keyword">from</span> tensorflow.python.framework <span class="keyword">import</span> graph_util, graph_io</span><br><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"><span class="keyword">from</span> tensorflow.python.platform <span class="keyword">import</span> gfile</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">h5_to_pb</span>(<span class="params">h5_weight_path, output_dir, out_prefix=<span class="string">&quot;output_&quot;</span>, log_tensorboard=<span class="literal">True</span></span>):</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> os.path.exists(output_dir):</span><br><span class="line">        os.mkdir(output_dir)</span><br><span class="line">    h5_model =  load_model(h5_weight_path) </span><br><span class="line">    out_nodes = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(h5_model.outputs)):</span><br><span class="line">        out_nodes.append(out_prefix + <span class="built_in">str</span>(i + <span class="number">1</span>))</span><br><span class="line">        tf.identity(h5_model.output[i], out_prefix + <span class="built_in">str</span>(i + <span class="number">1</span>))</span><br><span class="line"></span><br><span class="line">    model_name = os.path.splitext(os.path.split(h5_weight_path)[-<span class="number">1</span>])[<span class="number">0</span>] + <span class="string">&#x27;.pb&#x27;</span></span><br><span class="line"></span><br><span class="line">    sess = K.get_session()</span><br><span class="line">    init_graph = sess.graph.as_graph_def()</span><br><span class="line">    main_graph = graph_util.convert_variables_to_constants(sess, init_graph, out_nodes)</span><br><span class="line">    graph_io.write_graph(main_graph, output_dir, name=model_name, as_text=<span class="literal">False</span>)</span><br><span class="line"></span><br><span class="line">h5_to_pb(h5_weight_path=<span class="string">&#x27;model.h5&#x27;</span>, output_dir=<span class="string">&#x27;./&#x27;</span>)</span><br></pre></td></tr></table></figure>
-<p>② pb to onnx</p>
-<p>这里需要使用<a href="https://netron.app/">netron</a>查看pb模型的输入(input_image)，输出层(identity)名称。</p>
-<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/20210925161631.png" alt></p>
-<p>转化：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">python -m tf2onnx.convert --<span class="built_in">input</span> ./model.pb  --inputs input_image:<span class="number">0</span> --outputs output_1:<span class="number">0</span> --output ./model.onnx --opset <span class="number">12</span></span><br></pre></td></tr></table></figure>
-<p>—input: 待转化的pb模型</p>
-<p>—inputs: 模型输入名称，有多个输入可用<code>,</code>分割</p>
-<p>—outputs: 模型输出名称，有多个输出可用<code>,</code>分割</p>
-<p>—opset: tf2onnx支持所有tf1.x的版本，默认情况下使用的是opset 8。当然在转换的过程中也可以指定固定的版本 —opset 12，即使用tf1.12以上的版本</p>
-<h2 id="四-推理测试"><a href="#四-推理测试" class="headerlink" title="四.推理测试"></a>四.推理测试</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"><span class="keyword">from</span> keras.models <span class="keyword">import</span> load_model</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> onnxruntime <span class="keyword">as</span> rt</span><br><span class="line"><span class="keyword">from</span> keras.preprocessing.image <span class="keyword">import</span> img_to_array</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line"><span class="comment">#keras推理</span></span><br><span class="line">img = cv2.imread(<span class="string">&#x27;1.jpg&#x27;</span>,<span class="number">0</span>)</span><br><span class="line">img = cv2.resize(img,(<span class="number">28</span>,<span class="number">28</span>))</span><br><span class="line">img = np.array([img_to_array(img)],dtype=<span class="string">&#x27;float&#x27;</span>)/<span class="number">255.0</span></span><br><span class="line">model = load_model(<span class="string">&#x27;model.h5&#x27;</span>)</span><br><span class="line">predict = model.predict(img)</span><br><span class="line">p = [<span class="built_in">round</span>(i,<span class="number">5</span>) <span class="keyword">for</span> i <span class="keyword">in</span> predict[<span class="number">0</span>]]</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;\n keras :&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(p)</span><br><span class="line"></span><br><span class="line"><span class="comment">#opencv dnn pb</span></span><br><span class="line">img = cv2.imread(<span class="string">&#x27;1.jpg&#x27;</span>,<span class="number">0</span>)</span><br><span class="line">img = cv2.resize(img,(<span class="number">28</span>,<span class="number">28</span>))</span><br><span class="line">img = np.array([img_to_array(img)],dtype=<span class="string">&#x27;float&#x27;</span>)/<span class="number">255.0</span></span><br><span class="line">img = img.transpose((<span class="number">0</span>,<span class="number">3</span>,<span class="number">1</span>,<span class="number">2</span>))</span><br><span class="line">net = cv2.dnn.readNetFromTensorflow(<span class="string">&quot;model.pb&quot;</span>)</span><br><span class="line">net.setInput(img)  </span><br><span class="line">out = net.forward()  </span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;\n opencv dnn pb:&#x27;</span>)</span><br><span class="line">p = [<span class="built_in">round</span>(i,<span class="number">5</span>) <span class="keyword">for</span> i <span class="keyword">in</span> out[<span class="number">0</span>]]</span><br><span class="line"><span class="built_in">print</span>(p)</span><br><span class="line"></span><br><span class="line"><span class="comment">#onnxruntime </span></span><br><span class="line"><span class="comment"># 准备输入</span></span><br><span class="line">img = cv2.imread(<span class="string">&#x27;1.jpg&#x27;</span>,<span class="number">0</span>)</span><br><span class="line">img = cv2.resize(img,(<span class="number">28</span>,<span class="number">28</span>))</span><br><span class="line">img = np.array([img_to_array(img)],dtype=<span class="string">&#x27;float&#x27;</span>)/<span class="number">255.0</span></span><br><span class="line"><span class="comment"># onnx要求输入格式为float32，需要将双精度进行转换</span></span><br><span class="line">img= img.astype(np.float32)</span><br><span class="line"><span class="comment"># 加载onnx</span></span><br><span class="line">sess=rt.InferenceSession(<span class="string">&#x27;model.onnx&#x27;</span>)</span><br><span class="line"><span class="comment"># 获取输入名称</span></span><br><span class="line">input_name=sess.get_inputs()[<span class="number">0</span>].name</span><br><span class="line"><span class="comment"># 以字典形式对输入传参</span></span><br><span class="line">res=sess.run(<span class="literal">None</span>,&#123;input_name:img&#125;)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;\n onnxruntime :&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>([<span class="built_in">round</span>(i,<span class="number">5</span>) <span class="keyword">for</span> i <span class="keyword">in</span> res[<span class="number">0</span>]])</span><br></pre></td></tr></table></figure>
-<p>如图推理结果一致即可:</p>
-<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/20210925163653.png" alt></p>
-]]></content>
-      <categories>
-        <category>学习</category>
-      </categories>
-      <tags>
-        <tag>keras</tag>
-        <tag>onnx</tag>
-        <tag>tensorflow</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Ubuntu下pip安装numba</title>
-    <url>/2020/05/18/Ubuntu%E4%B8%8Bpip%E5%AE%89%E8%A3%85numba/</url>
-    <content><![CDATA[<h2 id="错误提醒"><a href="#错误提醒" class="headerlink" title=" 错误提醒"></a><span id="more"></span> 错误提醒</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ImportError: No module named numba</span><br></pre></td></tr></table></figure>
-<h2 id="解决方式"><a href="#解决方式" class="headerlink" title="解决方式"></a>解决方式</h2><p>注意：在安装numba之前必须安装llvm</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo apt-get install llvm-8*</span><br></pre></td></tr></table></figure>
-<p>导入环境变量</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">alias llvm-config=&quot;llvm-config-8&quot;</span><br><span class="line">export LLVM_CONFIG=&quot;/usr/bin/llvm-config-8&quot;</span><br></pre></td></tr></table></figure>
-<p>然后安装llvm</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">pip install llvmlite</span><br></pre></td></tr></table></figure>
-<p>最后安装numba</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">pip install -i https://pypi.tuna.tsinghua.edu.cn/simple numba</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
-        <tag>Python</tag>
       </tags>
   </entry>
   <entry>
@@ -7772,49 +7815,6 @@ filter=(c l a s s+5) \times 3</script><p>5代表x,y,w,h, score，score代表该�
 <p>意思是，选择auto模式时，插件为根据PAC规则判断是否要走代理</p>
 <p>现在软件在后台启动着，不需要开启代理，都可以通过浏览器的此插件进行切换，PAC模式选auto，全局选代理服务器，不代理选直连</p>
 <p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/switchyomega/Snipaste_2020-02-16_15-06-10.jpg" alt></p>
-]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
-        <tag>Proxy</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>如何给热点翻墙</title>
-    <url>/2020/02/16/%E5%A6%82%E4%BD%95%E7%BB%99%E7%83%AD%E7%82%B9%E7%BF%BB%E5%A2%99/</url>
-    <content><![CDATA[<h2 id="Netch简介"><a href="#Netch简介" class="headerlink" title=" Netch简介"></a><span id="more"></span> Netch简介</h2><p>Netch是一款开源的网络游戏工具，支持Socks5、55R、V2等协议，UDP NAT  FullCone及指定进程加速（不需要麻烦的IP规则）。功能上和SSTAP差不多，不过听说加速效果比后者要更好，甚至堪比一些付费的加速器，当然前提需要你的线路给力，不然加速就没意义了。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/netch/windows-netch-1.jpg" alt></p>
-<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><p>下载 Netch 客户端，解压后以管理员身份运行 Netch.exe。若系统提示需要安装 .NET Framework，请<a href="https://www.microsoft.com/net/download/dotnet-framework-runtime">点此</a>访问微软官网下载安装。</p>
-<p><strong>Github地址：</strong><a href="https://github.com/netchx/Netch">https://github.com/netchx/Netch</a></p>
-<p><strong>下载地址：</strong><a href="https://github.com/netchx/Netch/releases">https://github.com/netchx/Netch/releases</a></p>
-<p>打开程序后，选中 “订阅” &gt; “管理订阅链接”</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/netch/windows-netch-2.jpg" alt></p>
-<p>粘贴服务商提供的订阅链接到左下角的链接，备注随便填写，点击添加，然后点击保存</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/netch/windows-netch-3.jpg" alt></p>
-<p>也可以从剪切板添加节点</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/netch/Snipaste_2019-06-24_10-48-31.png" alt></p>
-<p>选择<code>Bypass LAN and China #绕过局域网和大陆</code>，点击启动，即可</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/netch/Snipaste_2020-02-16_12-45-58.jpg" alt></p>
-<p>模式中也可以选择相应的游戏进行加速，也支持给Xshell和Xftp连接国外服务器进行加速</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/netch/windows-netch-7.jpg" alt></p>
-<p>如果需要加速的游戏不在列表里面，那么就选中 “模式” &gt; “创建进程模式”</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/netch/windows-netch-4.jpg" alt></p>
-<p>点击 “扫描” 选取你游戏安装目录后选择确定即可添加，它将自动加载其中的exe文件，点击保存即可选择应用此模式</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/netch/windows-netch-6.jpg" alt>                            </p>
-<p>若需开启热点，给其他设备也翻墙，则需要Tap虚拟网卡的支持，自行查看自己电脑是否装有</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/netch/Snipaste_2020-02-16_12-58-05.jpg" alt></p>
-<p>若未安装则去<a href="https://build.openvpn.net/downloads/releases/tap-windows-9.21.2.exe">TAP-Windows</a>下载安装，Clash、OpenVPN等软件中也提供了安装</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/netch/Snipaste_2020-02-16_12-57-35.jpg" alt></p>
-<p>确认Tap网卡ip为自动获取</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/netch/Snipaste_2020-02-16_13-21-22.jpg" alt></p>
-<p>选择<code>Bypass LAN and China (TUN/TAP)</code>，点击启动</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/netch/Snipaste_2020-02-16_12-52-59.jpg" alt></p>
-<p>启动热点，会发现在网络适配器中多出一个本地连接</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/netch/Snipaste_2020-02-16_13-26-48.jpg" alt></p>
-<p>右键Tap网卡，属性—共享，选择Internet连接共享，添加热点所对应的本地连接</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/netch/Snipaste_2020-02-16_13-28-32.jpg" alt></p>
-<p>此时，热点即可成功翻墙</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/netch/TIM%E5%9B%BE%E7%89%8720200216133203.jpg" alt></p>
 ]]></content>
       <categories>
         <category>教程</category>
