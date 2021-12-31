@@ -1,6 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>解决Pycharm大量占用C盘问题</title>
+    <url>/2020/05/05/%E8%A7%A3%E5%86%B3Pycharm%E5%A4%A7%E9%87%8F%E5%8D%A0%E7%94%A8C%E7%9B%98%E9%97%AE%E9%A2%98/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在使用 PyCharm 时会在 C:\Users\<username>.PyCharm&lt;版本号&gt; 下创建一大堆文件，里边包括了配置信息，项目缓存信息等。随着pycharm的使用，这个文件夹越来越大，占用着系统内存，好不霸道！要为了解决Pycharm大量占用C盘问题，需要把一些配置信息搬迁到指定位置。</username></p>
+<h2 id="通过-PyCharm-修改"><a href="#通过-PyCharm-修改" class="headerlink" title="通过 PyCharm 修改"></a>通过 PyCharm 修改</h2><p>在启动 PyCharm 后选择 Help -&gt; Edit Custom Properties 的选项，弹出：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/pycharm/1.png" alt></p>
+<p>选择 Create ，之后在文件中添加以下内容，即你需要迁移到的路径：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">idea.config.path=D:/Program Files/.PyCharm&lt;版本号&gt;/config</span><br><span class="line">idea.system.path=D:/Program Files/.PyCharm&lt;版本号&gt;/system</span><br><span class="line">idea.plugins.path=D:/Program Files/.PyCharm&lt;版本号&gt;/config/plugins</span><br></pre></td></tr></table></figure>
+<p>保存并关闭 PyCharm 之后，将原文件夹下的 C:\Users\<username>.PyCharm&lt;版本号&gt; 复制到目标搬迁文件夹下，然后将原文件夹下的 C:\Users\<username>.PyCharm&lt;版本号&gt;只保留 config 目录下的一个 idea.properties 文件，其余文件删除即可。</username></username></p>
+<h2 id="修改程序配置"><a href="#修改程序配置" class="headerlink" title="修改程序配置"></a>修改程序配置</h2><p>打开 Pycharm 安装目录（bin），找到 idea.properties 文件：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/pycharm/2.png" alt></p>
+<p>然后，打开使用txt文本打开这个文件，并相应的写出红线标出的部分</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/pycharm/3.png" alt></p>
+<p>最后，打开pycharm就可以了。这时不会再在C盘创建.pycharm2019.3目录了。问题解决</p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Perceptual Generative Adversarial Networks for Small Object Detection</title>
+    <url>/2020/05/09/Perceptual-Generative-Adversarial-Networks-for-Small-Object-Detection/</url>
+    <content><![CDATA[<h2 id="详解"><a href="#详解" class="headerlink" title="详解"></a>详解</h2><ul>
+<li>小目标检测的一个常用思路是提升图片输入分辨率，来增强小目标的分辨率和生成高分辨率的特征图，但这会导致训练和验证极度费时。</li>
+<li>本文提出的PGAN方法对小目标生成高分辨率特征表示，使小目标的特征表示与大目标特征表示类似。</li>
+<li>生成器网络通过较前层提取细粒度特征将小目标分辨率较低的特征转换为分辨率较高的特征。</li>
+<li>判别器网络不仅用于生成小目标高分辨表示，同时证明带感知损失的生成高分辨率特征对检测准确率是有帮助的。</li>
+<li>生成器网络被训练欺骗辨别器通过产生最像大目标表征的小目标，同时提升检测准确率。</li>
+<li>辨别器被训练用于提升正确从实际大目标中分辨出生成的高分辨率表征，同时将定位准确率反馈给生成器。</li>
+<li>小目标检测典型应用领域：交通标志检测、行人检测</li>
+</ul>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/PGAN/11659928-8837870deae1ed8d.png" alt></p>
+<p>perception branch（感知分支）首先利用仅包含大目标的图片进行训练，然后利用仅包含小目标的图片进行训练，generator network 被训练用于对小目标生成高分辨率的类似大目标的表征。adversarial branch被训练用于区分生成的小目标高分辨率表征与实际大目标的原始表征。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/PGAN/11659928-0359caab80a4ee3a.png" alt></p>
+<p>generator 从底层提取细粒度特征，放入深度残差网络，通过element-wise加和操作，将深度残差网络学习到的残差特征与conv5学习到的特征结合，得到高分辨率特征图；discriminator将大目标和小目标的高分辨特征作为输入，adversarial分支用于判断输入相片属于真的大目标的概率值，perception分支用于分类和边界框回归，验证从生成高分辨率特征获得的检测准确率提升。</p>
+<p><strong>损失函数</strong></p>
+<p>$F_{l}$和 $F_{s}$代表大目标和小目标特征，$G$和$D$代表生成器和判别器，$\Theta_{g}$和$\Theta_{a}$代表生成器和判别器的网络参数</p>
+<ul>
+<li><p>生成器<br>$\Theta_{g}=\arg \min _{\Theta_{g}} L_{d i s}\left(G_{\Theta_{g}}\left(F_{s}\right)\right)$<br>$L_{d i s}$是判别器网络产生的对抗性损失$L_{d i s_{-} a}$和感知损失$L_{d i s_ p}$的加权组合<br>$L_{d i s}=w_{1} \times L_{d i s_{-} a}+w_{2} \times L_{d i s_{p}}$（作者设w1和w2为1）</p>
+<ul>
+<li><p>对抗性损失<br>$L_{d i s_{-}a}=-\log D_{\Theta_{a}}\left(G_{\Theta_{g}}\left(F_{s}\right)\right)$（使$D_{\Theta_{a}}\left(G_{ \Theta_{g}}\left(F_{s}\right)\right)$尽可能大）</p>
+</li>
+<li><p>感知损失</p>
+<p>$L_{d i s_{-p}}=L_{c l s}(p, g)+1[g \geq 1] L_{l o c}\left(r_{g}, r^{*}\right)$</p>
+<p>$L_{c l s}$和$L_{l o c}$是分类和边界框回归的损失</p>
+<p>感知分支输出K + 1个类别的类别级别置信度$p=\left(p_{0}, \dots, p_{k}\right)$，对于每个K对象类，边界框回归偏移$r_{k} = \left(r_{x}^{k}, r_{y}^{k}, r_{w}^{k}, r_{h}^{k}\right)$，真实类别为$g$，真实边界框回归目标$r^{*}$</p>
+</li>
+</ul>
+</li>
+<li><p>判别器网络的对抗分支：<br>$\Theta_{a}=\arg \min _{\Theta_{a}} L_{a}\left(G_{\Theta_{g}}\left(F_{s}\right), F_{l}\right)$<br>$L_{a}=-\log D_{\Theta_{a}}\left(F_{l}\right)-\log \left(1-D_{\Theta_{a}}\left(G_{\Theta_{g}}\left(F_{s}\right)\right)\right)$<br>区分当前生成的小对象超分辨表示和原始对象与真实大对象之间的差异。 即使$D_{\Theta_{a}}$尽可能大，$D _{\Theta_{a}}\left(G _{Theta_{g}}\left(F_{s}\right)\right)$尽可能小。</p>
+</li>
+</ul>
+<p><strong>联合对抗损失 </strong><br>$\begin{array}{rl}{\min _{G} \max _{D}} &amp; {L(D, G) \triangleq \mathbb{E}_{F_{l} \sim p_{ \text {data(F }\left._{l}\right)}} \log D\left(F_{l}\right)} \\ {} &amp; {+\mathbb{E}_{F_{s} \sim p_{F_{s}}}\left(F_{s} | f\right)[\log (1-D(\underbrace{F_{s}+G\left(F_{s} | f\right)}_{\text {residual learning }}))]}\end{array}$</p>
+<p>即G的目标是使它最小，D的目标使它最大，由于$F_{s}$中包含的信息有限。因此，引入了一个新的条件生成器模型，该模型以额外的辅助信息为条件，即小对象$f$的低级特征，生成器从中通过残差学习在大对象和小对象表示之间生成残差表示。</p>
+<p>个人理解：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/PGAN/1.png" alt></p>
+]]></content>
+      <categories>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>目标检测</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>keras/tensorflow转onnx</title>
     <url>/2021/09/25/keras%E8%BD%AConnx/</url>
     <content><![CDATA[<p>项目中遇到需要将训练好的keras模型转换成onnx以便部署到嵌入式设备进行RT加速，最开始使用的<a href="[GitHub - onnx/keras-onnx: Convert tf.keras/Keras models to ONNX](https://github.com/onnx/keras-onnx">keras2onnx</a>工具，然而此工具支持性并不好，在转化过程中遇到许多问题。因此决定将keras转成tensorflow格式，再使用支持性较好的<a href="[GitHub - onnx/tensorflow-onnx: Convert TensorFlow, Keras, Tensorflow.js and Tflite models to ONNX](https://github.com/onnx/tensorflow-onnx">tf2onnx</a>工具进行转化。</p>
@@ -3751,51 +3818,6 @@ Returns:
       </tags>
   </entry>
   <entry>
-    <title>Perceptual Generative Adversarial Networks for Small Object Detection</title>
-    <url>/2020/05/09/Perceptual-Generative-Adversarial-Networks-for-Small-Object-Detection/</url>
-    <content><![CDATA[<h2 id="详解"><a href="#详解" class="headerlink" title=" 详解"></a><span id="more"></span> 详解</h2><ul>
-<li>小目标检测的一个常用思路是提升图片输入分辨率，来增强小目标的分辨率和生成高分辨率的特征图，但这会导致训练和验证极度费时。</li>
-<li>本文提出的PGAN方法对小目标生成高分辨率特征表示，使小目标的特征表示与大目标特征表示类似。</li>
-<li>生成器网络通过较前层提取细粒度特征将小目标分辨率较低的特征转换为分辨率较高的特征。</li>
-<li>判别器网络不仅用于生成小目标高分辨表示，同时证明带感知损失的生成高分辨率特征对检测准确率是有帮助的。</li>
-<li>生成器网络被训练欺骗辨别器通过产生最像大目标表征的小目标，同时提升检测准确率。</li>
-<li>辨别器被训练用于提升正确从实际大目标中分辨出生成的高分辨率表征，同时将定位准确率反馈给生成器。</li>
-<li>小目标检测典型应用领域：交通标志检测、行人检测</li>
-</ul>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/PGAN/11659928-8837870deae1ed8d.png" alt></p>
-<p>perception branch（感知分支）首先利用仅包含大目标的图片进行训练，然后利用仅包含小目标的图片进行训练，generator network 被训练用于对小目标生成高分辨率的类似大目标的表征。adversarial branch被训练用于区分生成的小目标高分辨率表征与实际大目标的原始表征。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/PGAN/11659928-0359caab80a4ee3a.png" alt></p>
-<p>generator 从底层提取细粒度特征，放入深度残差网络，通过element-wise加和操作，将深度残差网络学习到的残差特征与conv5学习到的特征结合，得到高分辨率特征图；discriminator将大目标和小目标的高分辨特征作为输入，adversarial分支用于判断输入相片属于真的大目标的概率值，perception分支用于分类和边界框回归，验证从生成高分辨率特征获得的检测准确率提升。</p>
-<p><strong>损失函数</strong></p>
-<p>$F_{l}$和 $F_{s}$代表大目标和小目标特征，$G$和$D$代表生成器和判别器，$\Theta_{g}$和$\Theta_{a}$代表生成器和判别器的网络参数</p>
-<ul>
-<li><p>生成器<br>$\Theta_{g}=\arg \min _{\Theta_{g}} L_{d i s}\left(G_{\Theta_{g}}\left(F_{s}\right)\right)$<br>$L_{d i s}$是判别器网络产生的对抗性损失$L_{d i s_{-} a}$和感知损失$L_{d i s_ p}$的加权组合<br>$L_{d i s}=w_{1} \times L_{d i s_{-} a}+w_{2} \times L_{d i s_{p}}$（作者设w1和w2为1）</p>
-<ul>
-<li><p>对抗性损失<br>$L_{d i s_{-}a}=-\log D_{\Theta_{a}}\left(G_{\Theta_{g}}\left(F_{s}\right)\right)$（使$D_{\Theta_{a}}\left(G_{ \Theta_{g}}\left(F_{s}\right)\right)$尽可能大）</p>
-</li>
-<li><p>感知损失</p>
-<p>$L_{d i s_{-p}}=L_{c l s}(p, g)+1[g \geq 1] L_{l o c}\left(r_{g}, r^{*}\right)$</p>
-<p>$L_{c l s}$和$L_{l o c}$是分类和边界框回归的损失</p>
-<p>感知分支输出K + 1个类别的类别级别置信度$p=\left(p_{0}, \dots, p_{k}\right)$，对于每个K对象类，边界框回归偏移$r_{k} = \left(r_{x}^{k}, r_{y}^{k}, r_{w}^{k}, r_{h}^{k}\right)$，真实类别为$g$，真实边界框回归目标$r^{*}$</p>
-</li>
-</ul>
-</li>
-<li><p>判别器网络的对抗分支：<br>$\Theta_{a}=\arg \min _{\Theta_{a}} L_{a}\left(G_{\Theta_{g}}\left(F_{s}\right), F_{l}\right)$<br>$L_{a}=-\log D_{\Theta_{a}}\left(F_{l}\right)-\log \left(1-D_{\Theta_{a}}\left(G_{\Theta_{g}}\left(F_{s}\right)\right)\right)$<br>区分当前生成的小对象超分辨表示和原始对象与真实大对象之间的差异。 即使$D_{\Theta_{a}}$尽可能大，$D _{\Theta_{a}}\left(G _{Theta_{g}}\left(F_{s}\right)\right)$尽可能小。</p>
-</li>
-</ul>
-<p><strong>联合对抗损失 </strong><br>$\begin{array}{rl}{\min _{G} \max _{D}} &amp; {L(D, G) \triangleq \mathbb{E}_{F_{l} \sim p_{ \text {data(F }\left._{l}\right)}} \log D\left(F_{l}\right)} \\ {} &amp; {+\mathbb{E}_{F_{s} \sim p_{F_{s}}}\left(F_{s} | f\right)[\log (1-D(\underbrace{F_{s}+G\left(F_{s} | f\right)}_{\text {residual learning }}))]}\end{array}$</p>
-<p>即G的目标是使它最小，D的目标使它最大，由于$F_{s}$中包含的信息有限。因此，引入了一个新的条件生成器模型，该模型以额外的辅助信息为条件，即小对象$f$的低级特征，生成器从中通过残差学习在大对象和小对象表示之间生成残差表示。</p>
-<p>个人理解：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/PGAN/1.png" alt></p>
-]]></content>
-      <categories>
-        <category>学习</category>
-      </categories>
-      <tags>
-        <tag>目标检测</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>An Analysis of Scale Invariance in Object Detection – SNIP</title>
     <url>/2020/05/08/An-Analysis-of-Scale-Invariance-in-Object-Detection-%E2%80%93-SNIP/</url>
     <content><![CDATA[<h2 id="动机"><a href="#动机" class="headerlink" title="  动机"></a><span id="more"></span>  动机</h2><p>概括而言，这篇文章从COCO数据集开始分析，认为目前目标检测算法的难点在于数据集中object的尺寸分布较大，尤其对于小目标的检测效果也有待提高，因此提出Scale Normalization for Image Pyramids (SNIP)算法来解决这个问题。</p>
@@ -3939,28 +3961,6 @@ M A E=\frac{\sum_{n=1}^{n}\left|f\left(x_{i}\right)-y_{i}\right|}{n}</script><p>
 </ul>
 <p>可以在使用pip的时候，加上参数-i和镜像地址，指定下载源，加速下载过程，如：</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
-        <tag>Python</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>解决Pycharm大量占用C盘问题</title>
-    <url>/2020/05/05/%E8%A7%A3%E5%86%B3Pycharm%E5%A4%A7%E9%87%8F%E5%8D%A0%E7%94%A8C%E7%9B%98%E9%97%AE%E9%A2%98/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title=" 前言"></a><span id="more"></span> 前言</h2><p>在使用 PyCharm 时会在 C:\Users\<username>.PyCharm&lt;版本号&gt; 下创建一大堆文件，里边包括了配置信息，项目缓存信息等。随着pycharm的使用，这个文件夹越来越大，占用着系统内存，好不霸道！要为了解决Pycharm大量占用C盘问题，需要把一些配置信息搬迁到指定位置。</username></p>
-<h2 id="通过-PyCharm-修改"><a href="#通过-PyCharm-修改" class="headerlink" title="通过 PyCharm 修改"></a>通过 PyCharm 修改</h2><p>在启动 PyCharm 后选择 Help -&gt; Edit Custom Properties 的选项，弹出：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm%E5%8D%A0%E7%94%A8/1.png" alt></p>
-<p>选择 Create ，之后在文件中添加以下内容，即你需要迁移到的路径：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">idea.config.path=D:/Program Files/.PyCharm&lt;版本号&gt;/config</span><br><span class="line">idea.system.path=D:/Program Files/.PyCharm&lt;版本号&gt;/system</span><br><span class="line">idea.plugins.path=D:/Program Files/.PyCharm&lt;版本号&gt;/config/plugins</span><br></pre></td></tr></table></figure>
-<p>保存并关闭 PyCharm 之后，将原文件夹下的 C:\Users\<username>.PyCharm&lt;版本号&gt; 复制到目标搬迁文件夹下，然后将原文件夹下的 C:\Users\<username>.PyCharm&lt;版本号&gt;只保留 config 目录下的一个 idea.properties 文件，其余文件删除即可。</username></username></p>
-<h2 id="修改程序配置"><a href="#修改程序配置" class="headerlink" title="修改程序配置"></a>修改程序配置</h2><p>打开 Pycharm 安装目录（bin），找到 idea.properties 文件：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm%E5%8D%A0%E7%94%A8/2.png" alt></p>
-<p>然后，打开使用txt文本打开这个文件，并相应的写出红线标出的部分</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/pycharm%E5%8D%A0%E7%94%A8/3.png" alt></p>
-<p>最后，打开pycharm就可以了。这时不会再在C盘创建.pycharm2019.3目录了。问题解决</p>
 ]]></content>
       <categories>
         <category>教程</category>
