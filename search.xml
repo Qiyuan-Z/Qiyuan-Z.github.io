@@ -1,6 +1,673 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>SSD</title>
+    <url>/2020/02/29/SSD/</url>
+    <content><![CDATA[<h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>本文提出了仅需要单个卷积神经网络就能完成目标检测的算法，并命名为SSD(Single Shot Detector)。SSD算法将目标框的输出空间离散化为一组在每个特征图位置不同大小和形状的默认框。预测时，网络对位于每个默认框类的物体类别进行打分，并修正默认框位置来更好的匹配物体的位置。此外，SSD网络在不同分辨率的特征图上预测，这样就可以处理大小不同的物体。SSD比那些需要搜索物体候选框的算法简单，因为它完全去除了proposal生成和随后的特征再筛选的过程，把所有的计算封装在一个网络里面。这使得SSD训练起来很容易，可以直接加入到检测系统里面。在PASCAL VOC，COCO,和ILSVRC数据集上的实验也证明，与那些需要object  proposal的算法相比，SSD在保证准确性的同时，速度更快。SSD只需一个完整的框架来训练和测试。在NVIDIA Titan  X对于一个大小是300 x 300的输入图像，SSD在VOC2007测试上的MAP是74.3%，速度是59FPS。对于512 x 512的输入，SSD的MAP是76.9%，比Faster RCNN更准。和其他单阶段的方法比，即便是输入较小的图像，SSD的准确性也会更高。</p>
+<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>目前，目标检测系统基本采用以下的流程：假设物体边框，对每个边框内进行特征再采样，最后使用分类器进行分类。这个流程比较流行，基于Faster-RCNN的方法通过选择性搜索在PASCAL VOC,  COCO和ILSVRC上检测效果都很好。但是这些方法对于嵌入式设备来说计算量过大，甚至需要高端硬件的支持，对于实时系统来说太慢。最快的检测器Faster  RCNN的检测速度也只能到7FPS。人们尝试了很多其他方法来构建更快的检测器，但是增加速度大多以损失检测精度为代价。本文提出了基于目标检测器的网络(object detector)，它不需要为边框进行搜索，但是精度却不降反升。此方法实现了高精度和高速度，在VOC2007  上的测试速度是59FPS，mAP是74.3%；而Faster  R-CNN的mAP是73.2%，速度是7FPS；YOLO的mAP是63.4%，速度的是45FPS。速度的提升得益于去除了边框提议(RPN或者Selective  Search)和随后的特征再采样。使用了一个小卷积滤波器来预测目标分类和边框位置的偏移，对于不同横纵比检测使用不同的滤波器去处理，然后把这些滤波器应用在后面网络阶段的特征图上，这是为了用检测器检测不同比例的图片，这样我们在相对低分辨率的图像上也能获得高精度的输出，还提升了检测速度。本文的贡献如下：</p>
+<ul>
+<li>提出了SSD算法—-多类别单阶检测器， 要比其它的单阶段检测器（YOLO）快，而且更准确；</li>
+<li>SSD的核心部分是，在特征图上应用小卷积滤波器，预测分类得分和一个固定集合的默认边界框的偏移；</li>
+<li>为了实现高检测精度，在不同比例的特征图上产生不同的预测，通过纵横比来分开预测；</li>
+<li>以上的设计可以端到端训练，精度还高，甚至在低分辨率的图像上效果也不错；</li>
+<li>关于速度和精度的试验，主要在PASCAL VOC, COCO 和 ILSVRC数据集上进行，与其它方法进行比较。</li>
+</ul>
+<h2 id="SSD"><a href="#SSD" class="headerlink" title="SSD"></a>SSD</h2><h3 id="模型"><a href="#模型" class="headerlink" title="模型"></a>模型</h3><p>SSD基于前馈式卷积神经网络，针对那些方框里的目标检测实例，产生一个固定大小边界框集合和分数，紧接着是一个非极大值抑制步骤来产生最后的检测。网络前半部分是个标准结构(用于高质量图片分类)，成为基网络。然后对网络增加了辅助结构来实现以下特征：</p>
+<ul>
+<li><p><strong>多比例特征图检测</strong>：在基网络后增加卷积特征层，这些层按大小减少的次序连接，能够进行多尺度预测。</p>
+</li>
+<li><p><strong>卷积检测预测器</strong>：通过一个卷积滤波器集合，每个新增的特征层可以产生一个预测集合。假设特征层大小为m x n，p个通道，预测参数的基本单元是一个3 x 3 x p的小核，它要么产生一个类别的得分，要么产生一个相对于默认方框的位置偏移。核一共要应用在m x n个位置上，在每个位置上它都有一个输出值。边界框的偏移输出值是相对于默认的位置的。</p>
+</li>
+</ul>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/object_detection/Snipaste_2020-01-08_14-51-11.jpg" alt></p>
+<ul>
+<li><strong>默认方框和纵横比</strong>：将每个特征图单元(cell) 与默认边界框的集合关联起来，这是对于网络顶层的多特征图来说的。默认方框用卷积的方式覆盖特征图，这样，每个方框对应的单元(cell)是固定的。在每个特征映射单元上，我们预测相对于默认方框形状的偏移，以及每一类别的分数（表明每一个方框中一个类的出现）。在给定的位置有k个框，对于其中的每一个，计算c类类别的分数，和相对于原来默认方框形状的4个偏移。这就一共有(c + 4) x k个滤波器被应用到特征图的每个位置上；对于m x n的特征图，产生(c + 4) x k x m x n个输出。默认方框跟Faster R-CNN中的Anchor类似，但是作者将它们应用到不同分辨率的特征图上时，由于在一些特征图上有不同的默认框形状，这使得算法对不同尺度的目标有较好的探测作用。<br><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/SSD/640.jfif" alt><br>SSD在训练中只需一张输入图像和图像中每个目标的ground truth边界框信息。在卷积操作中，我们产生一个默认方框的集合，这些方框在每个位置有不同的纵横比，在一些特征图中有不同的比例，如上图所示。对于每个默认方框，预测它形状的偏移和类别的置信度$\left(c_{1}, c_{2}, c_{3}, \dots, c_{p}\right)$。训练时，首先将这些默认方框和 ground truth 边界框对应上。就像图中，作者匹配了2个默认方框，一个是猫，一个是狗，它们被认定为positive, 其余部分被认定为 negative. 模型损失函数是 localization loss(smooth L1) 和 confidence  loss(Softmax) 的加权之和。</li>
+</ul>
+<h2 id="怎么设置default-boxes？"><a href="#怎么设置default-boxes？" class="headerlink" title="怎么设置default boxes？"></a>怎么设置default boxes？</h2><p>SSD中default box的概念有点类似于Faster R-CNN中的anchor。不同于Faster  R-CNN只在最后一个特征层取anchor，SSD在多个特征层上取default box，可以得到不同尺度的default  box。在特征图的每个单元上取不同宽高比的default  box,一般宽高比在{1，2，3，1/2，1/3}中选取，有时还会额外增加一个宽高比为1但具有特殊尺度的box。上面那张图展示了在8 x 8的feature map和4 x 4的feature map上的每个单元取4个不同的default box。原文对于300 x 300的输入，分别在conv4_3，conv7，conv8_2，conv9_2，conv10_2，conv11_2的特征图上的每个单元取4，6，6，6，4，4个default  box.  由于以上特征图的大小分别是38x38，19x19，10x10，5x5，3x3，1x1，所以一共得到38 x 38 x 4 + 19 x 19 x 6 + 10 x 10 x 6 + 5 x 5 x 6 + 3 x 3 x 4 + 1 x 1 x 4 = 8732个default box.对一张300x300的图片输入网络将会针对这8732个default  box预测8732个边界框。</p>
+<h2 id="训练"><a href="#训练" class="headerlink" title="训练"></a>训练</h2><p>训练SSD和训练其他使用区域提议检测器的主要区别是，ground  truth信息在固定检测器输出的情况下需要指定到特定的输出。这样，损失函数和反向传播就可以端到端的应用。训练需要选择默认方框的集合，检测比例，以及hard negative mining（也就是不存在目标的样本集合）和数据增强策略。</p>
+<ul>
+<li><p><strong>Matching strategy</strong>， 在训练中，需要决定哪个默认框匹配一个 ground truth，由此来训练网络。对于每个从默认方框（不同位置，不同纵横比，不同比例上）中选择的 ground truth 边界框，开始时，根据最高的 jaccard overlap 来匹配 ground truth  边界框和默认方框（与MultiBox一样）。实际操作中，与 MultiBox 不同，当它们的 jaccard  overlap高于阈值0.5时，作者就将默认方框认为 ground  truth。这简化了学习问题，使得网络可以对多个重叠的默认方框预测得到高分，而不是仅挑选一个重合度最高的方框。</p>
+</li>
+<li><p><strong>Training objective</strong>， SSD的训练目标来自于MultiBox，但是作者将之扩展成可处理多目标分类的问题。$x_{i j}^{p}=1,0$表示匹配第$i$个默认方框和$p$类别第$j$个ground truth边界框。这种匹配策略会出现$\sum_{i} x_{i, j}^{p}&gt;=1$。整体的目标损失函数是定位损失加分类损失： $L(x, c, l, g)=\frac{1}{N}\left(L_{c o n f}(x, c)+\alpha L_{l o c}(x, l, g)\right)$，其中$N$是匹配默认框的个数，如果$N=0$，loss设为0。定位损失是预测边界框$l$和真值边界框参数$g$的Smooth L1 loss。与Faster R-CNN类似，对默认边界框$d$中心$(cx, cy)$的偏移量进行回归，$w$是宽，$h$是高。<br><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/SSD/641.webp" alt><br>分类损失是多个类别置信度的 softmax loss：<br><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/SSD/642.webp" alt><br>$\alpha$在交叉验证中设为1。</p>
+</li>
+<li><p><strong>Choosing scales and aspect ratio for default boxes</strong>，为了处理不同的目标比例，有些方法是把图片处理成不同的大小，然后结合不同大小图片的结果。但是在一个网络中利用多个不同层产生的特征图来预测也能产生类似的结果，所有比例的目标还可以共享参数。前面的研究已经证明使用底层的特征图可以提升语义分割质量，因为底层能捕捉到输入图像中的细节信息。受这些方法启发，本文使用了特征图中的高层和低层特征来进行目标检测。网络中不同层级的特征图会有不同的感受野，在SSD中，默认框不一定要和每层中的实际感受野对应。假设我们要用$m$个特征图来预测，每个特征图的默认框尺度计算如下：$s_{k}=s_{\min }+\frac{s_{\max }-s_{\min }}{m-1}(k-1, k \in[1, m])$ ，其中$s_{m i n}$是0.2，$s_{m a x}$是0.9，意味着最低的层的尺度是0.2，最高的层的尺度是0.9，中间层正常间隔分布。对于默认框，使用不同的高宽比，$a_{r} \in 1,2,3, \frac{1}{2}, \frac{1}{3}$。可以计算每个默认框的宽度$w_{k}^{a}=s_{k} \sqrt{a}_{r}$和高度$h_{k}^{a}=s_{k} / \sqrt{a_{r}}$。对于宽高比是1的情况，增加一个尺度是$s_{k}^{\prime}=\sqrt{s_{k} s_{k+1}}$的默认框，这样就在每个特征图位置有6个默认框。将框的中心设为$\left(\frac{i+0.5}{\left|f_{k}\right|}, \frac{j+0.5}{\left|f_{k}\right|}\right)$，其中$\left|f_{k}\right|$是第$k$个正方形特征图的大小。结合诸多特征图的不同位置下所有不同尺度和宽高比的默认框，就有了一个预测结果的集合，覆盖不同大小和形状的输入对象。例如图一中，那条狗与特征图中4 x 4的默认框匹配，但是不和任何8 x 8特征图中的默认框匹配，因为这些默认框有着不同的尺度，与狗的默认框不匹配，因此在训练中被认为是negative。</p>
+</li>
+<li><p><strong>Hard Negative Mining</strong> ，匹配步骤后，默认框中的大多数都是negative，尤其是候选框个数众多的时候。这就导致 positive 和 negative 训练样本不平衡。这些 negative 样本不全用，而是对于每一个默认框，通过最高置信度损失来对它们进行排序，选择最高的几个，这样negative 和 positive的比例最多是3:1。这样训练更稳定也更快。</p>
+</li>
+<li><p><strong>Data augmentation</strong> 为了让模型对不同的输入大小和形状更鲁棒，每张训练图片都通过以下步骤随机选择：(1)使用整张原始图片输入；(2)选择图片中的一块，与物体最低的  jaccard overlap 值为0.1, 0.3, 0.5, 0.7,  0.9；(3)随机采样某一块。采样区块的大小在原图片[0.1,1]之间，高宽比介于0.5和2之间。保留真值边界框中的重叠部分，如果它的中心在采样区块内。在采样步骤后，每个采样区块缩放到固定大小，以0.5的概率来水平翻转。</p>
+</li>
+</ul>
+<h2 id="实验结果"><a href="#实验结果" class="headerlink" title="实验结果"></a>实验结果</h2><p>在PSCAL VOC2012上面：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/SSD/643.webp" alt></p>
+<p>在COCO数据集上面：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/SSD/644.webp" alt></p>
+<p>速度和精度的整体对比：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/SSD/645.png" alt></p>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>SSD优势是速度比较快，整个过程只需要一步，首先在图片不同位置按照不同尺度和宽高比进行密集抽样，然后利用CNN提取特征后直接进行分类与回归，所以速度比较快，但均匀密集采样会造成正负样本不均衡的情况使得训练比较困难，导致模型准确度有所降低。另外，SSD对小目标的检测没有大目标好，因为随着网络的加深，在高层特征图中小目标的信息丢失掉了，适当增大输入图片的尺寸可以提升小目标的检测效果。</p>
+<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><p><a href="https://github.com/weiliu89/caffe/tree/ssd">https://github.com/weiliu89/caffe/tree/ssd</a></p>
+]]></content>
+      <categories>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>目标检测</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Faster-RCNN</title>
+    <url>/2020/02/26/Faster-RCNN/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>我们知道RCNN和Fast-RCNN都是双阶段的算法，依赖于候选框搜索算法。而搜索算法是很慢的，这就导致这两个算法不能实时。基于这个重大缺点，Faster-RCNN算法问世。</p>
+<h2 id="贡献"><a href="#贡献" class="headerlink" title="贡献"></a>贡献</h2><p>Fast-RCNN仍依赖于搜索候选框方法，其中以Selective  Search为主。在Fast-RCNN给出的时间测试结果中，一张图片需要2.3s的前向推理时间，其中2s用于生成2000个ROI。可以看到整个算法的时间消耗几乎都在区域候选框搜索这个步骤了，如果我们能去掉候选框搜索这个过程是不是实时有希望了？Faster-RCNN就干了这件事，论文提出在内部使用深层网络代替候选区域。新的候选区域网络(RPN)在生成ROI的效率大大提升，一张图片只需要10毫秒！！！</p>
+<h2 id="网络结构"><a href="#网络结构" class="headerlink" title="网络结构"></a>网络结构</h2><p>Faster-RCNN的网络结构如下图表示：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/Faster_RCNN/640.png" alt></p>
+<p>我们可以发现除了添加一个RPN网络之外，其他地方和Fast-RCNN是完全一致的。引用知乎上看到的一张更详细的网络结构如下：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/Faster_RCNN/641.jfif" alt></p>
+<h2 id="RPN网络"><a href="#RPN网络" class="headerlink" title="RPN网络"></a>RPN网络</h2><p>RPN网络将第一个卷积网络(backbone，如VGG16,ResNet)的输出特征图作为输入。它在特征图上滑动一个$3 \times 3$的卷积核，以使用卷积网络构建与类别无关的候选区域（候选框建议网络只用关心建议出来的框是否包含物体，而不用关系那个物体是哪一类的），我们将RPN产生的每个框叫做Anchor。</p>
+<p>这里这样说肯定还是比较模糊，我引用一张训练时候的RPN的结构图然后固定输入分辨率和backbone为VGG16来解释一下。下面这张图是RPN架构：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/Faster_RCNN/642.jfif" alt></p>
+<p>我们可以看到anchor的数量是和Feature Map的大小相关，对于特征图中的每一个位置，RPN会做$k$次预测。因此，在这里对每个像素，RPN将输出$4 \times k$个坐标和$2 \times k$个得分。然后由于使用了VGG16做Backbone，所以输入到RPN的特征图大小是原图的$H, W$的$\frac{1}{16}$。对于一个$512 \times 62 \times 37$的feature map，有$62 \times 37 \times 9$约等于20000个anchor。也就是对一张图片，有20000个左右的anchor。这里可以看到RPN的高明之处，一张图片20000个候选框就是猜也能猜得七七八八。但是并不是20000个框我们都需要，我们只需要选取其中的256个。具体的选取规则如下：</p>
+<ul>
+<li>对于每一个Ground Truth Bounding Box，选择和它IOU最高的一个anchor作为正样本。</li>
+<li>对于剩下的anchor，选择和任意一个Ground Truth Bounding Box 的IOU大于0.7的anchor作为正样本，正样本的数目不超过128个。</li>
+<li>负样本直接选择和Ground Truth Bounding Box 的IOU&lt;0.3的anchor。正负样本的总数保证为256个。</li>
+</ul>
+<p>RPN在产生正负样本训练的时候，还会产生ROIs作为Faster-RCNN(ROI-Head)的训练样本。RPN生成ROIs的过程（网络结构图中的ProposalCreator）如下：</p>
+<ul>
+<li>对于每张图片，利用它的feature map， 计算 (H/16)× (W/16)×9（大概20000）个anchor属于前景的概率，以及对应的位置参数。</li>
+<li>选取概率较大的12000个anchor</li>
+<li>利用回归的位置参数，修正这12000个anchor的位置，得到RoIs</li>
+<li>利用非极大值（(Non-maximum suppression, NMS）抑制，选出概率最大的2000个RoIs</li>
+</ul>
+<p>在前向推理阶段，12000和2000分别变为6000和3000以提高速度，这个过程不需要反向传播，所以更容易实现。</p>
+<p>最后RPN的输出维度是$2000 \times 4$或者$300 \times 4$的tensor。</p>
+<h2 id="损失函数"><a href="#损失函数" class="headerlink" title="损失函数"></a>损失函数</h2><p>在RPN网络中，对于每个Anchor，它们对应的gt_label（就是筛选到这个Anchor的那个ground truth框的label）要么是1要么是0，1代表前景，0代表背景。而gt_loc则是由4个位置参数$(t x, t y, t w, t h)$组成，这样比直接回归坐标更好。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/Faster_RCNN/643.webp" alt></p>
+<p>计算分类用的是交叉熵损失，而计算回归损失用的是SmoothL1Loss。在计算回归损失的时候只统计前景的损失，忽略背景的损失。</p>
+<p>网络在最后对每一个框都有两种损失，即物体属于哪一类的分类损失(21类，加了个背景)，位置在哪的回归损失。所以整个Faster-RCNN的损失是这4个损失之和。网络的目标就是最小化这四个损失之和。</p>
+<h2 id="训练"><a href="#训练" class="headerlink" title="训练"></a>训练</h2><p>上面讲了，RPN会产生大约2000个ROIs，这2000个ROIs并不都拿去训练，而是利用Proposal Target Creator选择128个ROIs用以训练。选择的规则如下：</p>
+<ul>
+<li>RoIs和gt_bboxes 的IoU大于0.5的，选择一些（比如32个）</li>
+<li>选择 RoIs和gt_bboxes的IoU小于等于0（或者0.1）的选择一些（比如 128-32=96个）作为负样本</li>
+</ul>
+<p>同时为了便于训练，对选择出的128个ROIs的对应的ground truth  bbox的坐标进行标准化处理，即减去均值除以标准差。对于分类问题,直接利用交叉熵损失。而对于位置的回归损失，一样采用Smooth_L1Loss，只不过只对正样本计算损失。而且是只对正样本中的这个类别4个参数计算损失。举例来说:</p>
+<ul>
+<li>一个RoI在经过FC 84后会输出一个84维的loc 向量。如果这个RoI是负样本,则这84维向量不参与计算 L1_Loss。</li>
+<li>如果这个RoI是正样本,属于label K,那么它的第 K×4，K×4+1，K×4+2， K×4+3 这4个数参与计算损失，其余的不参与计算损失。</li>
+</ul>
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>测试的时候保留大约300个ROIs，对每一个计算概率，并利用位置参数调整候选框的位置。最后用NMS筛一遍，就得到结果了。</p>
+]]></content>
+      <categories>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>目标检测</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Fast RCNN</title>
+    <url>/2020/02/24/Fast-RCNN/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>我们知道RCNN需要把每一个可能有目标的候选框搜索出来，然后把每个候选框传入CNN提取特征，每一张图片要产生大约2K个候选框，而每个框对应的图像都要传入CNN，这个时间开销肯定是很难承受的。基于RCNN这个致命问题，Fast-RCNN出现了。</p>
+<h2 id="算法介绍"><a href="#算法介绍" class="headerlink" title="算法介绍"></a>算法介绍</h2><p>Fast-RCNN是在SPPNet和RCNN的基础上进行改进的。SPPNet的主要贡献是在整张图像上计算全局特征图，然后对于特定的proposal，只需要在全局特征图上取出对应坐标的特征图就可以了。但SPPNet仍然需要将特征保存在磁盘中，速度还是很慢。结合RCNN的思想，论文提出直接将候选框区域应用于特征图，并使用ROI Pooling将其转化为固定大小的特征图，最后再连接两个并行的分类头和回归头完成检测任务。整个算法可以用下面的图来表示：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/object_detection/3940902-7569280b566d0e58.png" alt></p>
+<h2 id="贡献-amp-创新点"><a href="#贡献-amp-创新点" class="headerlink" title="贡献&amp;创新点"></a>贡献&amp;创新点</h2><ul>
+<li>Fast-RCNN 只对整个图像进行一次特征提取，避免R-CNN的上千次特征提取。</li>
+<li>使用ROI Pooling层替换最后一层的Max Pooling层，巧妙避免RCNN中的将每个候选框Resize到固定大小的操作。</li>
+<li>Fast RCNN在网络的尾部采用并行的全连接层，可同时输出分类结果和窗口回归结果，实现了端到端的多任务训练，且不需要额外的特征存储空间(在R-CNN中特征需要保存到磁盘，以供SVM和线性回归器训练)。</li>
+<li>使用SVD矩阵分解算法对网络末端并行的全连接层进行分解，加速运算。</li>
+</ul>
+<h2 id="ROI-Pooling层"><a href="#ROI-Pooling层" class="headerlink" title="ROI Pooling层"></a>ROI Pooling层</h2><p>Fast-RCNN的核心是ROI池化层，它的作用是输入特征图的大小不定，但输出大小固定的输出特征图。而什么是ROI呢？ROI就是经过区域建议算法(Selective Search)生成的框经过卷积神经网络网络提取特征后的特征图上的区域，每一个ROI对应了原图的一个区域建议框，只有大小变化了，相对位置没有发生改变。这个过程可以用下图表示：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/Fast_RCNN/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20200224140858.jpg" alt></p>
+<p>ROI Pooling层的输入有特征图和ROIs，特征图是经过CNN提取后的结果，ROIs表示Selective Search的结果，形状为$N \times 5 \times 1 \times 1$，其中$N$代表ROI的个数，5代表$x, y, w, h$。这里需要注意的是，坐标系的参数是针对原图的。</p>
+<h2 id="ROI-Pooling的具体操作"><a href="#ROI-Pooling的具体操作" class="headerlink" title="ROI Pooling的具体操作"></a>ROI Pooling的具体操作</h2><ul>
+<li>根据输入图片，将ROI映射到特征图对应位置（映射规则就是直接把各个坐标除以“输入图片和特征图大小的比值”）</li>
+<li>将映射后的区域划分为相同大小的sections，其中sections代表输出维度，例如7。</li>
+<li>对每个sections进行最大池化操作。</li>
+</ul>
+<p>最后上传一张经典动态图片，更好的表示这个过程：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/Fast_RCNN/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20200224140920.gif" alt></p>
+<h1 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h1><p>Fast-RCNN的作者rgbirshick依然给出了源码，有兴趣可以读一下：<a href="https://github.com/rbgirshick/fast-rcnn">https://github.com/rbgirshick/fast-rcnn</a></p>
+]]></content>
+      <categories>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>目标检测</tag>
+        <tag>Fast RCNN</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>RCNN</title>
+    <url>/2020/02/24/RCNN/</url>
+    <content><![CDATA[<h2 id="背景介绍"><a href="#背景介绍" class="headerlink" title="背景介绍"></a>背景介绍</h2><h3 id="什么是目标检测"><a href="#什么是目标检测" class="headerlink" title="什么是目标检测"></a>什么是目标检测</h3><p>所谓目标检测就是在一张图像中找到我们关注的目标，并确定它的类别和位置，这是计算机视觉领域最核心的问题之一。由于各类目标不同的外观，颜色，大小以及在成像时光照，遮挡等具有挑战性的问题，目标检测一直处于不断的优化和研究中。</p>
+<h3 id="目标检测算法分类"><a href="#目标检测算法分类" class="headerlink" title="目标检测算法分类"></a>目标检测算法分类</h3><p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/object_detection/20180509095302426.png" alt></p>
+<p>这张甘特图已经说明了目标检测算法主要分为两类，即：</p>
+<ul>
+<li>Two Stage目标检测算法。这类算法都是先进行区域候选框生成，就是找到一个可能包含物体的预选框，再通过卷积神经网络进行分类和回归修正，常见算法有R-CNN，SPP-Net，Fast-RCNN，Faster-RCNN和R-FCN等。</li>
+<li>One Stage目标检测算法。这类算法不使用候选框生成，直接在网络中提取特征来预测物体的分类和位置。常见的One-Stage算法有：YOLO系列，SSD，RetinaNet。</li>
+</ul>
+<h2 id="RCNN算法"><a href="#RCNN算法" class="headerlink" title="RCNN算法"></a>RCNN算法</h2><h3 id="贡献"><a href="#贡献" class="headerlink" title="贡献"></a>贡献</h3><p>RCNN是第一个使用卷积神经网络来对目标候选框提取特征的目标检测算法。同时，RCNN使用了微调(finetune)的技术，使用大数据集上训练好的分类模型的前几层做backbone，进行更有效的特征提取。</p>
+<h3 id="RCNN总览"><a href="#RCNN总览" class="headerlink" title="RCNN总览"></a>RCNN总览</h3><p>看下图：<br><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/object_detection/Snipaste_2020-01-07_09-57-14.jpg" alt></p>
+<p>首先，R-CNN是将传统图像算法和深度学习技术结合起来的结构，第一部分是需要候选框区域建议，这里一般使用Selective Search的方法提取出候选框，然后再传入CNN做特征提取及分类，后面还借助了机器学习算法做回归修正。</p>
+<h3 id="RCNN算法步骤"><a href="#RCNN算法步骤" class="headerlink" title="RCNN算法步骤"></a>RCNN算法步骤</h3><ul>
+<li>选择一个预训练 （pre-trained）神经网络（如AlexNet、VGG）。</li>
+<li>重新训练全连接层。使用需要检测的目标重新训练（re-train）最后全连接层（connected layer）。即是fintune技术的应用。</li>
+<li><p>生成候选框。利用Selective Search算法提取所有的Proposals，一张图片大概产生2000张，然后将图片规整化固定大小，使得其满足CNN的输入要求，最后将feature map存到磁盘(是的，你没有看错，RCNN要把提取到的特征存储到磁盘)，这个过程可以用下图表示：<br><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/RCNN/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20200224135208.jpg" alt></p>
+</li>
+<li><p>利用feature map训练SVM来对目标和背景进行分类，这里每一个类一个二元SVM。</p>
+</li>
+<li><p>训练线性回归器修正目标的位置，如下图所示：<br><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/RCNN/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20200224135251.jpg" alt></p>
+</li>
+</ul>
+<h2 id="实验结果"><a href="#实验结果" class="headerlink" title="实验结果"></a>实验结果</h2><p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/RCNN/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20200224135256.jpg" alt></p>
+<p>RCNN成为了当时目标检测领域的SOAT算法，虽然现在很少有人使用到了，但论文的思想我们仍可以借鉴。任何事情都要经历一个从无到有的过程。</p>
+<h2 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h2><p>rgbirshick大神，也就是RCNN作者，提供了源码，链接如下：<a href="https://github.com/rbgirshick/rcnn">https://github.com/rbgirshick/rcnn</a></p>
+]]></content>
+      <categories>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>目标检测</tag>
+        <tag>RCNN</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>ECCV 2018 Convolutional Block Attention Module</title>
+    <url>/2020/02/19/ECCV-2018-Convolutional-Block-Attention-Module/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>目前cv领域借鉴了nlp领域的attention机制以后生产出了很多有用的基于attention机制的论文，attention机制也是在2019年论文中非常火。这篇cbam虽然是在2018年提出的，但是其影响力比较深远，在很多领域都用到了该模块，所以一起来看一下这个模块有什么独到之处，并学着实现它。</p>
+<h2 id="什么是注意力机制？"><a href="#什么是注意力机制？" class="headerlink" title="什么是注意力机制？"></a>什么是注意力机制？</h2><p>注意力机制（Attention Mechanism）是机器学习中的一种数据处理方法，广泛应用在自然语言处理、图像识别及语音识别等各种不同类型的机器学习任务中。</p>
+<p>通俗来讲：注意力机制就是希望网络能够自动学出来图片或者文字序列中的需要注意的地方。比如人眼在看一幅画的时候，不会将注意力平等地分配给画中的所有像素，而是将更多注意力分配给人们关注的地方。</p>
+<p>从实现的角度来讲：注意力机制通过神经网络的操作生成一个掩码mask,，mask上的值一个打分，评价当前需要关注的点的评分。</p>
+<p>注意力机制可以分为：</p>
+<ul>
+<li>通道注意力机制：对通道生成掩码mask，进行打分，代表是SENet, Channel Attention Module</li>
+<li>空间注意力机制：对空间进行掩码的生成，进行打分，代表是Spatial Attention Module</li>
+<li>混合域注意力机制：同时对通道注意力和空间注意力进行评价打分，代表的有BAM, CBAM</li>
+</ul>
+<h2 id="怎么实现CBAM？-pytorch为例"><a href="#怎么实现CBAM？-pytorch为例" class="headerlink" title="怎么实现CBAM？(pytorch为例)"></a><strong>怎么实现CBAM？(pytorch为例)</strong></h2><p>CBAM全称是Convolutional Block Attention Module, 是在ECCV2018上发表的注意力机制代表作之一，<a href="http://openaccess.thecvf.com/content_ECCV_2018/papers/Sanghyun_Woo_Convolutional_Block_Attention_ECCV_2018_paper.pdf">论文下载地址</a>。</p>
+<p>在该论文中，作者研究了网络架构中的注意力，注意力不仅要告诉我们重点关注哪里，还要提高关注点的表示。目标是通过使用注意机制来增加表现力，关注重要特征并抑制不必要的特征。为了强调空间和通道这两个维度上的有意义特征，作者依次应用<strong>通道和空间注意模块</strong>，来分别在通道和空间维度上学习关注什么、在哪里关注。此外，通过了解要强调或抑制的信息也有助于网络内的信息流动。</p>
+<p>主要网络架构也很简单，一个是通道注意力模块，另一个是空间注意力模块，CBAM就是先后集成了通道注意力模块和空间注意力模块。</p>
+<h3 id="2-1-通道注意力机制"><a href="#2-1-通道注意力机制" class="headerlink" title="2.1 通道注意力机制"></a>2.1 通道注意力机制</h3><p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/CBAM/640.webp" alt></p>
+<p>通道注意力机制按照上图进行实现：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">class ChannelAttention(nn.Module):</span><br><span class="line">    def __init__(self, in_planes, rotio=16):</span><br><span class="line">        super(ChannelAttention, self).__init__()</span><br><span class="line">        self.avg_pool = nn.AdaptiveAvgPool2d(1)</span><br><span class="line">        self.max_pool = nn.AdaptiveMaxPool2d(1)</span><br><span class="line"></span><br><span class="line">        self.sharedMLP = nn.Sequential(</span><br><span class="line">            nn.Conv2d(in_planes, in_planes // ratio, 1, bias=False), nn.ReLU(),</span><br><span class="line">            nn.Conv2d(in_planes // rotio, in_planes, 1, bias=False))</span><br><span class="line">        self.sigmoid = nn.Sigmoid()</span><br><span class="line"></span><br><span class="line">    def forward(self, x):</span><br><span class="line">        avgout = self.sharedMLP(self.avg_pool(x))</span><br><span class="line">        maxout = self.sharedMLP(self.max_pool(x))</span><br><span class="line">        return self.sigmoid(avgout + maxout)</span><br></pre></td></tr></table></figure>
+<h3 id="2-2-空间注意力机制"><a href="#2-2-空间注意力机制" class="headerlink" title="2.2 空间注意力机制"></a>2.2 空间注意力机制</h3><p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/CBAM/641.png" alt></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">class SpatialAttention(nn.Module):</span><br><span class="line">    def __init__(self, kernel_size=7):</span><br><span class="line">        super(SpatialAttention, self).__init__()</span><br><span class="line">        assert kernel_size in (3,7), &quot;kernel size must be 3 or 7&quot;</span><br><span class="line">        padding = 3 if kernel_size == 7 else 1</span><br><span class="line"></span><br><span class="line">        self.conv = nn.Conv2d(2,1,kernel_size, padding=padding, bias=False)</span><br><span class="line">        self.sigmoid = nn.Sigmoid()</span><br><span class="line"></span><br><span class="line">    def forward(self, x):</span><br><span class="line">        avgout = torch.mean(x, dim=1, keepdim=True)</span><br><span class="line">        maxout, _ = torch.max(x, dim=1, keepdim=True)</span><br><span class="line">        x = torch.cat([avgout, maxout], dim=1)</span><br><span class="line">        x = self.conv(x)</span><br><span class="line">        return self.sigmoid(x)</span><br></pre></td></tr></table></figure>
+<h3 id="2-3-Convolutional-bottleneck-attention-module"><a href="#2-3-Convolutional-bottleneck-attention-module" class="headerlink" title="2.3 Convolutional bottleneck attention module"></a>2.3 Convolutional bottleneck attention module</h3><p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/CBAM/642.png" alt></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">class BasicBlock(nn.Module):</span><br><span class="line">    expansion = 1</span><br><span class="line">    def __init__(self, inplanes, planes, stride=1, downsample=None):</span><br><span class="line">        super(BasicBlock, self).__init__()</span><br><span class="line">        self.conv1 = conv3x3(inplanes, planes, stride)</span><br><span class="line">        self.bn1 = nn.BatchNorm2d(planes)</span><br><span class="line">        self.relu = nn.ReLU(inplace=True)</span><br><span class="line">        self.conv2 = conv3x3(planes, planes)</span><br><span class="line">        self.bn2 = nn.BatchNorm2d(planes)</span><br><span class="line">        self.ca = ChannelAttention(planes)</span><br><span class="line">        self.sa = SpatialAttention()</span><br><span class="line">        self.downsample = downsample</span><br><span class="line">        self.stride = stride</span><br><span class="line">    def forward(self, x):</span><br><span class="line">        residual = x</span><br><span class="line">        out = self.conv1(x)</span><br><span class="line">        out = self.bn1(out)</span><br><span class="line">        out = self.relu(out)</span><br><span class="line">        out = self.conv2(out)</span><br><span class="line">        out = self.bn2(out)</span><br><span class="line">        out = self.ca(out) * out  # 广播机制</span><br><span class="line">        out = self.sa(out) * out  # 广播机制</span><br><span class="line">        if self.downsample is not None:</span><br><span class="line">            residual = self.downsample(x)</span><br><span class="line">        out += residual</span><br><span class="line">        out = self.relu(out)</span><br><span class="line">        return out</span><br></pre></td></tr></table></figure>
+<p>为何要先使用通道注意力机制然后再使用空间注意力机制？使用顺序使用这两个模块还是并行的使用两个模块？其实是作者已经做过了相关实验，并且证明了先试用通道然后再使用空间注意力机制这样的组合效果比较好，这也是CBAM的通用组合模式。</p>
+<h2 id="在什么情况下可以使用？"><a href="#在什么情况下可以使用？" class="headerlink" title="在什么情况下可以使用？"></a>在什么情况下可以使用？</h2><p>提出CBAM的作者主要对分类网络和目标检测网络进行了实验,证明了CBAM模块确实是有效的。</p>
+<p>以ResNet为例，论文中提供了改造的示意图，如下图所示：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/CBAM/643.webp" alt></p>
+<p>也就是在ResNet中的每个block之间添加了CBAM模块，训练数据来自benchmark ImageNet-1K。检测使用的是Faster  R-CNN， Backbone选择的ResNet34，ResNet50，WideResNet18，ResNet50等，还跟SE等进行了对比。</p>
+<p><strong>消融实验</strong>：消融实验一般是控制变量，最能看出模型变好起作用的部分在那里。分为三个部分：</p>
+<ul>
+<li><p>如何更有效地计算channel attention?</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/CBAM/644.webp" alt>可以看出来，使用avgpool和maxpool可以更好的降低错误率，大概有1-2%的提升，这个组合就是dual pooling，能提供更加精细的信息，有利于提升模型的表现。</p>
+</li>
+<li><p>如何更有效地计算spatial attention?</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/CBAM/645.webp" alt></p>
+<p>这里的空间注意力机制参数也是有avg，max组成，另外还有一个卷积的参数kernel_size(k)，通过以上实验，可以看出，当前使用通道的平均和通道的最大化，并且设置kernel size=7是最好的。</p>
+</li>
+<li><p>如何组织这两个部分？</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/CBAM/646.webp" alt></p>
+<p>可以看出，这里与SENet中的SE模块也进行了比较，这里使用CBAM也是超出了SE的表现。除此以外，还进行了顺序和并行的测试，发现，先channel attention然后spatial attention效果最好，所以也是最终的CBAM模块的组成。</p>
+<p>在MSCOCO数据及使用了ResNet50，ResNet101为backbone，Faster RCNN为检测器的模型进行目标检测，如下图所示：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/CBAM/647.webp" alt></p>
+<p>在VOC2007数据集中采用了StairNet进行了测试，如下图所示：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/CBAM/648.webp" alt></p>
+<p>貌似没有找到目标检测部分的代码，CBAM的作用在于对信息进行精细化分配和处理，所以猜测是在backbone的分类器之前添加的CBAM模块。</p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>目标检测</tag>
+        <tag>Attention机制</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>最简单最易实现的SE模块</title>
+    <url>/2020/02/19/%E6%9C%80%E7%AE%80%E5%8D%95%E6%9C%80%E6%98%93%E5%AE%9E%E7%8E%B0%E7%9A%84SE%E6%A8%A1%E5%9D%97/</url>
+    <content><![CDATA[<h2 id="Squeeze-and-Excitation-Networks"><a href="#Squeeze-and-Excitation-Networks" class="headerlink" title=" Squeeze-and-Excitation Networks"></a><span id="more"></span> Squeeze-and-Excitation Networks</h2><p>SENet是Squeeze-and-Excitation  Networks的简称，拿到了ImageNet2017分类比赛冠军，其效果得到了认可，其提出的SE模块思想简单，易于实现，并且很容易可以加载到现有的网络模型框架中。SENet主要是学习了channel之间的相关性，筛选出了针对通道的注意力，稍微增加了一点计算量，但是效果比较好。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/se/640.webp" alt></p>
+<p>通过上图可以理解他的实现过程，通过对卷积的到的feature  map进行处理，得到一个和通道数一样的一维向量作为每个通道的评价分数，然后将修改的分数分别施加到对应的通道上，得到其结果，就在原有的基础上只添加了一个模块，下边我们用pytorch实现这个很简单的模块。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/se/641.webp" alt></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">class SELayer(nn.Module):</span><br><span class="line">    def __init__(self, channel, reduction=16):</span><br><span class="line">        super(SELayer, self).__init__()</span><br><span class="line">        self.avg_pool = nn.AdaptiveAvgPool2d(1)</span><br><span class="line">        self.fc = nn.Sequential(</span><br><span class="line">            nn.Linear(channel, channel // reduction, bias=False),</span><br><span class="line">            nn.ReLU(inplace=True),</span><br><span class="line">            nn.Linear(channel // reduction, channel, bias=False),</span><br><span class="line">            nn.Sigmoid()</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">    def forward(self, x):</span><br><span class="line">        b, c, _, _ = x.size()</span><br><span class="line">        y = self.avg_pool(x).view(b, c)</span><br><span class="line">        y = self.fc(y).view(b, c, 1, 1)</span><br><span class="line">        return x * y.expand_as(x)</span><br></pre></td></tr></table></figure>
+<p>虽然核心就是以上的内容，不过不能简单地结束，我们需要看一下以下几个点：</p>
+<ul>
+<li><p>作为一个重要的attention机制的文章，这篇文章如何描述attention，related work如何组织？</p>
+<p>attention机制当时已经有一定的研究和发展，也是集中于序列学习，image captioning, understanding in  images这些工作，也已经有很多出色的工作是探索了attention机制。senet这篇文章主要探索了通过对通道间关系进行建模来提升模型的表达能力。related work 主要从更深的网络架构，架构搜索，注意力机制三个角度进行了梳理，确实非常全面。</p>
+</li>
+<li><p>如何解释SE模块？</p>
+<p><strong>Sequeeze</strong>：对$C \times H \times W$进行global average pooling，得到 $1 \times 1 \times C$大小的特征图，这个特征图可以理解为具有全局感受野。</p>
+<p><strong>Excitation</strong>：使用一个全连接神经网络，对Sequeeze之后的结果做一个非线性变换。</p>
+<p><strong>特征重标定</strong>：使用Excitation 得到的结果作为权重，乘到输入特征上。</p>
+</li>
+<li><p>SE模块如何加到分类网络，效果如何？</p>
+<p>分类网络现在一般都是成一个block一个block，se模块就可以加到一个block结束的位置，进行一个信息refine。这里用了一些STOA的分类模型如：resnet50，resnext50，bn-inception等网络。通过添加SE模块，能使模型提升0.5-1.5%,效果还可以，增加的计算量也可以忽略不计。在轻量级网络MobileNet，ShuffleNet上也进行了实验，可以提升的点更多一点大概在1.5-2%。</p>
+</li>
+<li><p>SE模块如何加到目标检测网络，效果如何？</p>
+<p>主要还是将SE模块添加到backbone部分，优化学习到的内容。目标检测数据集使用的是benchmark MSCOCO, 使用的Faster  R-CNN作为目标检测器，使用backbone从ResNet50替换为SE-ResNet50以后带了了两个点的AP提升，确实有效果。</p>
+</li>
+<li><p>这篇文章的实验部分是如何设置的？</p>
+<p>这篇文章中也进行了消融实验，来证明SE模块的有效性，也说明了设置reduction=16的原因。</p>
+<ul>
+<li>squeeze方式：仅仅比较了max和avg，发现avg要好一点。</li>
+<li>excitation方式：使用了ReLU，Tanh，Sigmoid，发现Sigmoid好。</li>
+<li>stage: resnet50有不同的阶段，通过实验发现，将se施加到所有的阶段效果最好。</li>
+<li>集成策略：将se放在残差单元的前部，后部还是平行于残差单元，最终发现，放到前部比较好。</li>
+</ul>
+</li>
+<li><p>如何查看每个通道学到的attention信息并证明其有效性？</p>
+<p>作者选取了ImageNet中的四个类别进行了一个实验，测试backbone最后一个SE层的内容，如下图所示：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/se/642.webp" alt></p>
+<p>可以看出这两个类激活出来的内容有一定的差距，起到了一定的作用。</p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>目标检测</tag>
+        <tag>Attention机制</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>FPN</title>
+    <url>/2020/03/02/FPN/</url>
+    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>Faster-RCNN选取一个特征提取网络如VGG16做backbone，然后在高层特征（如VGG16后面的conv4）接RPN和检测头进行网络。正是由于Faster-RCNN基于图像的高级特征，这就导致对小目标的检测效果很差。而CV领域常用的处理尺度问题的办法就是特征金字塔，将原图以不同的比例采样，然后得到不同分辨率的图像进行训练和测试，在多数情况下确实是有效的。但是特征金字塔的时间开销非常大，导致在工程中应用是及其困难。FPN从新的角度出发提出了一个独特的特征金字塔网络来避免图像金字塔产生的超高计算量，同时可以较好的处理目标检测中的尺度变化问题，对小目标检测更鲁棒，同时在VOC和COCO数据集上MAP值均超过了Faster-RCNN。</p>
+<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>使用下图来阐释是如何处理尺度变化大的物体检测的。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/FPN2/640.webp" alt></p>
+<ul>
+<li>上图(a)是处理这类问题最常用的方法，即特征金字塔，这种方法在传统的手动设计特征的方法中非常常用，例如DPM方法使用了接近10种不同的尺度获得了不错的效果。</li>
+<li>上图(b)是在CNN提出之后出现的，因为神经网络模型对物体尺度本身有一定的鲁棒性，所以也取得了不错的性能，但最近的研究表明将特征金字塔和CNN结合仍可以提升性能，这说明基于单层特征的检测系统仍存在对尺度变化敏感的缺点。</li>
+<li>上图(c)表示除了使用图像金字塔，我们可以使用深度学习本身的多层次结构来提取多尺度特征。最常见的就是SSD算法中利用多个特征层来分别做预测。但这种方式也有一些缺点就是浅层的语义特征比较弱，在处理小物体时表现得不够好。</li>
+<li>上图(d)表示本文提出的FPN（Feature Pyramid Network ），它能较好的让各个不同尺度的特征都具有较强的语义信息。FPN结合Faster  RCNN可以在COCO物体检测比赛中取得当前单模型的最佳性能（SOTA）。另外，通过对比实验发现，FPN能让Faster  RCNN中的RPN网络的召回率提高8个点；并且它也能使Fast RCNN的检测性能提升2.3个点（COCO）和3.8个点（VOC）。</li>
+</ul>
+<h2 id="FPN结构"><a href="#FPN结构" class="headerlink" title="FPN结构"></a>FPN结构</h2><p>下图表示FPN的整体结构：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/FPN2/641.webp" alt></p>
+<p>我们可以看到FPN的整体结构分为<strong>自底向上</strong>和<strong>自顶向下和侧向连接</strong>的过程。接下来我们分别解释一下这两个关键部分。</p>
+<h3 id="自底向上"><a href="#自底向上" class="headerlink" title="自底向上"></a>自底向上</h3><p>这一部分就是普通的特征提取网络，特征分辨率不断缩小，容易想到这个特征提取网络可以换成任意Backbone，并且CNN网络一般都是按照特征图大小分为不同的stage，每个stage的特征图长宽差距为2倍。在这个自底向上的结构中，一个stage对应特征金字塔的一个level。以我们要用的ResNet为例，选取conv2、conv3、conv4、conv5层的最后一个残差block层特征作为FPN的特征，记为{C2、C3、C4、C5}，也即是FPN网络的4个级别。这几个特征层相对于原图的步长分别为4、8、16、32。</p>
+<h3 id="自上向下和侧向连接"><a href="#自上向下和侧向连接" class="headerlink" title="自上向下和侧向连接"></a>自上向下和侧向连接</h3><p>自上向下是特征图放大的过程，我们一般采用上采样来实现。FPN的巧妙之处就在于从高层特征上采样既可以利用顶层的高级语义特征（有助于分类）又可以利用底层的高分辨率信息（有助于定位）。上采样可以使用插值的方式实现。为了将高层语义特征和底层的精确定位能力结合，论文提出了类似于残差结构的侧向连接。连接将上一层经过上采样后和当前层分辨率一致的特征，通过相加的方法进行融合。同时为了保持所有级别的特征层通道数都保持一致，这里使用1*1卷积来实现。在网上看到一张图，比较好的解释了这个过程：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/FPN2/642.webp" alt></p>
+<p>FPN只是一个特征金字塔结构，需要配合其他目标检测算法才能使用。</p>
+<h2 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h2><h3 id="1-FPN对RPN网络的影响"><a href="#1-FPN对RPN网络的影响" class="headerlink" title="1.FPN对RPN网络的影响"></a>1.FPN对RPN网络的影响</h3><p>如下表所示，论文做了6个实验。</p>
+<ul>
+<li>(a)基于conv4的RPN，原始的RPN。</li>
+<li>(b)基于conv5的RPN。</li>
+<li>(c) 完整FPN。</li>
+<li>(d)只用了自底向上的多层特征，没有自顶向下的特征。</li>
+<li>(e)用了自顶向下的特征，但不用侧向连接。</li>
+<li>(f)用了自顶向下的特征，也用了横向特征融合，但只用最后的P2做预测。（完整的预测是使用每一个level的特征$P_{k}$做预测）</li>
+</ul>
+<p>分析表格可知，自顶向下的特征、横向连接、尺度分离、多个层次的预测是提升FPN性能的关键。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/FPN2/643.webp" alt></p>
+<p>为了更好的理解，放一张Faster-RCNN结合FPN的细致结构图如下：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/FPN2/644.webp" alt></p>
+<h2 id="2-FPN对Fast-RCNN的影响"><a href="#2-FPN对Fast-RCNN的影响" class="headerlink" title="2.FPN对Fast RCNN的影响"></a>2.FPN对Fast RCNN的影响</h2><p>使用和实验1相同的规则对Fast RCNN做了实验，结果如下表所示。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/FPN2/645.png" alt></p>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>本文提出了一种简单、有效的建立特征金字塔的方式。它的使用对RPN方法和Fast/Faster RCNN方法都有极大的性能提升。另外，它的训练和测试时间和普通的Faster RCNN方法相差很小。因此，它可以作为图像特征金字塔的一种较好的替代。</p>
+]]></content>
+      <categories>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>目标检测</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>NIPS 2016 R-FCN（来自微软何凯明团队）</title>
+    <url>/2020/03/05/NIPS-2016-R-FCN%EF%BC%88%E6%9D%A5%E8%87%AA%E5%BE%AE%E8%BD%AF%E4%BD%95%E5%87%AF%E6%98%8E%E5%9B%A2%E9%98%9F%EF%BC%89/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>R-FCN全称为Region-based Fully Convolutional Networks，是由微软的何凯明团队在NIPS 2016上提出来的，仍然是双阶段的目标检检测算法。论文地址和官方开源代码见文后。</p>
+<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>R-FCN论文的发表时间比YOLO,SSD出来的都晚一些，并且这个算法更像是针对Faster-RCNN的一种改进，并且扔属于two-stage算法。那个R-FCN具体要解决什么问题呢？我们不妨先来看看R-FCN之前的典型的two-stage算法分别是在解决什么？</p>
+<ul>
+<li>rcnn证明cnn具有良好的特征提取能力，也是第一个将cnn用来做目标检测任务的算法。</li>
+<li>fast-rcnn提出ROI-Pooling将需要应用到多个候选框的骨干CNN网络进行共享，加快速度的同时也提升了准确率。</li>
+<li>faster-rcnn解决了候选框搜索耗时过多的问题，提出RPN全卷积网络用于学习提取候选框，速度更快且精度更高。</li>
+</ul>
+<p>而Faster-RCNN的一个缺点在于在ROI Pooling之后全是全连接层，从而将ROI  Pooling之后的特征图映射为分类和回归两个任务。而越来越多的基础CNN架构如GoogleNet，ResNet等全卷积网络证明不要全连接层，网络的效果不仅会更好并且还可以适应不同尺度的输入图片。因为着眼于Faster-RCNN的全连接层负载很重这一痛点，R-FCN出世了。</p>
+<h2 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h2><p>R-FCN中主要有2个重要的点，第一个是将ROI Pooling后面的全连接层都用卷积层所代替，第二个是对ROI Pooling的魔改。</p>
+<h2 id="R-FCN整体结构"><a href="#R-FCN整体结构" class="headerlink" title="R-FCN整体结构"></a>R-FCN整体结构</h2><p>我们知道，对于Faster-RCNN是会对每一个候选框区域执行ROI  Pooling操作之后单独跑后面的分类和回归分支的。实际上是分成了几个subnetwork，第一个用来在整张图上做比较耗时的conv，这些操作与region无关，是计算共享的。第二个subnetwork是用来产生候选的boundingbox（如RPN），第三个subnetwork用来分类或进一步对box进行regression（如Fast RCNN），这个subnetwork和region是有关系的，必须每个region单独跑网络，衔接在这个subnetwork和前两个subnetwork中间的就是ROI pooling。我们希望的是，耗时的卷积都尽量移到前面共享的subnetwork上。因此R-FCN希望耗时的卷积都尽量移动到前面共享的网络中。基于此，和Faster-RCNN用ResNet做Backbone的处理方式不同(前面<code>91</code>层共享，然后插入<code>ROIPooling</code>，后面<code>10</code>层不共享)，R-FCN把所有的<code>101</code>层都设置为共享网络，最后用来做预测的只有一个卷积层，大大减少了计算量。这一点参见Table1。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/R-FCN/640.webp" alt></p>
+<p>R-FCN可以分成以下四个部分：</p>
+<ul>
+<li>Backbone网络，如ResNet101网络。</li>
+<li>一个区域建议网络(RPN)。</li>
+<li>一个正例敏感的预测层。</li>
+<li>最后的ROI Pooling+投票的决策层。</li>
+</ul>
+<p>R-FCN的网络结构图如下所示：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/R-FCN/641.jpg" alt></p>
+<p>可以看到整体结构和Faster-RCNN比较像，都有RPN网络来训练生成候选框，而ROI Pooling是不一样的，接下来就仔细讲讲。</p>
+<h2 id="R-FCN的ROIPooling"><a href="#R-FCN的ROIPooling" class="headerlink" title="R-FCN的ROIPooling"></a>R-FCN的ROIPooling</h2><p>我们省略一下R-FCN和Faster-RCNN网络结构完全相同的部分，着眼于R-FCN的变化之处即ROIPooling，关键部分如论文中的Figure1所示。我们接下来就针对这张图来仔细分析。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/R-FCN/642.webp" alt></p>
+<ul>
+<li><strong>Backbone architecture</strong>: ResNet 101—去掉原始ResNet101的最后一层全连接层，保留前100层，再接一个1 x 1 x 1024的全卷积层（100层输出是2048，为了降维，再引入了一个1 x 1的卷积层）。</li>
+<li><strong>$k^{2} \times(C+1)$的conv</strong>: ResNet101的输出是W x H x 1024，用$k^{2} \times(C+1)$个1024 x 1 x 1的卷积核去卷积即可得到$k^{2} \times(C+1)$个大小为W x H的position sensitive的score map。这步的卷积操作就是在做prediction。k = 3，表示把一个ROI划分成3 x 3，对应的9个位置分别是：上左（左上角），上中，上右，中左，中中，中右，下左，下中，下右（右下角）</li>
+<li><strong>$k^{2} \times(C+1)$个feature map的物理意义</strong>: 共有k x k = 9个颜色，每个颜色的立体块（W x H x (C+1)）表示的是不同位置存在目标的概率值（第一块黄色表示的是左上角位置，最后一块淡蓝色表示的是右下角位置）。共有$k^{2} \times(C+1)$个feature map。每个feature map，z(i,j,c)是第i+k(j-1)个立体块上的第c个map（1&lt;= i,j &lt;=3）。(i,j)决定了9种位置的某一种位置，假设为左上角位置（i=j=1），c决定了哪一类，假设为person类。在z(i,j,c)这个feature map上的某一个像素的位置是（x,y），像素值是value，则value表示的是原图对应的(x,y)这个位置上可能是人（c=‘person’）且是人的左上部位（i=j=1）的概率值。</li>
+<li><strong>ROI pooling</strong>: 就是faster RCNN中的ROI pooling，也就是一层的SPP结构。主要用来将不同大小的ROI对应的feature map映射成同样维度的特征，思路是不论对多大的ROI，规定在上面画一个n x n 个bin的网格，每个网格里的所有像素值做一个pooling（平均），这样不论图像多大，pooling后的ROI特征维度都是n x n。注意一点ROI pooling是每个feature map单独做，不是多个channel一起的。</li>
+<li><strong>vote投票</strong>：k x k个bin直接进行求和（每个类单独做）得到每一类的score，并进行softmax得到每类的最终得分，并用于计算损失</li>
+</ul>
+<p>可以看到原始图像经过Backbone的卷积神经网络之后得到了最后一层特征图，接下来就应该是提取当前特征图的ROI区域了。这个地方ROIPooling不像Faster-RCNN那样直接提取，而是重新设计了一个位置敏感的ROIPooling：将Faster-RCNN中的ROI划分成k x k大小，即是说将ROI区域分成k x k个小区域（论文中取k = 3，即将ROI区域分成9个部分）。然后假设目标检测数据集的目标类别一共有C类，同时加上一个背景类就是C + 1类，最后我们希望网络对每个类别都有各自的位置响应。因此最后ROIPooling层的特征维度是$k^{2} \times(C+1)$代表每一个类别在某个位置(一共9个)的位置敏感度map，其中每个map的大小和ROIPooling前面那个Backbone网络得到的特征图尺寸完全一致。</p>
+<p>那么具体是如何从位置敏感<code>map</code>得到最后那个C + 1个通道，并且尺寸为k x k的特征图呢？如下所示：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/R-FCN/643.jpg" alt></p>
+<p>Figure3展示了在人这<strong>一类</strong>目标上是如何从位置敏感map得到最后输出图，这里k = 3，那么位置敏感<code>map</code>可以用下面的表格来表示：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/R-FCN/644.webp" alt></p>
+<p>其中$\operatorname{Pos}_{x}^{y}$代表位置为$x$（即图中的<code>左上</code>，<code>中上</code>，<code>右下</code>，<code>左中</code>，<code>中间</code>，<code>右中</code>，<code>左下</code>，<code>中下</code>，<code>右下</code>9个位置）对应的类别集合为$y$的位置敏感<code>map</code>，每个表格的内容对应位置敏感<code>map</code>中一种颜色的部分特征图(C + 1个通道)，位置敏感<code>map</code>每个C + 1通道分别从上到下，从左到右对应了上面的表格。这里假设Figure3中的Person类对应的是第一个分类，那么Figure3的处理过程就是对下表对应的特征图进行操作：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/R-FCN/645.webp" alt></p>
+<p>具体的操作流程表示为：</p>
+<ul>
+<li><p>1、抽取特定类别(这里为人这个类别)对应的$k \times k=3 \times 3=9$个位置的特征图，如Figure3中部所示。</p>
+</li>
+<li><p>2、对抽取出来的部分进行求均值，然后按照位置组成一个$k \times k=3 \times 3$大小的矩阵。</p>
+</li>
+<li><p>3、对这个$k \times k$大小的矩阵求和，得到一个值。</p>
+</li>
+<li><p>4、对其他每个类别都执行1-3步骤，最终得到一个$1 \times(C+1)$的向量。将这个向量进行<code>softmax</code>，从而判别特征图上的这个ROI区域对应的目标类别是什么。</p>
+</li>
+</ul>
+<h2 id="R-FCN的目标框回归"><a href="#R-FCN的目标框回归" class="headerlink" title="R-FCN的目标框回归"></a><strong>R-FCN的目标框回归</strong></h2><p>上面详细讲解了R-FCN提出的ROIPooling的改进之处以及对于目标分类的处理方法，不要忘记目标检测还有一个框回归的过程，所以这里来说一下如何微调ROI区域使得框更加精确，这部分和分类实际上是类似的。我们知道位置敏感<code>map</code>是有$k^{2}(C+1)$个通道的，我们依然从Backbone的最后一个特征层部分接触一个有$4 \times k^{2}$个通道的特征图(和位置敏感map并列)，用来做ROI框回归，如下面的表格所示：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/R-FCN/646.webp" alt></p>
+<p>然后执行和分类一样的步骤得到一个1 x 4的向量即代表ROI区域的$x, y, w, h$。计算损失函数和前面Faster-RCNN的一致，均为多任务损失联合训练，分类使用交叉熵，定位使用L1-smooth损失函数。</p>
+<h2 id="训练"><a href="#训练" class="headerlink" title="训练"></a>训练</h2><ul>
+<li><p>训练的样本选择策略：使用OHEM策略，原理就是对样本按loss进行排序，选择前面loss较小的，这个策略主要用来对负样本进行筛选，使得正负样本更加平衡。</p>
+</li>
+<li><p>训练细节：</p>
+<ul>
+<li>SGD+带动量的优化方式，其中动量momentum = 0.9。</li>
+<li>权重惩罚为0.0005。</li>
+<li>单尺度训练，将图片$\min (\text {height}, \text {width})$设置为600。</li>
+<li>8块GPU，每一块GPU训练一张图片并且随机选择128个ROI区域进行梯度下降。</li>
+<li>在前20k次迭代，学习率为0.001，后面10k次迭代为0.0001。</li>
+<li>使用和Faster-RCNN中一致的训练方式。</li>
+<li>使用<code>atrous</code>（hole）算法。增加感受野的同时降低下采样次数。并且使用了这一策略在VOC 2007上可以提升2个点的map。</li>
+</ul>
+</li>
+</ul>
+<h2 id="实验结果"><a href="#实验结果" class="headerlink" title="实验结果"></a>实验结果</h2><p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/R-FCN/647.webp" alt></p>
+<p>可以看到R-FCN在没有OHEM的策略下精度完全吊打了Faster-RCNN，其中<code>fail</code>表示的应该是当k = 1的时候应该是模型无法收敛。</p>
+<h3 id="在PASCAL-VOC数据集上的测试结果"><a href="#在PASCAL-VOC数据集上的测试结果" class="headerlink" title="在PASCAL VOC数据集上的测试结果"></a>在PASCAL VOC数据集上的测试结果</h3><p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/R-FCN/648.jpg" alt></p>
+<p>可以看到R-FCN使用ResNet101做特征提取网络，最终在VOC的测试集上获得了83.6%的map值，并且相比于Faster-RCNN测试时间加速了2倍以上。论文还给出了一些消融研究：</p>
+<ul>
+<li><p>深度影响对比，可以看出ResNet-101表现最好。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/R-FCN/649.png" alt></p>
+</li>
+<li><p>候选区域选择算法对比：RPN比SS，EB好。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/R-FCN/650.png" alt></p>
+</li>
+</ul>
+<h3 id="在MS-COCO数据集的测试结果"><a href="#在MS-COCO数据集的测试结果" class="headerlink" title="在MS COCO数据集的测试结果"></a>在MS COCO数据集的测试结果</h3><p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/R-FCN/651.png" alt></p>
+<h2 id="可视化效果展示"><a href="#可视化效果展示" class="headerlink" title="可视化效果展示"></a>可视化效果展示</h2><p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/R-FCN/652.webp" alt></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>R-FCN在Faster-RCNN的基础上致力于解决全连接网络做分类和回归速度过慢的问题，将分类和回归分支换成了全卷积网络，并提出了一个位置敏感ROIPooling用于指定不同特征图是负责检测目标的不同位置，然后ROIPooling之后把不同位置得到的特征图进行组合就能复现原来的位置信息。不仅在精度上大幅度超越Faster-RCNN，并且速度是Faster-RCNN的2倍以上。</p>
+<h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><p>论文原文：<a href="https://arxiv.org/pdf/1605.06409v2.pdf">https://arxiv.org/pdf/1605.06409v2.pdf</a></p>
+<p>官方源码复现：<a href="https://github.com/daijifeng001/r-fcn">https://github.com/daijifeng001/r-fcn</a></p>
+]]></content>
+      <categories>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>目标检测</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>RetinaNet（引入Focal Loss）</title>
+    <url>/2020/03/06/RetinaNet%EF%BC%88%E5%BC%95%E5%85%A5Focal-Loss%EF%BC%89/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>今天来介绍一下目标检测算法中RetinaNet，这篇论文是CVPR2018的作品，Kaiming He大神也是作者之一，同时这篇论文提出的Focal  Loss也对工程上训练更好的目标检测模型做出了很大贡献，论文地址为：<a href="https://arxiv.org/pdf/1708.02002.pdf">https://arxiv.org/pdf/1708.02002.pdf</a></p>
+<h2 id="研究背景"><a href="#研究背景" class="headerlink" title="研究背景"></a>研究背景</h2><p>前面介绍了一些One-Stage目标检测算法和Two-Stage目标检测算法，这些算法在精度和速度上都各有特点，现在画个图总结一下之前介绍的各种算法的速度和精度：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/RetinaNet/640.png" alt></p>
+<p>可以看到One-Stage算法的精度相对于Two_Stage偏低，然后作者把这种问题的原因归结于<strong>正负类别不平衡</strong>（简单难分类别不平衡）。因此论文通过重新设计标准的交叉熵损失来解决这种难易样本不平衡的问题，即文章的核心Focal Loss。结合了Focal  Loss的One-Stage的目标检测器被称为RetinaNet，该检测器在COCO数据集上MAP值可以和FPN（特征金字塔目标检测器）和MaskRCNN接近。</p>
+<h2 id="一些问题"><a href="#一些问题" class="headerlink" title="一些问题"></a>一些问题</h2><h3 id="什么是hard-esay-postive-negtive-example"><a href="#什么是hard-esay-postive-negtive-example" class="headerlink" title="什么是hard/esay postive/negtive example"></a>什么是hard/esay postive/negtive example</h3><p>网上找到一张图解释在目标检测任务的一张图中什么是hard/easy postive/negtive example。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/RetinaNet/641.webp" alt></p>
+<p>候选框可以分成postive/negtive两类。当bbox(由anchor加上偏移量得到)与ground  truth间的IOU大于我们设置的阈值（一般取0.5）时，会认为该bbox属于positive  example，如果IOU小于下门限就认为该bbox属于negative example。</p>
+<h3 id="为什么One-Stage检测算法精度偏低"><a href="#为什么One-Stage检测算法精度偏低" class="headerlink" title="为什么One-Stage检测算法精度偏低"></a>为什么One-Stage检测算法精度偏低</h3><p>论文认为One-Stage算法准确度低是由于类别失衡引起的。因为在一张普通图片中，目标的所占的比例远远小于背景所占的比例，所以两类候选框例子中以negtive example为主。这就导致了：</p>
+<ul>
+<li>(1)针对所有的negtive example，数量过多造成它的loss太大，以至于主导了损失函数，不利于收敛。</li>
+<li>(2)针对单个negtive example来说，大多数的negative example不在前景和背景的过渡区域上，分类很明确(这种易分类的negative称为easy  negative)，训练时对应的背景类score会很大，换句话说就是单个example的loss很小，反向计算时梯度小。梯度小造成easy  negative example对参数的收敛作用很有限，我们更需要loss大的对参数收敛影响也更大的example，即hard  positive/negative example。</li>
+</ul>
+<p>因此如果One-Stage算法如果无脑的将所有bbox拿去做分类损失，因为bbox中属于background的bbox太多了，所以如果分类器无脑地把所有bbox统一归类为background，accuracy也可以刷得很高。这就导致分类器训练失败了，自然检测精度就偏低了。对于YOLO和SSD来讲，他们也确实没有无脑将所有的bbox拿去做分类损失，如在SSD中利用Hard-Negtive-Mining的方式将正负样本的比例控制在1:3，YOLO通过损失函数中权重惩罚的方式增大正样本对损失函数的影响等。但它们虽然可以处理第1个问题，但对于第2个问题就无能为了，这也是Focal Loss出现的原因。</p>
+<h3 id="Faster-RCNN为什么精度更高"><a href="#Faster-RCNN为什么精度更高" class="headerlink" title="Faster-RCNN为什么精度更高"></a>Faster-RCNN为什么精度更高</h3><p>Faster-RCNN在FPN阶段会根据前景分数提出最可能是前景的example，这就会滤除大量背景概率高的easy  negtive样本，这便解决了上面提出的第2个问题。同时，在生成样本给ROIPooling层的时候，会据IOU的大小来调整positive和negative example的比例，比如设置成1：3，这样防止了negative过多的情况(同时防止了easy negative和hard  negative)，就解决了前面的第1个问题。因此，相对于One-Stage检测器，Faster-RCNN的精度更高。</p>
+<h2 id="Focal-Loss"><a href="#Focal-Loss" class="headerlink" title="Focal Loss"></a>Focal Loss</h2><p>论文引入了Focal Loss来解决<strong>难易样本数量不平衡</strong>。One-Stage的模板检测器通常会产生10k数量级的框，但只有极少数是正样本，正负样本数量非常不平衡。我们在计算分类的时候常用的损失——交叉熵的公式如下：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/RetinaNet/651.JPG" alt></p>
+<p>为了解决<strong>正负样本数量不平衡</strong>的问题，我们经常在交叉熵损失前面加一个参数$\alpha$，即：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/RetinaNet/643.png" alt></p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/RetinaNet/652.JPG" alt></p>
+<p>虽然$\alpha$平衡了正负样本的数量，但实际上，目标检测中大量的候选目标都是易分样本。这些样本的损失很低，但是由于数量极不平衡，易分样本的数量相对来讲太多，最终主导了总的损失。</p>
+<p>因此，这篇论文认为<strong>易分样本（即，置信度高的样本）对模型的提升效果非常小，模型应该主要关注与那些难分样本</strong> 。所以Focal Loss横空出世了。一个简单的想法就是只要我们将高置信度(p)样本的损失降低一些就好了吧？也即是下面的公式：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/RetinaNet/644.png" alt></p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/RetinaNet/653.JPG" alt></p>
+<p>我们取$\gamma$等于2来只管感受一下，如果$p=0.9$，那么，$(1-0.9)^{2}=0.001$，损失降低了1000倍。从中，我们易看出focal loss所加的指数式系数可对正负样本对loss的贡献自动调节。当某样本类别比较明确些，它对整体loss的贡献就比较少；而若某样本类别不易区分，则对整体loss的贡献就相对偏大。这样得到的loss最终将集中精力去诱导模型去努力分辨那些难分的目标类别，于是就有效提升了整体的目标检测准度。</p>
+<p>最终Focal Loss还结合了公式(2)，这很好理解，公式(3)解决了难易样本的不平衡，公式(2)解决了正负样本的不平衡，将公式(2)与(3)结合使用，同时解决正负难易2个问题！所以最终Focal Loss的形式如下：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/RetinaNet/645.png" alt></p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/RetinaNet/654.png" alt></p>
+<p>下面这张图展示了Focal Loss取不同的$\gamma$时的损失函数下降。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/RetinaNet/646.jpg" alt></p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/RetinaNet/655.png" alt></p>
+<p>实验结果展示，当$\gamma=2$，$\alpha=0.25$时，效果最好，这样损失函数训练的过程中关注的样本优先级就是正难&gt;负难&gt;正易&gt;负易了。</p>
+<h2 id="RetinaNet"><a href="#RetinaNet" class="headerlink" title="RetinaNet"></a>RetinaNet</h2><p>说完了Focal Loss就回到文章RetinaNet，Focal Loss与ResNet-101-FPN  backbone结合就构成了RetinaNet（one-stage检测器），RetinaNet在COCO  test-dev上达到39.1mAP，速度为5FPS。下图展示了RetinaNet的网络结构：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/RetinaNet/647.jpg" alt></p>
+<p>训练RetinaNet时有几个值得注意的关键点：</p>
+<ul>
+<li>训练时FPN每一级的所有example都被用于计算Focal Loss，loss值加到一起用来训练。</li>
+<li>测试时FPN每一级只选取score最大的1000个example来做nms。</li>
+<li>整个结构不同层的head部分(上图中的c和d部分)共享参数，但分类和回归分支间的参数不共享。</li>
+<li>分类分支的最后一级卷积的bias初始化成-log((1-π)/π)。这里π被指定在训练开始时，所有的anchor都需要被标注为带有π置信率的前景。这里取π=0.01，是为了防止在训练的第一个周期大量的背景anchors生成一个巨大的不稳定的loss值。</li>
+</ul>
+<p>RetinaNet和当时流行的检测算法速度和精度对比如下，可以看到从速度和精度都完成了对其他算法的压制：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/RetinaNet/648.webp" alt></p>
+<h2 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h2><p>Table1是关于RetinaNet和Focal Loss的一些实验结果。其中(a)是在交叉熵的基础上加上参数$\alpha$，$\alpha=0.5$就表示传统的交叉熵，可以看出当$\alpha=0.75$的时候效果最好，AP值提升了0.9。(b)是对比不同的参数$\gamma$和$\alpha$的实验结果，可以看出随着$\gamma$的增加，AP提升比较明显。(c)是anchor对AP值的影响。(d)是通过和OHEM的对比可以看出最好的Focal  Loss比最好的OHEM提高了3.2AP。这里OHEM1:3表示在通过OHEM得到的minibatch上强制positive和negative样本的比例为1:3，通过对比可以看出这种强制的操作并没有提升AP。(e)加入了运算时间的对比，可以和前面的Figure2结合起来看，速度方面也有优势。Table2表示RetinaNet和One-Stage检测器的比较，可以看到RetinaNet也是毫不顺色的。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/RetinaNet/649.jpg" alt></p>
+<h2 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h2><p>keras版本：<a href="https://github.com/fizyr/keras-retinanet">https://github.com/fizyr/keras-retinanet</a><br>pytorch版本: <a href="https://github.com/yhenon/pytorch-retinanet">https://github.com/yhenon/pytorch-retinanet</a><br>caffe-focal loss: <a href="https://github.com/chuanqi305/FocalLoss">https://github.com/chuanqi305/FocalLoss</a></p>
+]]></content>
+      <categories>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>目标检测</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>ECCV 2018 RFBNet，在检测中调感受野</title>
+    <url>/2020/03/07/ECCV-2018-RFBNet%EF%BC%8C%E5%9C%A8%E6%A3%80%E6%B5%8B%E4%B8%AD%E8%B0%83%E6%84%9F%E5%8F%97%E9%87%8E/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>看了不少的目标检测论文了，个人认为多数论文的出发点就两个，一是感受野，二是特征融合。此外，解决数据不平衡和轻量化也是另外两个重要的方向。今天为大家科普一篇ECCV 2018的一篇目标检测网络RFBNet就是从感受野角度来改善了SSD检测器，论文全名为：<strong>Receptive Field Block Net for Accurate and Fast Object Detection</strong>  。这篇论文主要的贡献点主要是在SSD网络中提出了一个<strong>Receptive Field Block (RFB)</strong> 模块，RFB模块主要是在Inception的基础上加入了空洞卷积层从而有效的增大了感受野。另外，RFB模块是嵌在SSD上的，所以检测的速度比较快，精度比SSD更高。</p>
+<h2 id="RFB模块"><a href="#RFB模块" class="headerlink" title="RFB模块"></a>RFB模块</h2><p>RFB模块的效果示意图如图所示，其中虚线部分就是指RFB模块。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/RFBNet/640.jpg" alt></p>
+<p>RFB模块主要有两个特点：</p>
+<ul>
+<li><p>RFB模块有多个分支，每个分支的第一层都由特定大小卷积核的卷积核构成，例如图上的1 x 1， 3 x 3，5 x 5。</p>
+</li>
+<li><p>RFB模块引入了空洞卷积，主要作用是为了增加感受野，空洞卷积之前是应用在分割网络DeepLab中，这里将其应用在检测任务中，以获得更大的感受野，可以更好的编码空间长距离语义。</p>
+</li>
+</ul>
+<p>在RFB模块中，最后将不同尺寸和感受野的输出特征图进行Concat操作，以达到融合不同特征的目的。在图中，RFB模块中使用三种不同大小和颜色的输出叠加来展示。在图的最后一列中将融合后的特征与人类视觉感受野做对比，从图中看出是非常接近的，这也是这篇论文的出发点。</p>
+<h2 id="两种RFB结构示意图"><a href="#两种RFB结构示意图" class="headerlink" title="两种RFB结构示意图"></a>两种RFB结构示意图</h2><p>下面的Figure4展示了RFBNet的两种结构。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/RFBNet/641.jpg" alt></p>
+<ul>
+<li><p>Figure4(a)表示RFB结构，整体上借鉴了Inception的思想。主要不同点在于引入3个空洞卷积层。</p>
+</li>
+<li><p>Figure4(b)表示RFB-s结构。RFB-s和RFB相比主要有两个改进，一方面用3 x 3卷积层代替5 x 5卷积层，另一方面用1 x 3和3 x 1卷积层代替3 x 3卷积层，主要目的应该是为了减少计算量，类似Inception后面的版本对Inception结构的改进。</p>
+</li>
+</ul>
+<h2 id="RFBNet-300的结构"><a href="#RFBNet-300的结构" class="headerlink" title="RFBNet-300的结构"></a>RFBNet-300的结构</h2><p>下面的Figure5代表RFBNet-300的整体结构图，基本是照搬了SSD，主要有2点不同：</p>
+<ul>
+<li>BackBone部分用两个RFB结构替换原来新增的两层。</li>
+<li><code>conv4_3</code>和<code>conv7_fc</code>在接预测层之前分别接RFB-s和RFB结构。</li>
+</ul>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/RFBNet/642.jpg" alt></p>
+<h2 id="实验结果"><a href="#实验结果" class="headerlink" title="实验结果"></a>实验结果</h2><p>下面的Table1展示了RFBNet-300在PASCAL VOC2007 test dev上的测试结果，训练集基于2007和2012的trainval。RFBNet-300在mAP和FPS两方面效果都不错。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/RFBNet/643.jpg" alt></p>
+<p>而下面的Table4是在COCO test dev 2015数据集上的测试结果。最后的RFBNet-512E做了两个改变：</p>
+<ul>
+<li>对<code>conv7_fc</code>的输出特征做了<code>up-sample</code>，然后和<code>conv4_3</code>的输出特征做融合，基于融合后的特征做预测。这种做法实际上是借鉴了FPN算法的思想。</li>
+<li>RFB结构中增加了<code>7x7</code>大小的卷积分支。这两点改进对效果的提升有一定帮助，而且带来的计算量也少。</li>
+</ul>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/RFBNet/644.jpg" alt></p>
+<p>下面的Figure6展示了和RFBNet同时期的一些目标检测算法在COCO test-dev数据集上关于效果和速度的直观对比，可以看到RFBNet的速度和精度平衡还是不错的。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/RFBNet/645.jpg" alt></p>
+<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>RFBNet说白了就是空洞卷积的应用，虽然看起来论文比较水，但至少给我们提供了一个重要信息，在检测中调感受野是行之有效的。</p>
+<h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><ul>
+<li>论文原文：<a href="https://arxiv.org/pdf/1711.07767.pdf">https://arxiv.org/pdf/1711.07767.pdf</a></li>
+<li>代码实现：<a href="https://github.com/ruinmessi/RFBNet">https://github.com/ruinmessi/RFBNet</a></li>
+<li>参考：<a href="https://blog.csdn.net/u014380165/article/details/81556769">https://blog.csdn.net/u014380165/article/details/81556769</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>目标检测</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>CVPR 2018 Cascade R-CNN</title>
+    <url>/2020/04/07/CVPR-2018-Cascade-R-CNN/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Cascade R-CNN这个算法是CVPR 2018提出的，通过级联多个检测网络达到不断优化预测结果的目的。但是和普通的级联检测器不同，Cascade R-CNN的多个检测网络是基于不同的IOU阈值进而确定不同的正负样本训练出来的，在COCO数据集上Cascade  R-CNN取得了非常出色的结果，并且也成为了当前目标检测比赛中的有力Trick。</p>
+<h2 id="简单回顾R-CNN结构"><a href="#简单回顾R-CNN结构" class="headerlink" title="简单回顾R-CNN结构"></a>简单回顾R-CNN结构</h2><p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/Cascade_R-CNN/v2-11788fb6c9bb4840e17be9a63ab38759_hd.jpg" alt></p>
+<p>首先，以经典的Faster R-CNN为例。整个网络可以分为两个阶段，training阶段和inference阶段，如上图所示。</p>
+<ul>
+<li>training阶段，RPN网络提出了2000左右的proposals，这些proposals被送入到Fast R-CNN结构中，在Fast  R-CNN结构中，首先计算每个proposal和gt之间的iou，通过人为的设定一个IoU阈值（通常为0.5），把这些Proposals分为正样本（前景）和负样本（背景），并对这些正负样本采样，使得他们之间的比例尽量满足（1:3，二者总数量通常为128），之后这些proposals（128个）被送入到Roi Pooling，最后进行类别分类和box回归。</li>
+<li>inference阶段，RPN网络提出了300左右的proposals，这些proposals被送入到Fast R-CNN结构中，<strong>和training阶段不同的是，inference阶段没有办法对这些proposals采样（inference阶段肯定不知道gt的，也就没法计算iou）</strong>，所以他们直接进入Roi Pooling，之后进行类别分类和box回归。</li>
+</ul>
+<p>在这里插一句，在R-CNN中用到IoU阈值的有两个地方，分别是Training时<strong>Positive</strong>与<strong>Negative</strong>判定，和Inference时计算mAP。论文中强调的IoU阈值指的是Training时<strong>Positive</strong>和<strong>Negative</strong>判定处。</p>
+<h2 id="出发点"><a href="#出发点" class="headerlink" title="出发点"></a>出发点</h2><p>下面的Figure1展示了Cascade R-CNN的出发点。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/Cascade_R-CNN/640.jpg" alt></p>
+<ul>
+<li><p><code>Figure1(a)</code>展示了当IOU阈值等于0.5时的检测结果，可以看到结果图中存在较多误检，因为0.5的阈值会使得正样本中有较多的背景，这是产生误检的主要原因。</p>
+</li>
+<li><p><code>Figure1(b)</code>展示了当IOU阈值等于0.7时的检测结果，可以看到误检变少了，但是并不一定误检变少了结果就一定更好，因为IOU阈值更大导致正样本越少，那么过拟合的风险就越大。</p>
+</li>
+<li><p><code>Figure1(c)</code>展示了模型定位表现，其中横坐标表示输入候选框和GT框的IOU值，即proposal的IoU，纵坐标表示输出的候选框和GT框的IOU值， 即经过box reg得到的新的IoU。然后，红，绿，蓝三条曲线分别代表训练检测模型时用的正负样本标签的阈值分别是0.7，0.6，0.5。可以看到<strong>当一个检测模型采用某个IOU阈值（假设u=0.6）来判定正负样本时，那么当输入候选框和GT的IOU在这个阈值（u=0.6）附近时，该检测模型比基于其它阈值的检测模型效果更好</strong>。</p>
+</li>
+<li><p><code>Figure1(d)</code>展示了使用不同阈值来训练检测模型的表现，可以看出当IOU阈值等于0.7的时候效果下降比较明显，原因是IOU阈值过高导致正样本数量更少，这样<strong>样本</strong>会更加不平衡并且容易导致过拟合。</p>
+</li>
+</ul>
+<h2 id="Cascade-R-CNN原理"><a href="#Cascade-R-CNN原理" class="headerlink" title="Cascade R-CNN原理"></a>Cascade R-CNN原理</h2><p>基于上面的出发点，Cascade R-CNN横空出世。简单来说，Cascade  R-CNN就是由一系列检测器组成的级联检测模型，并且每个检测器都基于不同IOu阈值的正负样本训练得到，前一个检测器的输出作为后一个检测器的输入，并且越往后走，检测器的阈值是越大的。</p>
+<p>为什么Cascade R-CNN要这样来设计呢？这和上面的出发点密切相关，从<code>Figure1(c)</code>中我们看出使用不同的IOU阈值训练得到的检测模型对有不同IOU阈值的输入候选框的结果差别较大，因此<strong>我们希望训练每个检测模型用的IOU阈值要尽可能和输入候选框的IOU接近</strong>。并且从<code>Figure1(c)</code>中可以看出三条彩色曲线都在灰度曲线上方，这说明对于这几个阈值来说，<strong>输出的IOU阈值都大于输入的IOU阈值</strong>。根据这一特点，我们就可以拿上一个阶段的输出作为下一个阶段的输入，这样就可以得到越来越高的IOU。</p>
+<p>总结一下，<strong>我们很难让一个在指定IOU阈值界定的训练集上训练得到的检测模型对IOU跨度较大的输入候选框都达到最佳，因此采取级联的方式能够让每一个阶段的检测器都专注于检测IOU在某一范围内的候选框，因为输出IOU普遍大于输入IOU，因此检测效果会越来越好。</strong></p>
+<h2 id="Cascade-R-CNN网络结构"><a href="#Cascade-R-CNN网络结构" class="headerlink" title="Cascade R-CNN网络结构"></a>Cascade R-CNN网络结构</h2><p>下面的Figure3展示了和Cascade R-CNN有关的几种经典检测网络结构的示意图。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/Cascade_R-CNN/641.webp" alt></p>
+<ul>
+<li><p><code>Figure3(a)</code>表示Faster RCNN，因为双阶段类型的目标检测算法基本上都基于Faster RCNN，所以这里也以该算法为BaseLine。其中H0代表的是RPN网络，H1代表的是Faster R-CNN进行检测与分类的head，C1代表最终的分类结果，B1代表最终的bounding box回归结果。</p>
+</li>
+<li><p><code>Figure3(b)</code>表示迭代式的边界框回归，从图也非常容易看出思想，就是前一个检测模型回归得到的边界框坐标初始化下一个检测模型的边界框，然后继续回归，这样迭代三次后得到结果。</p>
+</li>
+<li><p><code>Figure3(c)</code>表示Integral Loss，表示对输出边界框的标签界定采用不同的IOU阈值，因为当IOU较高时，虽然预测得到边界框很准确，但是也会丢失一些边界框。（即分类结果基于不同IOU，bbox并没有）关于这个网络的解释看原文更容易理解：<br><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/Cascade_R-CNN/646.webp" alt><br>这种Trick在比赛中比较常用，就是说按照数据集的评价指标来自定义Loss（一般是把和指标相关的那一项加在原始的Loss后面）往往可以取得更好的效果。</p>
+</li>
+<li><p><code>Figure3(d)</code>表示Cascade R-CNN，<strong>H1那一部分是一样的，但是Cascade R-CNN得到B1回归后的检测框后，将其输入到H2部分，继续回归，以此类推到H3部分，使得每次对bounding box都提高一定的精度，已达到提高检测框准确度的作用。(注：级联的方式，不再是为了找到hard negatives，而是通过调整bounding boxes，给下一阶段找到一个IoU更高的正样本来训练。)</strong>，和<code>Figure3(b)</code>，<code>Figure3(c)</code>的结构比较像。但和<code>Figure3(b)</code>最主要的区别是Cascade R-CNN中的检测模型是基于前一阶段的输出进行训练，而不是<code>Figure3(b)</code>中3个检测模型都是基于最初始的数据进行训练，（个人理解：<strong>head相同</strong>，相当于基于最开始训练）而且(b)是在验证阶段采用的方式，而cascade-R-CNN是在训练和验证阶段采用的方式。而和<code>Figure3(c)</code>的区别更加明显，Cascade R-CNN中每个Stage的输入候选框都是前一个阶段的候选框输出，而却没有这种级联的思想，仅仅是模型基于不同的IOU阈值进行训练得到。</p>
+</li>
+</ul>
+<h2 id="Cascade-R-CNN的可行性分析"><a href="#Cascade-R-CNN的可行性分析" class="headerlink" title="Cascade R-CNN的可行性分析"></a>Cascade R-CNN的可行性分析</h2><p>上面的<code>Figure3(b)</code>中的迭代回归有两个致命缺点：</p>
+<ul>
+<li>从<code>Figure1(c)</code>的实验知道基于不同IOU阈值训练的检测模型对不同IOU的候选框输入效果差别很大，因此如果每次迭代都基于相同IOU阈值的数据进行训练获得的检测模型，那么当输入候选框的IOU不在训练的检测模型的IOU附近时，效果不会有太大提升。</li>
+<li>下面的<code>Figure2</code>为我们展示了<code>Figure3(b)</code>这种候选框回归在不同阶段的4个坐标回归值的分布情况，可以看到在不同的阶段坐标的分布差异是比较大的，对于这种情况，<code>Figure3(b)</code>的迭代回归模型是无能为力的。<br><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/Cascade_R-CNN/642.jpg" alt><br>第一行横纵轴分别是回归目标中的box的x方向和y方向偏移量；第二行横纵轴分别是回归目标中的box的宽、高偏差量，$\delta_{x}=\left(g_{x}-b_{x}\right) / b_{w}$, $\delta_{y}=\left(g_{y}-b_{y}\right) / b_{h}$，$\delta_{w}=\log \left(g_{w} / b_{w}\right)$, $\delta_{h}=\log \left(g_{h} / b_{h}\right)$。我们可以看到，从1st stage到2nd stage，proposal的分布其实已经发生很大变化了，因为很多噪声经过box reg实际上也提高了IoU，2nd和3rd中的那些红色点已经属于outliers，如果不提高阈值来去掉它们，就会引入大量噪声干扰，对结果很不利。(head不变，IOU不变还为0.5，去不掉已提高IOU的噪声，也就是红点)从这里也可以看出，阈值的重新选取本质上是一个<strong>resample</strong>的过程，它保证了样本的质量。</li>
+</ul>
+<p>那么Cascade R-CNN是否可以改善上述问题呢？下面的<code>Figure4</code>展示了Cascade R-CNN在不同阶段预测得到的候选框的IOU值分布情况。可以看到，每经过一个检测器进行坐标回归，候选框越准确，也即是说候选框和GT框的IOU更大。从<code>Figure4</code>可以看出，经过检测器之后IOU大的样本增加了，这就说明了Cascade R-CNN是可行的，因为它不会因为后面的检测器提高阈值导致正样本过少而过拟合。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/Cascade_R-CNN/643.png" alt></p>
+<p>从这张图，我们可以看到，1st stage大于0.5的，到2nd stage大于0.6的，到3rd stage大于0.7的……在这一个过程中proposal的样本数量确实没有特别大的改变，甚至还有稍许提升，和2图结合起来看，应该可以说是非常强有力的证明了。<br>总结起来，就是：</p>
+<ul>
+<li>cascaded regression不断改变了proposal的分布，并且通过调整阈值的方式重采样（即：$f^{\prime}(x, b)=f_{T} \cdot f_{T-1} \cdot f_{T-2} \cdots f_{1}(x, b)$）</li>
+<li>cascaded在train和inference时都会使用，并没有偏差问题</li>
+<li>cascaded重采样后的每个检测器，都对重采样后的样本是最优的，没有mismatch问题</li>
+</ul>
+<h2 id="实验结果"><a href="#实验结果" class="headerlink" title="实验结果"></a>实验结果</h2><p>下面的Table1展示了<code>Figure3</code>中几种模型和Cascade R-CNN的结果对比。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/Cascade_R-CNN/644.png" alt></p>
+<p>然后再来看一下在COCO数据集上的表现，可以看到Cascade R-CNN非常的SOTA了，YOLOV3只有33%的mAP，而Cascade R-CNN则有42.8%的mAP值。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/Cascade_R-CNN/645.jpg" alt></p>
+]]></content>
+      <categories>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>目标检测</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>不需要预训练模型的目标检测算法DSOD</title>
+    <url>/2020/04/10/%E4%B8%8D%E9%9C%80%E8%A6%81%E9%A2%84%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B%E7%9A%84%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E7%AE%97%E6%B3%95DSOD/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>DSOD(Deeply Supervised Object Detectors)是ICCV  2017的一篇文章，它表达了一个非常有意思的东西。这篇论文不是从目标检测的高mAP值或者速度更快出发，而是从另外一个角度切入来说明fine-tune后的检测模型和直接训练的检测模型的差距其实是可以减少的，也即是说一些检测模型可以摆脱fine-tune这一过程，并且相比于fine-tune训练出来的模型效果并不会变差。</p>
+<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>DSOD这一算法是在SSD的基础上进行的改进，可以简单的看成：</p>
+<p><strong>DSOD=SSD+DenseNet</strong></p>
+<p>作者在论文中提到他也实验了从0开始训练<strong>Region Proposal Based</strong>的检测算法比如Faster RCNN，R-FCN等，但这些模型很难收敛。而One-Stage的目标检测算法比如SSD却可以收敛，虽然效果很一般，因此最后作者使用SSD作为了这篇论文接下来讨论的BaseLine。</p>
+<p>然后本文基于SSD改进的DSOD在VOC2007 trainval和2012 trainval数据集上训练模型，然后在VOC2007  testset上测试的表现(77.7%mAP)超过了使用fine-tune策略的SSD300S（69.6%mAP）和SSD300（75.8mAP），原文是这样描述的。</p>
+<blockquote>
+<p>Our DSOD300 achieves 77.7% mAP, which is much better than the SSD300S  that is trained from scratch using VGG16 (69.6%) without deep  supervision. It is also much better than the fine-tuned results by  SSD300 (75.8%)</p>
+</blockquote>
+<h2 id="出发点"><a href="#出发点" class="headerlink" title="出发点"></a>出发点</h2><p>这篇文章的出发点是什么呢？作者认为几乎的所有检测网络都在使用fine-tune这一技巧，那么一定要用fine-tune吗？作者列出来了3个原因来尝试说明fine-tune不是必须的。原因如下：</p>
+<ul>
+<li>预训练的模型一般是在分类图像数据集比如Imagenet上训练的，不一定可以迁移到检测模型的数据上（比如医学图像）。</li>
+<li>预训练的模型，其结构都是固定的，因此如果想要再修改的话比较麻烦。</li>
+<li>预训练的分类网络的训练目标一般和检测目标不一致，因此预训练的模型对于检测算法而言不一定是最优的选择。</li>
+</ul>
+<p>基于上面这几点原因，论文提出了一个从0开始的检测模型DSOD，接下来看看是怎么设计的吧。</p>
+<h2 id="DSOD网络结构"><a href="#DSOD网络结构" class="headerlink" title="DSOD网络结构"></a>DSOD网络结构</h2><p>下面的Figure1分别展示了SSD的整体结构和DSOD的整体结构。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/DSOD/640.webp" alt></p>
+<p>Figure1左图的<code>plain connection</code>表示SSD网络中的特征融合操作，这里对于的输入300 x 300图像来说，一共融合了6种不同scale的特征。在每个虚线矩形框内都有一个1 x 1的卷积和一个3 x 3的卷积操作，这也可以被叫作BottleNeck，也就是1 x 1卷积主要起到降维从而降低3 x 3卷积计算量的作用。</p>
+<p>Figure1右图的<code>dense connection</code>表示本文的DSOD引入了DenseNet的思想。<code>dense connection</code>左边的虚线框部分和<code>plain connection</code>右边的虚线框部分结构一致，区别在于里面的<code>channel</code>个数，<code>dense connection</code>中3 x 3卷积的<code>channel</code>个数是<code>plain connection</code>中3 x 3卷积的一半。主要是因为在<code>plain connection</code>中每个BottleNeck的输入是前面一个BottleNeck的输出，而在<code>dense connection</code>中，<strong>每个bottleneck的输入是前面所有bottleneck的输出的concate</strong>，所以为了降低计算量减少了通道数。</p>
+<p>同时，<code>dense connection</code>部分右边的矩形框是下采样模块，包含一个2 x 2的最大池化层（降采样作用）和一个的1 x 1卷积层（降低<code>channel</code>个数的作用），作者也提到先进行降采样再进行1 x 1卷积可以进一步减少计算量。</p>
+<p>因此可以看出DSOD即是<strong>SSD+DenseNet</strong>的结果。</p>
+<p>DSOD是在SSD的基础上发展而来的，DSOD的不同在于，不管是在backbong还是head部分，DSOD都借鉴了DenseNet的设计思想。</p>
+<p>DSOD 网络分两个部分：用于特征提取的backbone，用于目标预测的front-end。backbone子网络类似于DenseNets，包含Stem block，4个dense block，2个过渡层，2个无池化层的过渡层。front-end子网络使用致密的结构融合多尺度预测响应。其中Dense Block就是DenseNet网络的子模块，然后<code>stem block</code>由3 x 3卷积和2 x 2池化组成，后面实验证明了这个<code>stem block</code>可以提高mAP值。下面的Table1详细展示了DSOS网络的结构。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/DSOD/641.jpg" alt></p>
+<h2 id="实验结果"><a href="#实验结果" class="headerlink" title="实验结果"></a>实验结果</h2><p>下面的Table3展示了在VOC2007 testset上不同参数的实验结果。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/DSOD/642.webp" alt></p>
+<p>第3，4行的对比可以看出BottleNeck的channel个数越多，mAP相对越高。第5、6行的对比可以看出growth rate从16变成48，可以提高4.8%的mAP。第6，9行的对比可以看出stem block的存在可以提高2.8%的mAP。</p>
+<p>下面的Table4则展示了更丰富的结果。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/DSOD/643.webp" alt></p>
+<p>可以看出SSD在没有预训练模型的情况下也是可以收敛的，不过效果一般。但如果使用本文的DSOD则可以达到使用预训练模型效果，并且结果还偏好一点。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>DSOD是在SSD的基础上结合了DenseNet的思想，使得网络可以在不使用预训练模型的条件下收敛得和使用预训练模型的BaseLine模型一样好，另外DenseNet的引入也使得相比SSD来说DSOD的参数数量大大减少，注意参数量不等于推理速度会变快。如果专注于特殊图像检测或者难以搞定预训练模型的场景这篇文章的思想是值得借鉴的。</p>
+]]></content>
+      <categories>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>目标检测</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>CVPR 2017 ResNeXt（ResNet进化版）</title>
+    <url>/2020/04/10/CVPR-2017-ResNeXt%EF%BC%88ResNet%E8%BF%9B%E5%8C%96%E7%89%88%EF%BC%89/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>传统的卷积神经网络在提高性能时都是加深和加宽网络，但随着超参数数量的增加(如通道数，卷积核大小等)网络变得非常难调，且网络的计算开销和网络结构设计也变得越来越难。此外这些大模型针对性比较强，即在特定数据集上表现好的网络放到新数据集上就需要修改很多的参数才能工作良好，因此可扩展性比较一般。针对上述问题，Saining Xie, Ross Girshick, Kaiming He在CVPR2017上提出了ResNeXt。</p>
+<h2 id="贡献"><a href="#贡献" class="headerlink" title="贡献"></a>贡献</h2><ul>
+<li>网络结构更加简单和模块化。</li>
+<li>大量减少了需要手动调节的超参数，扩展性更强。</li>
+<li>和ResNet相比，相同的参数个数，结果更好。具体来说，一个101层的ResNeXt网络和200层的ResNet准确度差不多，但是计算量只有后者的一半。</li>
+</ul>
+<h2 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h2><h3 id="网络结构"><a href="#网络结构" class="headerlink" title="网络结构"></a>网络结构</h3><p>ResNeXt的网络结构如Table1所示：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/ResNeXt/640.webp" alt></p>
+<p>Table 1的左边网络为ResNet-50，Table 1的右边网络为ResNeXt-50，括号代表残差块，括号外面的数字代表残差块的堆叠次数，而C代表的ResNeXt引入的卷积分组数，同时可以看到这两个网络的FLOPs基本一致，也即是说模型复杂度一致。那ResNeXt有什么优点呢？这要先从分组来说起。</p>
+<h3 id="ResNeXt残差模块"><a href="#ResNeXt残差模块" class="headerlink" title="ResNeXt残差模块"></a>ResNeXt残差模块</h3><p>分组数在论文中又被称为基数(cardinality)，是对GoogleNet中分立合并思想和VGG/ResNet中堆叠思想的一种结合，ResNet的残差模块和ResNeXt的残差模块如Figure1所示。可以看到ResNeXt残差模块有32个基数(分组数)，并且每个被聚合的拓扑结构就完全一样，这里是1 x 1 + 3 x 3 + 1 x 1的组件，这也是和Inception结构的最大区别。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/ResNeXt/641.webp" alt></p>
+<p>然后论文从理论角度来分析了一下这个ResNeXt残差模块，用全连接层举例来讲，全连接层的公式可以表示为：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/ResNeXt/642.webp" alt></p>
+<p>然后Figure2就清晰的展示了全连接层分离变化合并(<code>split-transform-merge</code>)的处理过程：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/ResNeXt/643.webp" alt></p>
+<p>而ResNeXt残差模块实际上就是将其中的$w_{i} x_{i}$替换成了更一般的函数，用公式表示如下：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/ResNeXt/644.png" alt></p>
+<p>其中$C$就是上一节提到的分组数/基数，而$T_{i}(x)$代表的是相同的拓扑结构，在Figure1中就是<code>1x1+3x3+1x1</code>卷积堆叠。</p>
+<h3 id="等价模式"><a href="#等价模式" class="headerlink" title="等价模式"></a>等价模式</h3><p>而Figure1中的ResNeXt残差模块有两种等价的模型，如Figure3所示。其中Figure3（a）前面已经讲过了。而Figure3（b）表示的是使用了两层卷积后concat，然后再卷积，比较类似于Inception-ResNet。Figure3（c）使用的是原始的组卷积。论文指出这三种结构是完全等价的，并且最后做出来的实验结果完全一样，而在实验部分展示的是Figure3（c）的结果，因为Figure3（c）的结构比较简洁并且速度更快。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/ResNeXt/645.webp" alt></p>
+<h3 id="模型容量"><a href="#模型容量" class="headerlink" title="模型容量"></a>模型容量</h3><p>下面的Table2说明了Figure1左右两个结构即ResNet结构和ResNeXt结构的参数量差不多，其中第二行的$d$表示每个路径的中间channel数量，而第三行代表整个模块的宽度，是第一行$C$和第二行$d$的乘积。关于这两个模型容量也就是FLOPs的计算如公式(4)。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/ResNeXt/646.png" alt></p>
+<p>FLOPs计算公式如下，可以看到FLOPs基本相等。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/ResNeXt/647.webp" alt></p>
+<h2 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h2><p>在实验中ResNeXt相比于ResNet区别仅仅是其中的block，其他都不变，作者的实验结果如Figure5所示。可以看到相同层数的ResNet和ResNeXt的对比：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/ResNeXt/648.webp" alt></p>
+<p>其中，32 x 4d表示的是有32个相同的路径，然后每个路径的宽度都为4，即如Figure3展示的那样。可以看到ResNeXt和ResNet的参数复杂度差不多，但是其训练误差和测试误差都降低了。</p>
+<p>ResNet和ResNeXt在ImageNet上的对比结果如Table3所示：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/ResNeXt/649.jpg" alt></p>
+<p>另外一个重要的实验结果如Table4所示，主要说明了增加基数/分组数和增加宽度和深度的区别。第一个是基准模型，增加深度和宽度分别是第三，第四个，可以看到Top1误差分别降低了0.3%和0.7%。同时第五个加倍了分组数Top1误差降低了1.3%，第六个则把分组数加到了64，Top1误差降低了1.6。由此可以看出，增加分组数比增加深度或宽度会更加有效。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/ResNeXt/650.webp" alt></p>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>ResNeXt这篇论文提出了使用一种平行堆叠相同拓扑结构的残差模块来代替原始的残差模块，在不明显增加参数量的同时提升了模型的准确率，同时由于拓扑结构相同，需要自己调的超参数也减少因此更便于模型的扩展和移值。</p>
+]]></content>
+      <categories>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>目标检测</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>YOLOv3模型构建中的YOLOLayer</title>
     <url>/2020/02/18/YOLOv3%E6%A8%A1%E5%9E%8B%E6%9E%84%E5%BB%BA%E4%B8%AD%E7%9A%84YOLOLayer/</url>
     <content><![CDATA[<h2 id="1-Grid创建"><a href="#1-Grid创建" class="headerlink" title="1. Grid创建"></a>1. Grid创建</h2><p>YOLOv3是一个单阶段的目标检测器，将目标划分为不同的grid，每个grid分配3个anchor作为先验框来进行匹配。首先读一下代码中关于grid创建的部分。</p>
@@ -5963,91 +6630,6 @@ Returns:
       </tags>
   </entry>
   <entry>
-    <title>CVPR 2017 ResNeXt（ResNet进化版）</title>
-    <url>/2020/04/10/CVPR-2017-ResNeXt%EF%BC%88ResNet%E8%BF%9B%E5%8C%96%E7%89%88%EF%BC%89/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a><span id="more"></span>前言</h2><p>传统的卷积神经网络在提高性能时都是加深和加宽网络，但随着超参数数量的增加(如通道数，卷积核大小等)网络变得非常难调，且网络的计算开销和网络结构设计也变得越来越难。此外这些大模型针对性比较强，即在特定数据集上表现好的网络放到新数据集上就需要修改很多的参数才能工作良好，因此可扩展性比较一般。针对上述问题，Saining Xie, Ross Girshick, Kaiming He在CVPR2017上提出了ResNeXt。</p>
-<h2 id="贡献"><a href="#贡献" class="headerlink" title="贡献"></a>贡献</h2><ul>
-<li>网络结构更加简单和模块化。</li>
-<li>大量减少了需要手动调节的超参数，扩展性更强。</li>
-<li>和ResNet相比，相同的参数个数，结果更好。具体来说，一个101层的ResNeXt网络和200层的ResNet准确度差不多，但是计算量只有后者的一半。</li>
-</ul>
-<h2 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h2><h3 id="网络结构"><a href="#网络结构" class="headerlink" title="网络结构"></a>网络结构</h3><p>ResNeXt的网络结构如Table1所示：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ResNeXt/640.webp" alt></p>
-<p>Table 1的左边网络为ResNet-50，Table 1的右边网络为ResNeXt-50，括号代表残差块，括号外面的数字代表残差块的堆叠次数，而C代表的ResNeXt引入的卷积分组数，同时可以看到这两个网络的FLOPs基本一致，也即是说模型复杂度一致。那ResNeXt有什么优点呢？这要先从分组来说起。</p>
-<h3 id="ResNeXt残差模块"><a href="#ResNeXt残差模块" class="headerlink" title="ResNeXt残差模块"></a>ResNeXt残差模块</h3><p>分组数在论文中又被称为基数(cardinality)，是对GoogleNet中分立合并思想和VGG/ResNet中堆叠思想的一种结合，ResNet的残差模块和ResNeXt的残差模块如Figure1所示。可以看到ResNeXt残差模块有32个基数(分组数)，并且每个被聚合的拓扑结构就完全一样，这里是1 x 1 + 3 x 3 + 1 x 1的组件，这也是和Inception结构的最大区别。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ResNeXt/641.webp" alt></p>
-<p>然后论文从理论角度来分析了一下这个ResNeXt残差模块，用全连接层举例来讲，全连接层的公式可以表示为：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ResNeXt/642.webp" alt></p>
-<p>然后Figure2就清晰的展示了全连接层分离变化合并(<code>split-transform-merge</code>)的处理过程：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ResNeXt/643.webp" alt></p>
-<p>而ResNeXt残差模块实际上就是将其中的$w_{i} x_{i}$替换成了更一般的函数，用公式表示如下：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ResNeXt/644.png" alt></p>
-<p>其中$C$就是上一节提到的分组数/基数，而$T_{i}(x)$代表的是相同的拓扑结构，在Figure1中就是<code>1x1+3x3+1x1</code>卷积堆叠。</p>
-<h3 id="等价模式"><a href="#等价模式" class="headerlink" title="等价模式"></a>等价模式</h3><p>而Figure1中的ResNeXt残差模块有两种等价的模型，如Figure3所示。其中Figure3（a）前面已经讲过了。而Figure3（b）表示的是使用了两层卷积后concat，然后再卷积，比较类似于Inception-ResNet。Figure3（c）使用的是原始的组卷积。论文指出这三种结构是完全等价的，并且最后做出来的实验结果完全一样，而在实验部分展示的是Figure3（c）的结果，因为Figure3（c）的结构比较简洁并且速度更快。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ResNeXt/645.webp" alt></p>
-<h3 id="模型容量"><a href="#模型容量" class="headerlink" title="模型容量"></a>模型容量</h3><p>下面的Table2说明了Figure1左右两个结构即ResNet结构和ResNeXt结构的参数量差不多，其中第二行的$d$表示每个路径的中间channel数量，而第三行代表整个模块的宽度，是第一行$C$和第二行$d$的乘积。关于这两个模型容量也就是FLOPs的计算如公式(4)。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ResNeXt/646.png" alt></p>
-<p>FLOPs计算公式如下，可以看到FLOPs基本相等。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ResNeXt/647.webp" alt></p>
-<h2 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h2><p>在实验中ResNeXt相比于ResNet区别仅仅是其中的block，其他都不变，作者的实验结果如Figure5所示。可以看到相同层数的ResNet和ResNeXt的对比：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ResNeXt/648.webp" alt></p>
-<p>其中，32 x 4d表示的是有32个相同的路径，然后每个路径的宽度都为4，即如Figure3展示的那样。可以看到ResNeXt和ResNet的参数复杂度差不多，但是其训练误差和测试误差都降低了。</p>
-<p>ResNet和ResNeXt在ImageNet上的对比结果如Table3所示：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ResNeXt/649.jpg" alt></p>
-<p>另外一个重要的实验结果如Table4所示，主要说明了增加基数/分组数和增加宽度和深度的区别。第一个是基准模型，增加深度和宽度分别是第三，第四个，可以看到Top1误差分别降低了0.3%和0.7%。同时第五个加倍了分组数Top1误差降低了1.3%，第六个则把分组数加到了64，Top1误差降低了1.6。由此可以看出，增加分组数比增加深度或宽度会更加有效。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/ResNeXt/650.webp" alt></p>
-<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>ResNeXt这篇论文提出了使用一种平行堆叠相同拓扑结构的残差模块来代替原始的残差模块，在不明显增加参数量的同时提升了模型的准确率，同时由于拓扑结构相同，需要自己调的超参数也减少因此更便于模型的扩展和移值。</p>
-]]></content>
-      <categories>
-        <category>学习</category>
-      </categories>
-      <tags>
-        <tag>目标检测</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>不需要预训练模型的目标检测算法DSOD</title>
-    <url>/2020/04/10/%E4%B8%8D%E9%9C%80%E8%A6%81%E9%A2%84%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B%E7%9A%84%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E7%AE%97%E6%B3%95DSOD/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title=" 前言"></a><span id="more"></span> 前言</h2><p>DSOD(Deeply Supervised Object Detectors)是ICCV  2017的一篇文章，它表达了一个非常有意思的东西。这篇论文不是从目标检测的高mAP值或者速度更快出发，而是从另外一个角度切入来说明fine-tune后的检测模型和直接训练的检测模型的差距其实是可以减少的，也即是说一些检测模型可以摆脱fine-tune这一过程，并且相比于fine-tune训练出来的模型效果并不会变差。</p>
-<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>DSOD这一算法是在SSD的基础上进行的改进，可以简单的看成：</p>
-<p><strong>DSOD=SSD+DenseNet</strong></p>
-<p>作者在论文中提到他也实验了从0开始训练<strong>Region Proposal Based</strong>的检测算法比如Faster RCNN，R-FCN等，但这些模型很难收敛。而One-Stage的目标检测算法比如SSD却可以收敛，虽然效果很一般，因此最后作者使用SSD作为了这篇论文接下来讨论的BaseLine。</p>
-<p>然后本文基于SSD改进的DSOD在VOC2007 trainval和2012 trainval数据集上训练模型，然后在VOC2007  testset上测试的表现(77.7%mAP)超过了使用fine-tune策略的SSD300S（69.6%mAP）和SSD300（75.8mAP），原文是这样描述的。</p>
-<blockquote>
-<p>Our DSOD300 achieves 77.7% mAP, which is much better than the SSD300S  that is trained from scratch using VGG16 (69.6%) without deep  supervision. It is also much better than the fine-tuned results by  SSD300 (75.8%)</p>
-</blockquote>
-<h2 id="出发点"><a href="#出发点" class="headerlink" title="出发点"></a>出发点</h2><p>这篇文章的出发点是什么呢？作者认为几乎的所有检测网络都在使用fine-tune这一技巧，那么一定要用fine-tune吗？作者列出来了3个原因来尝试说明fine-tune不是必须的。原因如下：</p>
-<ul>
-<li>预训练的模型一般是在分类图像数据集比如Imagenet上训练的，不一定可以迁移到检测模型的数据上（比如医学图像）。</li>
-<li>预训练的模型，其结构都是固定的，因此如果想要再修改的话比较麻烦。</li>
-<li>预训练的分类网络的训练目标一般和检测目标不一致，因此预训练的模型对于检测算法而言不一定是最优的选择。</li>
-</ul>
-<p>基于上面这几点原因，论文提出了一个从0开始的检测模型DSOD，接下来看看是怎么设计的吧。</p>
-<h2 id="DSOD网络结构"><a href="#DSOD网络结构" class="headerlink" title="DSOD网络结构"></a>DSOD网络结构</h2><p>下面的Figure1分别展示了SSD的整体结构和DSOD的整体结构。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/DSOD/640.webp" alt></p>
-<p>Figure1左图的<code>plain connection</code>表示SSD网络中的特征融合操作，这里对于的输入300 x 300图像来说，一共融合了6种不同scale的特征。在每个虚线矩形框内都有一个1 x 1的卷积和一个3 x 3的卷积操作，这也可以被叫作BottleNeck，也就是1 x 1卷积主要起到降维从而降低3 x 3卷积计算量的作用。</p>
-<p>Figure1右图的<code>dense connection</code>表示本文的DSOD引入了DenseNet的思想。<code>dense connection</code>左边的虚线框部分和<code>plain connection</code>右边的虚线框部分结构一致，区别在于里面的<code>channel</code>个数，<code>dense connection</code>中3 x 3卷积的<code>channel</code>个数是<code>plain connection</code>中3 x 3卷积的一半。主要是因为在<code>plain connection</code>中每个BottleNeck的输入是前面一个BottleNeck的输出，而在<code>dense connection</code>中，<strong>每个bottleneck的输入是前面所有bottleneck的输出的concate</strong>，所以为了降低计算量减少了通道数。</p>
-<p>同时，<code>dense connection</code>部分右边的矩形框是下采样模块，包含一个2 x 2的最大池化层（降采样作用）和一个的1 x 1卷积层（降低<code>channel</code>个数的作用），作者也提到先进行降采样再进行1 x 1卷积可以进一步减少计算量。</p>
-<p>因此可以看出DSOD即是<strong>SSD+DenseNet</strong>的结果。</p>
-<p>DSOD是在SSD的基础上发展而来的，DSOD的不同在于，不管是在backbong还是head部分，DSOD都借鉴了DenseNet的设计思想。</p>
-<p>DSOD 网络分两个部分：用于特征提取的backbone，用于目标预测的front-end。backbone子网络类似于DenseNets，包含Stem block，4个dense block，2个过渡层，2个无池化层的过渡层。front-end子网络使用致密的结构融合多尺度预测响应。其中Dense Block就是DenseNet网络的子模块，然后<code>stem block</code>由3 x 3卷积和2 x 2池化组成，后面实验证明了这个<code>stem block</code>可以提高mAP值。下面的Table1详细展示了DSOS网络的结构。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/DSOD/641.jpg" alt></p>
-<h2 id="实验结果"><a href="#实验结果" class="headerlink" title="实验结果"></a>实验结果</h2><p>下面的Table3展示了在VOC2007 testset上不同参数的实验结果。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/DSOD/642.webp" alt></p>
-<p>第3，4行的对比可以看出BottleNeck的channel个数越多，mAP相对越高。第5、6行的对比可以看出growth rate从16变成48，可以提高4.8%的mAP。第6，9行的对比可以看出stem block的存在可以提高2.8%的mAP。</p>
-<p>下面的Table4则展示了更丰富的结果。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/DSOD/643.webp" alt></p>
-<p>可以看出SSD在没有预训练模型的情况下也是可以收敛的，不过效果一般。但如果使用本文的DSOD则可以达到使用预训练模型效果，并且结果还偏好一点。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>DSOD是在SSD的基础上结合了DenseNet的思想，使得网络可以在不使用预训练模型的条件下收敛得和使用预训练模型的BaseLine模型一样好，另外DenseNet的引入也使得相比SSD来说DSOD的参数数量大大减少，注意参数量不等于推理速度会变快。如果专注于特殊图像检测或者难以搞定预训练模型的场景这篇文章的思想是值得借鉴的。</p>
-]]></content>
-      <categories>
-        <category>学习</category>
-      </categories>
-      <tags>
-        <tag>目标检测</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>目标检测算法优化技巧</title>
     <url>/2020/04/08/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E7%AE%97%E6%B3%95%E4%BC%98%E5%8C%96%E6%8A%80%E5%B7%A7/</url>
     <content><![CDATA[<h2 id="简介"><a href="#简介" class="headerlink" title=" 简介"></a><span id="more"></span> 简介</h2><p>目标检测模型相比于分类模型的研究相比，更缺少普遍性，并且网络结构和优化目标更加复杂。</p>
@@ -6175,69 +6757,6 @@ Returns:
       </tags>
   </entry>
   <entry>
-    <title>CVPR 2018 Cascade R-CNN</title>
-    <url>/2020/04/07/CVPR-2018-Cascade-R-CNN/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="  前言"></a><span id="more"></span>  前言</h2><p>Cascade R-CNN这个算法是CVPR 2018提出的，通过级联多个检测网络达到不断优化预测结果的目的。但是和普通的级联检测器不同，Cascade R-CNN的多个检测网络是基于不同的IOU阈值进而确定不同的正负样本训练出来的，在COCO数据集上Cascade  R-CNN取得了非常出色的结果，并且也成为了当前目标检测比赛中的有力Trick。</p>
-<h2 id="简单回顾R-CNN结构"><a href="#简单回顾R-CNN结构" class="headerlink" title="简单回顾R-CNN结构"></a>简单回顾R-CNN结构</h2><p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/Cascade%20R-CNN/v2-11788fb6c9bb4840e17be9a63ab38759_hd.jpg" alt></p>
-<p>首先，以经典的Faster R-CNN为例。整个网络可以分为两个阶段，training阶段和inference阶段，如上图所示。</p>
-<ul>
-<li>training阶段，RPN网络提出了2000左右的proposals，这些proposals被送入到Fast R-CNN结构中，在Fast  R-CNN结构中，首先计算每个proposal和gt之间的iou，通过人为的设定一个IoU阈值（通常为0.5），把这些Proposals分为正样本（前景）和负样本（背景），并对这些正负样本采样，使得他们之间的比例尽量满足（1:3，二者总数量通常为128），之后这些proposals（128个）被送入到Roi Pooling，最后进行类别分类和box回归。</li>
-<li>inference阶段，RPN网络提出了300左右的proposals，这些proposals被送入到Fast R-CNN结构中，<strong>和training阶段不同的是，inference阶段没有办法对这些proposals采样（inference阶段肯定不知道gt的，也就没法计算iou）</strong>，所以他们直接进入Roi Pooling，之后进行类别分类和box回归。</li>
-</ul>
-<p>在这里插一句，在R-CNN中用到IoU阈值的有两个地方，分别是Training时<strong>Positive</strong>与<strong>Negative</strong>判定，和Inference时计算mAP。论文中强调的IoU阈值指的是Training时<strong>Positive</strong>和<strong>Negative</strong>判定处。</p>
-<h2 id="出发点"><a href="#出发点" class="headerlink" title="出发点"></a>出发点</h2><p>下面的Figure1展示了Cascade R-CNN的出发点。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/Cascade%20R-CNN/640.jpg" alt></p>
-<ul>
-<li><p><code>Figure1(a)</code>展示了当IOU阈值等于0.5时的检测结果，可以看到结果图中存在较多误检，因为0.5的阈值会使得正样本中有较多的背景，这是产生误检的主要原因。</p>
-</li>
-<li><p><code>Figure1(b)</code>展示了当IOU阈值等于0.7时的检测结果，可以看到误检变少了，但是并不一定误检变少了结果就一定更好，因为IOU阈值更大导致正样本越少，那么过拟合的风险就越大。</p>
-</li>
-<li><p><code>Figure1(c)</code>展示了模型定位表现，其中横坐标表示输入候选框和GT框的IOU值，即proposal的IoU，纵坐标表示输出的候选框和GT框的IOU值， 即经过box reg得到的新的IoU。然后，红，绿，蓝三条曲线分别代表训练检测模型时用的正负样本标签的阈值分别是0.7，0.6，0.5。可以看到<strong>当一个检测模型采用某个IOU阈值（假设u=0.6）来判定正负样本时，那么当输入候选框和GT的IOU在这个阈值（u=0.6）附近时，该检测模型比基于其它阈值的检测模型效果更好</strong>。</p>
-</li>
-<li><p><code>Figure1(d)</code>展示了使用不同阈值来训练检测模型的表现，可以看出当IOU阈值等于0.7的时候效果下降比较明显，原因是IOU阈值过高导致正样本数量更少，这样<strong>样本</strong>会更加不平衡并且容易导致过拟合。</p>
-</li>
-</ul>
-<h2 id="Cascade-R-CNN原理"><a href="#Cascade-R-CNN原理" class="headerlink" title="Cascade R-CNN原理"></a>Cascade R-CNN原理</h2><p>基于上面的出发点，Cascade R-CNN横空出世。简单来说，Cascade  R-CNN就是由一系列检测器组成的级联检测模型，并且每个检测器都基于不同IOu阈值的正负样本训练得到，前一个检测器的输出作为后一个检测器的输入，并且越往后走，检测器的阈值是越大的。</p>
-<p>为什么Cascade R-CNN要这样来设计呢？这和上面的出发点密切相关，从<code>Figure1(c)</code>中我们看出使用不同的IOU阈值训练得到的检测模型对有不同IOU阈值的输入候选框的结果差别较大，因此<strong>我们希望训练每个检测模型用的IOU阈值要尽可能和输入候选框的IOU接近</strong>。并且从<code>Figure1(c)</code>中可以看出三条彩色曲线都在灰度曲线上方，这说明对于这几个阈值来说，<strong>输出的IOU阈值都大于输入的IOU阈值</strong>。根据这一特点，我们就可以拿上一个阶段的输出作为下一个阶段的输入，这样就可以得到越来越高的IOU。</p>
-<p>总结一下，<strong>我们很难让一个在指定IOU阈值界定的训练集上训练得到的检测模型对IOU跨度较大的输入候选框都达到最佳，因此采取级联的方式能够让每一个阶段的检测器都专注于检测IOU在某一范围内的候选框，因为输出IOU普遍大于输入IOU，因此检测效果会越来越好。</strong></p>
-<h2 id="Cascade-R-CNN网络结构"><a href="#Cascade-R-CNN网络结构" class="headerlink" title="Cascade R-CNN网络结构"></a>Cascade R-CNN网络结构</h2><p>下面的Figure3展示了和Cascade R-CNN有关的几种经典检测网络结构的示意图。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/Cascade%20R-CNN/641.webp" alt></p>
-<ul>
-<li><p><code>Figure3(a)</code>表示Faster RCNN，因为双阶段类型的目标检测算法基本上都基于Faster RCNN，所以这里也以该算法为BaseLine。其中H0代表的是RPN网络，H1代表的是Faster R-CNN进行检测与分类的head，C1代表最终的分类结果，B1代表最终的bounding box回归结果。</p>
-</li>
-<li><p><code>Figure3(b)</code>表示迭代式的边界框回归，从图也非常容易看出思想，就是前一个检测模型回归得到的边界框坐标初始化下一个检测模型的边界框，然后继续回归，这样迭代三次后得到结果。</p>
-</li>
-<li><p><code>Figure3(c)</code>表示Integral Loss，表示对输出边界框的标签界定采用不同的IOU阈值，因为当IOU较高时，虽然预测得到边界框很准确，但是也会丢失一些边界框。（即分类结果基于不同IOU，bbox并没有）关于这个网络的解释看原文更容易理解：<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/Cascade%20R-CNN/646.webp" alt><br>这种Trick在比赛中比较常用，就是说按照数据集的评价指标来自定义Loss（一般是把和指标相关的那一项加在原始的Loss后面）往往可以取得更好的效果。</p>
-</li>
-<li><p><code>Figure3(d)</code>表示Cascade R-CNN，<strong>H1那一部分是一样的，但是Cascade R-CNN得到B1回归后的检测框后，将其输入到H2部分，继续回归，以此类推到H3部分，使得每次对bounding box都提高一定的精度，已达到提高检测框准确度的作用。(注：级联的方式，不再是为了找到hard negatives，而是通过调整bounding boxes，给下一阶段找到一个IoU更高的正样本来训练。)</strong>，和<code>Figure3(b)</code>，<code>Figure3(c)</code>的结构比较像。但和<code>Figure3(b)</code>最主要的区别是Cascade R-CNN中的检测模型是基于前一阶段的输出进行训练，而不是<code>Figure3(b)</code>中3个检测模型都是基于最初始的数据进行训练，（个人理解：<strong>head相同</strong>，相当于基于最开始训练）而且(b)是在验证阶段采用的方式，而cascade-R-CNN是在训练和验证阶段采用的方式。而和<code>Figure3(c)</code>的区别更加明显，Cascade R-CNN中每个Stage的输入候选框都是前一个阶段的候选框输出，而却没有这种级联的思想，仅仅是模型基于不同的IOU阈值进行训练得到。</p>
-</li>
-</ul>
-<h2 id="Cascade-R-CNN的可行性分析"><a href="#Cascade-R-CNN的可行性分析" class="headerlink" title="Cascade R-CNN的可行性分析"></a>Cascade R-CNN的可行性分析</h2><p>上面的<code>Figure3(b)</code>中的迭代回归有两个致命缺点：</p>
-<ul>
-<li>从<code>Figure1(c)</code>的实验知道基于不同IOU阈值训练的检测模型对不同IOU的候选框输入效果差别很大，因此如果每次迭代都基于相同IOU阈值的数据进行训练获得的检测模型，那么当输入候选框的IOU不在训练的检测模型的IOU附近时，效果不会有太大提升。</li>
-<li>下面的<code>Figure2</code>为我们展示了<code>Figure3(b)</code>这种候选框回归在不同阶段的4个坐标回归值的分布情况，可以看到在不同的阶段坐标的分布差异是比较大的，对于这种情况，<code>Figure3(b)</code>的迭代回归模型是无能为力的。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/Cascade%20R-CNN/642.jpg" alt><br>第一行横纵轴分别是回归目标中的box的x方向和y方向偏移量；第二行横纵轴分别是回归目标中的box的宽、高偏差量，$\delta_{x}=\left(g_{x}-b_{x}\right) / b_{w}$, $\delta_{y}=\left(g_{y}-b_{y}\right) / b_{h}$，$\delta_{w}=\log \left(g_{w} / b_{w}\right)$, $\delta_{h}=\log \left(g_{h} / b_{h}\right)$。我们可以看到，从1st stage到2nd stage，proposal的分布其实已经发生很大变化了，因为很多噪声经过box reg实际上也提高了IoU，2nd和3rd中的那些红色点已经属于outliers，如果不提高阈值来去掉它们，就会引入大量噪声干扰，对结果很不利。(head不变，IOU不变还为0.5，去不掉已提高IOU的噪声，也就是红点)从这里也可以看出，阈值的重新选取本质上是一个<strong>resample</strong>的过程，它保证了样本的质量。</li>
-</ul>
-<p>那么Cascade R-CNN是否可以改善上述问题呢？下面的<code>Figure4</code>展示了Cascade R-CNN在不同阶段预测得到的候选框的IOU值分布情况。可以看到，每经过一个检测器进行坐标回归，候选框越准确，也即是说候选框和GT框的IOU更大。从<code>Figure4</code>可以看出，经过检测器之后IOU大的样本增加了，这就说明了Cascade R-CNN是可行的，因为它不会因为后面的检测器提高阈值导致正样本过少而过拟合。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/Cascade%20R-CNN/643.png" alt></p>
-<p>从这张图，我们可以看到，1st stage大于0.5的，到2nd stage大于0.6的，到3rd stage大于0.7的……在这一个过程中proposal的样本数量确实没有特别大的改变，甚至还有稍许提升，和2图结合起来看，应该可以说是非常强有力的证明了。<br>总结起来，就是：</p>
-<ul>
-<li>cascaded regression不断改变了proposal的分布，并且通过调整阈值的方式重采样（即：$f^{\prime}(x, b)=f_{T} \cdot f_{T-1} \cdot f_{T-2} \cdots f_{1}(x, b)$）</li>
-<li>cascaded在train和inference时都会使用，并没有偏差问题</li>
-<li>cascaded重采样后的每个检测器，都对重采样后的样本是最优的，没有mismatch问题</li>
-</ul>
-<h2 id="实验结果"><a href="#实验结果" class="headerlink" title="实验结果"></a>实验结果</h2><p>下面的Table1展示了<code>Figure3</code>中几种模型和Cascade R-CNN的结果对比。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/Cascade%20R-CNN/644.png" alt></p>
-<p>然后再来看一下在COCO数据集上的表现，可以看到Cascade R-CNN非常的SOTA了，YOLOV3只有33%的mAP，而Cascade R-CNN则有42.8%的mAP值。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/Cascade%20R-CNN/645.jpg" alt></p>
-]]></content>
-      <categories>
-        <category>学习</category>
-      </categories>
-      <tags>
-        <tag>目标检测</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>一些百度网盘的破解方法</title>
     <url>/2020/02/02/%E4%B8%80%E4%BA%9B%E7%99%BE%E5%BA%A6%E7%BD%91%E7%9B%98%E7%9A%84%E7%A0%B4%E8%A7%A3%E6%96%B9%E6%B3%95/</url>
     <content><![CDATA[<h2 id="1-网盘助手"><a href="#1-网盘助手" class="headerlink" title=" 1.网盘助手"></a><span id="more"></span> 1.网盘助手</h2><p>由网友”哩呵”制作的<a href="https://greasyfork.org/zh-CN/scripts/378301-%E7%BD%91%E7%9B%98%E5%8A%A9%E6%89%8B">网盘助手</a>脚本，需要通过拓展 Violentmonkey 或者 Tampermonkey 来启用，原理是通过显示直链，然后使用 IDM 来加速下载<br><strong>使用方法：（下载部分）</strong><br>1、选择要下载的文件，点击页面里的 “生成链接” 来获取加速下载地址。<br>2、使用鼠标右键点击链接（注意是右键点击链接），选择“使用 IDM 下载”，然后确定下载。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/baiduwp/7a6a15d5gy1g8s99l1zdqg20qn0euqa8.gif" alt></p>
@@ -6280,114 +6799,6 @@ Returns:
       </categories>
       <tags>
         <tag>Ubuntu</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>ECCV 2018 RFBNet，在检测中调感受野</title>
-    <url>/2020/03/07/ECCV-2018-RFBNet%EF%BC%8C%E5%9C%A8%E6%A3%80%E6%B5%8B%E4%B8%AD%E8%B0%83%E6%84%9F%E5%8F%97%E9%87%8E/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title=" 前言"></a><span id="more"></span> 前言</h2><p>看了不少的目标检测论文了，个人认为多数论文的出发点就两个，一是感受野，二是特征融合。此外，解决数据不平衡和轻量化也是另外两个重要的方向。今天为大家科普一篇ECCV 2018的一篇目标检测网络RFBNet就是从感受野角度来改善了SSD检测器，论文全名为：<strong>Receptive Field Block Net for Accurate and Fast Object Detection</strong>  。这篇论文主要的贡献点主要是在SSD网络中提出了一个<strong>Receptive Field Block (RFB)</strong> 模块，RFB模块主要是在Inception的基础上加入了空洞卷积层从而有效的增大了感受野。另外，RFB模块是嵌在SSD上的，所以检测的速度比较快，精度比SSD更高。</p>
-<h2 id="RFB模块"><a href="#RFB模块" class="headerlink" title="RFB模块"></a>RFB模块</h2><p>RFB模块的效果示意图如图所示，其中虚线部分就是指RFB模块。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RFBNet/640.jpg" alt></p>
-<p>RFB模块主要有两个特点：</p>
-<ul>
-<li><p>RFB模块有多个分支，每个分支的第一层都由特定大小卷积核的卷积核构成，例如图上的1 x 1， 3 x 3，5 x 5。</p>
-</li>
-<li><p>RFB模块引入了空洞卷积，主要作用是为了增加感受野，空洞卷积之前是应用在分割网络DeepLab中，这里将其应用在检测任务中，以获得更大的感受野，可以更好的编码空间长距离语义。</p>
-</li>
-</ul>
-<p>在RFB模块中，最后将不同尺寸和感受野的输出特征图进行Concat操作，以达到融合不同特征的目的。在图中，RFB模块中使用三种不同大小和颜色的输出叠加来展示。在图的最后一列中将融合后的特征与人类视觉感受野做对比，从图中看出是非常接近的，这也是这篇论文的出发点。</p>
-<h2 id="两种RFB结构示意图"><a href="#两种RFB结构示意图" class="headerlink" title="两种RFB结构示意图"></a>两种RFB结构示意图</h2><p>下面的Figure4展示了RFBNet的两种结构。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RFBNet/641.jpg" alt></p>
-<ul>
-<li><p>Figure4(a)表示RFB结构，整体上借鉴了Inception的思想。主要不同点在于引入3个空洞卷积层。</p>
-</li>
-<li><p>Figure4(b)表示RFB-s结构。RFB-s和RFB相比主要有两个改进，一方面用3 x 3卷积层代替5 x 5卷积层，另一方面用1 x 3和3 x 1卷积层代替3 x 3卷积层，主要目的应该是为了减少计算量，类似Inception后面的版本对Inception结构的改进。</p>
-</li>
-</ul>
-<h2 id="RFBNet-300的结构"><a href="#RFBNet-300的结构" class="headerlink" title="RFBNet-300的结构"></a>RFBNet-300的结构</h2><p>下面的Figure5代表RFBNet-300的整体结构图，基本是照搬了SSD，主要有2点不同：</p>
-<ul>
-<li>BackBone部分用两个RFB结构替换原来新增的两层。</li>
-<li><code>conv4_3</code>和<code>conv7_fc</code>在接预测层之前分别接RFB-s和RFB结构。</li>
-</ul>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RFBNet/642.jpg" alt></p>
-<h2 id="实验结果"><a href="#实验结果" class="headerlink" title="实验结果"></a>实验结果</h2><p>下面的Table1展示了RFBNet-300在PASCAL VOC2007 test dev上的测试结果，训练集基于2007和2012的trainval。RFBNet-300在mAP和FPS两方面效果都不错。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RFBNet/643.jpg" alt></p>
-<p>而下面的Table4是在COCO test dev 2015数据集上的测试结果。最后的RFBNet-512E做了两个改变：</p>
-<ul>
-<li>对<code>conv7_fc</code>的输出特征做了<code>up-sample</code>，然后和<code>conv4_3</code>的输出特征做融合，基于融合后的特征做预测。这种做法实际上是借鉴了FPN算法的思想。</li>
-<li>RFB结构中增加了<code>7x7</code>大小的卷积分支。这两点改进对效果的提升有一定帮助，而且带来的计算量也少。</li>
-</ul>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RFBNet/644.jpg" alt></p>
-<p>下面的Figure6展示了和RFBNet同时期的一些目标检测算法在COCO test-dev数据集上关于效果和速度的直观对比，可以看到RFBNet的速度和精度平衡还是不错的。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RFBNet/645.jpg" alt></p>
-<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>RFBNet说白了就是空洞卷积的应用，虽然看起来论文比较水，但至少给我们提供了一个重要信息，在检测中调感受野是行之有效的。</p>
-<h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><ul>
-<li>论文原文：<a href="https://arxiv.org/pdf/1711.07767.pdf">https://arxiv.org/pdf/1711.07767.pdf</a></li>
-<li>代码实现：<a href="https://github.com/ruinmessi/RFBNet">https://github.com/ruinmessi/RFBNet</a></li>
-<li>参考：<a href="https://blog.csdn.net/u014380165/article/details/81556769">https://blog.csdn.net/u014380165/article/details/81556769</a></li>
-</ul>
-]]></content>
-      <categories>
-        <category>学习</category>
-      </categories>
-      <tags>
-        <tag>目标检测</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>RetinaNet（引入Focal Loss）</title>
-    <url>/2020/03/06/RetinaNet%EF%BC%88%E5%BC%95%E5%85%A5Focal-Loss%EF%BC%89/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title=" 前言"></a><span id="more"></span> 前言</h2><p>今天来介绍一下目标检测算法中RetinaNet，这篇论文是CVPR2018的作品，Kaiming He大神也是作者之一，同时这篇论文提出的Focal  Loss也对工程上训练更好的目标检测模型做出了很大贡献，论文地址为：<a href="https://arxiv.org/pdf/1708.02002.pdf">https://arxiv.org/pdf/1708.02002.pdf</a></p>
-<h2 id="研究背景"><a href="#研究背景" class="headerlink" title="研究背景"></a>研究背景</h2><p>前面介绍了一些One-Stage目标检测算法和Two-Stage目标检测算法，这些算法在精度和速度上都各有特点，现在画个图总结一下之前介绍的各种算法的速度和精度：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RetinaNet/640.png" alt></p>
-<p>可以看到One-Stage算法的精度相对于Two_Stage偏低，然后作者把这种问题的原因归结于<strong>正负类别不平衡</strong>（简单难分类别不平衡）。因此论文通过重新设计标准的交叉熵损失来解决这种难易样本不平衡的问题，即文章的核心Focal Loss。结合了Focal  Loss的One-Stage的目标检测器被称为RetinaNet，该检测器在COCO数据集上MAP值可以和FPN（特征金字塔目标检测器）和MaskRCNN接近。</p>
-<h2 id="一些问题"><a href="#一些问题" class="headerlink" title="一些问题"></a>一些问题</h2><h3 id="什么是hard-esay-postive-negtive-example"><a href="#什么是hard-esay-postive-negtive-example" class="headerlink" title="什么是hard/esay postive/negtive example"></a>什么是hard/esay postive/negtive example</h3><p>网上找到一张图解释在目标检测任务的一张图中什么是hard/easy postive/negtive example。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RetinaNet/641.webp" alt></p>
-<p>候选框可以分成postive/negtive两类。当bbox(由anchor加上偏移量得到)与ground  truth间的IOU大于我们设置的阈值（一般取0.5）时，会认为该bbox属于positive  example，如果IOU小于下门限就认为该bbox属于negative example。</p>
-<h3 id="为什么One-Stage检测算法精度偏低"><a href="#为什么One-Stage检测算法精度偏低" class="headerlink" title="为什么One-Stage检测算法精度偏低"></a>为什么One-Stage检测算法精度偏低</h3><p>论文认为One-Stage算法准确度低是由于类别失衡引起的。因为在一张普通图片中，目标的所占的比例远远小于背景所占的比例，所以两类候选框例子中以negtive example为主。这就导致了：</p>
-<ul>
-<li>(1)针对所有的negtive example，数量过多造成它的loss太大，以至于主导了损失函数，不利于收敛。</li>
-<li>(2)针对单个negtive example来说，大多数的negative example不在前景和背景的过渡区域上，分类很明确(这种易分类的negative称为easy  negative)，训练时对应的背景类score会很大，换句话说就是单个example的loss很小，反向计算时梯度小。梯度小造成easy  negative example对参数的收敛作用很有限，我们更需要loss大的对参数收敛影响也更大的example，即hard  positive/negative example。</li>
-</ul>
-<p>因此如果One-Stage算法如果无脑的将所有bbox拿去做分类损失，因为bbox中属于background的bbox太多了，所以如果分类器无脑地把所有bbox统一归类为background，accuracy也可以刷得很高。这就导致分类器训练失败了，自然检测精度就偏低了。对于YOLO和SSD来讲，他们也确实没有无脑将所有的bbox拿去做分类损失，如在SSD中利用Hard-Negtive-Mining的方式将正负样本的比例控制在1:3，YOLO通过损失函数中权重惩罚的方式增大正样本对损失函数的影响等。但它们虽然可以处理第1个问题，但对于第2个问题就无能为了，这也是Focal Loss出现的原因。</p>
-<h3 id="Faster-RCNN为什么精度更高"><a href="#Faster-RCNN为什么精度更高" class="headerlink" title="Faster-RCNN为什么精度更高"></a>Faster-RCNN为什么精度更高</h3><p>Faster-RCNN在FPN阶段会根据前景分数提出最可能是前景的example，这就会滤除大量背景概率高的easy  negtive样本，这便解决了上面提出的第2个问题。同时，在生成样本给ROIPooling层的时候，会据IOU的大小来调整positive和negative example的比例，比如设置成1：3，这样防止了negative过多的情况(同时防止了easy negative和hard  negative)，就解决了前面的第1个问题。因此，相对于One-Stage检测器，Faster-RCNN的精度更高。</p>
-<h2 id="Focal-Loss"><a href="#Focal-Loss" class="headerlink" title="Focal Loss"></a>Focal Loss</h2><p>论文引入了Focal Loss来解决<strong>难易样本数量不平衡</strong>。One-Stage的模板检测器通常会产生10k数量级的框，但只有极少数是正样本，正负样本数量非常不平衡。我们在计算分类的时候常用的损失——交叉熵的公式如下：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RetinaNet/651.JPG" alt></p>
-<p>为了解决<strong>正负样本数量不平衡</strong>的问题，我们经常在交叉熵损失前面加一个参数$\alpha$，即：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RetinaNet/643.png" alt></p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RetinaNet/652.JPG" alt></p>
-<p>虽然$\alpha$平衡了正负样本的数量，但实际上，目标检测中大量的候选目标都是易分样本。这些样本的损失很低，但是由于数量极不平衡，易分样本的数量相对来讲太多，最终主导了总的损失。</p>
-<p>因此，这篇论文认为<strong>易分样本（即，置信度高的样本）对模型的提升效果非常小，模型应该主要关注与那些难分样本</strong> 。所以Focal Loss横空出世了。一个简单的想法就是只要我们将高置信度(p)样本的损失降低一些就好了吧？也即是下面的公式：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RetinaNet/644.png" alt></p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RetinaNet/653.JPG" alt></p>
-<p>我们取$\gamma$等于2来只管感受一下，如果$p=0.9$，那么，$(1-0.9)^{2}=0.001$，损失降低了1000倍。从中，我们易看出focal loss所加的指数式系数可对正负样本对loss的贡献自动调节。当某样本类别比较明确些，它对整体loss的贡献就比较少；而若某样本类别不易区分，则对整体loss的贡献就相对偏大。这样得到的loss最终将集中精力去诱导模型去努力分辨那些难分的目标类别，于是就有效提升了整体的目标检测准度。</p>
-<p>最终Focal Loss还结合了公式(2)，这很好理解，公式(3)解决了难易样本的不平衡，公式(2)解决了正负样本的不平衡，将公式(2)与(3)结合使用，同时解决正负难易2个问题！所以最终Focal Loss的形式如下：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RetinaNet/645.png" alt></p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RetinaNet/654.png" alt></p>
-<p>下面这张图展示了Focal Loss取不同的$\gamma$时的损失函数下降。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RetinaNet/646.jpg" alt></p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RetinaNet/655.png" alt></p>
-<p>实验结果展示，当$\gamma=2$，$\alpha=0.25$时，效果最好，这样损失函数训练的过程中关注的样本优先级就是正难&gt;负难&gt;正易&gt;负易了。</p>
-<h2 id="RetinaNet"><a href="#RetinaNet" class="headerlink" title="RetinaNet"></a>RetinaNet</h2><p>说完了Focal Loss就回到文章RetinaNet，Focal Loss与ResNet-101-FPN  backbone结合就构成了RetinaNet（one-stage检测器），RetinaNet在COCO  test-dev上达到39.1mAP，速度为5FPS。下图展示了RetinaNet的网络结构：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RetinaNet/647.jpg" alt></p>
-<p>训练RetinaNet时有几个值得注意的关键点：</p>
-<ul>
-<li>训练时FPN每一级的所有example都被用于计算Focal Loss，loss值加到一起用来训练。</li>
-<li>测试时FPN每一级只选取score最大的1000个example来做nms。</li>
-<li>整个结构不同层的head部分(上图中的c和d部分)共享参数，但分类和回归分支间的参数不共享。</li>
-<li>分类分支的最后一级卷积的bias初始化成-log((1-π)/π)。这里π被指定在训练开始时，所有的anchor都需要被标注为带有π置信率的前景。这里取π=0.01，是为了防止在训练的第一个周期大量的背景anchors生成一个巨大的不稳定的loss值。</li>
-</ul>
-<p>RetinaNet和当时流行的检测算法速度和精度对比如下，可以看到从速度和精度都完成了对其他算法的压制：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RetinaNet/648.webp" alt></p>
-<h2 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h2><p>Table1是关于RetinaNet和Focal Loss的一些实验结果。其中(a)是在交叉熵的基础上加上参数$\alpha$，$\alpha=0.5$就表示传统的交叉熵，可以看出当$\alpha=0.75$的时候效果最好，AP值提升了0.9。(b)是对比不同的参数$\gamma$和$\alpha$的实验结果，可以看出随着$\gamma$的增加，AP提升比较明显。(c)是anchor对AP值的影响。(d)是通过和OHEM的对比可以看出最好的Focal  Loss比最好的OHEM提高了3.2AP。这里OHEM1:3表示在通过OHEM得到的minibatch上强制positive和negative样本的比例为1:3，通过对比可以看出这种强制的操作并没有提升AP。(e)加入了运算时间的对比，可以和前面的Figure2结合起来看，速度方面也有优势。Table2表示RetinaNet和One-Stage检测器的比较，可以看到RetinaNet也是毫不顺色的。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RetinaNet/649.jpg" alt></p>
-<h2 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h2><p>keras版本：<a href="https://github.com/fizyr/keras-retinanet">https://github.com/fizyr/keras-retinanet</a><br>pytorch版本: <a href="https://github.com/yhenon/pytorch-retinanet">https://github.com/yhenon/pytorch-retinanet</a><br>caffe-focal loss: <a href="https://github.com/chuanqi305/FocalLoss">https://github.com/chuanqi305/FocalLoss</a></p>
-]]></content>
-      <categories>
-        <category>学习</category>
-      </categories>
-      <tags>
-        <tag>目标检测</tag>
       </tags>
   </entry>
   <entry>
@@ -6474,100 +6885,6 @@ Returns:
 </ul>
 </li>
 </ul>
-]]></content>
-      <categories>
-        <category>学习</category>
-      </categories>
-      <tags>
-        <tag>目标检测</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>NIPS 2016 R-FCN（来自微软何凯明团队）</title>
-    <url>/2020/03/05/NIPS-2016-R-FCN%EF%BC%88%E6%9D%A5%E8%87%AA%E5%BE%AE%E8%BD%AF%E4%BD%95%E5%87%AF%E6%98%8E%E5%9B%A2%E9%98%9F%EF%BC%89/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title=" 前言"></a><span id="more"></span> 前言</h2><p>R-FCN全称为Region-based Fully Convolutional Networks，是由微软的何凯明团队在NIPS 2016上提出来的，仍然是双阶段的目标检检测算法。论文地址和官方开源代码见文后。</p>
-<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>R-FCN论文的发表时间比YOLO,SSD出来的都晚一些，并且这个算法更像是针对Faster-RCNN的一种改进，并且扔属于two-stage算法。那个R-FCN具体要解决什么问题呢？我们不妨先来看看R-FCN之前的典型的two-stage算法分别是在解决什么？</p>
-<ul>
-<li>rcnn证明cnn具有良好的特征提取能力，也是第一个将cnn用来做目标检测任务的算法。</li>
-<li>fast-rcnn提出ROI-Pooling将需要应用到多个候选框的骨干CNN网络进行共享，加快速度的同时也提升了准确率。</li>
-<li>faster-rcnn解决了候选框搜索耗时过多的问题，提出RPN全卷积网络用于学习提取候选框，速度更快且精度更高。</li>
-</ul>
-<p>而Faster-RCNN的一个缺点在于在ROI Pooling之后全是全连接层，从而将ROI  Pooling之后的特征图映射为分类和回归两个任务。而越来越多的基础CNN架构如GoogleNet，ResNet等全卷积网络证明不要全连接层，网络的效果不仅会更好并且还可以适应不同尺度的输入图片。因为着眼于Faster-RCNN的全连接层负载很重这一痛点，R-FCN出世了。</p>
-<h2 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h2><p>R-FCN中主要有2个重要的点，第一个是将ROI Pooling后面的全连接层都用卷积层所代替，第二个是对ROI Pooling的魔改。</p>
-<h2 id="R-FCN整体结构"><a href="#R-FCN整体结构" class="headerlink" title="R-FCN整体结构"></a>R-FCN整体结构</h2><p>我们知道，对于Faster-RCNN是会对每一个候选框区域执行ROI  Pooling操作之后单独跑后面的分类和回归分支的。实际上是分成了几个subnetwork，第一个用来在整张图上做比较耗时的conv，这些操作与region无关，是计算共享的。第二个subnetwork是用来产生候选的boundingbox（如RPN），第三个subnetwork用来分类或进一步对box进行regression（如Fast RCNN），这个subnetwork和region是有关系的，必须每个region单独跑网络，衔接在这个subnetwork和前两个subnetwork中间的就是ROI pooling。我们希望的是，耗时的卷积都尽量移到前面共享的subnetwork上。因此R-FCN希望耗时的卷积都尽量移动到前面共享的网络中。基于此，和Faster-RCNN用ResNet做Backbone的处理方式不同(前面<code>91</code>层共享，然后插入<code>ROIPooling</code>，后面<code>10</code>层不共享)，R-FCN把所有的<code>101</code>层都设置为共享网络，最后用来做预测的只有一个卷积层，大大减少了计算量。这一点参见Table1。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/R-FCN/640.webp" alt></p>
-<p>R-FCN可以分成以下四个部分：</p>
-<ul>
-<li>Backbone网络，如ResNet101网络。</li>
-<li>一个区域建议网络(RPN)。</li>
-<li>一个正例敏感的预测层。</li>
-<li>最后的ROI Pooling+投票的决策层。</li>
-</ul>
-<p>R-FCN的网络结构图如下所示：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/R-FCN/641.jpg" alt></p>
-<p>可以看到整体结构和Faster-RCNN比较像，都有RPN网络来训练生成候选框，而ROI Pooling是不一样的，接下来就仔细讲讲。</p>
-<h2 id="R-FCN的ROIPooling"><a href="#R-FCN的ROIPooling" class="headerlink" title="R-FCN的ROIPooling"></a>R-FCN的ROIPooling</h2><p>我们省略一下R-FCN和Faster-RCNN网络结构完全相同的部分，着眼于R-FCN的变化之处即ROIPooling，关键部分如论文中的Figure1所示。我们接下来就针对这张图来仔细分析。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/R-FCN/642.webp" alt></p>
-<ul>
-<li><strong>Backbone architecture</strong>: ResNet 101—去掉原始ResNet101的最后一层全连接层，保留前100层，再接一个1 x 1 x 1024的全卷积层（100层输出是2048，为了降维，再引入了一个1 x 1的卷积层）。</li>
-<li><strong>$k^{2} \times(C+1)$的conv</strong>: ResNet101的输出是W x H x 1024，用$k^{2} \times(C+1)$个1024 x 1 x 1的卷积核去卷积即可得到$k^{2} \times(C+1)$个大小为W x H的position sensitive的score map。这步的卷积操作就是在做prediction。k = 3，表示把一个ROI划分成3 x 3，对应的9个位置分别是：上左（左上角），上中，上右，中左，中中，中右，下左，下中，下右（右下角）</li>
-<li><strong>$k^{2} \times(C+1)$个feature map的物理意义</strong>: 共有k x k = 9个颜色，每个颜色的立体块（W x H x (C+1)）表示的是不同位置存在目标的概率值（第一块黄色表示的是左上角位置，最后一块淡蓝色表示的是右下角位置）。共有$k^{2} \times(C+1)$个feature map。每个feature map，z(i,j,c)是第i+k(j-1)个立体块上的第c个map（1&lt;= i,j &lt;=3）。(i,j)决定了9种位置的某一种位置，假设为左上角位置（i=j=1），c决定了哪一类，假设为person类。在z(i,j,c)这个feature map上的某一个像素的位置是（x,y），像素值是value，则value表示的是原图对应的(x,y)这个位置上可能是人（c=‘person’）且是人的左上部位（i=j=1）的概率值。</li>
-<li><strong>ROI pooling</strong>: 就是faster RCNN中的ROI pooling，也就是一层的SPP结构。主要用来将不同大小的ROI对应的feature map映射成同样维度的特征，思路是不论对多大的ROI，规定在上面画一个n x n 个bin的网格，每个网格里的所有像素值做一个pooling（平均），这样不论图像多大，pooling后的ROI特征维度都是n x n。注意一点ROI pooling是每个feature map单独做，不是多个channel一起的。</li>
-<li><strong>vote投票</strong>：k x k个bin直接进行求和（每个类单独做）得到每一类的score，并进行softmax得到每类的最终得分，并用于计算损失</li>
-</ul>
-<p>可以看到原始图像经过Backbone的卷积神经网络之后得到了最后一层特征图，接下来就应该是提取当前特征图的ROI区域了。这个地方ROIPooling不像Faster-RCNN那样直接提取，而是重新设计了一个位置敏感的ROIPooling：将Faster-RCNN中的ROI划分成k x k大小，即是说将ROI区域分成k x k个小区域（论文中取k = 3，即将ROI区域分成9个部分）。然后假设目标检测数据集的目标类别一共有C类，同时加上一个背景类就是C + 1类，最后我们希望网络对每个类别都有各自的位置响应。因此最后ROIPooling层的特征维度是$k^{2} \times(C+1)$代表每一个类别在某个位置(一共9个)的位置敏感度map，其中每个map的大小和ROIPooling前面那个Backbone网络得到的特征图尺寸完全一致。</p>
-<p>那么具体是如何从位置敏感<code>map</code>得到最后那个C + 1个通道，并且尺寸为k x k的特征图呢？如下所示：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/R-FCN/643.jpg" alt></p>
-<p>Figure3展示了在人这<strong>一类</strong>目标上是如何从位置敏感map得到最后输出图，这里k = 3，那么位置敏感<code>map</code>可以用下面的表格来表示：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/R-FCN/644.webp" alt></p>
-<p>其中$\operatorname{Pos}_{x}^{y}$代表位置为$x$（即图中的<code>左上</code>，<code>中上</code>，<code>右下</code>，<code>左中</code>，<code>中间</code>，<code>右中</code>，<code>左下</code>，<code>中下</code>，<code>右下</code>9个位置）对应的类别集合为$y$的位置敏感<code>map</code>，每个表格的内容对应位置敏感<code>map</code>中一种颜色的部分特征图(C + 1个通道)，位置敏感<code>map</code>每个C + 1通道分别从上到下，从左到右对应了上面的表格。这里假设Figure3中的Person类对应的是第一个分类，那么Figure3的处理过程就是对下表对应的特征图进行操作：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/R-FCN/645.webp" alt></p>
-<p>具体的操作流程表示为：</p>
-<ul>
-<li><p>1、抽取特定类别(这里为人这个类别)对应的$k \times k=3 \times 3=9$个位置的特征图，如Figure3中部所示。</p>
-</li>
-<li><p>2、对抽取出来的部分进行求均值，然后按照位置组成一个$k \times k=3 \times 3$大小的矩阵。</p>
-</li>
-<li><p>3、对这个$k \times k$大小的矩阵求和，得到一个值。</p>
-</li>
-<li><p>4、对其他每个类别都执行1-3步骤，最终得到一个$1 \times(C+1)$的向量。将这个向量进行<code>softmax</code>，从而判别特征图上的这个ROI区域对应的目标类别是什么。</p>
-</li>
-</ul>
-<h2 id="R-FCN的目标框回归"><a href="#R-FCN的目标框回归" class="headerlink" title="R-FCN的目标框回归"></a><strong>R-FCN的目标框回归</strong></h2><p>上面详细讲解了R-FCN提出的ROIPooling的改进之处以及对于目标分类的处理方法，不要忘记目标检测还有一个框回归的过程，所以这里来说一下如何微调ROI区域使得框更加精确，这部分和分类实际上是类似的。我们知道位置敏感<code>map</code>是有$k^{2}(C+1)$个通道的，我们依然从Backbone的最后一个特征层部分接触一个有$4 \times k^{2}$个通道的特征图(和位置敏感map并列)，用来做ROI框回归，如下面的表格所示：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/R-FCN/646.webp" alt></p>
-<p>然后执行和分类一样的步骤得到一个1 x 4的向量即代表ROI区域的$x, y, w, h$。计算损失函数和前面Faster-RCNN的一致，均为多任务损失联合训练，分类使用交叉熵，定位使用L1-smooth损失函数。</p>
-<h2 id="训练"><a href="#训练" class="headerlink" title="训练"></a>训练</h2><ul>
-<li><p>训练的样本选择策略：使用OHEM策略，原理就是对样本按loss进行排序，选择前面loss较小的，这个策略主要用来对负样本进行筛选，使得正负样本更加平衡。</p>
-</li>
-<li><p>训练细节：</p>
-<ul>
-<li>SGD+带动量的优化方式，其中动量momentum = 0.9。</li>
-<li>权重惩罚为0.0005。</li>
-<li>单尺度训练，将图片$\min (\text {height}, \text {width})$设置为600。</li>
-<li>8块GPU，每一块GPU训练一张图片并且随机选择128个ROI区域进行梯度下降。</li>
-<li>在前20k次迭代，学习率为0.001，后面10k次迭代为0.0001。</li>
-<li>使用和Faster-RCNN中一致的训练方式。</li>
-<li>使用<code>atrous</code>（hole）算法。增加感受野的同时降低下采样次数。并且使用了这一策略在VOC 2007上可以提升2个点的map。</li>
-</ul>
-</li>
-</ul>
-<h2 id="实验结果"><a href="#实验结果" class="headerlink" title="实验结果"></a>实验结果</h2><p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/R-FCN/647.webp" alt></p>
-<p>可以看到R-FCN在没有OHEM的策略下精度完全吊打了Faster-RCNN，其中<code>fail</code>表示的应该是当k = 1的时候应该是模型无法收敛。</p>
-<h3 id="在PASCAL-VOC数据集上的测试结果"><a href="#在PASCAL-VOC数据集上的测试结果" class="headerlink" title="在PASCAL VOC数据集上的测试结果"></a>在PASCAL VOC数据集上的测试结果</h3><p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/R-FCN/648.jpg" alt></p>
-<p>可以看到R-FCN使用ResNet101做特征提取网络，最终在VOC的测试集上获得了83.6%的map值，并且相比于Faster-RCNN测试时间加速了2倍以上。论文还给出了一些消融研究：</p>
-<ul>
-<li><p>深度影响对比，可以看出ResNet-101表现最好。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/R-FCN/649.png" alt></p>
-</li>
-<li><p>候选区域选择算法对比：RPN比SS，EB好。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/R-FCN/650.png" alt></p>
-</li>
-</ul>
-<h3 id="在MS-COCO数据集的测试结果"><a href="#在MS-COCO数据集的测试结果" class="headerlink" title="在MS COCO数据集的测试结果"></a>在MS COCO数据集的测试结果</h3><p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/R-FCN/651.png" alt></p>
-<h2 id="可视化效果展示"><a href="#可视化效果展示" class="headerlink" title="可视化效果展示"></a>可视化效果展示</h2><p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/R-FCN/652.webp" alt></p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>R-FCN在Faster-RCNN的基础上致力于解决全连接网络做分类和回归速度过慢的问题，将分类和回归分支换成了全卷积网络，并提出了一个位置敏感ROIPooling用于指定不同特征图是负责检测目标的不同位置，然后ROIPooling之后把不同位置得到的特征图进行组合就能复现原来的位置信息。不仅在精度上大幅度超越Faster-RCNN，并且速度是Faster-RCNN的2倍以上。</p>
-<h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><p>论文原文：<a href="https://arxiv.org/pdf/1605.06409v2.pdf">https://arxiv.org/pdf/1605.06409v2.pdf</a></p>
-<p>官方源码复现：<a href="https://github.com/daijifeng001/r-fcn">https://github.com/daijifeng001/r-fcn</a></p>
 ]]></content>
       <categories>
         <category>学习</category>
@@ -6783,152 +7100,6 @@ s_{i}=\left\{\begin{array}{ll}s_{i}, & \text { iou }\left(\mathcal{M}, b_{i}\rig
       </tags>
   </entry>
   <entry>
-    <title>FPN</title>
-    <url>/2020/03/02/FPN/</url>
-    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title=" 背景"></a><span id="more"></span> 背景</h2><p>Faster-RCNN选取一个特征提取网络如VGG16做backbone，然后在高层特征（如VGG16后面的conv4）接RPN和检测头进行网络。正是由于Faster-RCNN基于图像的高级特征，这就导致对小目标的检测效果很差。而CV领域常用的处理尺度问题的办法就是特征金字塔，将原图以不同的比例采样，然后得到不同分辨率的图像进行训练和测试，在多数情况下确实是有效的。但是特征金字塔的时间开销非常大，导致在工程中应用是及其困难。FPN从新的角度出发提出了一个独特的特征金字塔网络来避免图像金字塔产生的超高计算量，同时可以较好的处理目标检测中的尺度变化问题，对小目标检测更鲁棒，同时在VOC和COCO数据集上MAP值均超过了Faster-RCNN。</p>
-<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>使用下图来阐释是如何处理尺度变化大的物体检测的。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/FPN/640.webp" alt></p>
-<ul>
-<li>上图(a)是处理这类问题最常用的方法，即特征金字塔，这种方法在传统的手动设计特征的方法中非常常用，例如DPM方法使用了接近10种不同的尺度获得了不错的效果。</li>
-<li>上图(b)是在CNN提出之后出现的，因为神经网络模型对物体尺度本身有一定的鲁棒性，所以也取得了不错的性能，但最近的研究表明将特征金字塔和CNN结合仍可以提升性能，这说明基于单层特征的检测系统仍存在对尺度变化敏感的缺点。</li>
-<li>上图(c)表示除了使用图像金字塔，我们可以使用深度学习本身的多层次结构来提取多尺度特征。最常见的就是SSD算法中利用多个特征层来分别做预测。但这种方式也有一些缺点就是浅层的语义特征比较弱，在处理小物体时表现得不够好。</li>
-<li>上图(d)表示本文提出的FPN（Feature Pyramid Network ），它能较好的让各个不同尺度的特征都具有较强的语义信息。FPN结合Faster  RCNN可以在COCO物体检测比赛中取得当前单模型的最佳性能（SOTA）。另外，通过对比实验发现，FPN能让Faster  RCNN中的RPN网络的召回率提高8个点；并且它也能使Fast RCNN的检测性能提升2.3个点（COCO）和3.8个点（VOC）。</li>
-</ul>
-<h2 id="FPN结构"><a href="#FPN结构" class="headerlink" title="FPN结构"></a>FPN结构</h2><p>下图表示FPN的整体结构：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/FPN/641.webp" alt></p>
-<p>我们可以看到FPN的整体结构分为<strong>自底向上</strong>和<strong>自顶向下和侧向连接</strong>的过程。接下来我们分别解释一下这两个关键部分。</p>
-<h3 id="自底向上"><a href="#自底向上" class="headerlink" title="自底向上"></a>自底向上</h3><p>这一部分就是普通的特征提取网络，特征分辨率不断缩小，容易想到这个特征提取网络可以换成任意Backbone，并且CNN网络一般都是按照特征图大小分为不同的stage，每个stage的特征图长宽差距为2倍。在这个自底向上的结构中，一个stage对应特征金字塔的一个level。以我们要用的ResNet为例，选取conv2、conv3、conv4、conv5层的最后一个残差block层特征作为FPN的特征，记为{C2、C3、C4、C5}，也即是FPN网络的4个级别。这几个特征层相对于原图的步长分别为4、8、16、32。</p>
-<h3 id="自上向下和侧向连接"><a href="#自上向下和侧向连接" class="headerlink" title="自上向下和侧向连接"></a>自上向下和侧向连接</h3><p>自上向下是特征图放大的过程，我们一般采用上采样来实现。FPN的巧妙之处就在于从高层特征上采样既可以利用顶层的高级语义特征（有助于分类）又可以利用底层的高分辨率信息（有助于定位）。上采样可以使用插值的方式实现。为了将高层语义特征和底层的精确定位能力结合，论文提出了类似于残差结构的侧向连接。连接将上一层经过上采样后和当前层分辨率一致的特征，通过相加的方法进行融合。同时为了保持所有级别的特征层通道数都保持一致，这里使用1*1卷积来实现。在网上看到一张图，比较好的解释了这个过程：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/FPN/642.webp" alt></p>
-<p>FPN只是一个特征金字塔结构，需要配合其他目标检测算法才能使用。</p>
-<h2 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h2><h3 id="1-FPN对RPN网络的影响"><a href="#1-FPN对RPN网络的影响" class="headerlink" title="1.FPN对RPN网络的影响"></a>1.FPN对RPN网络的影响</h3><p>如下表所示，论文做了6个实验。</p>
-<ul>
-<li>(a)基于conv4的RPN，原始的RPN。</li>
-<li>(b)基于conv5的RPN。</li>
-<li>(c) 完整FPN。</li>
-<li>(d)只用了自底向上的多层特征，没有自顶向下的特征。</li>
-<li>(e)用了自顶向下的特征，但不用侧向连接。</li>
-<li>(f)用了自顶向下的特征，也用了横向特征融合，但只用最后的P2做预测。（完整的预测是使用每一个level的特征$P_{k}$做预测）</li>
-</ul>
-<p>分析表格可知，自顶向下的特征、横向连接、尺度分离、多个层次的预测是提升FPN性能的关键。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/FPN/643.webp" alt></p>
-<p>为了更好的理解，放一张Faster-RCNN结合FPN的细致结构图如下：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/FPN/644.webp" alt></p>
-<h2 id="2-FPN对Fast-RCNN的影响"><a href="#2-FPN对Fast-RCNN的影响" class="headerlink" title="2.FPN对Fast RCNN的影响"></a>2.FPN对Fast RCNN的影响</h2><p>使用和实验1相同的规则对Fast RCNN做了实验，结果如下表所示。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/FPN/645.png" alt></p>
-<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>本文提出了一种简单、有效的建立特征金字塔的方式。它的使用对RPN方法和Fast/Faster RCNN方法都有极大的性能提升。另外，它的训练和测试时间和普通的Faster RCNN方法相差很小。因此，它可以作为图像特征金字塔的一种较好的替代。</p>
-]]></content>
-      <categories>
-        <category>学习</category>
-      </categories>
-      <tags>
-        <tag>目标检测</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SSD</title>
-    <url>/2020/02/29/SSD/</url>
-    <content><![CDATA[<h2 id="摘要"><a href="#摘要" class="headerlink" title=" 摘要"></a><span id="more"></span> 摘要</h2><p>本文提出了仅需要单个卷积神经网络就能完成目标检测的算法，并命名为SSD(Single Shot Detector)。SSD算法将目标框的输出空间离散化为一组在每个特征图位置不同大小和形状的默认框。预测时，网络对位于每个默认框类的物体类别进行打分，并修正默认框位置来更好的匹配物体的位置。此外，SSD网络在不同分辨率的特征图上预测，这样就可以处理大小不同的物体。SSD比那些需要搜索物体候选框的算法简单，因为它完全去除了proposal生成和随后的特征再筛选的过程，把所有的计算封装在一个网络里面。这使得SSD训练起来很容易，可以直接加入到检测系统里面。在PASCAL VOC，COCO,和ILSVRC数据集上的实验也证明，与那些需要object  proposal的算法相比，SSD在保证准确性的同时，速度更快。SSD只需一个完整的框架来训练和测试。在NVIDIA Titan  X对于一个大小是300 x 300的输入图像，SSD在VOC2007测试上的MAP是74.3%，速度是59FPS。对于512 x 512的输入，SSD的MAP是76.9%，比Faster RCNN更准。和其他单阶段的方法比，即便是输入较小的图像，SSD的准确性也会更高。</p>
-<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>目前，目标检测系统基本采用以下的流程：假设物体边框，对每个边框内进行特征再采样，最后使用分类器进行分类。这个流程比较流行，基于Faster-RCNN的方法通过选择性搜索在PASCAL VOC,  COCO和ILSVRC上检测效果都很好。但是这些方法对于嵌入式设备来说计算量过大，甚至需要高端硬件的支持，对于实时系统来说太慢。最快的检测器Faster  RCNN的检测速度也只能到7FPS。人们尝试了很多其他方法来构建更快的检测器，但是增加速度大多以损失检测精度为代价。本文提出了基于目标检测器的网络(object detector)，它不需要为边框进行搜索，但是精度却不降反升。此方法实现了高精度和高速度，在VOC2007  上的测试速度是59FPS，mAP是74.3%；而Faster  R-CNN的mAP是73.2%，速度是7FPS；YOLO的mAP是63.4%，速度的是45FPS。速度的提升得益于去除了边框提议(RPN或者Selective  Search)和随后的特征再采样。使用了一个小卷积滤波器来预测目标分类和边框位置的偏移，对于不同横纵比检测使用不同的滤波器去处理，然后把这些滤波器应用在后面网络阶段的特征图上，这是为了用检测器检测不同比例的图片，这样我们在相对低分辨率的图像上也能获得高精度的输出，还提升了检测速度。本文的贡献如下：</p>
-<ul>
-<li>提出了SSD算法—-多类别单阶检测器， 要比其它的单阶段检测器（YOLO）快，而且更准确；</li>
-<li>SSD的核心部分是，在特征图上应用小卷积滤波器，预测分类得分和一个固定集合的默认边界框的偏移；</li>
-<li>为了实现高检测精度，在不同比例的特征图上产生不同的预测，通过纵横比来分开预测；</li>
-<li>以上的设计可以端到端训练，精度还高，甚至在低分辨率的图像上效果也不错；</li>
-<li>关于速度和精度的试验，主要在PASCAL VOC, COCO 和 ILSVRC数据集上进行，与其它方法进行比较。</li>
-</ul>
-<h2 id="SSD"><a href="#SSD" class="headerlink" title="SSD"></a>SSD</h2><h3 id="模型"><a href="#模型" class="headerlink" title="模型"></a>模型</h3><p>SSD基于前馈式卷积神经网络，针对那些方框里的目标检测实例，产生一个固定大小边界框集合和分数，紧接着是一个非极大值抑制步骤来产生最后的检测。网络前半部分是个标准结构(用于高质量图片分类)，成为基网络。然后对网络增加了辅助结构来实现以下特征：</p>
-<ul>
-<li><p><strong>多比例特征图检测</strong>：在基网络后增加卷积特征层，这些层按大小减少的次序连接，能够进行多尺度预测。</p>
-</li>
-<li><p><strong>卷积检测预测器</strong>：通过一个卷积滤波器集合，每个新增的特征层可以产生一个预测集合。假设特征层大小为m x n，p个通道，预测参数的基本单元是一个3 x 3 x p的小核，它要么产生一个类别的得分，要么产生一个相对于默认方框的位置偏移。核一共要应用在m x n个位置上，在每个位置上它都有一个输出值。边界框的偏移输出值是相对于默认的位置的。</p>
-</li>
-</ul>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/Snipaste_2020-01-08_14-51-11.jpg" alt></p>
-<ul>
-<li><strong>默认方框和纵横比</strong>：将每个特征图单元(cell) 与默认边界框的集合关联起来，这是对于网络顶层的多特征图来说的。默认方框用卷积的方式覆盖特征图，这样，每个方框对应的单元(cell)是固定的。在每个特征映射单元上，我们预测相对于默认方框形状的偏移，以及每一类别的分数（表明每一个方框中一个类的出现）。在给定的位置有k个框，对于其中的每一个，计算c类类别的分数，和相对于原来默认方框形状的4个偏移。这就一共有(c + 4) x k个滤波器被应用到特征图的每个位置上；对于m x n的特征图，产生(c + 4) x k x m x n个输出。默认方框跟Faster R-CNN中的Anchor类似，但是作者将它们应用到不同分辨率的特征图上时，由于在一些特征图上有不同的默认框形状，这使得算法对不同尺度的目标有较好的探测作用。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SSD/640.jfif" alt><br>SSD在训练中只需一张输入图像和图像中每个目标的ground truth边界框信息。在卷积操作中，我们产生一个默认方框的集合，这些方框在每个位置有不同的纵横比，在一些特征图中有不同的比例，如上图所示。对于每个默认方框，预测它形状的偏移和类别的置信度$\left(c_{1}, c_{2}, c_{3}, \dots, c_{p}\right)$。训练时，首先将这些默认方框和 ground truth 边界框对应上。就像图中，作者匹配了2个默认方框，一个是猫，一个是狗，它们被认定为positive, 其余部分被认定为 negative. 模型损失函数是 localization loss(smooth L1) 和 confidence  loss(Softmax) 的加权之和。</li>
-</ul>
-<h2 id="怎么设置default-boxes？"><a href="#怎么设置default-boxes？" class="headerlink" title="怎么设置default boxes？"></a>怎么设置default boxes？</h2><p>SSD中default box的概念有点类似于Faster R-CNN中的anchor。不同于Faster  R-CNN只在最后一个特征层取anchor，SSD在多个特征层上取default box，可以得到不同尺度的default  box。在特征图的每个单元上取不同宽高比的default  box,一般宽高比在{1，2，3，1/2，1/3}中选取，有时还会额外增加一个宽高比为1但具有特殊尺度的box。上面那张图展示了在8 x 8的feature map和4 x 4的feature map上的每个单元取4个不同的default box。原文对于300 x 300的输入，分别在conv4_3，conv7，conv8_2，conv9_2，conv10_2，conv11_2的特征图上的每个单元取4，6，6，6，4，4个default  box.  由于以上特征图的大小分别是38x38，19x19，10x10，5x5，3x3，1x1，所以一共得到38 x 38 x 4 + 19 x 19 x 6 + 10 x 10 x 6 + 5 x 5 x 6 + 3 x 3 x 4 + 1 x 1 x 4 = 8732个default box.对一张300x300的图片输入网络将会针对这8732个default  box预测8732个边界框。</p>
-<h2 id="训练"><a href="#训练" class="headerlink" title="训练"></a>训练</h2><p>训练SSD和训练其他使用区域提议检测器的主要区别是，ground  truth信息在固定检测器输出的情况下需要指定到特定的输出。这样，损失函数和反向传播就可以端到端的应用。训练需要选择默认方框的集合，检测比例，以及hard negative mining（也就是不存在目标的样本集合）和数据增强策略。</p>
-<ul>
-<li><p><strong>Matching strategy</strong>， 在训练中，需要决定哪个默认框匹配一个 ground truth，由此来训练网络。对于每个从默认方框（不同位置，不同纵横比，不同比例上）中选择的 ground truth 边界框，开始时，根据最高的 jaccard overlap 来匹配 ground truth  边界框和默认方框（与MultiBox一样）。实际操作中，与 MultiBox 不同，当它们的 jaccard  overlap高于阈值0.5时，作者就将默认方框认为 ground  truth。这简化了学习问题，使得网络可以对多个重叠的默认方框预测得到高分，而不是仅挑选一个重合度最高的方框。</p>
-</li>
-<li><p><strong>Training objective</strong>， SSD的训练目标来自于MultiBox，但是作者将之扩展成可处理多目标分类的问题。$x_{i j}^{p}=1,0$表示匹配第$i$个默认方框和$p$类别第$j$个ground truth边界框。这种匹配策略会出现$\sum_{i} x_{i, j}^{p}&gt;=1$。整体的目标损失函数是定位损失加分类损失： $L(x, c, l, g)=\frac{1}{N}\left(L_{c o n f}(x, c)+\alpha L_{l o c}(x, l, g)\right)$，其中$N$是匹配默认框的个数，如果$N=0$，loss设为0。定位损失是预测边界框$l$和真值边界框参数$g$的Smooth L1 loss。与Faster R-CNN类似，对默认边界框$d$中心$(cx, cy)$的偏移量进行回归，$w$是宽，$h$是高。<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SSD/641.webp" alt><br>分类损失是多个类别置信度的 softmax loss：<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SSD/642.webp" alt><br>$\alpha$在交叉验证中设为1。</p>
-</li>
-<li><p><strong>Choosing scales and aspect ratio for default boxes</strong>，为了处理不同的目标比例，有些方法是把图片处理成不同的大小，然后结合不同大小图片的结果。但是在一个网络中利用多个不同层产生的特征图来预测也能产生类似的结果，所有比例的目标还可以共享参数。前面的研究已经证明使用底层的特征图可以提升语义分割质量，因为底层能捕捉到输入图像中的细节信息。受这些方法启发，本文使用了特征图中的高层和低层特征来进行目标检测。网络中不同层级的特征图会有不同的感受野，在SSD中，默认框不一定要和每层中的实际感受野对应。假设我们要用$m$个特征图来预测，每个特征图的默认框尺度计算如下：$s_{k}=s_{\min }+\frac{s_{\max }-s_{\min }}{m-1}(k-1, k \in[1, m])$ ，其中$s_{m i n}$是0.2，$s_{m a x}$是0.9，意味着最低的层的尺度是0.2，最高的层的尺度是0.9，中间层正常间隔分布。对于默认框，使用不同的高宽比，$a_{r} \in 1,2,3, \frac{1}{2}, \frac{1}{3}$。可以计算每个默认框的宽度$w_{k}^{a}=s_{k} \sqrt{a}_{r}$和高度$h_{k}^{a}=s_{k} / \sqrt{a_{r}}$。对于宽高比是1的情况，增加一个尺度是$s_{k}^{\prime}=\sqrt{s_{k} s_{k+1}}$的默认框，这样就在每个特征图位置有6个默认框。将框的中心设为$\left(\frac{i+0.5}{\left|f_{k}\right|}, \frac{j+0.5}{\left|f_{k}\right|}\right)$，其中$\left|f_{k}\right|$是第$k$个正方形特征图的大小。结合诸多特征图的不同位置下所有不同尺度和宽高比的默认框，就有了一个预测结果的集合，覆盖不同大小和形状的输入对象。例如图一中，那条狗与特征图中4 x 4的默认框匹配，但是不和任何8 x 8特征图中的默认框匹配，因为这些默认框有着不同的尺度，与狗的默认框不匹配，因此在训练中被认为是negative。</p>
-</li>
-<li><p><strong>Hard Negative Mining</strong> ，匹配步骤后，默认框中的大多数都是negative，尤其是候选框个数众多的时候。这就导致 positive 和 negative 训练样本不平衡。这些 negative 样本不全用，而是对于每一个默认框，通过最高置信度损失来对它们进行排序，选择最高的几个，这样negative 和 positive的比例最多是3:1。这样训练更稳定也更快。</p>
-</li>
-<li><p><strong>Data augmentation</strong> 为了让模型对不同的输入大小和形状更鲁棒，每张训练图片都通过以下步骤随机选择：(1)使用整张原始图片输入；(2)选择图片中的一块，与物体最低的  jaccard overlap 值为0.1, 0.3, 0.5, 0.7,  0.9；(3)随机采样某一块。采样区块的大小在原图片[0.1,1]之间，高宽比介于0.5和2之间。保留真值边界框中的重叠部分，如果它的中心在采样区块内。在采样步骤后，每个采样区块缩放到固定大小，以0.5的概率来水平翻转。</p>
-</li>
-</ul>
-<h2 id="实验结果"><a href="#实验结果" class="headerlink" title="实验结果"></a>实验结果</h2><p>在PSCAL VOC2012上面：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SSD/643.webp" alt></p>
-<p>在COCO数据集上面：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SSD/644.webp" alt></p>
-<p>速度和精度的整体对比：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/SSD/645.png" alt></p>
-<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>SSD优势是速度比较快，整个过程只需要一步，首先在图片不同位置按照不同尺度和宽高比进行密集抽样，然后利用CNN提取特征后直接进行分类与回归，所以速度比较快，但均匀密集采样会造成正负样本不均衡的情况使得训练比较困难，导致模型准确度有所降低。另外，SSD对小目标的检测没有大目标好，因为随着网络的加深，在高层特征图中小目标的信息丢失掉了，适当增大输入图片的尺寸可以提升小目标的检测效果。</p>
-<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><p><a href="https://github.com/weiliu89/caffe/tree/ssd">https://github.com/weiliu89/caffe/tree/ssd</a></p>
-]]></content>
-      <categories>
-        <category>学习</category>
-      </categories>
-      <tags>
-        <tag>目标检测</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Faster-RCNN</title>
-    <url>/2020/02/26/Faster-RCNN/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title=" 前言"></a><span id="more"></span> 前言</h2><p>我们知道RCNN和Fast-RCNN都是双阶段的算法，依赖于候选框搜索算法。而搜索算法是很慢的，这就导致这两个算法不能实时。基于这个重大缺点，Faster-RCNN算法问世。</p>
-<h2 id="贡献"><a href="#贡献" class="headerlink" title="贡献"></a>贡献</h2><p>Fast-RCNN仍依赖于搜索候选框方法，其中以Selective  Search为主。在Fast-RCNN给出的时间测试结果中，一张图片需要2.3s的前向推理时间，其中2s用于生成2000个ROI。可以看到整个算法的时间消耗几乎都在区域候选框搜索这个步骤了，如果我们能去掉候选框搜索这个过程是不是实时有希望了？Faster-RCNN就干了这件事，论文提出在内部使用深层网络代替候选区域。新的候选区域网络(RPN)在生成ROI的效率大大提升，一张图片只需要10毫秒！！！</p>
-<h2 id="网络结构"><a href="#网络结构" class="headerlink" title="网络结构"></a>网络结构</h2><p>Faster-RCNN的网络结构如下图表示：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/Faster%20RCNN/640.png" alt></p>
-<p>我们可以发现除了添加一个RPN网络之外，其他地方和Fast-RCNN是完全一致的。引用知乎上看到的一张更详细的网络结构如下：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/Faster%20RCNN/641.jfif" alt></p>
-<h2 id="RPN网络"><a href="#RPN网络" class="headerlink" title="RPN网络"></a>RPN网络</h2><p>RPN网络将第一个卷积网络(backbone，如VGG16,ResNet)的输出特征图作为输入。它在特征图上滑动一个$3 \times 3$的卷积核，以使用卷积网络构建与类别无关的候选区域（候选框建议网络只用关心建议出来的框是否包含物体，而不用关系那个物体是哪一类的），我们将RPN产生的每个框叫做Anchor。</p>
-<p>这里这样说肯定还是比较模糊，我引用一张训练时候的RPN的结构图然后固定输入分辨率和backbone为VGG16来解释一下。下面这张图是RPN架构：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/Faster%20RCNN/642.jfif" alt></p>
-<p>我们可以看到anchor的数量是和Feature Map的大小相关，对于特征图中的每一个位置，RPN会做$k$次预测。因此，在这里对每个像素，RPN将输出$4 \times k$个坐标和$2 \times k$个得分。然后由于使用了VGG16做Backbone，所以输入到RPN的特征图大小是原图的$H, W$的$\frac{1}{16}$。对于一个$512 \times 62 \times 37$的feature map，有$62 \times 37 \times 9$约等于20000个anchor。也就是对一张图片，有20000个左右的anchor。这里可以看到RPN的高明之处，一张图片20000个候选框就是猜也能猜得七七八八。但是并不是20000个框我们都需要，我们只需要选取其中的256个。具体的选取规则如下：</p>
-<ul>
-<li>对于每一个Ground Truth Bounding Box，选择和它IOU最高的一个anchor作为正样本。</li>
-<li>对于剩下的anchor，选择和任意一个Ground Truth Bounding Box 的IOU大于0.7的anchor作为正样本，正样本的数目不超过128个。</li>
-<li>负样本直接选择和Ground Truth Bounding Box 的IOU&lt;0.3的anchor。正负样本的总数保证为256个。</li>
-</ul>
-<p>RPN在产生正负样本训练的时候，还会产生ROIs作为Faster-RCNN(ROI-Head)的训练样本。RPN生成ROIs的过程（网络结构图中的ProposalCreator）如下：</p>
-<ul>
-<li>对于每张图片，利用它的feature map， 计算 (H/16)× (W/16)×9（大概20000）个anchor属于前景的概率，以及对应的位置参数。</li>
-<li>选取概率较大的12000个anchor</li>
-<li>利用回归的位置参数，修正这12000个anchor的位置，得到RoIs</li>
-<li>利用非极大值（(Non-maximum suppression, NMS）抑制，选出概率最大的2000个RoIs</li>
-</ul>
-<p>在前向推理阶段，12000和2000分别变为6000和3000以提高速度，这个过程不需要反向传播，所以更容易实现。</p>
-<p>最后RPN的输出维度是$2000 \times 4$或者$300 \times 4$的tensor。</p>
-<h2 id="损失函数"><a href="#损失函数" class="headerlink" title="损失函数"></a>损失函数</h2><p>在RPN网络中，对于每个Anchor，它们对应的gt_label（就是筛选到这个Anchor的那个ground truth框的label）要么是1要么是0，1代表前景，0代表背景。而gt_loc则是由4个位置参数$(t x, t y, t w, t h)$组成，这样比直接回归坐标更好。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/Faster%20RCNN/643.webp" alt></p>
-<p>计算分类用的是交叉熵损失，而计算回归损失用的是SmoothL1Loss。在计算回归损失的时候只统计前景的损失，忽略背景的损失。</p>
-<p>网络在最后对每一个框都有两种损失，即物体属于哪一类的分类损失(21类，加了个背景)，位置在哪的回归损失。所以整个Faster-RCNN的损失是这4个损失之和。网络的目标就是最小化这四个损失之和。</p>
-<h2 id="训练"><a href="#训练" class="headerlink" title="训练"></a>训练</h2><p>上面讲了，RPN会产生大约2000个ROIs，这2000个ROIs并不都拿去训练，而是利用Proposal Target Creator选择128个ROIs用以训练。选择的规则如下：</p>
-<ul>
-<li>RoIs和gt_bboxes 的IoU大于0.5的，选择一些（比如32个）</li>
-<li>选择 RoIs和gt_bboxes的IoU小于等于0（或者0.1）的选择一些（比如 128-32=96个）作为负样本</li>
-</ul>
-<p>同时为了便于训练，对选择出的128个ROIs的对应的ground truth  bbox的坐标进行标准化处理，即减去均值除以标准差。对于分类问题,直接利用交叉熵损失。而对于位置的回归损失，一样采用Smooth_L1Loss，只不过只对正样本计算损失。而且是只对正样本中的这个类别4个参数计算损失。举例来说:</p>
-<ul>
-<li>一个RoI在经过FC 84后会输出一个84维的loc 向量。如果这个RoI是负样本,则这84维向量不参与计算 L1_Loss。</li>
-<li>如果这个RoI是正样本,属于label K,那么它的第 K×4，K×4+1，K×4+2， K×4+3 这4个数参与计算损失，其余的不参与计算损失。</li>
-</ul>
-<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>测试的时候保留大约300个ROIs，对每一个计算概率，并利用位置参数调整候选框的位置。最后用NMS筛一遍，就得到结果了。</p>
-]]></content>
-      <categories>
-        <category>学习</category>
-      </categories>
-      <tags>
-        <tag>目标检测</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Windows下VSCode使用SSH连接报Bad owner or permissions on C:\\Users\\Administrator/.ssh/config错误问题解决</title>
     <url>/2020/02/25/Windows%E4%B8%8BVSCode%E4%BD%BF%E7%94%A8SSH%E8%BF%9E%E6%8E%A5%E6%8A%A5Bad-owner-or-permissions-on-CUsersAdministrator.sshconfig%E9%94%99%E8%AF%AF%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3/</url>
     <content><![CDATA[<h2 id="问题描述"><a href="#问题描述" class="headerlink" title=" 问题描述"></a><span id="more"></span> 问题描述</h2><p>在 Windows 系统下的 VSCode 安装 <strong>Remote - SSH</strong> 扩展后，使用扩展配置 SSH 并进行远程连接，可能会发生 <strong>Bad owner or permissions on C:\Users\Administrator/.ssh/config</strong> 错误，造成无法进行 SSH 远程连接的问题。</p>
@@ -6972,73 +7143,6 @@ s_{i}=\left\{\begin{array}{ll}s_{i}, & \text { iou }\left(\mathcal{M}, b_{i}\rig
       </categories>
       <tags>
         <tag>VSCode</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Fast RCNN</title>
-    <url>/2020/02/24/Fast-RCNN/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title=" 前言"></a><span id="more"></span> 前言</h2><p>我们知道RCNN需要把每一个可能有目标的候选框搜索出来，然后把每个候选框传入CNN提取特征，每一张图片要产生大约2K个候选框，而每个框对应的图像都要传入CNN，这个时间开销肯定是很难承受的。基于RCNN这个致命问题，Fast-RCNN出现了。</p>
-<h2 id="算法介绍"><a href="#算法介绍" class="headerlink" title="算法介绍"></a>算法介绍</h2><p>Fast-RCNN是在SPPNet和RCNN的基础上进行改进的。SPPNet的主要贡献是在整张图像上计算全局特征图，然后对于特定的proposal，只需要在全局特征图上取出对应坐标的特征图就可以了。但SPPNet仍然需要将特征保存在磁盘中，速度还是很慢。结合RCNN的思想，论文提出直接将候选框区域应用于特征图，并使用ROI Pooling将其转化为固定大小的特征图，最后再连接两个并行的分类头和回归头完成检测任务。整个算法可以用下面的图来表示：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/3940902-7569280b566d0e58.png" alt></p>
-<h2 id="贡献-amp-创新点"><a href="#贡献-amp-创新点" class="headerlink" title="贡献&amp;创新点"></a>贡献&amp;创新点</h2><ul>
-<li>Fast-RCNN 只对整个图像进行一次特征提取，避免R-CNN的上千次特征提取。</li>
-<li>使用ROI Pooling层替换最后一层的Max Pooling层，巧妙避免RCNN中的将每个候选框Resize到固定大小的操作。</li>
-<li>Fast RCNN在网络的尾部采用并行的全连接层，可同时输出分类结果和窗口回归结果，实现了端到端的多任务训练，且不需要额外的特征存储空间(在R-CNN中特征需要保存到磁盘，以供SVM和线性回归器训练)。</li>
-<li>使用SVD矩阵分解算法对网络末端并行的全连接层进行分解，加速运算。</li>
-</ul>
-<h2 id="ROI-Pooling层"><a href="#ROI-Pooling层" class="headerlink" title="ROI Pooling层"></a>ROI Pooling层</h2><p>Fast-RCNN的核心是ROI池化层，它的作用是输入特征图的大小不定，但输出大小固定的输出特征图。而什么是ROI呢？ROI就是经过区域建议算法(Selective Search)生成的框经过卷积神经网络网络提取特征后的特征图上的区域，每一个ROI对应了原图的一个区域建议框，只有大小变化了，相对位置没有发生改变。这个过程可以用下图表示：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/Fast%20RCNN/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20200224140858.jpg" alt></p>
-<p>ROI Pooling层的输入有特征图和ROIs，特征图是经过CNN提取后的结果，ROIs表示Selective Search的结果，形状为$N \times 5 \times 1 \times 1$，其中$N$代表ROI的个数，5代表$x, y, w, h$。这里需要注意的是，坐标系的参数是针对原图的。</p>
-<h2 id="ROI-Pooling的具体操作"><a href="#ROI-Pooling的具体操作" class="headerlink" title="ROI Pooling的具体操作"></a>ROI Pooling的具体操作</h2><ul>
-<li>根据输入图片，将ROI映射到特征图对应位置（映射规则就是直接把各个坐标除以“输入图片和特征图大小的比值”）</li>
-<li>将映射后的区域划分为相同大小的sections，其中sections代表输出维度，例如7。</li>
-<li>对每个sections进行最大池化操作。</li>
-</ul>
-<p>最后上传一张经典动态图片，更好的表示这个过程：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/Fast%20RCNN/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20200224140920.gif" alt></p>
-<h1 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h1><p>Fast-RCNN的作者rgbirshick依然给出了源码，有兴趣可以读一下：<a href="https://github.com/rbgirshick/fast-rcnn">https://github.com/rbgirshick/fast-rcnn</a></p>
-]]></content>
-      <categories>
-        <category>学习</category>
-      </categories>
-      <tags>
-        <tag>目标检测</tag>
-        <tag>Fast RCNN</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>RCNN</title>
-    <url>/2020/02/24/RCNN/</url>
-    <content><![CDATA[<h2 id="背景介绍"><a href="#背景介绍" class="headerlink" title=" 背景介绍"></a><span id="more"></span> 背景介绍</h2><h3 id="什么是目标检测"><a href="#什么是目标检测" class="headerlink" title="什么是目标检测"></a>什么是目标检测</h3><p>所谓目标检测就是在一张图像中找到我们关注的目标，并确定它的类别和位置，这是计算机视觉领域最核心的问题之一。由于各类目标不同的外观，颜色，大小以及在成像时光照，遮挡等具有挑战性的问题，目标检测一直处于不断的优化和研究中。</p>
-<h3 id="目标检测算法分类"><a href="#目标检测算法分类" class="headerlink" title="目标检测算法分类"></a>目标检测算法分类</h3><p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/20180509095302426.png" alt></p>
-<p>这张甘特图已经说明了目标检测算法主要分为两类，即：</p>
-<ul>
-<li>Two Stage目标检测算法。这类算法都是先进行区域候选框生成，就是找到一个可能包含物体的预选框，再通过卷积神经网络进行分类和回归修正，常见算法有R-CNN，SPP-Net，Fast-RCNN，Faster-RCNN和R-FCN等。</li>
-<li>One Stage目标检测算法。这类算法不使用候选框生成，直接在网络中提取特征来预测物体的分类和位置。常见的One-Stage算法有：YOLO系列，SSD，RetinaNet。</li>
-</ul>
-<h2 id="RCNN算法"><a href="#RCNN算法" class="headerlink" title="RCNN算法"></a>RCNN算法</h2><h3 id="贡献"><a href="#贡献" class="headerlink" title="贡献"></a>贡献</h3><p>RCNN是第一个使用卷积神经网络来对目标候选框提取特征的目标检测算法。同时，RCNN使用了微调(finetune)的技术，使用大数据集上训练好的分类模型的前几层做backbone，进行更有效的特征提取。</p>
-<h3 id="RCNN总览"><a href="#RCNN总览" class="headerlink" title="RCNN总览"></a>RCNN总览</h3><p>看下图：<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/object%20detection/Snipaste_2020-01-07_09-57-14.jpg" alt></p>
-<p>首先，R-CNN是将传统图像算法和深度学习技术结合起来的结构，第一部分是需要候选框区域建议，这里一般使用Selective Search的方法提取出候选框，然后再传入CNN做特征提取及分类，后面还借助了机器学习算法做回归修正。</p>
-<h3 id="RCNN算法步骤"><a href="#RCNN算法步骤" class="headerlink" title="RCNN算法步骤"></a>RCNN算法步骤</h3><ul>
-<li>选择一个预训练 （pre-trained）神经网络（如AlexNet、VGG）。</li>
-<li>重新训练全连接层。使用需要检测的目标重新训练（re-train）最后全连接层（connected layer）。即是fintune技术的应用。</li>
-<li><p>生成候选框。利用Selective Search算法提取所有的Proposals，一张图片大概产生2000张，然后将图片规整化固定大小，使得其满足CNN的输入要求，最后将feature map存到磁盘(是的，你没有看错，RCNN要把提取到的特征存储到磁盘)，这个过程可以用下图表示：<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RCNN/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20200224135208.jpg" alt></p>
-</li>
-<li><p>利用feature map训练SVM来对目标和背景进行分类，这里每一个类一个二元SVM。</p>
-</li>
-<li><p>训练线性回归器修正目标的位置，如下图所示：<br><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RCNN/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20200224135251.jpg" alt></p>
-</li>
-</ul>
-<h2 id="实验结果"><a href="#实验结果" class="headerlink" title="实验结果"></a>实验结果</h2><p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/RCNN/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20200224135256.jpg" alt></p>
-<p>RCNN成为了当时目标检测领域的SOAT算法，虽然现在很少有人使用到了，但论文的思想我们仍可以借鉴。任何事情都要经历一个从无到有的过程。</p>
-<h2 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h2><p>rgbirshick大神，也就是RCNN作者，提供了源码，链接如下：<a href="https://github.com/rbgirshick/rcnn">https://github.com/rbgirshick/rcnn</a></p>
-]]></content>
-      <categories>
-        <category>学习</category>
-      </categories>
-      <tags>
-        <tag>目标检测</tag>
-        <tag>RCNN</tag>
       </tags>
   </entry>
   <entry>
@@ -7946,110 +8050,6 @@ y=\left(t_{y} * h_{a}\right)-y_{a}</script><p>这个公式的理解为：当预�
       <tags>
         <tag>Ubuntu</tag>
         <tag>VNC</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>ECCV 2018 Convolutional Block Attention Module</title>
-    <url>/2020/02/19/ECCV-2018-Convolutional-Block-Attention-Module/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title=" 前言"></a><span id="more"></span> 前言</h2><p>目前cv领域借鉴了nlp领域的attention机制以后生产出了很多有用的基于attention机制的论文，attention机制也是在2019年论文中非常火。这篇cbam虽然是在2018年提出的，但是其影响力比较深远，在很多领域都用到了该模块，所以一起来看一下这个模块有什么独到之处，并学着实现它。</p>
-<h2 id="什么是注意力机制？"><a href="#什么是注意力机制？" class="headerlink" title="什么是注意力机制？"></a>什么是注意力机制？</h2><p>注意力机制（Attention Mechanism）是机器学习中的一种数据处理方法，广泛应用在自然语言处理、图像识别及语音识别等各种不同类型的机器学习任务中。</p>
-<p>通俗来讲：注意力机制就是希望网络能够自动学出来图片或者文字序列中的需要注意的地方。比如人眼在看一幅画的时候，不会将注意力平等地分配给画中的所有像素，而是将更多注意力分配给人们关注的地方。</p>
-<p>从实现的角度来讲：注意力机制通过神经网络的操作生成一个掩码mask,，mask上的值一个打分，评价当前需要关注的点的评分。</p>
-<p>注意力机制可以分为：</p>
-<ul>
-<li>通道注意力机制：对通道生成掩码mask，进行打分，代表是SENet, Channel Attention Module</li>
-<li>空间注意力机制：对空间进行掩码的生成，进行打分，代表是Spatial Attention Module</li>
-<li>混合域注意力机制：同时对通道注意力和空间注意力进行评价打分，代表的有BAM, CBAM</li>
-</ul>
-<h2 id="怎么实现CBAM？-pytorch为例"><a href="#怎么实现CBAM？-pytorch为例" class="headerlink" title="怎么实现CBAM？(pytorch为例)"></a><strong>怎么实现CBAM？(pytorch为例)</strong></h2><p>CBAM全称是Convolutional Block Attention Module, 是在ECCV2018上发表的注意力机制代表作之一，<a href="http://openaccess.thecvf.com/content_ECCV_2018/papers/Sanghyun_Woo_Convolutional_Block_Attention_ECCV_2018_paper.pdf">论文下载地址</a>。</p>
-<p>在该论文中，作者研究了网络架构中的注意力，注意力不仅要告诉我们重点关注哪里，还要提高关注点的表示。目标是通过使用注意机制来增加表现力，关注重要特征并抑制不必要的特征。为了强调空间和通道这两个维度上的有意义特征，作者依次应用<strong>通道和空间注意模块</strong>，来分别在通道和空间维度上学习关注什么、在哪里关注。此外，通过了解要强调或抑制的信息也有助于网络内的信息流动。</p>
-<p>主要网络架构也很简单，一个是通道注意力模块，另一个是空间注意力模块，CBAM就是先后集成了通道注意力模块和空间注意力模块。</p>
-<h3 id="2-1-通道注意力机制"><a href="#2-1-通道注意力机制" class="headerlink" title="2.1 通道注意力机制"></a>2.1 通道注意力机制</h3><p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/CBAM/640.webp" alt></p>
-<p>通道注意力机制按照上图进行实现：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">class ChannelAttention(nn.Module):</span><br><span class="line">    def __init__(self, in_planes, rotio=16):</span><br><span class="line">        super(ChannelAttention, self).__init__()</span><br><span class="line">        self.avg_pool = nn.AdaptiveAvgPool2d(1)</span><br><span class="line">        self.max_pool = nn.AdaptiveMaxPool2d(1)</span><br><span class="line"></span><br><span class="line">        self.sharedMLP = nn.Sequential(</span><br><span class="line">            nn.Conv2d(in_planes, in_planes // ratio, 1, bias=False), nn.ReLU(),</span><br><span class="line">            nn.Conv2d(in_planes // rotio, in_planes, 1, bias=False))</span><br><span class="line">        self.sigmoid = nn.Sigmoid()</span><br><span class="line"></span><br><span class="line">    def forward(self, x):</span><br><span class="line">        avgout = self.sharedMLP(self.avg_pool(x))</span><br><span class="line">        maxout = self.sharedMLP(self.max_pool(x))</span><br><span class="line">        return self.sigmoid(avgout + maxout)</span><br></pre></td></tr></table></figure>
-<h3 id="2-2-空间注意力机制"><a href="#2-2-空间注意力机制" class="headerlink" title="2.2 空间注意力机制"></a>2.2 空间注意力机制</h3><p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/CBAM/641.png" alt></p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">class SpatialAttention(nn.Module):</span><br><span class="line">    def __init__(self, kernel_size=7):</span><br><span class="line">        super(SpatialAttention, self).__init__()</span><br><span class="line">        assert kernel_size in (3,7), &quot;kernel size must be 3 or 7&quot;</span><br><span class="line">        padding = 3 if kernel_size == 7 else 1</span><br><span class="line"></span><br><span class="line">        self.conv = nn.Conv2d(2,1,kernel_size, padding=padding, bias=False)</span><br><span class="line">        self.sigmoid = nn.Sigmoid()</span><br><span class="line"></span><br><span class="line">    def forward(self, x):</span><br><span class="line">        avgout = torch.mean(x, dim=1, keepdim=True)</span><br><span class="line">        maxout, _ = torch.max(x, dim=1, keepdim=True)</span><br><span class="line">        x = torch.cat([avgout, maxout], dim=1)</span><br><span class="line">        x = self.conv(x)</span><br><span class="line">        return self.sigmoid(x)</span><br></pre></td></tr></table></figure>
-<h3 id="2-3-Convolutional-bottleneck-attention-module"><a href="#2-3-Convolutional-bottleneck-attention-module" class="headerlink" title="2.3 Convolutional bottleneck attention module"></a>2.3 Convolutional bottleneck attention module</h3><p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/CBAM/642.png" alt></p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">class BasicBlock(nn.Module):</span><br><span class="line">    expansion = 1</span><br><span class="line">    def __init__(self, inplanes, planes, stride=1, downsample=None):</span><br><span class="line">        super(BasicBlock, self).__init__()</span><br><span class="line">        self.conv1 = conv3x3(inplanes, planes, stride)</span><br><span class="line">        self.bn1 = nn.BatchNorm2d(planes)</span><br><span class="line">        self.relu = nn.ReLU(inplace=True)</span><br><span class="line">        self.conv2 = conv3x3(planes, planes)</span><br><span class="line">        self.bn2 = nn.BatchNorm2d(planes)</span><br><span class="line">        self.ca = ChannelAttention(planes)</span><br><span class="line">        self.sa = SpatialAttention()</span><br><span class="line">        self.downsample = downsample</span><br><span class="line">        self.stride = stride</span><br><span class="line">    def forward(self, x):</span><br><span class="line">        residual = x</span><br><span class="line">        out = self.conv1(x)</span><br><span class="line">        out = self.bn1(out)</span><br><span class="line">        out = self.relu(out)</span><br><span class="line">        out = self.conv2(out)</span><br><span class="line">        out = self.bn2(out)</span><br><span class="line">        out = self.ca(out) * out  # 广播机制</span><br><span class="line">        out = self.sa(out) * out  # 广播机制</span><br><span class="line">        if self.downsample is not None:</span><br><span class="line">            residual = self.downsample(x)</span><br><span class="line">        out += residual</span><br><span class="line">        out = self.relu(out)</span><br><span class="line">        return out</span><br></pre></td></tr></table></figure>
-<p>为何要先使用通道注意力机制然后再使用空间注意力机制？使用顺序使用这两个模块还是并行的使用两个模块？其实是作者已经做过了相关实验，并且证明了先试用通道然后再使用空间注意力机制这样的组合效果比较好，这也是CBAM的通用组合模式。</p>
-<h2 id="在什么情况下可以使用？"><a href="#在什么情况下可以使用？" class="headerlink" title="在什么情况下可以使用？"></a>在什么情况下可以使用？</h2><p>提出CBAM的作者主要对分类网络和目标检测网络进行了实验,证明了CBAM模块确实是有效的。</p>
-<p>以ResNet为例，论文中提供了改造的示意图，如下图所示：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/CBAM/643.webp" alt></p>
-<p>也就是在ResNet中的每个block之间添加了CBAM模块，训练数据来自benchmark ImageNet-1K。检测使用的是Faster  R-CNN， Backbone选择的ResNet34，ResNet50，WideResNet18，ResNet50等，还跟SE等进行了对比。</p>
-<p><strong>消融实验</strong>：消融实验一般是控制变量，最能看出模型变好起作用的部分在那里。分为三个部分：</p>
-<ul>
-<li><p>如何更有效地计算channel attention?</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/CBAM/644.webp" alt>可以看出来，使用avgpool和maxpool可以更好的降低错误率，大概有1-2%的提升，这个组合就是dual pooling，能提供更加精细的信息，有利于提升模型的表现。</p>
-</li>
-<li><p>如何更有效地计算spatial attention?</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/CBAM/645.webp" alt></p>
-<p>这里的空间注意力机制参数也是有avg，max组成，另外还有一个卷积的参数kernel_size(k)，通过以上实验，可以看出，当前使用通道的平均和通道的最大化，并且设置kernel size=7是最好的。</p>
-</li>
-<li><p>如何组织这两个部分？</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/CBAM/646.webp" alt></p>
-<p>可以看出，这里与SENet中的SE模块也进行了比较，这里使用CBAM也是超出了SE的表现。除此以外，还进行了顺序和并行的测试，发现，先channel attention然后spatial attention效果最好，所以也是最终的CBAM模块的组成。</p>
-<p>在MSCOCO数据及使用了ResNet50，ResNet101为backbone，Faster RCNN为检测器的模型进行目标检测，如下图所示：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/CBAM/647.webp" alt></p>
-<p>在VOC2007数据集中采用了StairNet进行了测试，如下图所示：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/CBAM/648.webp" alt></p>
-<p>貌似没有找到目标检测部分的代码，CBAM的作用在于对信息进行精细化分配和处理，所以猜测是在backbone的分类器之前添加的CBAM模块。</p>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>学习</category>
-      </categories>
-      <tags>
-        <tag>目标检测</tag>
-        <tag>Attention机制</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>最简单最易实现的SE模块</title>
-    <url>/2020/02/19/%E6%9C%80%E7%AE%80%E5%8D%95%E6%9C%80%E6%98%93%E5%AE%9E%E7%8E%B0%E7%9A%84SE%E6%A8%A1%E5%9D%97/</url>
-    <content><![CDATA[<h2 id="Squeeze-and-Excitation-Networks"><a href="#Squeeze-and-Excitation-Networks" class="headerlink" title=" Squeeze-and-Excitation Networks"></a><span id="more"></span> Squeeze-and-Excitation Networks</h2><p>SENet是Squeeze-and-Excitation  Networks的简称，拿到了ImageNet2017分类比赛冠军，其效果得到了认可，其提出的SE模块思想简单，易于实现，并且很容易可以加载到现有的网络模型框架中。SENet主要是学习了channel之间的相关性，筛选出了针对通道的注意力，稍微增加了一点计算量，但是效果比较好。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/se/640.webp" alt></p>
-<p>通过上图可以理解他的实现过程，通过对卷积的到的feature  map进行处理，得到一个和通道数一样的一维向量作为每个通道的评价分数，然后将修改的分数分别施加到对应的通道上，得到其结果，就在原有的基础上只添加了一个模块，下边我们用pytorch实现这个很简单的模块。</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/se/641.webp" alt></p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">class SELayer(nn.Module):</span><br><span class="line">    def __init__(self, channel, reduction=16):</span><br><span class="line">        super(SELayer, self).__init__()</span><br><span class="line">        self.avg_pool = nn.AdaptiveAvgPool2d(1)</span><br><span class="line">        self.fc = nn.Sequential(</span><br><span class="line">            nn.Linear(channel, channel // reduction, bias=False),</span><br><span class="line">            nn.ReLU(inplace=True),</span><br><span class="line">            nn.Linear(channel // reduction, channel, bias=False),</span><br><span class="line">            nn.Sigmoid()</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">    def forward(self, x):</span><br><span class="line">        b, c, _, _ = x.size()</span><br><span class="line">        y = self.avg_pool(x).view(b, c)</span><br><span class="line">        y = self.fc(y).view(b, c, 1, 1)</span><br><span class="line">        return x * y.expand_as(x)</span><br></pre></td></tr></table></figure>
-<p>虽然核心就是以上的内容，不过不能简单地结束，我们需要看一下以下几个点：</p>
-<ul>
-<li><p>作为一个重要的attention机制的文章，这篇文章如何描述attention，related work如何组织？</p>
-<p>attention机制当时已经有一定的研究和发展，也是集中于序列学习，image captioning, understanding in  images这些工作，也已经有很多出色的工作是探索了attention机制。senet这篇文章主要探索了通过对通道间关系进行建模来提升模型的表达能力。related work 主要从更深的网络架构，架构搜索，注意力机制三个角度进行了梳理，确实非常全面。</p>
-</li>
-<li><p>如何解释SE模块？</p>
-<p><strong>Sequeeze</strong>：对$C \times H \times W$进行global average pooling，得到 $1 \times 1 \times C$大小的特征图，这个特征图可以理解为具有全局感受野。</p>
-<p><strong>Excitation</strong>：使用一个全连接神经网络，对Sequeeze之后的结果做一个非线性变换。</p>
-<p><strong>特征重标定</strong>：使用Excitation 得到的结果作为权重，乘到输入特征上。</p>
-</li>
-<li><p>SE模块如何加到分类网络，效果如何？</p>
-<p>分类网络现在一般都是成一个block一个block，se模块就可以加到一个block结束的位置，进行一个信息refine。这里用了一些STOA的分类模型如：resnet50，resnext50，bn-inception等网络。通过添加SE模块，能使模型提升0.5-1.5%,效果还可以，增加的计算量也可以忽略不计。在轻量级网络MobileNet，ShuffleNet上也进行了实验，可以提升的点更多一点大概在1.5-2%。</p>
-</li>
-<li><p>SE模块如何加到目标检测网络，效果如何？</p>
-<p>主要还是将SE模块添加到backbone部分，优化学习到的内容。目标检测数据集使用的是benchmark MSCOCO, 使用的Faster  R-CNN作为目标检测器，使用backbone从ResNet50替换为SE-ResNet50以后带了了两个点的AP提升，确实有效果。</p>
-</li>
-<li><p>这篇文章的实验部分是如何设置的？</p>
-<p>这篇文章中也进行了消融实验，来证明SE模块的有效性，也说明了设置reduction=16的原因。</p>
-<ul>
-<li>squeeze方式：仅仅比较了max和avg，发现avg要好一点。</li>
-<li>excitation方式：使用了ReLU，Tanh，Sigmoid，发现Sigmoid好。</li>
-<li>stage: resnet50有不同的阶段，通过实验发现，将se施加到所有的阶段效果最好。</li>
-<li>集成策略：将se放在残差单元的前部，后部还是平行于残差单元，最终发现，放到前部比较好。</li>
-</ul>
-</li>
-<li><p>如何查看每个通道学到的attention信息并证明其有效性？</p>
-<p>作者选取了ImageNet中的四个类别进行了一个实验，测试backbone最后一个SE层的内容，如下图所示：</p>
-<p><img src="https://blog-1300912400.cos.ap-shanghai.myqcloud.com/se/642.webp" alt></p>
-<p>可以看出这两个类激活出来的内容有一定的差距，起到了一定的作用。</p>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>学习</category>
-      </categories>
-      <tags>
-        <tag>目标检测</tag>
-        <tag>Attention机制</tag>
       </tags>
   </entry>
   <entry>
