@@ -22,7 +22,7 @@
 <p>勾选完毕，点击install开始安装。</p>
 <p>过程中会叫你选择是否创建指向cuda的链接：</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Do you want to install a symbolic link at /usr/local/cuda?</span><br><span class="line">(y)es/(n)o/(q)uit:</span><br></pre></td></tr></table></figure>
-<p>如果马上想要使用当前版本，这里就选yes，或者就选no，等有需要时再设置。</p>
+<p>如果马上想要使用当前版本，这里就选yes，否则就选no，等有需要时再设置。</p>
 <h2 id="安装cuDNN"><a href="#安装cuDNN" class="headerlink" title="安装cuDNN"></a>安装cuDNN</h2><p>同样去<a href="https://developer.nvidia.com/rdp/cudnn-archive">官网</a>下载好与CUDA版本对应的安装包，文件格式为tar压缩文件<code>cudnn-10.1-linux-x64-v7.6.4.38.tgz</code>。</p>
 <p>① 进行解压</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">tar -zxvf cudnn-10.1-linux-x64-v7.6.4.38.tgz</span><br></pre></td></tr></table></figure>
