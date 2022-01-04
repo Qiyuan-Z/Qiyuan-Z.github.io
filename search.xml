@@ -1,6 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Ubuntu多版本CUDA安装与切换</title>
+    <url>/2022/01/04/Ubuntu%E5%A4%9A%E7%89%88%E6%9C%ACcuda%E5%AE%89%E8%A3%85%E4%B8%8E%E5%88%87%E6%8D%A2/</url>
+    <content><![CDATA[<p>本文主要介绍CUDA多版本如何共存与切换，这里以cuda10.1为例。</p>
+<h2 id="安装新版本cuda"><a href="#安装新版本cuda" class="headerlink" title="安装新版本cuda"></a>安装新版本cuda</h2><p>去<a href="https://developer.nvidia.com/cuda-downloads?target_os=Windows&amp;target_arch=x86_64&amp;target_version=10">官网</a>选择对应安装包，这里选择runfile类型的安装文件<code>cuda_10.1.243_418.87.00_linux.run</code>。</p>
+<p>执行以下命令，开始安装：<br><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo sh cuda_10.1.243_418.87.00_linux.run</span><br></pre></td></tr></table></figure></p>
+<p>依次出现如下界面：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/cuda/sw1.png" alt></p>
+<p>选择continue，继续。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/cuda/sw2.png" alt></p>
+<p>输入accept，回车接受。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/cuda/sw3.png" alt></p>
+<ul>
+<li>是否安装显卡驱动，本机已有，这里一般取消勾选</li>
+<li>是否安装工具包，默认勾选</li>
+<li>是否安装样例， 默认勾选</li>
+<li>是否安装演示套件，默认勾选</li>
+<li>是否安装文档，默认勾选</li>
+</ul>
+<p>勾选完毕，点击install开始安装。</p>
+<p>过程中会叫你选择是否创建指向cuda的链接：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Do you want to install a symbolic link at /usr/local/cuda?</span><br><span class="line">(y)es/(n)o/(q)uit:</span><br></pre></td></tr></table></figure>
+<p>如果马上想要使用当前版本，这里就选yes，或者就选no，等有需要时再设置。</p>
+<h2 id="安装cuDNN"><a href="#安装cuDNN" class="headerlink" title="安装cuDNN"></a>安装cuDNN</h2><p>同样去<a href="https://developer.nvidia.com/rdp/cudnn-archive">官网</a>下载好与CUDA版本对应的安装包，文件格式为tar压缩文件<code>cudnn-10.1-linux-x64-v7.6.4.38.tgz</code>。</p>
+<p>① 进行解压</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">tar -zxvf cudnn-10.1-linux-x64-v7.6.4.38.tgz</span><br></pre></td></tr></table></figure>
+<p>② 将解压后的文件复制到新版本cuda目录</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo cp cuda/include/cudnn.h  /usr/local/cuda-10.1/include</span><br><span class="line">sudo cp cuda/lib64/libcudnn*  /usr/local/cuda-10.1/lib64</span><br></pre></td></tr></table></figure>
+<p>③ 更改权限</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo chmod a+r /usr/local/cuda-10.1/include/cudnn.h  /usr/local/cuda-10.1/lib64/libcudnn*</span><br></pre></td></tr></table></figure>
+<h2 id="配置环境变量"><a href="#配置环境变量" class="headerlink" title="配置环境变量"></a>配置环境变量</h2><p>修改 ~/.bashrc 文件，在末尾添加：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda/lib64</span><br><span class="line">export PATH=$PATH:/usr/local/cuda/bin</span><br><span class="line">export CUDA_HOME=$CUDA_HOME:/usr/local/cuda</span><br></pre></td></tr></table></figure>
+<p>按此设置后，以后更换CUDA版本无需再动环境配置。</p>
+<h2 id="多版本切换"><a href="#多版本切换" class="headerlink" title="多版本切换"></a>多版本切换</h2><p>CUDA默认安装在<code>/usr/local</code>下，可至此目录查看已安装版本。</p>
+<p>使用stat命令可查看当前CUDA软链接指向哪个CUDA版本：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/cuda/sw4.png" alt></p>
+<p>切换版本只需将软链接指向新的CUDA版本：</p>
+<p>① 删除原来的链接：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo rm -rf /usr/local/cuda</span><br></pre></td></tr></table></figure>
+<p>② 建立新链接，指向指定的CUDA版本：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo ln -s /usr/local/cuda-10.1 /usr/local/cuda</span><br></pre></td></tr></table></figure>
+<p>切换完毕后可再次通过<code>stat</code>命令或<code>nvcc -V</code>查看：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/cuda/sw5.png" alt></p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+        <tag>CUDA</tag>
+        <tag>cuDNN</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>EndNote样式使用教程</title>
     <url>/2020/12/11/EndNote%E6%A0%B7%E5%BC%8F%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>EndNote主要针对英文文献，所以并没提供符合中华标准的文献样式，而网上找的样式又不太对。因此这里本人根据中华人民共和国国家标准GB/T7714-2005和江南大学论文要求，制作了可供导入使用的样式。</p>
