@@ -1,6 +1,195 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>快速入门Docker</title>
+    <url>/2022/01/04/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8Docker/</url>
+    <content><![CDATA[<h1 id="Docker是什么？"><a href="#Docker是什么？" class="headerlink" title="Docker是什么？"></a>Docker是什么？</h1><p>Docker是一个虚拟环境容器，可以将你的开发环境、代码、配置文件等一并打包到这个容器中，并发布和应用到任意平台中。</p>
+<h1 id="Docker的三个概念"><a href="#Docker的三个概念" class="headerlink" title="Docker的三个概念"></a>Docker的三个概念</h1><p>① 镜像（Image）：是一个包含有文件系统的面向Docker引擎的只读模板。任何应用程序运行都需要环境，而镜像就是用来提供这种运行环境的。例如一个Ubuntu镜像就是一个包含Ubuntu操作系统环境的模板。</p>
+<p>② 容器（Container）：类似于一个轻量级的沙盒，可以将其看作一个极简的Linux系统环境（包括root权限、进程空间、用户空间和网络空间等），以及运行在其中的应用程序。Docker引擎利用容器来运行、隔离各个应用。容器是镜像创建的应用实例，可以创建、启动、停止、删除容器，各个容器之间是是相互隔离的，互不影响。注意：镜像本身是只读的，容器从镜像启动时，Docker在镜像的上层创建一个可写层，镜像本身不变。</p>
+<p>③ 仓库（Repository）：Docker用来集中存放镜像文件的地方。注意与注册服务器（Registry）的区别：注册服务器是存放仓库的地方，一般会有多个仓库；而仓库是存放镜像的地方，一般每个仓库存放一类镜像，每个镜像利用tag进行区分，比如Ubuntu仓库存放有多个版本（12.04、14.04等）的Ubuntu镜像。</p>
+<h1 id="Docker的安装和卸载"><a href="#Docker的安装和卸载" class="headerlink" title="Docker的安装和卸载"></a>Docker的安装和卸载</h1><p>可查看<a href="https://docs.docker.com/engine/install/">官方教程</a>，这里以CentOS系统和Ubuntu系统为例。</p>
+<h2 id="CentOS"><a href="#CentOS" class="headerlink" title="CentOS"></a>CentOS</h2><h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><p>① 安装所需软件包与驱动程序</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo yum install -y yum-utils device-mapper-persistent-data lvm2</span><br></pre></td></tr></table></figure>
+<p>② 设置仓库源</p>
+<ul>
+<li><p>官方源（比较慢）</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo</span><br></pre></td></tr></table></figure></li>
+<li><p>阿里源</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo yum-config-manager --add-repo https://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo</span><br></pre></td></tr></table></figure></li>
+<li><p>清华大学源</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo yum-config-manager --add-repo https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux/centos/docker-ce.repo</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>③ 安装Docker（默认安装最新版本）</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo yum install docker-ce docker-ce-cli containerd.io</span><br></pre></td></tr></table></figure>
+<p>安装过程中会提示是否接受GPG密钥，请选是。</p>
+<p>如果要安装指定版本，可使用如下命令查可用版本（按版本号从高到低对结果进行排序）：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">yum list docker-ce --showduplicates | sort -r</span><br></pre></td></tr></table></figure>
+<p>例：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker-ce.x86_64  3:18.09.1-3.el7                     docker-ce-stable</span><br><span class="line">docker-ce.x86_64  3:18.09.0-3.el7                     docker-ce-stable</span><br><span class="line">docker-ce.x86_64  18.06.1.ce-3.el7                    docker-ce-stable</span><br><span class="line">docker-ce.x86_64  18.06.0.ce-3.el7                    docker-ce-stable</span><br></pre></td></tr></table></figure>
+<p>并通过其版本号安装特定版本，即第二列第一个<code>:</code>一直到第一个<code>-</code>中间的字符。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo yum install docker-ce-18.09.1 docker-ce-cli-18.09.1 containerd.io</span><br></pre></td></tr></table></figure>
+<p>注：Docker 安装完默认未启动。并且已经创建好 docker 用户组，但该用户组下没有用户。</p>
+<p>④ 启动Docker</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo systemctl start docker</span><br></pre></td></tr></table></figure>
+<p>⑤ 验证</p>
+<p>通过运行 hello-world 映像来验证是否正确安装：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo docker run hello-world</span><br></pre></td></tr></table></figure>
+<h3 id="卸载"><a href="#卸载" class="headerlink" title="卸载"></a>卸载</h3><p>删除安装包：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">yum remove docker-ce</span><br></pre></td></tr></table></figure>
+<p>删除镜像、容器、配置文件等内容：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">rm -rf /var/lib/docker</span><br></pre></td></tr></table></figure>
+<p>卸载旧版本：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo yum remove docker \</span><br><span class="line">                  docker-client \</span><br><span class="line">                  docker-client-latest \</span><br><span class="line">                  docker-common \</span><br><span class="line">                  docker-latest \</span><br><span class="line">                  docker-latest-logrotate \</span><br><span class="line">                  docker-logrotate \</span><br><span class="line">                  docker-engine</span><br></pre></td></tr></table></figure>
+<h2 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h2><h3 id="安装-1"><a href="#安装-1" class="headerlink" title="安装"></a>安装</h3><p><strong>自动安装：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">curl -fsSL https://get.docker.com | bash -s docker --mirror Aliyun</span><br></pre></td></tr></table></figure>
+<p>也可以使用国内 daocloud 一键安装命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">curl -sSL https://get.daocloud.io/docker | sh</span><br></pre></td></tr></table></figure>
+<p><strong>手动安装：</strong></p>
+<p>① 更新apt包索引</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo apt-get update</span><br></pre></td></tr></table></figure>
+<p>② 安装apt依赖包，用于通过https来获取仓库：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo apt-get install apt-transport-https ca-certificates curl gnupg-agent software-properties-common</span><br></pre></td></tr></table></figure>
+<p>③ 添加Docker的官方GPG密钥：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">curl -fsSL https://mirrors.ustc.edu.cn/docker-ce/linux/ubuntu/gpg | sudo apt-key add -</span><br></pre></td></tr></table></figure>
+<p>9DC8 5822 9FC7 DD38 854A E2D8 8D81 803C 0EBF CD88 通过搜索指纹的后8个字符，验证您现在是否拥有带有指纹的密钥。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo apt-key fingerprint 0EBFCD88</span><br></pre></td></tr></table></figure>
+<p>④ 设置稳定版仓库</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo add-apt-repository &quot;deb [arch=amd64] https://mirrors.ustc.edu.cn/docker-ce/linux/ubuntu/ $(lsb_release -cs) stable&quot;</span><br></pre></td></tr></table></figure>
+<p>⑤ 更新apt包索引</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo apt-get update</span><br></pre></td></tr></table></figure>
+<p>⑥ 安装Docker</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo apt-get install docker-ce docker-ce-cli containerd.io</span><br></pre></td></tr></table></figure>
+<p>如果要安装指定版本，可使用如下命令查可用版本（按版本号从高到低对结果进行排序）：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">apt-cache madison docker-ce</span><br></pre></td></tr></table></figure>
+<p>例：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker-ce | 5:18.09.1~3-0~ubuntu-xenial | https://mirrors.ustc.edu.cn/docker-ce/linux/ubuntu  xenial/stable amd64 Packages</span><br><span class="line">docker-ce | 5:18.09.0~3-0~ubuntu-xenial | https://mirrors.ustc.edu.cn/docker-ce/linux/ubuntu  xenial/stable amd64 Packages</span><br><span class="line">docker-ce | 18.06.1~ce~3-0~ubuntu       | https://mirrors.ustc.edu.cn/docker-ce/linux/ubuntu  xenial/stable amd64 Packages</span><br><span class="line">docker-ce | 18.06.0~ce~3-0~ubuntu       | https://mirrors.ustc.edu.cn/docker-ce/linux/ubuntu  xenial/stable amd64 Packages</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>并通过其版本号安装特定版本，即第二列第一个<code>:</code>一直到第一个<code>-</code>中间的字符。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo apt-get install docker-ce-18.09.1 docker-ce-cli-18.09.1 containerd.io</span><br></pre></td></tr></table></figure>
+<p>注：Docker 安装完默认未启动。并且已经创建好 docker 用户组，但该用户组下没有用户。</p>
+<p>⑦ 启动Docker</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo service docker start</span><br></pre></td></tr></table></figure>
+<p>⑧ 验证</p>
+<p>通过运行 hello-world 映像来验证是否正确安装：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo docker run hello-world</span><br></pre></td></tr></table></figure>
+<h3 id="卸载-1"><a href="#卸载-1" class="headerlink" title="卸载"></a>卸载</h3><p>删除安装包：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo apt-get purge docker-ce</span><br></pre></td></tr></table></figure>
+<p>删除镜像、容器、配置文件等内容：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo rm -rf /var/lib/docker</span><br></pre></td></tr></table></figure>
+<p>卸载旧版本</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo apt-get remove docker docker-engine docker.io containerd runc</span><br></pre></td></tr></table></figure>
+<h1 id="加入用户组"><a href="#加入用户组" class="headerlink" title="加入用户组"></a>加入用户组</h1><p>Docker需要用户具有sudo权限，为了避免每次命令都输入sudo，建议将用户加入Docker用户组：</p>
+<p>① 添加Docker分组</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo groupadd docker</span><br></pre></td></tr></table></figure>
+<p>② 将当前用户添加到分组</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo usermod -aG docker $USER</span><br></pre></td></tr></table></figure>
+<p>③ 重启服务</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo service docker restart</span><br></pre></td></tr></table></figure>
+<p>④ 切换当前会话到新组</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">newgrp - docker</span><br></pre></td></tr></table></figure>
+<h1 id="配置镜像加速"><a href="#配置镜像加速" class="headerlink" title="配置镜像加速"></a>配置镜像加速</h1><p>国内从DockerHub拉取镜像速度慢，此时可以配置镜像加速器。Docker官方和国内很多云服务商都提供了国内加速器服务。例如：</p>
+<ul>
+<li>科大镜像：<a href="https://docker.mirrors.ustc.edu.cn/">https://docker.mirrors.ustc.edu.cn/</a></li>
+<li>网易：<a href="https://hub-mirror.c.163.com/">https://hub-mirror.c.163.com/</a></li>
+<li>阿里云：https://&lt;你的ID&gt;.mirror.aliyuncs.com</li>
+<li>七牛云加速器：<a href="https://reg-mirror.qiniu.com">https://reg-mirror.qiniu.com</a></li>
+<li>ustc：<a href="https://docker.mirrors.ustc.edu.cn">https://docker.mirrors.ustc.edu.cn</a></li>
+<li>中国科技大学<a href="https://docker.mirrors.ustc.edu.cn">https://docker.mirrors.ustc.edu.cn</a></li>
+</ul>
+<p>注：阿里云须<a href="https://cr.console.aliyun.com/cn-hangzhou/instances/mirrors">登录</a>，从左侧菜单选中镜像加速器获取专属地址。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/docker/docker1.jpg" alt></p>
+<p>这里以Ubuntu16.04+、Debian8+、CentOS7的配置为例，在 <code>/etc/docker/daemon.json</code>中写入如下内容（如果文件不存在请新建该文件）：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">&quot;registry-mirrors&quot;: [&quot;https://registry.docker-cn.com&quot;,</span><br><span class="line">&quot;http://hub-mirror.c.163.com&quot;,</span><br><span class="line">&quot;https://docker.mirrors.ustc.edu.cn&quot;</span><br><span class="line">]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>多个镜像源则以<code>,</code>分割。</p>
+<p>之后重启服务：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo systemctl daemon-reload</span><br><span class="line">sudo systemctl restart docker</span><br></pre></td></tr></table></figure>
+<h1 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h1><h2 id="docker常用命令"><a href="#docker常用命令" class="headerlink" title="docker常用命令"></a>docker常用命令</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker --help #查看docker命令</span><br><span class="line">docker info #docker 详细信息，镜像和容器</span><br><span class="line">docker version #查看docker版本</span><br></pre></td></tr></table></figure>
+<h2 id="常用镜像命令"><a href="#常用镜像命令" class="headerlink" title="常用镜像命令"></a>常用镜像命令</h2><h3 id="查看镜像"><a href="#查看镜像" class="headerlink" title="查看镜像"></a>查看镜像</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker images #查看docker镜像</span><br><span class="line">docker images -a #列出本地所有的镜像</span><br><span class="line">docker images -q #只显示镜像ID</span><br><span class="line">docker images --digests #显示镜像的摘要信息</span><br><span class="line">docker images --no-trunc #显示完整的镜像信息</span><br></pre></td></tr></table></figure>
+<p>具体列解释含义：</p>
+<ul>
+<li>REPOSITORY：镜像仓库源        </li>
+<li>TAG：镜像的标签         </li>
+<li>IMAGE ID：镜像id      </li>
+<li>CREATED：创建时间       </li>
+<li>SIZE：大小</li>
+</ul>
+<p>注：同一个仓库源可以有多个TAG，表示这个仓库源的不同版本，我们使用<code>REPOSITORY:TAG</code>来定义不同的镜像。如果不指定一个镜像的版本标签，例如只使用tomcat，docker将默认使用<code>tomcat:latest</code>镜像</p>
+<h3 id="查找镜像"><a href="#查找镜像" class="headerlink" title="查找镜像"></a>查找镜像</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker search tomcat #从Docker Hub上查找tomcat镜像</span><br><span class="line">docker search --filter=stars=300 tomcat #从Docker Hub上查找关注度(stars)大于300的tomcat镜像</span><br></pre></td></tr></table></figure>
+<h3 id="下载镜像"><a href="#下载镜像" class="headerlink" title="下载镜像"></a>下载镜像</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker pull tomcat #下载tomcat镜像，相当于：docker pull tomcat:latest</span><br></pre></td></tr></table></figure>
+<h3 id="删除镜像"><a href="#删除镜像" class="headerlink" title="删除镜像"></a>删除镜像</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker rmi redis #单个镜像删除，相当于：docker rmi redis:latest</span><br><span class="line">docker rmi -f redis #强制删除(针对基于镜像有运行的容器进程)</span><br><span class="line">docker rmi -f redis tomcat nginx #多个镜像删除，不同镜像间以空格间隔</span><br><span class="line">docker rmi -f $(docker images -q) #删除本地全部镜像</span><br></pre></td></tr></table></figure>
+<h2 id="容器命令"><a href="#容器命令" class="headerlink" title="容器命令"></a>容器命令</h2><p>只有在镜像的基础上才能运行容器命令</p>
+<h3 id="查看容器"><a href="#查看容器" class="headerlink" title="查看容器"></a>查看容器</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker ps -a #-a 是查看当前所有正在运行的容器</span><br><span class="line">docker ps -q #只显示容器ID</span><br></pre></td></tr></table></figure>
+<h3 id="容器启动"><a href="#容器启动" class="headerlink" title="容器启动"></a>容器启动</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker run -i -t --name mycentos #新建并启动容器，参数：-i 以交互模式运行容器；-t 为容器重新分配一个伪输入终端；--name 为容器指定一个名称, 相当于: docker run -it mycentos</span><br><span class="line">docker run -d mycentos #后台启动容器，参数：-d 以守护进程方式启动容器</span><br><span class="line">docker start 容器id或容器名 #启动容器</span><br><span class="line">docker restart 容器id或容器名 #重启容器</span><br></pre></td></tr></table></figure>
+<h3 id="容器停止"><a href="#容器停止" class="headerlink" title="容器停止"></a>容器停止</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker kill 容器id或容器名</span><br><span class="line">docker stop 容器id或容器名</span><br></pre></td></tr></table></figure>
+<h3 id="进入容器"><a href="#进入容器" class="headerlink" title="进入容器"></a>进入容器</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">#放在镜像名后的是命令，这里我们希望有个交互式Shell，因此用的是/bin/bash</span><br><span class="line">docker attach 容器id或容器名 /bin/bash #进入容器正在执行的终端，不会启动新的终端进程</span><br><span class="line">docker run -it 容器id或容器名 /bin/bash #使用run方式在创建时进入</span><br><span class="line">docker exec -it 容器id /bin/bash #进入容器后，开启一个新的终端，可以再里面操作</span><br></pre></td></tr></table></figure>
+<h3 id="退出容器"><a href="#退出容器" class="headerlink" title="退出容器"></a>退出容器</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">exit #关闭容器并退出</span><br><span class="line">快捷键：Ctrl + P + Q #仅退出容器，不关闭</span><br></pre></td></tr></table></figure>
+<h3 id="容器内拷贝文件到主机"><a href="#容器内拷贝文件到主机" class="headerlink" title="容器内拷贝文件到主机"></a>容器内拷贝文件到主机</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker cp 容器id:容器内路径 目的主机路径</span><br></pre></td></tr></table></figure>
+<h2 id="利用Dockerfile创建镜像"><a href="#利用Dockerfile创建镜像" class="headerlink" title="利用Dockerfile创建镜像"></a>利用Dockerfile创建镜像</h2><p>Dockerfile可以理解为一种配置文件，用来告诉docker build命令应该执行哪些操作。可参照<a href="https://docs.docker.com/engine/reference/builder/">官方</a>说明。</p>
+<h3 id="Dockerfile组成"><a href="#Dockerfile组成" class="headerlink" title="Dockerfile组成"></a>Dockerfile组成</h3><p>Dockerfile是由一行行命令语句组成，并且支持已<code>#</code>开头的注释行。</p>
+<p>一般来说，可以将Dockerfile分为四个部分：</p>
+<ul>
+<li>基础镜像(父镜像)信息指令<code>FROM</code></li>
+<li>维护者信息指令<code>MAINTAINER</code></li>
+<li>镜像操作指令<code>RUN</code>、<code>EVN</code>、<code>ADD</code>和<code>WORKDIR</code>等</li>
+<li>容器启动指令<code>CMD</code>、<code>ENTRYPOINT</code>和<code>USER</code>等</li>
+</ul>
+<h3 id="Dockerfile示例"><a href="#Dockerfile示例" class="headerlink" title="Dockerfile示例"></a>Dockerfile示例</h3><p>下面是一段简单的Dockerfile的例子：</p>
+<p>首先创建Dockerfile文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">touch Dockerfile</span><br></pre></td></tr></table></figure>
+<p>然后编辑该文件，输入内容：<br><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">FROM python:3.6</span><br><span class="line">MAINTAINER zqy &lt;zqy@gmail.com&gt;</span><br><span class="line">COPY . /app</span><br><span class="line">WORKDIR /app</span><br><span class="line">RUN pip install -r requirements.txt</span><br><span class="line">EXPOSE 5000</span><br><span class="line">ENTRYPOINT [&quot;python&quot;]</span><br><span class="line">CMD [&quot;app.py&quot;]</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>1、从<code>Docker Hub</code>上<code>pull</code>下<code>python 3.6</code>的基础镜像</li>
+<li>2、构建者的信息（自己定义）</li>
+<li>3、<code>copy</code>当前目录<code>.</code>到容器中的<code>/app</code>目录下</li>
+<li>4、指定工作路径为<code>/app</code></li>
+<li>5、安装依赖包</li>
+<li>6、暴露<code>5000</code>端口</li>
+<li>7、执行<code>app.py</code></li>
+</ul>
+<p>最后在Dockerfile文件所在目录执行：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker build -t zqy/demo:v1 .</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>-t</code>是为新镜像设置仓库和名称，其中<code>zqy</code>为仓库名，<code>demo</code>为镜像名，<code>:v1</code>为版本标签（不添加为默认 <code>latest</code> ），<code>.</code>为当前路径</li>
+</ul>
+<h3 id="常用指令集"><a href="#常用指令集" class="headerlink" title="常用指令集"></a>常用指令集</h3><h4 id="FROM"><a href="#FROM" class="headerlink" title="FROM"></a>FROM</h4><p>用于指定基础的<code>images</code>，一般格式为<code>FROM &lt;image&gt;</code>or<code>FORM &lt;image&gt;:&lt;tag&gt;</code>，所有的 Dockerfile都用该以<code>FROM</code>开头，<code>FROM</code>命令指明Dockerfile所创建的镜像文件以什么镜像为基础，<code>FROM</code>以后的所有指令都会在<code>FROM</code>的基础上进行创建镜像。</p>
+<h4 id="MAINTAINER"><a href="#MAINTAINER" class="headerlink" title="MAINTAINER"></a>MAINTAINER</h4><p>MAINTAINER 是用于指定镜像创建者和联系方式，一般格式为<code>MAINTAINER &lt;name&gt;</code>。</p>
+<h4 id="COPY"><a href="#COPY" class="headerlink" title="COPY"></a>COPY</h4><p>用于复制本地主机的<code>&lt;src&gt;</code>(为 Dockerfile 所在目录的相对路径)到容器中的 <code>&lt;dest&gt;</code>。当使用本地目录为源目录时，推荐使用<code>COPY</code>。一般格式为<code>COPY &lt;src&gt; &lt;dest&gt;</code>或<code>COPY [&quot;&lt;src&gt;&quot;,... &quot;&lt;dest&gt;&quot;]</code>(特别适合路径中带有空格的情况)。</p>
+<h4 id="ADD"><a href="#ADD" class="headerlink" title="ADD"></a>ADD</h4><p>不仅能够将构建命令所在的主机本地的文件或目录，而且能够将远程URL所对应的文件或目录，作为资源复制到镜像文件系统。可以认为是增强版的<code>COPY</code>，支持将远程URL的资源加入到镜像的文件系统。一般格式为<code>ADD &lt;src&gt; &lt;dest&gt;</code>或<code>ADD [&quot;&lt;src&gt;&quot;,... &quot;&lt;dest&gt;&quot;]</code>(特别适合路径中带有空格的情况)。</p>
+<h4 id="ENV"><a href="#ENV" class="headerlink" title="ENV"></a>ENV</h4><p>设置环境变量，可以被后面的所有指令中使用，格式为<code>ENV &lt;key&gt; &lt;value&gt; ...</code>，如设置JAVA环境变量：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ENV JAVA_HOME /opt/software/jdk1.8.0_161</span><br><span class="line">ENV PATH $JAVA_HOME/bin:$PATH</span><br></pre></td></tr></table></figure>
+<h4 id="WORKDIR"><a href="#WORKDIR" class="headerlink" title="WORKDIR"></a>WORKDIR</h4><p>用于配合<code>RUN</code>，<code>CMD</code>，<code>ENTRYPOINT</code>命令设置当前工作路径。可以设置多次，如果是相对路径，则相对前一个<code>WORKDIR</code>命令。默认路径为<code>/</code>。一般格式为<code>WORKDIR /path/to/work/dir</code>。</p>
+<h4 id="RUN"><a href="#RUN" class="headerlink" title="RUN"></a>RUN</h4><p>用于容器内部执行命令。每个<code>RUN</code>命令相当于在原有的镜像基础上添加了一个改动层，原有的镜像不会有变化。一般格式为<code>RUN &lt;command&gt;</code> 。例如要安装<code>python</code>依赖包，做法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">RUN pip install -r requirements.txt</span><br></pre></td></tr></table></figure>
+<h4 id="EXPOSE"><a href="#EXPOSE" class="headerlink" title="EXPOSE"></a>EXPOSE</h4><p>用来指定对外开放的端口。一般格式为<code>EXPOSE &lt;port&gt; [&lt;port&gt;...]</code></p>
+<h4 id="ENTRYPOINT"><a href="#ENTRYPOINT" class="headerlink" title="ENTRYPOINT"></a>ENTRYPOINT</h4><p>让容器表现得像一个可执行程序一样。一个Dockerfile中只能有一个<code>ENTRYPOINT</code>，如果有多个，则最后一个生效。</p>
+<p><code>ENTRYPOINT</code> 命令有两种格式：</p>
+<ul>
+<li><code>ENTRYPOINT [&quot;executable&quot;, &quot;param1&quot;, &quot;param2&quot;]</code> ：推荐使用的 <code>exec</code>形式</li>
+<li><code>ENTRYPOINT command param1 param2</code> ：<code>shell</code> 形式</li>
+</ul>
+<p>例如要将<code>python</code>镜像变成可执行的程序，可以这样去做：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ENTRYPOINT [&quot;python&quot;]</span><br></pre></td></tr></table></figure>
+<h4 id="CMD"><a href="#CMD" class="headerlink" title="CMD"></a>CMD</h4><p>用于启动容器时默认执行的命令，<code>CMD</code>命令可以包含可执行文件，也可以不包含可执行文件。不包含可执行文件的情况下就要用<code>ENTRYPOINT</code>指定一个，然后<code>CMD</code>命令的参数就会作为<code>ENTRYPOINT</code>的参数。</p>
+<p><code>CMD</code> 命令有三种格式：</p>
+<ul>
+<li><code>CMD [&quot;executable&quot;,&quot;param1&quot;,&quot;param2&quot;]</code>：推荐使用的 <code>exec</code> 形式。</li>
+<li><code>CMD [&quot;param1&quot;,&quot;param2&quot;]</code>：无可执行程序形式</li>
+<li><code>CMD command param1 param2</code>：shell 形式。</li>
+</ul>
+<p>一个Dockerfile中只能有一个<code>CMD</code>，如果有多个，则最后一个生效。而<code>CMD</code>的<code>shell</code>形式默认调用<code>/bin/sh -c</code>执行命令。</p>
+<p><code>CMD</code>命令会被Docker命令行传入的参数覆盖：<code>docker run busybox /bin/echo Hello</code> <code>Docker</code>会把<code>CMD</code>里的命令覆盖。</p>
+<h4 id="USER"><a href="#USER" class="headerlink" title="USER"></a>USER</h4><p>指定运行容器时的用户名或UID或GID，后续的操作都会使用指定用户。格式：<code>USER user</code>或<code>USER user:group</code>或<code>USER uid</code>或<code>USER uid:gid</code>或<code>USER user:gid</code>或<code>USER uid:group</code></p>
+<p>例：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">USER www #使用USER指定用户后，Dockerfile中其后的命令RUN、CMD、ENTRYPOINT都将使用该用户。镜像构建完成后，通过docker run运行容器时，可以通过-u参数来覆盖所指定的用户。</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Docker</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Ubuntu多版本CUDA安装与切换</title>
     <url>/2022/01/04/Ubuntu%E5%A4%9A%E7%89%88%E6%9C%ACcuda%E5%AE%89%E8%A3%85%E4%B8%8E%E5%88%87%E6%8D%A2/</url>
     <content><![CDATA[<p>本文主要介绍CUDA多版本如何共存与切换，这里以cuda10.1为例。</p>
