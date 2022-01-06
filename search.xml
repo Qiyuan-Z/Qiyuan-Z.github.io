@@ -1,6 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>解决nvidia-smi和nvcc显示信息与所安装CUDA版本不一致问题</title>
+    <url>/2022/01/06/%E8%A7%A3%E5%86%B3nvidia-smi%E5%92%8Cnvcc%E6%98%BE%E7%A4%BA%E4%BF%A1%E6%81%AF%E4%B8%8E%E6%89%80%E5%AE%89%E8%A3%85CUDA%E7%89%88%E6%9C%AC%E4%B8%8D%E4%B8%80%E8%87%B4%E9%97%AE%E9%A2%98/</url>
+    <content><![CDATA[<h2 id="nvidia-smi-amp-nvcc-V"><a href="#nvidia-smi-amp-nvcc-V" class="headerlink" title="nvidia-smi &amp; nvcc -V"></a>nvidia-smi &amp; nvcc -V</h2><p>首先需明白CUDA有runtime api和driver api，两者都有对应的CUDA版本，<code>nvcc -V</code>显示前者对应的CUDA版本，而<code>nvidia-smi</code>显示后者对应的CUDA版本。</p>
+<p>通常，driver api版本能向下兼容runtime api的版本，即<code>nvidia-smi</code>显示的版本大于<code>nvcc -V</code>的版本通常不会出现大问题。因此<code>nvidia-smi</code>显示的版本与所安装CUDA版本不一致是正常的。</p>
+<p>而平常我们做深度学习所用的是CUDA的runtime api版本，因此以<code>nvcc -V</code>为准，这里版本如果不一致就容易发生问题。其原因主要是本机存在多个CUDA，没有正确映射造成。</p>
+<h2 id="问题解决"><a href="#问题解决" class="headerlink" title="问题解决"></a>问题解决</h2><p>查询现在的映射关系，可通过如下命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">stat /usr/bin/nvcc</span><br></pre></td></tr></table></figure>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/cuda/image-20220106101722613.png" alt></p>
+<p>要是映射错误，需重新建立映射：</p>
+<p>① 删除原来映射</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo rm -rf /usr/bin/nvcc</span><br></pre></td></tr></table></figure>
+<p>② 建立新的软链接指向安装的CUDA版本</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo ln -s /usr/local/cuda/bin/nvcc /usr/bin/nvcc</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>CUDA</tag>
+        <tag>cuDNN</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>快速入门Docker</title>
     <url>/2022/01/04/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8Docker/</url>
     <content><![CDATA[<h1 id="Docker是什么？"><a href="#Docker是什么？" class="headerlink" title="Docker是什么？"></a>Docker是什么？</h1><p>Docker是一个虚拟环境容器，可以将你的开发环境、代码、配置文件等一并打包到这个容器中，并发布和应用到任意平台中。</p>
@@ -93,7 +116,6 @@
 <li>网易：<a href="https://hub-mirror.c.163.com/">https://hub-mirror.c.163.com/</a></li>
 <li>阿里云：https://&lt;你的ID&gt;.mirror.aliyuncs.com</li>
 <li>七牛云加速器：<a href="https://reg-mirror.qiniu.com">https://reg-mirror.qiniu.com</a></li>
-<li>ustc：<a href="https://docker.mirrors.ustc.edu.cn">https://docker.mirrors.ustc.edu.cn</a></li>
 <li>中国科技大学<a href="https://docker.mirrors.ustc.edu.cn">https://docker.mirrors.ustc.edu.cn</a></li>
 </ul>
 <p>注：阿里云须<a href="https://cr.console.aliyun.com/cn-hangzhou/instances/mirrors">登录</a>，从左侧菜单选中镜像加速器获取专属地址。</p>
@@ -121,9 +143,17 @@
 <h3 id="查看容器"><a href="#查看容器" class="headerlink" title="查看容器"></a>查看容器</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker ps -a #-a 是查看当前所有正在运行的容器</span><br><span class="line">docker ps -q #只显示容器ID</span><br></pre></td></tr></table></figure>
 <h3 id="容器启动"><a href="#容器启动" class="headerlink" title="容器启动"></a>容器启动</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker run -i -t --name mycentos #新建并启动容器，参数：-i 以交互模式运行容器；-t 为容器重新分配一个伪输入终端；--name 为容器指定一个名称, 相当于: docker run -it mycentos</span><br><span class="line">docker run -d mycentos #后台启动容器，参数：-d 以守护进程方式启动容器</span><br><span class="line">docker start 容器id或容器名 #启动容器</span><br><span class="line">docker restart 容器id或容器名 #重启容器</span><br></pre></td></tr></table></figure>
 <h3 id="容器停止"><a href="#容器停止" class="headerlink" title="容器停止"></a>容器停止</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker kill 容器id或容器名</span><br><span class="line">docker stop 容器id或容器名</span><br></pre></td></tr></table></figure>
-<h3 id="进入容器"><a href="#进入容器" class="headerlink" title="进入容器"></a>进入容器</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">#放在镜像名后的是命令，这里我们希望有个交互式Shell，因此用的是/bin/bash</span><br><span class="line">docker attach 容器id或容器名 /bin/bash #进入容器正在执行的终端，不会启动新的终端进程</span><br><span class="line">docker run -it 容器id或容器名 /bin/bash #使用run方式在创建时进入</span><br><span class="line">docker exec -it 容器id /bin/bash #进入容器后，开启一个新的终端，可以再里面操作</span><br></pre></td></tr></table></figure>
+<h3 id="进入容器"><a href="#进入容器" class="headerlink" title="进入容器"></a>进入容器</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">#放在镜像名后的是命令，这里我们希望有个交互式Shell，因此用的是/bin/bash</span><br><span class="line">docker attach 容器id或容器名 /bin/bash #进入容器正在执行的终端，不会启动新的终端进程</span><br><span class="line">docker run -it 容器id或容器名 /bin/bash #使用run方式在创建时进入</span><br><span class="line">docker exec -it 容器id或容器名 /bin/bash #进入容器后，开启一个新的终端，可以在里面操作</span><br></pre></td></tr></table></figure>
 <h3 id="退出容器"><a href="#退出容器" class="headerlink" title="退出容器"></a>退出容器</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">exit #关闭容器并退出</span><br><span class="line">快捷键：Ctrl + P + Q #仅退出容器，不关闭</span><br></pre></td></tr></table></figure>
+<h3 id="挂载"><a href="#挂载" class="headerlink" title="挂载"></a>挂载</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker run -it -v /宿主机目录:/容器目录 镜像名 /bin/bash #-v 容器启动时会将宿主机目录挂载到容器里</span><br></pre></td></tr></table></figure>
 <h3 id="容器内拷贝文件到主机"><a href="#容器内拷贝文件到主机" class="headerlink" title="容器内拷贝文件到主机"></a>容器内拷贝文件到主机</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker cp 容器id:容器内路径 目的主机路径</span><br></pre></td></tr></table></figure>
+<h3 id="容器连接"><a href="#容器连接" class="headerlink" title="容器连接"></a>容器连接</h3><p>可以通过 <code>-P</code> 或 <code>-p</code>参数来指定端口映射，实现外部通过网络端口来访问运行在Docker容器内的服务，例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker run -d -P training/webapp python app.py</span><br><span class="line">docker run -d -p 5000:5000 training/webapp python app.py</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>-P</code> :是容器内部端口<strong>随机</strong>映射到主机的高端口。</li>
+<li><code>-p</code>:是容器内部端口绑定到<strong>指定</strong>的主机端口。</li>
+</ul>
+<p>外部可通过SSH，使用ip+绑定的主机端口号进行容器访问。</p>
 <h2 id="利用Dockerfile创建镜像"><a href="#利用Dockerfile创建镜像" class="headerlink" title="利用Dockerfile创建镜像"></a>利用Dockerfile创建镜像</h2><p>Dockerfile可以理解为一种配置文件，用来告诉docker build命令应该执行哪些操作。可参照<a href="https://docs.docker.com/engine/reference/builder/">官方</a>说明。</p>
 <h3 id="Dockerfile组成"><a href="#Dockerfile组成" class="headerlink" title="Dockerfile组成"></a>Dockerfile组成</h3><p>Dockerfile是由一行行命令语句组成，并且支持已<code>#</code>开头的注释行。</p>
 <p>一般来说，可以将Dockerfile分为四个部分：</p>
