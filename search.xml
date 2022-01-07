@@ -1,6 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>TensorRT安装</title>
+    <url>/2022/01/07/TensorRT%E5%AE%89%E8%A3%85/</url>
+    <content><![CDATA[<h2 id="安装PyCuda"><a href="#安装PyCuda" class="headerlink" title="安装PyCuda"></a>安装PyCuda</h2><p>如果通过Python使用TensorRT的话，需要安装PyCuda，只需要执行：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">pip install pycuda</span><br></pre></td></tr></table></figure>
+<p>(注：本人测试环境为Ubuntu16.04，在安装过程中发现PyCuda新版本会编译失败，而<code>pycuda&lt;=2019.1</code>则正常。)</p>
+<p>若安装出现问题，需手动编译，可参照<a href="https://wiki.tiker.net/PyCuda/Installation/Linux/">官网</a>教程</p>
+<h2 id="安装TensorRT"><a href="#安装TensorRT" class="headerlink" title="安装TensorRT"></a>安装TensorRT</h2><p>官方推荐安装cuda10.2或者11.0以上，cuda版本不对的请自行更换。这里推荐安装TensorRT 7.2.3.4及以上版本，太早的版本很多算子不支持，容易踩坑。</p>
+<p>以TensorRT7系列为例，去<a href="https://link.zhihu.com/?target=https%3A//developer.nvidia.com/nvidia-tensorrt-7x-download">官网</a>选择合适版本下载</p>
+<p>① 解压缩</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">tar xzvf TensorRT-7.2.3.4.Ubuntu-16.04.x86_64-gnu.cuda-10.2.cudnn8.1.tar.gz</span><br></pre></td></tr></table></figure>
+<p>② 安装TensorRT wheel 文件，根据python版本选择，这里是python3.6</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cd TensorRT-7.2.3.4/python</span><br><span class="line">pip install tensorrt-7.2.3.4-cp36-none-linux_x86_64.whl</span><br></pre></td></tr></table></figure>
+<p>③ 安装graphsurgeon wheel文件</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cd TensorRT-7.2.3.4/graphsurgeon</span><br><span class="line">pip install graphsurgeon-0.4.5-py2.py3-none-any.whl</span><br></pre></td></tr></table></figure>
+<p>④ 配置环境变量</p>
+<p>编辑<code>~/.bashrc</code>文件，在文末添加以下内容：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">export LD_LIBRARY_PATH=/home/用户名/TensorRT-7.2.3.4/lib:$LD_LIBRARY_PATH</span><br></pre></td></tr></table></figure>
+<p>(注：自己换成TensorRT-7.2.3.4所在路径)</p>
+<p>配置生效：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">source ~/.bashrc</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>TensorRT</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>解决nvidia-smi和nvcc显示信息与所安装CUDA版本不一致问题</title>
     <url>/2022/01/06/%E8%A7%A3%E5%86%B3nvidia-smi%E5%92%8Cnvcc%E6%98%BE%E7%A4%BA%E4%BF%A1%E6%81%AF%E4%B8%8E%E6%89%80%E5%AE%89%E8%A3%85CUDA%E7%89%88%E6%9C%AC%E4%B8%8D%E4%B8%80%E8%87%B4%E9%97%AE%E9%A2%98/</url>
     <content><![CDATA[<h2 id="nvidia-smi-amp-nvcc-V"><a href="#nvidia-smi-amp-nvcc-V" class="headerlink" title="nvidia-smi &amp; nvcc -V"></a>nvidia-smi &amp; nvcc -V</h2><p>首先需明白CUDA有runtime api和driver api，两者都有对应的CUDA版本，<code>nvcc -V</code>显示前者对应的CUDA版本，而<code>nvidia-smi</code>显示后者对应的CUDA版本。</p>
