@@ -4,6 +4,7 @@
     <title>Grad-CAM原理和实现</title>
     <url>/2022/01/10/Grad-CAM%E5%8E%9F%E7%90%86%E5%92%8C%E5%AE%9E%E7%8E%B0/</url>
     <content><![CDATA[<p>本文转载于<a href="https://zhuanlan.zhihu.com/p/453689298">⚡哥的知乎专栏</a>，大佬写的真是清晰易懂，菜鸡的我默默留存，好好学习！🙇‍♂️</p>
+<p>觉得不错的，大家记得帮电哥点赞👍+收藏⭐呀！</p>
 <h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>① 要做猫狗的二分类任务，网络的分类器是输出为两个神经元的全连接层，两个神经元的输出分别为$z=\left[z_{c}, z_{d}\right]$，其中猫的概率为$p_c$，狗的概率为$p_d$，且$\left[p_{c}, p_{d}\right]=\operatorname{softmax}(z)$。<br>② 要可视化猫这个类别的GradCAM，通过$z_c$对CNN最后一层的所有特征图$A_{i, j}^{k}$求偏导$G_{i, j}^{k}=\frac{\partial z_{c}}{\partial A_{i, j}^{k}}$，其中$A_{i, j}^{k}$表示特征图$A$ shape=(1, C, H, W)的第k通道的(i, j)坐标点，最终的偏导特征图$G$ shape=(1, C, H, W)。</p>
 <ul>
 <li><p>取最后一层的原因：</p>
@@ -43,7 +44,7 @@
 <p>若安装出现问题，需手动编译，可参照<a href="https://wiki.tiker.net/PyCuda/Installation/Linux/">官网</a>教程：</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git clone https://github.com/inducer/pycuda.git # 测试时新版本为2020.1</span><br><span class="line">tar xfz pycuda-VERSION.tar.gz</span><br><span class="line">cd pycuda-VERSION</span><br><span class="line">pip3 install numpy==1.20rc   # 此处一定要注意版本,本人刚开始安装了1.19,一直不成功</span><br><span class="line">python configure.py --cuda-root=/where/ever/you/installed/cuda  # 修改为自己cuda的路径</span><br><span class="line">su -c &quot;make install&quot;</span><br><span class="line"></span><br><span class="line"># 测试</span><br><span class="line">cd pycuda-VERSION/test</span><br><span class="line">python test_driver.py    # &quot;OK&quot;则通过</span><br></pre></td></tr></table></figure>
 <h2 id="安装TensorRT"><a href="#安装TensorRT" class="headerlink" title="安装TensorRT"></a>安装TensorRT</h2><p>官方推荐安装cuda10.2或者11.0以上，cuda版本不对的请自行更换。这里推荐安装TensorRT 7.2.3.4及以上版本，太早的版本很多算子不支持，容易踩坑。</p>
-<p>以TensorRT7系列为例，去<a href="https://link.zhihu.com/?target=https%3A//developer.nvidia.com/nvidia-tensorrt-7x-download">官网</a>选择合适版本下载</p>
+<p>以TensorRT 7系列为例，去<a href="https://link.zhihu.com/?target=https%3A//developer.nvidia.com/nvidia-tensorrt-7x-download">官网</a>选择合适版本下载</p>
 <p>① 解压缩</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">tar xzvf TensorRT-7.2.3.4.Ubuntu-16.04.x86_64-gnu.cuda-10.2.cudnn8.1.tar.gz</span><br></pre></td></tr></table></figure>
 <p>② 安装TensorRT wheel 文件，根据python版本选择，这里是python3.6</p>
