@@ -1,6 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>JetBrains全系列软件激活教程</title>
+    <url>/2022/01/14/JetBrains%E5%85%A8%E7%B3%BB%E5%88%97%E8%BD%AF%E4%BB%B6%E6%BF%80%E6%B4%BB%E6%95%99%E7%A8%8B/</url>
+    <content><![CDATA[<p>Jetbrains家的产品有一个很良心的地方，他会允许你试用 30 天（这个数字写死在代码里了）以评估是否你真的需要为它而付费。 因此推荐使用无限重置试用的方法白嫖，最终和永久激活使用无差异，也比破解稳定。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/jetbrains/image-20220114101810909.png" alt></p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>在<code>Settings/Preferences... -&gt; Plugins</code>内手动添加第三方插件仓库地址：<code>https://plugins.zhile.io</code>搜索：IDE Eval Reset插件进行安装。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/jetbrains/image-20220114101936925.png" alt></p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/jetbrains/image-20220114102036711.png" alt></p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/jetbrains/image-20220114102121670.png" alt></p>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>一般来说，在 IDE 窗口切出去或切回来时（窗口失去/得到焦点）会触发事件，检测是否长时间（25天）没有重置，给通知让你选择。（初次安装因为无法获取上次重置时间，会直接给予提示）。</p>
+<p>您也可以手动唤出插件的主界面：</p>
+<p>a. 如果 IDE 没有打开项目，在 Welcome 界面点击 IDE 的菜单：<code>Get Help -&gt; Eval Reset</code></p>
+<p>b. 如果 IDE 打开了项目，点击 IDE 的菜单：<code>Help -&gt; Eval Reset</code></p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/jetbrains/image-20220114102222559.png" alt></p>
+<p>唤出的插件主界面中包含了一些显示信息，有 2 个按钮和 1 个勾选项：</p>
+<ul>
+<li>按钮：<code>Reload</code> 用来刷新界面上的显示信息。</li>
+<li>按钮：<code>Reset</code> 点击会询问是否重置试用信息并重启 IDE。选择 Yes 则执行重置操作并重启 IDE 生效，选择 No 则什么也不做。（此为手动重置方式）</li>
+<li>勾选项：<code>Auto reset before per restart</code> 如果勾选了，则自勾选后每次重启/退出 IDE 时会自动重置试用信息，你无需做额外的事情。（此为自动重置方式，推荐此方法！）</li>
+</ul>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/jetbrains/image-20220114102304339.png" alt></p>
+<h3 id="一些说明"><a href="#一些说明" class="headerlink" title="一些说明"></a>一些说明</h3><p>市场付费插件的试用信息也会一并重置。</p>
+<p>MyBatisCodeHelperPro 插件有两个版本如下，功能完全相同，安装时须看清楚！</p>
+<ul>
+<li><a href="https://plugins.jetbrains.com/plugin/14522-mybatiscodehelperpro-marketplace-edition-">MyBatisCodeHelperPro</a> (Marketplace Edition)，<code>可重置</code>！</li>
+<li><a href="https://plugins.jetbrains.com/plugin/9837-mybatiscodehelperpro">MyBatisCodeHelperPro</a>，<code>不可重置</code>！</li>
+</ul>
+<p>对于某些付费插件（如: Iedis 2, MinBatis）来说，你可能需要去取掉 javaagent 配置（如果有）后重启IDE：</p>
+<ul>
+<li>如果IDE没有打开项目，在 Welcome 界面点击菜单：Configure -&gt; Edit Custom VM Options… -&gt; 移除 -javaagent: 开头的行。</li>
+<li>如果IDE打开了项目，点击菜单：Help -&gt; Edit Custom VM Options… -&gt; 移除 -javaagent: 开头的行。</li>
+</ul>
+<p>重置需要重启IDE生效！</p>
+<p>重置后并不弹出 Licenses 对话框让你选择输入 License 或试用，这和之前的重置脚本/插件不同（省去这烦人的一步）。</p>
+<p>如果长达 25 天不曾有任何重置动作，IDE 会有通知询问你是否进行重置。</p>
+<p>如果勾选：Auto reset before per restart ，重置是静默无感知的。</p>
+<p>简单来说：勾选了 Auto reset before per restart 则无需再管，一劳永逸。</p>
+<h3 id="支持的产品"><a href="#支持的产品" class="headerlink" title="支持的产品"></a>支持的产品</h3><ul>
+<li>IntelliJ IDEA</li>
+<li>AppCode</li>
+<li>CLion</li>
+<li>DataGrip</li>
+<li>GoLand</li>
+<li>PhpStorm</li>
+<li>PyCharm</li>
+<li>Rider</li>
+<li>RubyMine</li>
+<li>WebStorm</li>
+</ul>
+]]></content>
+      <categories>
+        <category>资源</category>
+      </categories>
+      <tags>
+        <tag>JetBrains</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>LabelImg标注工具使用及数据格式解析</title>
     <url>/2022/01/12/LabelImg%E6%A0%87%E6%B3%A8%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8%E5%8F%8A%E6%95%B0%E6%8D%AE%E6%A0%BC%E5%BC%8F%E8%A7%A3%E6%9E%90/</url>
     <content><![CDATA[<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>LabelImg是目标检测数据标注工具，支持两种标注格式：</p>
