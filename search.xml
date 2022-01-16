@@ -1,6 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>解决梅林新版软件中心禁止安装含非法关键词的插件</title>
+    <url>/2022/01/16/%E8%A7%A3%E5%86%B3%E6%A2%85%E6%9E%97%E6%96%B0%E7%89%88%E8%BD%AF%E4%BB%B6%E4%B8%AD%E5%BF%83%E7%A6%81%E6%AD%A2%E5%AE%89%E8%A3%85%E5%90%AB%E9%9D%9E%E6%B3%95%E5%85%B3%E9%94%AE%E8%AF%8D%E7%9A%84%E6%8F%92%E4%BB%B6/</url>
+    <content><![CDATA[<h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>因为某些不可抗力的原因，梅林新版的软件中心离线安装科学插件的时候会出现下面的提示：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/merlin/a415b7142f88f7d6d14de00c77684110923cde50.png@progressive.webp" alt></p>
+<p>因此，为了安装插件，我们需要手动修改路由的安装脚本来跳过软件中心的检测。</p>
+<h2 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h2><p>① 进入路由[系统管理]-[系统设置]页面，更改[启用ssh]的选项为[LAN only]，[允许使用密码登录]为是，开启路由器的SSH功能。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/merlin/8f51831b741479132a152653e9519567bc757d2b.png@progressive.webp" alt></p>
+<p>② 使用ssh客户端连接路由器，用账号密码登录。不会的请自行百度，也可参照我之前的<a href="https://qiyuan-z.github.io/2020/01/26/Ubuntu%E9%85%8D%E7%BD%AESSH%E5%92%8CXshell%E8%BF%9E%E6%8E%A5%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E6%95%99%E7%A8%8B/">教程</a>，下载Xshell之类的软件，登录服务器IP即为路由器的网关，华硕路由器默认(192.168.50.1)，SSH端口如图，默认为22。这里就不再细讲了。</p>
+<p>③ 输入如下命令执行，即可：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sed -i &#x27;s/\tdetect_package/\t# detect_package/g&#x27; /koolshare/scripts/ks_tar_install.sh</span><br></pre></td></tr></table></figure>
+<p>其原理就是编辑<code>/koolshare/scripts/ks_tar_install.sh</code>安装脚本文件，找到 <code>detect_package()</code>函数，把<code>ILLEGAL_KEYWORDS</code>这一行引号里面的内容删除。</p>
+<p>因此，你也可以远程用记事本或<code>vim</code>之类的命令，对该文件进行编辑，手动删除保存即可。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/merlin/e4035d6254dd910f011d3e2a959c3f604fb3bd49.png@progressive.webp" alt></p>
+<p>执行完该命令后，就跳过了软件中心的检测机制，可以自由的安装科学插件了。 </p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>路由器</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>ConvNeXt：重新设计纯卷积ConvNet</title>
     <url>/2022/01/15/ConvNeXt%EF%BC%9A%E9%87%8D%E6%96%B0%E8%AE%BE%E8%AE%A1%E7%BA%AF%E5%8D%B7%E7%A7%AFConvNet/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近看到一篇挺有意思的文章，来自<strong>Facebook和加州伯克利团队</strong>设计并测试了<strong>纯ConvNet</strong>所能达到的极限命名为<strong>ConvNeXt</strong>。ConvNeXt完全由卷积网络构建，在准确性和可扩展性方面ConvNeXt取得了与Transformer具有竞争力的结果，达到<strong>87.8% ImageNet top-1 准确率</strong>，在COCO检测和ADE20K分割方面优于Swin Transformer，同时保持标准ConvNet的简单性和有效性。</p>
