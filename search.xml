@@ -1,6 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>梅林固件安装Clash</title>
+    <url>/2022/01/17/%E6%A2%85%E6%9E%97%E5%9B%BA%E4%BB%B6%E5%AE%89%E8%A3%85Clash/</url>
+    <content><![CDATA[<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Merlin Clash是一款运行在<a href="https://www.koolcenter.com">KoolCenter</a>软件中心(Arm版)上的Clash GUI插件。获取插件需加入Telegram群组-<a href="https://t.me/merlinclashcat">merlinclashcat</a>，相信能看懂这篇的，都有翻墙技能，这里不再叙述。</p>
+<h2 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h2><p>路由器需要能支持刷固件，固件需要带软件中心，比如梅林固件。一般华硕、网件的路由器固件种类多，比较好刷。若是华硕路由器刷梅林固件可查看我之前写的-<a href="https://qiyuan-z.github.io/2020/02/03/华硕路由器刷固件/">华硕路由器刷固件</a>。其他型号的请自行查找是否有人对其开发相应的固件供刷机。</p>
+<h2 id="插件下载"><a href="#插件下载" class="headerlink" title="插件下载"></a>插件下载</h2><p>进入群组下载对应版本：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/merlin/image-20220117102613765.png" alt></p>
+<p>比如我的路由器是AC86U就下载ARM v8 HND版本，若是不知道自己该下哪个版本，群组里也提供了辅助工具：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/merlin/image-20220117102934363.png" alt></p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>打开[软件中心]-[离线安装]，上传下载好的merlinclash的<code>tar</code>包并安装。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/merlin/image-20220117103235782.png" alt></p>
+<p>要是提示含非法关键词，安装失败的，可查看之前写的-<a href="https://qiyuan-z.github.io/2022/01/16/解决梅林新版软件中心禁止安装含非法关键词的插件/">解决梅林新版软件中心禁止安装含非法关键词的插件</a>。</p>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>详细的使用和更多的技巧可参考<a href="https://mcreadme.gitbook.io/mc/">官方WiKi</a>。</p>
+<p>我这里讲下主要的配置。</p>
+<h3 id="订阅"><a href="#订阅" class="headerlink" title="订阅"></a>订阅</h3><p>插件支持<code>SS</code>|<code>SSR</code>|<code>V2ray</code>|<code>Trojan</code>|<code>Clash</code>订阅链接及<code>ss://xxx</code>|<code>ssr://xxxx</code>|<code>vemss://xxx</code>|<code>trojan://xxx</code>分享链接。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/merlin/image-20220117104109292.png" alt></p>
+<ul>
+<li>小白一键订阅助手：推荐使用，填入代理商提供的订阅链接，设置好配置名称即可，支持多订阅合并成一个配置，使用<code>|</code>分开即可，格式：<code>订阅链接1|订阅链接2</code> 。</li>
+<li>SubConverter本地转换：高级订阅方式，在小白一键订阅助手的基础上增加了一些自定义项。</li>
+<li>Clash-Yaml配置下载：填入代理商提供的Clash专用订阅链接，但机场默认Clash规则普遍不适用于路由器（废流量/国内网站打不开等），不建议新手使用此种订阅方式。</li>
+</ul>
+<p>填好订阅链接，设置好配置名称后，点击开始转换，即可完成订阅。当然也提供<code>导入Clash配置文件</code>(直接导入*.yaml文件)、<code>导入【科学上网】节点</code>(从路由器SS插件导入节点，生成Clash配置文件)，不过一般不建议，可能会有奇怪的问题。</p>
+<p>订阅完成后，可按需要设置定时订阅等，这里就不再叙述了。</p>
+<h3 id="附加功能"><a href="#附加功能" class="headerlink" title="附加功能"></a>附加功能</h3><p>附加功能中建议打开[自定规则]，其他按你需要自行开启：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/merlin/image-20220117105252711.png" alt></p>
+<h3 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h3><p>完成配置后，打开开关，保存并启动后即可开启：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/merlin/image-20220117105444296.png" alt></p>
+<p>图中，红框处显示绿色，则正常。</p>
+<h3 id="管理面板"><a href="#管理面板" class="headerlink" title="管理面板"></a>管理面板</h3><p>插件提供两种网页端的管理面板：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/merlin/image-20220117105626420.png" alt></p>
+<p>可在网页端输入ip地址访问，默认密码<code>clash</code>，也可直接点击按钮进入，此时免密。</p>
+<h3 id="代理模式"><a href="#代理模式" class="headerlink" title="代理模式"></a>代理模式</h3><p>进入管理面板，可查看默认代理模式为总模式，有相应选项进行选择：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/merlin/image-20220117105931807.png" alt></p>
+<p>可设置按<code>延迟最低</code>自动切换、按<code>负载均衡</code>自动切换、<code>故障</code>时自动切换、<code>手动</code>选择以及<code>直连</code>，一般推荐使用按<code>延迟最低</code>自动切换。</p>
+<h3 id="运行模式"><a href="#运行模式" class="headerlink" title="运行模式"></a>运行模式</h3><p>默认按配置文件设定的规则进行代理，即规则中出现的网站走代理，大陆不走代理。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/merlin/image-20220117110304371.png" alt></p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/merlin/image-20220117110353903.png" alt></p>
+<p>因此，如果有些网站规则里没有，但你想让它走代理，可在[自定规则]中设置。</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/merlin/26.jpg" alt></p>
+<p>简单说明一些两个较为常用的：</p>
+<ul>
+<li>DOMAIN-SUFFIX：目的域名后缀， 设定浏览器等访问包含相关的域名后缀如何走规则。</li>
+</ul>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>DOMAIN-SUFFIX</th>
+<th>包含</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>abc.com</td>
+<td><code>abc.com</code> <code>abc.com/*</code> <code>*.abc.com</code> <code>*.abc.com/*</code></td>
+</tr>
+<tr>
+<td>123.abc.com</td>
+<td><code>123.abc.com</code> <code>123.abc.com/*</code> <code>*.123.abc.com</code> <code>*.123.abc.com/*</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li>DOMAIN：目的域名，设定浏览器等访问的域名如何走规则。</li>
+</ul>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>DOMAIN</th>
+<th>包含</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>abc.com</td>
+<td><code>abc.com</code> <code>abc.com/*</code></td>
+</tr>
+<tr>
+<td>123.abc.com</td>
+<td><code>123.abc.com</code> <code>123.abc.com/*</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>剩下的请自行查看<a href="https://mcreadme.gitbook.io/mc/Advanced/Custom">自定义规则 - MerlinClash Wiki (gitbook.io)</a>。</p>
+<h3 id="代理端口"><a href="#代理端口" class="headerlink" title="代理端口"></a>代理端口</h3><p>可在管理面板查看：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/merlin/image-20220117114252109.png" alt></p>
+<p>因此，如果浏览器有使用SwitchyOmega插件(具体使用可参照之前写的-<a href="https://qiyuan-z.github.io/2020/02/16/如何配置SwitchyOmega插件/">如何配置SwitchyOmega插件</a>)，需按照图中设定的端口设置：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/merlin/image-20220117114450798.png" alt></p>
+<p>同理，若需要下载些国外资源，下载器的代理服务器设置，也需与设定的端口对应：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/merlin/image-20220117114733242.png" alt></p>
+<h2 id="效果"><a href="#效果" class="headerlink" title="效果"></a>效果</h2><p>起飞🚀：</p>
+<p><img src="https://gitee.com/qiyuan-z/yuan-blog-image/raw/master/img/merlin/Snipaste_2022-01-17_11-54-57.jpg" alt></p>
+]]></content>
+      <categories>
+        <category>资源</category>
+      </categories>
+      <tags>
+        <tag>路由器</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>解决梅林新版软件中心禁止安装含非法关键词的插件</title>
     <url>/2022/01/16/%E8%A7%A3%E5%86%B3%E6%A2%85%E6%9E%97%E6%96%B0%E7%89%88%E8%BD%AF%E4%BB%B6%E4%B8%AD%E5%BF%83%E7%A6%81%E6%AD%A2%E5%AE%89%E8%A3%85%E5%90%AB%E9%9D%9E%E6%B3%95%E5%85%B3%E9%94%AE%E8%AF%8D%E7%9A%84%E6%8F%92%E4%BB%B6/</url>
     <content><![CDATA[<h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>因为某些不可抗力的原因，梅林新版的软件中心离线安装科学插件的时候会出现下面的提示：</p>
