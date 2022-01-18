@@ -1,6 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>PyTorch卷积与BatchNorm的融合</title>
+    <url>/2022/01/18/PyTorch%E5%8D%B7%E7%A7%AF%E4%B8%8EBatchNorm%E7%9A%84%E8%9E%8D%E5%90%88/</url>
+    <content><![CDATA[<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>卷积的工作：</p>
+<script type="math/tex; mode=display">z=w * x+b</script><p>BN的工作：</p>
+<script type="math/tex; mode=display">y=\gamma \frac{z-\mu}{\sqrt{\sigma^{2}+\epsilon}}+\beta</script><p>把卷积带入BN：</p>
+<script type="math/tex; mode=display">y=\gamma \frac{w * x+b-\mu}{\sqrt{\sigma^{2}+\epsilon}}+\beta</script><p>融合后的新卷积：</p>
+<script type="math/tex; mode=display">w^{\prime}=\gamma \frac{w}{\sqrt{\sigma^{2}+\epsilon}}</script><script type="math/tex; mode=display">b^{\prime}=\gamma \frac{b-\mu}{\sqrt{\sigma^{2}+\epsilon}}+\beta</script><h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">from</span> torch <span class="keyword">import</span> cuda</span><br><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"><span class="keyword">from</span> time <span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">from</span> copy <span class="keyword">import</span> deepcopy</span><br><span class="line"></span><br><span class="line">torch.manual_seed(<span class="number">1</span>)</span><br><span class="line">torch.cuda.manual_seed(<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 原样返回，占位用的，免得报错</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DummyModule</span>(<span class="params">nn.Module</span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self</span>):</span></span><br><span class="line">        <span class="built_in">super</span>(DummyModule, self).__init__()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span>(<span class="params">self, x</span>):</span></span><br><span class="line">        <span class="keyword">return</span> x</span><br><span class="line"></span><br><span class="line"><span class="comment"># 核心函数，把conv和bn进行融合</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">fuse</span>(<span class="params">conv, bn</span>):</span></span><br><span class="line">    w = conv.weight</span><br><span class="line">    mean = bn.running_mean</span><br><span class="line">    var_sqrt = torch.sqrt(bn.running_var + bn.eps)</span><br><span class="line"></span><br><span class="line">    beta = bn.weight</span><br><span class="line">    gamma = bn.bias</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> conv.bias <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">        b = conv.bias</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        b = mean.new_zeros(mean.shape)</span><br><span class="line"></span><br><span class="line">    w = w * (beta / var_sqrt).reshape([conv.out_channels, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>])</span><br><span class="line">    b = (b - mean)/var_sqrt * beta + gamma</span><br><span class="line"></span><br><span class="line">    fused_conv = nn.Conv2d(</span><br><span class="line">        conv.in_channels,</span><br><span class="line">        conv.out_channels,</span><br><span class="line">        conv.kernel_size,</span><br><span class="line">        conv.stride,</span><br><span class="line">        conv.padding,</span><br><span class="line">        conv.dilation,</span><br><span class="line">        conv.groups,</span><br><span class="line">        bias=<span class="literal">True</span>,</span><br><span class="line">        padding_mode=conv.padding_mode</span><br><span class="line">    )</span><br><span class="line">    fused_conv.weight = nn.Parameter(w)</span><br><span class="line">    fused_conv.bias = nn.Parameter(b)</span><br><span class="line">    <span class="keyword">return</span> fused_conv</span><br><span class="line"></span><br><span class="line"><span class="comment"># 对整个网络的bn进行融合</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">fuse_module</span>(<span class="params">m</span>):</span></span><br><span class="line">    children = <span class="built_in">list</span>(m.named_children())</span><br><span class="line">    conv = <span class="literal">None</span></span><br><span class="line">    conv_name = <span class="literal">None</span></span><br><span class="line">    <span class="comment"># 遍历整个网路的层</span></span><br><span class="line">    <span class="keyword">for</span> name, child <span class="keyword">in</span> children:</span><br><span class="line">        <span class="comment"># 如果该层为bn且上一层为conv，则融合</span></span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">isinstance</span>(child, nn.BatchNorm2d) <span class="keyword">and</span> conv:</span><br><span class="line">            bc = fuse(conv, child)</span><br><span class="line">            m._modules[conv_name] = bc</span><br><span class="line">            m._modules[name] = DummyModule()</span><br><span class="line">            conv = <span class="literal">None</span></span><br><span class="line">        <span class="comment"># 如果该层为conv，记录该层</span></span><br><span class="line">        <span class="keyword">elif</span> <span class="built_in">isinstance</span>(child, nn.Conv2d):</span><br><span class="line">            conv = child</span><br><span class="line">            conv_name = name</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="comment"># 递归</span></span><br><span class="line">            fuse_module(child)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 验证融合后网络与原网络的差异</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">validate</span>(<span class="params">net, cuda=torch.cuda.is_available(<span class="params"></span>)</span>):</span></span><br><span class="line">    net.<span class="built_in">eval</span>()</span><br><span class="line">    fused_net = deepcopy(net)</span><br><span class="line">    fused_net.<span class="built_in">eval</span>()</span><br><span class="line">    fuse_module(fused_net)</span><br><span class="line"></span><br><span class="line">    error = <span class="number">0</span></span><br><span class="line">    origin_time = <span class="number">0</span></span><br><span class="line">    fused_time = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> cuda:</span><br><span class="line">        net.cuda()</span><br><span class="line">        fused_net.cuda()</span><br><span class="line">    n = <span class="number">1</span></span><br><span class="line">    <span class="keyword">with</span> torch.no_grad():</span><br><span class="line">        <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(n):</span><br><span class="line">            x = torch.randn(size=(<span class="number">32</span>, <span class="number">3</span>, <span class="number">224</span>, <span class="number">224</span>))</span><br><span class="line">            <span class="keyword">if</span> cuda:</span><br><span class="line">                x = x.cuda()</span><br><span class="line"></span><br><span class="line">            torch.cuda.synchronize()</span><br><span class="line">            start = time()</span><br><span class="line">            out_origin = net(x)</span><br><span class="line">            torch.cuda.synchronize()</span><br><span class="line">            end = time()</span><br><span class="line">            origin_time += end - start</span><br><span class="line"></span><br><span class="line">            torch.cuda.synchronize()</span><br><span class="line">            start = time()</span><br><span class="line">            out_fused = fused_net(x)</span><br><span class="line">            torch.cuda.synchronize()</span><br><span class="line">            end = time()</span><br><span class="line">            fused_time += end - start</span><br><span class="line"></span><br><span class="line">            error += (out_origin - out_fused).<span class="built_in">abs</span>().<span class="built_in">max</span>().item()</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;origin time: <span class="subst">&#123;origin_time / n&#125;</span>s fused time: <span class="subst">&#123;fused_time / n&#125;</span>s error:<span class="subst">&#123;error / n&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    <span class="keyword">import</span> torchvision</span><br><span class="line">    net = torchvision.models.mobilenet_v2(<span class="literal">True</span>)</span><br><span class="line">    net.<span class="built_in">eval</span>()</span><br><span class="line">    validate(net, cuda=<span class="literal">False</span>)</span><br></pre></td></tr></table></figure>
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>这个融合优化属于经济上净赚的事情，精度理论上无损（实际上有损，但是很小），速度有20%-30%的提升，尤其是BN层特别多的情况。</p>
+<p>以下为在CPU上测速的情况：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>ResNet</th>
+<th>Before</th>
+<th>After</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ResNet18</td>
+<td>0.088</td>
+<td>0.076</td>
+</tr>
+<tr>
+<td>ResNet34</td>
+<td>0.157</td>
+<td>0.124</td>
+</tr>
+<tr>
+<td>ResNet50</td>
+<td>0.275</td>
+<td>0.185</td>
+</tr>
+<tr>
+<td>ResNet152</td>
+<td>0.728</td>
+<td>0.406</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p><a href="https://zhuanlan.zhihu.com/p/49329030">PyTorch 卷积与BatchNorm的融合 - 知乎 (zhihu.com)</a></p>
+]]></content>
+      <categories>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>Pytorch</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>梅林固件安装Clash</title>
     <url>/2022/01/17/%E6%A2%85%E6%9E%97%E5%9B%BA%E4%BB%B6%E5%AE%89%E8%A3%85Clash/</url>
     <content><![CDATA[<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Merlin Clash是一款运行在<a href="https://www.koolcenter.com">KoolCenter</a>软件中心(Arm版)上的Clash GUI插件。获取插件需加入Telegram群组-<a href="https://t.me/merlinclashcat">merlinclashcat</a>，相信能看懂这篇的，都有翻墙技能，这里不再叙述。</p>
