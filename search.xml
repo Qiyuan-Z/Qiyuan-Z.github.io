@@ -1,6 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>EndNote样式使用教程</title>
+    <url>/2020/12/11/EndNote%E6%A0%B7%E5%BC%8F%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>EndNote主要针对英文文献，所以并没提供符合中华标准的文献样式，而网上找的样式又不太对。因此这里本人根据中华人民共和国国家标准GB/T7714-2005和江南大学论文要求，制作了可供导入使用的样式。</p>
+<p>下载链接如下：<br><a href="https://drive.google.com/file/d/1RgwQu1P_yDF_zLhAr2b-q3qFkFm8pNLz/view?usp=sharing">江大开题报告样式</a><br><a href="https://drive.google.com/file/d/1EeGhckTxcrS2fdU2tLck_1vozWer0jU6/view?usp=sharing">江大毕业论文样式</a></p>
+<h2 id="使用教程"><a href="#使用教程" class="headerlink" title="使用教程"></a>使用教程</h2><p><strong>① 将.ens样式文件放入EndNote安装目录下的Styles文件夹。</strong></p>
+<p><strong>② 使用时切换样式即可：</strong></p>
+<p><img src="https://yuanblog-1300912400.cos.ap-shanghai.myqcloud.com/img/wenxian/4.jpg" alt></p>
+<p><img src="https://yuanblog-1300912400.cos.ap-shanghai.myqcloud.com/img/wenxian/5.png" alt></p>
+<p><strong>③ 插入文献效果如下：</strong></p>
+<ul>
+<li>开题报告：</li>
+</ul>
+<p><img src="https://yuanblog-1300912400.cos.ap-shanghai.myqcloud.com/img/wenxian/6.jpg" alt></p>
+<ul>
+<li><p>毕业论文：</p>
+<p><img src="https://yuanblog-1300912400.cos.ap-shanghai.myqcloud.com/img/wenxian/13.png" alt></p>
+</li>
+</ul>
+<p><strong>④ 若参考文献序号后面空格过长可设置悬挂缩进距离：</strong></p>
+<p><img src="https://yuanblog-1300912400.cos.ap-shanghai.myqcloud.com/img/wenxian/7.jpg" alt></p>
+<p><img src="https://yuanblog-1300912400.cos.ap-shanghai.myqcloud.com/img/wenxian/8.jpg" alt></p>
+<p><img src="https://yuanblog-1300912400.cos.ap-shanghai.myqcloud.com/img/wenxian/9.jpg" alt></p>
+<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><h3 id="①-arxiv期刊，请设置参考类型为Manuscript，以方便样式识别文献类型，并按图中字段完善相应内容。"><a href="#①-arxiv期刊，请设置参考类型为Manuscript，以方便样式识别文献类型，并按图中字段完善相应内容。" class="headerlink" title="①  arxiv期刊，请设置参考类型为Manuscript，以方便样式识别文献类型，并按图中字段完善相应内容。"></a>①  arxiv期刊，请设置参考类型为Manuscript，以方便样式识别文献类型，并按图中字段完善相应内容。</h3><p><img src="https://yuanblog-1300912400.cos.ap-shanghai.myqcloud.com/img/wenxian/10.jpg" alt></p>
+<h3 id="②-中文文献，请设置参考类型为中文文献，并填写Secondary-Author（与Author一样），以方便样式识别文献类型。"><a href="#②-中文文献，请设置参考类型为中文文献，并填写Secondary-Author（与Author一样），以方便样式识别文献类型。" class="headerlink" title="② 中文文献，请设置参考类型为中文文献，并填写Secondary Author（与Author一样），以方便样式识别文献类型。"></a>② 中文文献，请设置参考类型为中文文献，并填写Secondary Author（与Author一样），以方便样式识别文献类型。</h3><p><img src="https://yuanblog-1300912400.cos.ap-shanghai.myqcloud.com/img/wenxian/12.jpg" alt></p>
+<p><strong>中文文献参考类型设置：</strong></p>
+<p>点击「编辑」→「首选项」→「参考文献类型」→「修改参考文献类型」（「Edit」→「Preference」→「Reference Types」→「Modify Reference Types 」）</p>
+<p>EndNote未使用的文献类型 (Reference Type) 默认为3个 , 它们被命名为 Unused 1，Unused 2和Unused 3 。我们可以利用这几个未作用的文献类型来修改。</p>
+<p>如选择Unused 1，在 Generic 项中输入新文献类型名「中文文献」，然后依次修改各项，修改完毕后「OK」关闭保存。</p>
+<p><img src="https://yuanblog-1300912400.cos.ap-shanghai.myqcloud.com/img/wenxian/11.jpg" alt></p>
+<h3 id="③-学位论文，则按照如下图，完善相应信息。"><a href="#③-学位论文，则按照如下图，完善相应信息。" class="headerlink" title="③ 学位论文，则按照如下图，完善相应信息。"></a>③ 学位论文，则按照如下图，完善相应信息。</h3><p><img src="https://yuanblog-1300912400.cos.ap-shanghai.myqcloud.com/img/wenxian/14.png" alt></p>
+<h3 id="④-会议论文请补充完善会议地点："><a href="#④-会议论文请补充完善会议地点：" class="headerlink" title="④ 会议论文请补充完善会议地点："></a>④ 会议论文请补充完善会议地点：</h3><p><img src="https://yuanblog-1300912400.cos.ap-shanghai.myqcloud.com/img/wenxian/15.png" alt></p>
+<h3 id="⑤-作者缩写："><a href="#⑤-作者缩写：" class="headerlink" title="⑤ 作者缩写："></a>⑤ 作者缩写：</h3><p>样式中设置了中文三个作者以上缩写为等，英文三个作者以上缩写为et al. 但是有的人使用过程中发现并未生效，可自己编辑样式启用该功能。</p>
+<p>点击「编辑」→「输出样式」→「编辑“xxxx”」：</p>
+<p><img src="https://yuanblog-1300912400.cos.ap-shanghai.myqcloud.com/img/wenxian/image-20220515104659095.png" alt></p>
+<p><img src="https://yuanblog-1300912400.cos.ap-shanghai.myqcloud.com/img/wenxian/image-20220515104731063.png" alt></p>
+<p>将参考文献中作者列表和编者列表显示方式，选择第二项进行保存即可生效。</p>
+]]></content>
+      <categories>
+        <category>资源</category>
+      </categories>
+  </entry>
+  <entry>
     <title>OpenCV多线程方式处理视频（Python）</title>
     <url>/2022/04/30/OpenCV%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%96%B9%E5%BC%8F%E5%A4%84%E7%90%86%E8%A7%86%E9%A2%91%EF%BC%88Python%EF%BC%89/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>用多线程处理视频并用于目标检测能够加快处理的帧率，而Python的threading模块封装了相关的操作，通过编写功能类继承threading.Thread即可实现自己的逻辑：通过调用start()方法，线程实例开始在单独的线程上下文中运行自己的run()函数处理任务，直到线程退出。在此期间，主线程可以继续执行任务。当主线程任务执行结束时，主线程可通过设置全局状态变量告知子线程退出，同时调用join()方法等待子线程运行结束。</p>
@@ -5730,43 +5772,6 @@ Returns:
       <tags>
         <tag>leetcode</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>EndNote样式使用教程</title>
-    <url>/2020/12/11/EndNote%E6%A0%B7%E5%BC%8F%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>EndNote主要针对英文文献，所以并没提供符合中华标准的文献样式，而网上找的样式又不太对。因此这里本人根据中华人民共和国国家标准GB/T7714-2005和江南大学论文要求，制作了可供导入使用的样式。</p>
-<p>下载链接如下：<br><a href="https://drive.google.com/file/d/1RgwQu1P_yDF_zLhAr2b-q3qFkFm8pNLz/view?usp=sharing">江大开题报告样式</a><br><a href="https://drive.google.com/file/d/1EeGhckTxcrS2fdU2tLck_1vozWer0jU6/view?usp=sharing">江大毕业论文样式</a></p>
-<h2 id="使用教程"><a href="#使用教程" class="headerlink" title="使用教程"></a>使用教程</h2><p><strong>① 将.ens样式文件放入EndNote安装目录下的Styles文件夹。</strong></p>
-<p><strong>② 使用时切换样式即可：</strong></p>
-<p><img src="https://yuanblog-1300912400.cos.ap-shanghai.myqcloud.com/img/wenxian/4.jpg" alt></p>
-<p><img src="https://yuanblog-1300912400.cos.ap-shanghai.myqcloud.com/img/wenxian/5.png" alt></p>
-<p><strong>③ 插入文献效果如下：</strong></p>
-<ul>
-<li>开题报告：</li>
-</ul>
-<p><img src="https://yuanblog-1300912400.cos.ap-shanghai.myqcloud.com/img/wenxian/6.jpg" alt></p>
-<ul>
-<li><p>毕业论文：</p>
-<p><img src="https://yuanblog-1300912400.cos.ap-shanghai.myqcloud.com/img/wenxian/13.png" alt></p>
-</li>
-</ul>
-<p><strong>④ 若参考文献序号后面空格过长可设置悬挂缩进距离：</strong></p>
-<p><img src="https://yuanblog-1300912400.cos.ap-shanghai.myqcloud.com/img/wenxian/7.jpg" alt></p>
-<p><img src="https://yuanblog-1300912400.cos.ap-shanghai.myqcloud.com/img/wenxian/8.jpg" alt></p>
-<p><img src="https://yuanblog-1300912400.cos.ap-shanghai.myqcloud.com/img/wenxian/9.jpg" alt></p>
-<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><h3 id="①-arxiv期刊，请设置参考类型为Manuscript，以方便样式识别文献类型，并按图中字段完善相应内容。"><a href="#①-arxiv期刊，请设置参考类型为Manuscript，以方便样式识别文献类型，并按图中字段完善相应内容。" class="headerlink" title="①  arxiv期刊，请设置参考类型为Manuscript，以方便样式识别文献类型，并按图中字段完善相应内容。"></a>①  arxiv期刊，请设置参考类型为Manuscript，以方便样式识别文献类型，并按图中字段完善相应内容。</h3><p><img src="https://yuanblog-1300912400.cos.ap-shanghai.myqcloud.com/img/wenxian/10.jpg" alt></p>
-<h3 id="②-中文文献，请设置参考类型为中文文献，并填写Secondary-Author（与Author一样），以方便样式识别文献类型。"><a href="#②-中文文献，请设置参考类型为中文文献，并填写Secondary-Author（与Author一样），以方便样式识别文献类型。" class="headerlink" title="② 中文文献，请设置参考类型为中文文献，并填写Secondary Author（与Author一样），以方便样式识别文献类型。"></a>② 中文文献，请设置参考类型为中文文献，并填写Secondary Author（与Author一样），以方便样式识别文献类型。</h3><p><img src="https://yuanblog-1300912400.cos.ap-shanghai.myqcloud.com/img/wenxian/12.jpg" alt></p>
-<p><strong>中文文献参考类型设置：</strong></p>
-<p>点击「编辑」→「首选项」→「参考文献类型」→「修改参考文献类型」（「Edit」→「Preference」→「Reference Types」→「Modify Reference Types 」）</p>
-<p>EndNote未使用的文献类型 (Reference Type) 默认为3个 , 它们被命名为 Unused 1，Unused 2和Unused 3 。我们可以利用这几个未作用的文献类型来修改。</p>
-<p>如选择Unused 1，在 Generic 项中输入新文献类型名「中文文献」，然后依次修改各项，修改完毕后「OK」关闭保存。</p>
-<p><img src="https://yuanblog-1300912400.cos.ap-shanghai.myqcloud.com/img/wenxian/11.jpg" alt></p>
-<h3 id="③-学位论文，则按照如下图，完善相应信息。"><a href="#③-学位论文，则按照如下图，完善相应信息。" class="headerlink" title="③ 学位论文，则按照如下图，完善相应信息。"></a>③ 学位论文，则按照如下图，完善相应信息。</h3><p><img src="https://yuanblog-1300912400.cos.ap-shanghai.myqcloud.com/img/wenxian/14.png" alt></p>
-<h3 id="④-会议论文请补充完善会议地点："><a href="#④-会议论文请补充完善会议地点：" class="headerlink" title="④ 会议论文请补充完善会议地点："></a>④ 会议论文请补充完善会议地点：</h3><p><img src="https://yuanblog-1300912400.cos.ap-shanghai.myqcloud.com/img/wenxian/15.png" alt></p>
-]]></content>
-      <categories>
-        <category>资源</category>
-      </categories>
   </entry>
   <entry>
     <title>历届CCF顶会地点查询</title>
